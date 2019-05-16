@@ -3,9 +3,9 @@
 <b>WARNING</b> : This game is entirely under construction.
 
 The game is a RPG Tactical Fantasy game, turn-based and is in 2D.
-I'm actually looking for a name.
+I'm currently looking for a name.
 <br>
-Neither goal (i.e. no victory condition) nor defeat condition are availables for now.
+Neither goal (i.e. no victory condition) nor defeat condition are available for now.
 
 <b>Version</b> : 0.0.0
 
