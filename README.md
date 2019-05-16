@@ -4,6 +4,7 @@
 
 The game is a RPG Tactical Fantasy game, turn-based and is in 2D.
 I'm actually looking for a name.
+Neither goal (i.e. no victory condition) nor defeat condition are availables for now.
 
 <b>Version</b> : 0.0.0
 
