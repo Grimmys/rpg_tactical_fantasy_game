@@ -1,0 +1,20 @@
+<life_potion>
+    <name>
+        Life Potion
+    </name>
+    <sprite>
+        potion/ruby_new.png
+    </sprite>
+    <info>
+        Use it to regen some HP.
+    </info>
+    <category>
+        potion
+    </category>
+    <effect>
+        heal
+    </effect>
+    <power>
+        5
+    </power>
+</life_potion>

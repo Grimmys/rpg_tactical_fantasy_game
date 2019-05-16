@@ -1,0 +1,14 @@
+<key>
+    <name>
+        Key
+    </name>
+    <sprite>
+        misc/key.png
+    </sprite>
+    <info>
+        Could be used to open some chest.
+    </info>
+    <category>
+        key
+    </category>
+</key>
