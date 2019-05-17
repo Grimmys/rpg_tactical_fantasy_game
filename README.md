@@ -3,12 +3,18 @@
 <b>WARNING</b> : This game is entirely under construction.
 
 The game is a RPG Tactical Fantasy game, turn-based and is in 2D.
-I'm actually looking for a name.
+I'm currently looking for a name.
+
 <br>
-Neither goal (i.e. no victory condition) nor defeat condition are availables for now.
+
+Neither goal (i.e. no victory condition) nor defeat condition are available for now.
 
 <b>Version</b> : 0.0.0
 
+![Main screen with possible moves and attack](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/player_moves_and_attacks_avalaibles.png)
+![Inventory menu](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/inventory_weapon_interaction_menu.png)
+
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 ## How to start game
 
 Type the following command in a shell at the project root :

@@ -19,12 +19,16 @@ from src.InfoBox import InfoBox
 from src.Sidebar import Sidebar
 from src.Animation import Animation
 
+<<<<<<< HEAD
 BLACK = (0, 0, 0)
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 WHITE = (255, 255, 255)
 GREY = (128, 128, 128)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+<<<<<<< HEAD
 MARINE_BLUE = (34, 61, 200)
 ORANGE = (255, 140, 0)
 YELLOW = (143, 143, 5)
@@ -32,17 +36,24 @@ GOLD = (200, 172, 34)
 BROWN = (139, 69, 19)
 MAROON = (128, 0, 0)
 BROWN_RED = (165, 42, 42)
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 
 TILE_SIZE = 48
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
 TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 46)
+<<<<<<< HEAD
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 MENU_SUB_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
+=======
+ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
+ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 
 LANDING_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
 LANDING = pg.transform.scale(pg.image.load(LANDING_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
@@ -61,7 +72,10 @@ ACTION_MENU_WIDTH = 200
 ITEM_MENU_WIDTH = 500
 ITEM_INFO_MENU_WIDTH = 600
 ITEM_DELETE_MENU_WIDTH = 350
+<<<<<<< HEAD
 STATUS_MENU_WIDTH = 300
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 
 MARGINTOP = 10
 
@@ -278,6 +292,7 @@ class Level:
         if self.active_menu:
             self.active_menu.display(win)
 
+<<<<<<< HEAD
     @staticmethod
     def determine_hp_color(hp, hp_max):
         if hp == hp_max:
@@ -291,6 +306,8 @@ class Level:
         else:
             return RED
 
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
     def show_possible_actions(self, movable, win, possible_moves, possible_attacks):
         self.show_possible_moves(movable, win, possible_moves)
         self.show_possible_attacks(movable, win, possible_attacks)
@@ -465,6 +482,7 @@ class Level:
             entries = Level.create_inventory_entries(items)
 
             self.active_menu = InfoBox("Inventory", "imgs/Interface/PopUpMenu.png", entries, ITEM_MENU_WIDTH, close_button=True)
+<<<<<<< HEAD
         # Display player's status
         elif method_id == 2:
             self.background_menus.append([self.active_menu, True])
@@ -498,6 +516,10 @@ class Level:
                        [{'type': 'text', 'color': MARINE_BLUE, 'text': self.selected_player.get_formatted_alterations()}]]
 
             self.active_menu = InfoBox("Status", "imgs/Interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH, close_button=True)
+=======
+        elif method_id == 2:
+            pass
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
         # Wait action : Given Character's turn is finished
         elif method_id == 3:
             self.selected_item = None

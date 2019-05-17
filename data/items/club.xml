@@ -6,7 +6,11 @@
         weapon/club_new.png
     </sprite>
     <info>
+<<<<<<< HEAD
         Not a real weapon, but you could hurt someone with.
+=======
+        Not a real weapon, but you could harm someone with.
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
     </info>
     <category>
         weapon

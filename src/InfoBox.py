@@ -5,7 +5,11 @@ from src.Button import Button
 from src.ItemButton import ItemButton
 
 
+<<<<<<< HEAD
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
+=======
+TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 
@@ -25,7 +29,10 @@ BUTTON_SIZE = (150, 30)
 ITEM_BUTTON_SIZE = (180, TILE_SIZE + 30)
 CLOSE_BUTTON_SIZE = (150, 50)
 CLOSE_ACTION_ID = -1
+<<<<<<< HEAD
 CLOSE_BUTTON_MARGINTOP = 20
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 
 DEFAULT_WIDTH = 400
 
@@ -33,7 +40,11 @@ DEFAULT_WIDTH = 400
 class InfoBox:
     def __init__(self, name, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=False):
         self.name = name
+<<<<<<< HEAD
         self.title = TextElement(self.name, (0, 0), MENU_TITLE_FONT, (0, 0, 0, 0), WHITE)
+=======
+        self.title = TextElement(self.name, (0, 0), TITLE_FONT, (0, 0, 0, 0), WHITE)
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
         self.element_linked = el_rect_linked
         self.close_button = close_button
 
@@ -53,6 +64,10 @@ class InfoBox:
             for entry in row:
                 if 'margin' not in entry:
                     entry['margin'] = (0, 0, 0, 0)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
                 if entry['type'] == 'button':
                     element.append(Button(entry['name'], entry['id'], BUTTON_SIZE, (0, 0), BUTTON_INACTIVE, BUTTON_ACTIVE, entry['margin']))
                 elif entry['type'] == 'item_button':
@@ -60,9 +75,13 @@ class InfoBox:
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
                         entry['font'] = ITEM_FONT
+<<<<<<< HEAD
                     if 'color' not in entry:
                         entry['color'] = WHITE
                     element.append(TextElement(entry['text'], (0, 0), entry['font'], entry['margin'], entry['color']))
+=======
+                    element.append(TextElement(entry['text'], (0, 0), entry['font'], entry['margin']))
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
             elements.append(element)
         elements.insert(0, [title])
         return elements
@@ -79,11 +98,19 @@ class InfoBox:
             height += max_height
             row.insert(0, max_height)
         if close_button:
+<<<<<<< HEAD
             close_button_height = CLOSE_BUTTON_SIZE[1] + MARGINTOP + CLOSE_BUTTON_MARGINTOP
             height += close_button_height
             self.elements.append([close_button_height,
                                   Button("Close", CLOSE_ACTION_ID, CLOSE_BUTTON_SIZE, (0, 0), BUTTON_INACTIVE,
                                          BUTTON_ACTIVE, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
+=======
+            close_button_height = CLOSE_BUTTON_SIZE[1] + MARGINTOP
+            height += close_button_height
+            self.elements.append([close_button_height,
+                                  Button("Close", CLOSE_ACTION_ID, CLOSE_BUTTON_SIZE, (0, 0), BUTTON_INACTIVE,
+                                         BUTTON_ACTIVE, (0, 0, 0, 0))])
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 
         self.size = (width, height)
         self.pos = self.determine_pos(el_rect_linked)

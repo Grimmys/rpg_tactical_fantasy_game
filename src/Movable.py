@@ -5,25 +5,34 @@ TIMER = 60
 NB_ITEMS_MAX = 8
 
 class Movable(Destroyable):
+<<<<<<< HEAD
 
     XP_NEXT_LVL_BASE = 15
 
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
     def __init__(self, name, pos, sprite, hp, max_move, strength, lvl=1):
         Destroyable.__init__(self, name, pos, sprite, hp)
         self.max_move = max_move
         self.on_move = []
         self.timer = TIMER
         self.strength = strength
+<<<<<<< HEAD
         self.res = 0
         self.defense = 0
         self.alterations = []
         self.lvl = lvl
         self.xp = 0
         self.xp_next_lvl = self.determine_xp_goal()
+=======
+        self.alterations = []
+        self.lvl = lvl
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
         self.state = 0
         self.items = []
         self.nb_items_max = NB_ITEMS_MAX
 
+<<<<<<< HEAD
     def get_strength(self):
         return self.strength
 
@@ -33,6 +42,8 @@ class Movable(Destroyable):
     def get_defense(self):
         return self.defense
 
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
     def get_max_moves(self):
         return self.max_move
 
@@ -49,13 +60,18 @@ class Movable(Destroyable):
         formatted_string = ""
         for alteration in self.alterations:
             formatted_string += alteration.capitalize() + ", "
+<<<<<<< HEAD
         if formatted_string == "":
+=======
+        if (formatted_string == ""):
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
             return "None"
         return formatted_string[:-2]
 
     def get_lvl(self):
         return self.lvl
 
+<<<<<<< HEAD
     def get_xp(self):
         return self.xp
 
@@ -65,6 +81,8 @@ class Movable(Destroyable):
     def get_next_lvl_xp(self):
         return self.xp_next_lvl
 
+=======
+>>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
     def get_item(self, index):
         if index not in range(len(self.items)):
             return False
