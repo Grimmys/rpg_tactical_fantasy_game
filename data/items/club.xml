@@ -1,0 +1,29 @@
+<club>
+    <name>
+        Club
+    </name>
+    <sprite>
+        weapon/club_new.png
+    </sprite>
+    <info>
+        Not a real weapon, but you could hurt someone with.
+    </info>
+    <category>
+        weapon
+    </category>
+    <power>
+        1
+    </power>
+    <range>
+        1
+    </range>
+    <fragility>
+        10
+    </fragility>
+    <weight>
+        2
+    </weight>
+    <equipped_sprite>
+        club_slant.png
+    </equipped_sprite>
+</club>
