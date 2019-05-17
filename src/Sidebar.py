@@ -4,11 +4,8 @@ from src.Character import Character
 from src.Movable import Movable
 from src.Breakable import Breakable
 
-<<<<<<< HEAD
+
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
-=======
-TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
->>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 18)
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 
@@ -58,11 +55,7 @@ class Sidebar():
         win.blit(self.sprite, self.pos)
 
         # Turn indication
-<<<<<<< HEAD
         turn_text = MENU_TITLE_FONT.render("TURN " + str(nb_turn), 1, BLACK)
-=======
-        turn_text = TITLE_FONT.render("TURN " + str(nb_turn), 1, BLACK)
->>>>>>> 7acfac91df1e95dce2f8b2478efaa777d8d5a06f
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 15))
 
         # Display the current informations about the entity hovered
