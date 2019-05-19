@@ -65,6 +65,7 @@ ITEM_MENU_WIDTH = 500
 ITEM_INFO_MENU_WIDTH = 600
 ITEM_DELETE_MENU_WIDTH = 350
 STATUS_MENU_WIDTH = 300
+EQUIPMENT_MENU_WIDTH = 500
 
 MARGINTOP = 10
 
@@ -384,7 +385,7 @@ class Level:
 
     def create_player_menu(self):
         player_rect = self.selected_player.get_rect()
-        entries = [[{'name': 'Inventory', 'id': 1}], [{'name': 'Status', 'id': 2}], [{'name': 'Wait', 'id': 3}]]
+        entries = [[{'name': 'Inventory', 'id': 1}], [{'name': 'Equipment', 'id': 10}], [{'name': 'Status', 'id': 2}], [{'name': 'Wait', 'id': 3}]]
         if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, 1, True):
             entries.insert(0, [{'name': 'Attack', 'id': 0}])
         for row in entries:
@@ -437,6 +438,22 @@ class Level:
         if row:
             entries.append(row)
 
+        return entries
+
+    @staticmethod
+    def create_equipment_entries(equipments):
+        entries = []
+        row = []
+        body_parts = [['head'], ['body'], ['wrist'], ['left_hand', 'right_hand'], ['legs'], ['feet']]
+        for part in body_parts:
+            row = []
+            for member in part:
+                entry = {'type': 'item_button', 'item': None, 'index': -1, 'subtype': 'equip'}
+                for i, eq in enumerate(equipments):
+                    if member == eq.get_body_part():
+                        entry = {'type': 'item_button', 'item': eq, 'index': i, 'subtype': 'equip'}
+                row.append(entry)
+            entries.append(row)
         return entries
 
     def execute_action(self, action):
@@ -515,9 +532,9 @@ class Level:
             self.background_menus.append([self.active_menu, True])
 
             item_button_pos = args[0]
-            item_index = args[1]
+            item = args[1]
 
-            self.selected_item = self.selected_player.get_item(item_index)
+            self.selected_item = item
 
             formatted_item_name = self.selected_item.get_formatted_name()
 
@@ -529,15 +546,18 @@ class Level:
             if isinstance(self.selected_item, Consumable):
                 entries.insert(0, [{'name': 'Use', 'id': 8}])
             elif isinstance(self.selected_item, Equipment):
-                entries.insert(0, [{'name': 'Equip', 'id': 9}])
+                if self.selected_player.has_equipment(self.selected_item):
+                    entries.insert(0, [{'name': 'Unequip', 'id': 11}])
+                else:
+                    entries.insert(0, [{'name': 'Equip', 'id': 9}])
 
             for row in entries:
                 for entry in row:
                     entry['type'] = 'button'
 
             item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0], ITEM_BUTTON_MENU_SIZE[1])
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
-
+            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
+                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
         # Get info about an item
         elif method_id == 6:
             self.background_menus.append([self.active_menu, False])
@@ -547,7 +567,6 @@ class Level:
 
             entries = [[{'type' : 'text', 'text' : description, 'font' : ITEM_DESC_FONT, 'margin' : (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
-
         # Remove an item from the inventory
         elif method_id == 7:
             self.background_menus.append([self.active_menu, False])
@@ -629,6 +648,40 @@ class Level:
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=True)
+        # Equipment action : open the equipment screen
+        elif method_id == 10:
+            self.background_menus.append([self.active_menu, True])
+
+            equipments = self.selected_player.get_equipments()
+            entries = Level.create_equipment_entries(equipments)
+
+            self.active_menu = InfoBox("Equipment", "imgs/Interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
+        # Unequip an item
+        elif method_id == 11:
+            print("OK !")
+            self.background_menus.append([self.active_menu, False])
+
+            formatted_item_name = self.selected_item.get_formatted_name()
+
+            # Try to unequip the item
+            unequipped = self.selected_player.unequip(self.selected_item)
+            result_msg = "The item can't be unequipped : Not enough space in your inventory."
+            if unequipped:
+                result_msg = "The item has been unequipped"
+
+                # Update equipment screen content
+                equipments = self.selected_player.get_equipments()
+                entries = Level.create_equipment_entries(equipments)
+
+                # Cancel item menu
+                self.background_menus.pop()
+                # Update the inventory menu (i.e. first menu backward)
+                self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
+
+            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
+                                       ITEM_INFO_MENU_WIDTH + 200, close_button=True)
+
 
     def begin_turn(self):
         if self.side_turn == 'P':

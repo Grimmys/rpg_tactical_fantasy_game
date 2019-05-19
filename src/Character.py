@@ -21,6 +21,14 @@ class Character(Movable):
     def get_equipments(self):
         return self.equipments
 
+    def get_equipment(self, index):
+        if index not in range(len(self.equipments)):
+            return False
+        return self.equipments[index]
+
+    def has_equipment(self, eq):
+        return eq in self.equipments
+
     def get_classes(self):
         return self.classes
 
@@ -39,6 +47,14 @@ class Character(Movable):
         self.equipments.append(eq)
         self.remove_item(eq)
         return True
+
+    def unequip(self, eq):
+        # If the item has been appended to the inventory
+        if self.set_item(eq):
+            self.remove_equipment(eq)
+            return True
+        return False
+
 
     def remove_equipment(self, eq):
         id = eq.get_id()

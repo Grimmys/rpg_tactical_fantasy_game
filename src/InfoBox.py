@@ -23,6 +23,7 @@ BUTTON_ACTIVE = "imgs/interface/MenuButtonPreLight.png"
 
 BUTTON_SIZE = (150, 30)
 ITEM_BUTTON_SIZE = (180, TILE_SIZE + 30)
+EQUIP_BUTTON_SIZE = (150, TILE_SIZE + 10)
 CLOSE_BUTTON_SIZE = (150, 50)
 CLOSE_ACTION_ID = -1
 CLOSE_BUTTON_MARGINTOP = 20
@@ -33,11 +34,10 @@ DEFAULT_WIDTH = 400
 class InfoBox:
     def __init__(self, name, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=False):
         self.name = name
-        self.title = TextElement(self.name, (0, 0), MENU_TITLE_FONT, (0, 0, 0, 0), WHITE)
         self.element_linked = el_rect_linked
         self.close_button = close_button
 
-        self.elements = InfoBox.init_elements(entries, self.title)
+        self.elements = InfoBox.init_elements(entries, self.name)
         self.determine_sizepos(width, el_rect_linked, close_button)
         self.determine_elements_pos()
         self.buttons = self.get_buttons()
@@ -57,7 +57,11 @@ class InfoBox:
                 if entry['type'] == 'button':
                     element.append(Button(entry['name'], entry['id'], BUTTON_SIZE, (0, 0), BUTTON_INACTIVE, BUTTON_ACTIVE, entry['margin']))
                 elif entry['type'] == 'item_button':
-                    element.append(ItemButton(ITEM_BUTTON_SIZE, (0, 0), entry['item'], entry['margin'], entry['index']))
+                    button_size = ITEM_BUTTON_SIZE
+                    if 'subtype' in entry:
+                        if entry['subtype'] == 'equip':
+                            button_size = EQUIP_BUTTON_SIZE
+                    element.append(ItemButton(button_size, (0, 0), entry['item'], entry['margin'], entry['index']))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
                         entry['font'] = ITEM_FONT
@@ -65,7 +69,7 @@ class InfoBox:
                         entry['color'] = WHITE
                     element.append(TextElement(entry['text'], (0, 0), entry['font'], entry['margin'], entry['color']))
             elements.append(element)
-        elements.insert(0, [title])
+        elements.insert(0, [TextElement(title, (0, 0), MENU_TITLE_FONT, (len(entries) + 5, 0, 0, 0), WHITE)])
         return elements
 
     def determine_sizepos(self, width, el_rect_linked, close_button):
@@ -126,7 +130,7 @@ class InfoBox:
             y += row[0]
 
     def update_content(self, entries):
-        self.elements = InfoBox.init_elements(entries, self.title)
+        self.elements = InfoBox.init_elements(entries, self.name)
         self.determine_sizepos(self.size[0], self.element_linked, self.close_button)
         self.determine_elements_pos()
         self.buttons = self.get_buttons()

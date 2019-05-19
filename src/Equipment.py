@@ -24,3 +24,6 @@ class Equipment(Item):
 
     def get_equipped_sprite(self):
         return self.equipped_sprite
+
+    def get_body_part(self):
+        return self.body_part

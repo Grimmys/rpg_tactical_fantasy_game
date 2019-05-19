@@ -78,6 +78,7 @@ class Movable(Destroyable):
         if len(self.items) == NB_ITEMS_MAX:
             return False
         self.items.append(item)
+        return True
 
     def remove_item(self, item):
         id = item.get_id()
