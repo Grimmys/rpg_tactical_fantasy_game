@@ -27,10 +27,7 @@ class Button(BoxElement):
         win.blit(self.name, (self.pos[0] + (self.size[0] // 2) - (self.name.get_width() // 2), self.pos[1] + (self.size[1] // 2) - (self.name.get_height() // 2)))
 
     def set_hover(self, hover):
-        if hover:
-            self.content = self.sprite_hover
-        else:
-            self.content = self.sprite
+        self.content = self.sprite_hover if hover else self.sprite
 
     def action_triggered(self):
         return self.method_id, self.pos
