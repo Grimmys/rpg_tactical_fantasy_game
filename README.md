@@ -7,7 +7,7 @@ I'm currently looking for a name.
 
 Neither goal (i.e. no victory condition) nor defeat condition are available for now.
 
-<b>Version</b> : 0.0.1
+<b>Version</b> : 0.0.2
 
 ![Main screen with possible moves and attack](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/player_moves_and_attacks_avalaibles.png)
 ![Inventory menu](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/inventory_weapon_interaction_menu.png)
