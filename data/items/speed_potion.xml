@@ -1,23 +1,23 @@
-<life_potion>
+<item>
     <name>
-        Life Potion
+        Speed Potion
     </name>
     <sprite>
-        potion/ruby_new.png
+        potion/murky.png
     </sprite>
     <info>
-        Use it to regen some HP.
+        Use it to boost speed.
     </info>
     <category>
         potion
     </category>
     <effect>
-        heal
+        speed
     </effect>
     <power>
-        5
+        2
     </power>
     <duration>
-        0
+        3
     </duration>
-</life_potion>
+</item>

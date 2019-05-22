@@ -58,10 +58,11 @@ class InfoBox:
                     element.append(Button(entry['name'], entry['id'], BUTTON_SIZE, (0, 0), BUTTON_INACTIVE, BUTTON_ACTIVE, entry['margin']))
                 elif entry['type'] == 'item_button':
                     button_size = ITEM_BUTTON_SIZE
+                    disabled = 'disabled' in entry
                     if 'subtype' in entry:
                         if entry['subtype'] == 'equip':
                             button_size = EQUIP_BUTTON_SIZE
-                    element.append(ItemButton(button_size, (0, 0), entry['item'], entry['margin'], entry['index']))
+                    element.append(ItemButton(button_size, (0, 0), entry['item'], entry['margin'], entry['index'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
                         entry['font'] = ITEM_FONT

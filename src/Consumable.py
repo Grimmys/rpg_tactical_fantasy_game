@@ -1,24 +1,28 @@
 from src.Item import Item
-
+from src.Alteration import  Alteration
 
 class Consumable(Item):
-    def __init__(self, name, sprite, description, effect, power):
+    def __init__(self, name, sprite, description, effect, power, duration):
         Item.__init__(self, name, sprite, description)
         self.effect = effect
         self.power = power
+        self.duration = duration
 
     def use(self, player):
-        print(self.effect)
-        print(self.effect == 'heal')
+        msg = ""
+        used = True
+        player_name = player.get_name()
         if self.effect == 'heal':
             recovered_hp = player.healed(self.power)
-            player_name = player.get_name()
-            msg = ""
-            used = True
             if recovered_hp > 0:
                 msg = player_name + " recovered " + str(recovered_hp) + " HP"
                 player.remove_item(self)
             else:
                 msg = player_name + " is at full health and can't be healed !"
                 used = False
-            return used, msg
+        elif self.effect == 'speed':
+            alteration = Alteration('Speed up', self.effect, self.power, self.duration)
+            player.set_alteration(alteration)
+            player.remove_item(self)
+            msg = "The speed of " + player_name + " has been increased for " + str(self.duration) + " turns."
+        return used, msg

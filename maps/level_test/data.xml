@@ -146,7 +146,22 @@
                 </sprite>
             </opened>
             <contains>
-                null
+                <item>
+                    <probability>
+                        0.8
+                    </probability>
+                    <name>
+                        speed_potion
+                    </name>
+                </item>
+                <item>
+                    <probability>
+                        0.2
+                    </probability>
+                    <name>
+                        green_book
+                    </name>
+                </item>
             </contains>
             <position>
                 <x>11</x>
@@ -165,7 +180,14 @@
                 </sprite>
             </opened>
             <contains>
-                null
+                <item>
+                    <probability>
+                        1
+                    </probability>
+                    <name>
+                        plumed_helmet
+                    </name>
+                </item>
             </contains>
             <position>
                 <x>13</x>

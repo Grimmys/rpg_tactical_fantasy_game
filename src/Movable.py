@@ -1,8 +1,10 @@
 from src.Destroyable import Destroyable
+from src.Key import Key
 
 ANIMATION_SPEED = 4
 TIMER = 60
 NB_ITEMS_MAX = 8
+
 
 class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
@@ -49,7 +51,7 @@ class Movable(Destroyable):
     def get_formatted_alterations(self):
         formatted_string = ""
         for alteration in self.alterations:
-            formatted_string += alteration.capitalize() + ", "
+            formatted_string += alteration.get_name().capitalize() + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
@@ -74,8 +76,11 @@ class Movable(Destroyable):
     def get_items(self):
         return self.items
 
+    def has_free_space(self):
+        return len(self.items) < NB_ITEMS_MAX
+
     def set_item(self, item):
-        if len(self.items) == NB_ITEMS_MAX:
+        if not self.has_free_space:
             return False
         self.items.append(item)
         return True
@@ -84,6 +89,11 @@ class Movable(Destroyable):
         id = item.get_id()
         for index, it in enumerate(self.items):
             if it.get_id() == id:
+                return self.items.pop(index)
+
+    def remove_key(self):
+        for index, it in enumerate(self.items):
+            if isinstance(it, Key):
                 return self.items.pop(index)
 
     def use_item(self, item):
@@ -104,3 +114,6 @@ class Movable(Destroyable):
 
     def new_turn(self):
         self.state = 0
+
+    def set_alteration(self, alteration):
+        self.alterations.append(alteration)

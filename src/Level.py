@@ -8,6 +8,7 @@ from src.Equipment import Equipment
 from src.Weapon import Weapon
 from src.Potion import Potion
 from src.Consumable import Consumable
+from src.Spellbook import Spellbook
 from src.Character import Character
 from src.Player import Player
 from src.Foe import Foe
@@ -47,12 +48,15 @@ ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.tt
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 
 
-LANDING_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
+LANDING_SPRITE = 'imgs/dungeon_crawl/misc/move.png'
 LANDING = pg.transform.scale(pg.image.load(LANDING_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-LANDING_OPACITY = 100
+LANDING_OPACITY = 40
 ATTACKABLE_SPRITE = 'imgs/dungeon_crawl/misc/attackable.png'
 ATTACKABLE = pg.transform.scale(pg.image.load(ATTACKABLE_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 ATTACKABLE_OPACITY = 40
+INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
+INTERACTION = pg.transform.scale(pg.image.load(INTERACTION_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+INTERACTION_OPACITY = 100
 
 BUTTON_MENU_SIZE = (150, 30)
 CLOSE_BUTTON_SIZE = (150, 50)
@@ -62,7 +66,7 @@ MENU_HEIGHT = 100
 
 ACTION_MENU_WIDTH = 200
 ITEM_MENU_WIDTH = 500
-ITEM_INFO_MENU_WIDTH = 600
+ITEM_INFO_MENU_WIDTH = 800
 ITEM_DELETE_MENU_WIDTH = 350
 STATUS_MENU_WIDTH = 300
 EQUIPMENT_MENU_WIDTH = 500
@@ -76,6 +80,7 @@ NEW_TURN_POS = (MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAP_HEIGHT / 2 - NEW_T
 NEW_TURN_TEXT = TITLE_FONT.render("New turn !", 1, WHITE)
 NEW_TURN_TEXT_POS = (NEW_TURN.get_width() / 2 - NEW_TURN_TEXT.get_width() / 2, NEW_TURN.get_height() / 2 - NEW_TURN_TEXT.get_height() / 2)
 
+
 def blit_alpha(target, source, location, opacity):
     x = location[0]
     y = location[1]
@@ -84,6 +89,7 @@ def blit_alpha(target, source, location, opacity):
     temp.blit(source, (0, 0))
     temp.set_alpha(opacity)
     target.blit(temp, location)
+
 
 class Level:
     def __init__(self, directory):
@@ -118,25 +124,7 @@ class Level:
 
             items_id = ['life_potion', 'key', 'club']
             for name in items_id:
-                it_tree_root = etree.parse('data/items/' + name + '.xml').getroot()
-
-                sprite = 'imgs/dungeon_crawl/item/' + it_tree_root.find('sprite').text.strip()
-                info = it_tree_root.find('info').text.strip()
-                category = it_tree_root.find('category').text.strip()
-
-                if category == 'potion':
-                    effect = it_tree_root.find('effect').text.strip()
-                    power = int(it_tree_root.find('power').text.strip())
-                    item = Potion(name, sprite, info, effect, power)
-                elif category == 'weapon':
-                    power = int(it_tree_root.find('power').text.strip())
-                    weight = int(it_tree_root.find('weight').text.strip())
-                    fragility = int(it_tree_root.find('fragility').text.strip())
-                    equipped_sprite = 'imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find('equipped_sprite').text.strip()
-                    item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, range)
-                elif category == 'key':
-                    item = Key(name, sprite, info)
-
+                item = Level.parse_item_file(name)
                 player.set_item(item)
 
             self.players.append(player)
@@ -161,7 +149,14 @@ class Level:
             pos = (x, y)
             sprite_closed = 'imgs/dungeon_crawl/' + chest.find('closed/sprite').text.strip()
             sprite_opened = 'imgs/dungeon_crawl/' + chest.find('opened/sprite').text.strip()
-            self.chests.append(Chest(name, pos, sprite_closed, sprite_opened))
+            potential_items = []
+            for item in chest.xpath("contains/item"):
+                name = item.find('name').text.strip()
+                it = Level.parse_item_file(name)
+                proba = float(item.find('probability').text)
+
+                potential_items.append((proba, it))
+            self.chests.append(Chest(name, pos, sprite_closed, sprite_opened, potential_items))
         #Load portals
         self.portals = []
         i = 0
@@ -222,12 +217,49 @@ class Level:
         self.side_turn = 'P'
         self.selected_player = None
         self.watched_ent = None
-        self.possible_moves = None
-        self.possible_attacks = None
+        self.possible_moves = []
+        self.possible_attacks = []
+        self.possible_interactions = []
         self.active_menu = None
         self.background_menus = []
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), SIDEBAR_SPRITE)
+
+    @staticmethod
+    def parse_item_file(name):
+        it_tree_root = etree.parse('data/items/' + name + '.xml').getroot()
+
+        sprite = 'imgs/dungeon_crawl/item/' + it_tree_root.find('sprite').text.strip()
+        info = it_tree_root.find('info').text.strip()
+        category = it_tree_root.find('category').text.strip()
+
+        item = None
+        if category == 'potion':
+            effect = it_tree_root.find('effect').text.strip()
+            power = int(it_tree_root.find('power').text.strip())
+            duration = int(it_tree_root.find('duration').text.strip())
+            item = Potion(name, sprite, info, effect, power, duration)
+        elif category == 'armor':
+            body_part = it_tree_root.find('bodypart').text.strip()
+            defense = int(it_tree_root.find('def').text.strip())
+            weight = int(it_tree_root.find('weight').text.strip())
+            equipped_sprite = 'imgs/dungeon_crawl/player/' + body_part + '/' + it_tree_root.find(
+                'equipped_sprite').text.strip()
+            item = Equipment(name, sprite, info, equipped_sprite, body_part, defense, 0, 0, weight)
+        elif category == 'weapon':
+            power = int(it_tree_root.find('power').text.strip())
+            weight = int(it_tree_root.find('weight').text.strip())
+            fragility = int(it_tree_root.find('fragility').text.strip())
+            equipped_sprite = 'imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
+                'equipped_sprite').text.strip()
+            item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, range)
+        elif category == 'key':
+            item = Key(name, sprite, info)
+        elif category == 'spellbook':
+            spell = it_tree_root.find('effect').text.strip()
+            item = Spellbook(name, sprite, info, spell)
+
+        return item
 
     def update_state(self):
         if self.animation:
@@ -254,7 +286,6 @@ class Level:
             else:
                 self.new_turn()
 
-
     def display(self, win):
         win.blit(self.map, (0, 0))
         self.sidebar.display(win, self.turn, self.hovered_ent)
@@ -263,14 +294,17 @@ class Level:
             if isinstance(ent, Destroyable):
                 ent.display_hp(win)
         if self.selected_player:
-            #If player is waiting to move
+            # If player is waiting to move
             state = self.selected_player.get_state()
             if state == 1:
-                self.show_possible_actions(self.selected_player, win, self.possible_moves, self.possible_attacks)
+                self.show_possible_actions(self.selected_player, win)
             elif state == 4:
-                self.show_possible_attacks(self.selected_player, win, self.possible_attacks)
+                if self.possible_attacks:
+                    self.show_possible_attacks(self.selected_player, win)
+                elif self.possible_interactions:
+                    self.show_possible_interactions(win)
         elif self.watched_ent:
-            self.show_possible_actions(self.watched_ent, win, self.possible_moves, self.possible_attacks)
+            self.show_possible_actions(self.watched_ent, win)
 
         if self.animation:
             if self.animation.anim(win):
@@ -295,19 +329,35 @@ class Level:
         else:
             return RED
 
-    def show_possible_actions(self, movable, win, possible_moves, possible_attacks):
-        self.show_possible_moves(movable, win, possible_moves)
-        self.show_possible_attacks(movable, win, possible_attacks)
+    def show_possible_actions(self, movable, win):
+        self.show_possible_moves(movable, win)
+        self.show_possible_attacks(movable, win)
 
-    def show_possible_attacks(self, movable, win, possible_attacks):
-        for tile in possible_attacks:
+    def show_possible_attacks(self, movable, win):
+        for tile in self.possible_attacks:
             if movable.get_pos() != tile:
                 blit_alpha(win, ATTACKABLE, tile, ATTACKABLE_OPACITY)
 
-    def show_possible_moves(self, movable, win, possible_moves):
-        for (tile, level) in possible_moves.items():
+    def show_possible_moves(self, movable, win):
+        for tile in self.possible_moves.keys():
             if movable.get_pos() != tile:
                 blit_alpha(win, LANDING, tile, LANDING_OPACITY)
+
+    def show_possible_interactions(self, win):
+        for tile in self.possible_interactions:
+            blit_alpha(win, INTERACTION, tile, INTERACTION_OPACITY)
+
+    def get_next_cases(self, pos):
+        tiles = []
+        for x in range(-1, 2):
+            for y in {1 - abs(x), -1 + abs(x)}:
+                case_x = pos[0] + (x * TILE_SIZE)
+                case_y = pos[1] + (y * TILE_SIZE)
+                case_pos = (case_x, case_y)
+                if case_pos > (0, 0) and case_pos < (MAP_WIDTH, MAP_HEIGHT):
+                    case = self.get_entity_on_case(case_pos)
+                    tiles.append(case)
+        return tiles
 
     def get_possible_moves(self, pos, max_moves):
         tiles = {pos: 0}
@@ -315,7 +365,7 @@ class Level:
         for i in range(1, max_moves + 1):
             tiles_next_level = {}
             for tile in tiles_prev_level:
-                for x in range(-1, 1 + 1):
+                for x in range(-1, 2):
                     for y in {1 - abs(x), -1 + abs(x)}:
                         case_x = tile[0] + (x * TILE_SIZE)
                         case_y = tile[1] + (y * TILE_SIZE)
@@ -350,7 +400,7 @@ class Level:
         return set(tiles)
 
     def case_is_empty(self, case):
-        #Check all entities
+        # Check all entities
         ent_cases = []
         for ent in self.entities:
             pos = ent.get_pos()
@@ -361,15 +411,19 @@ class Level:
                 ent_cases.append(pos)
         return case > (0, 0) and case < (MAP_WIDTH, MAP_HEIGHT) and case not in ent_cases and case not in self.obstacles
 
-    def get_target_from_case(self, case, prnt=False):
+    def get_entity_on_case(self, case):
         # Check all entities
-        for ent in self.foes + self.players + self.breakables:
+        for ent in self.entities:
             pos = ent.get_pos()
-            if pos == case:
-                return ent
-        return False
+            if type(pos) == list:
+                if case in pos:
+                    return ent
+            else:
+                if pos == case:
+                    return ent
+        return None
 
-    def determine_path_to(self, case_from, case_to, distance):
+    def determine_path_to(self, case_to, distance):
         path = [case_to]
         current_case = case_to
         while distance[current_case] > 1:
@@ -386,6 +440,12 @@ class Level:
     def create_player_menu(self):
         player_rect = self.selected_player.get_rect()
         entries = [[{'name': 'Inventory', 'id': 1}], [{'name': 'Equipment', 'id': 10}], [{'name': 'Status', 'id': 2}], [{'name': 'Wait', 'id': 3}]]
+
+        for case_content in self.get_next_cases((player_rect.x, player_rect.y)):
+            if isinstance(case_content, Chest) and not case_content.is_open():
+                entries.insert(0, [{'name': 'Open', 'id': 12}])
+                break
+
         if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, 1, True):
             entries.insert(0, [{'name': 'Attack', 'id': 0}])
         for row in entries:
@@ -393,6 +453,31 @@ class Level:
                 entry['type'] = 'button'
 
         self.active_menu = InfoBox("Select an action", "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
+
+    def interact(self, actor, target):
+        if isinstance(target, Chest):
+            if isinstance(actor, Player):
+                if actor.has_free_space():
+                    # Key is used to open the chest
+                    actor.remove_key()
+
+                    # Get object inside the chest
+                    item = target.open()
+                    actor.set_item(item)
+
+                    # Get item infos
+                    name = item.get_formatted_name()
+                    entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True}
+
+                    entries = [[entry_item],
+                               [{'type': 'text', 'text': "Item has been added to your inventory", 'font': ITEM_DESC_FONT}]]
+                    self.active_menu = InfoBox(name, "imgs/interface/PopUpMenu.png",
+                                               entries, ITEM_MENU_WIDTH, close_button=True)
+                    # No more menu : turn is finished
+                    self.background_menus = []
+                else:
+                    self.active_menu = InfoBox("You have no free space in your inventory.", "imgs/interface/PopUpMenu.png",
+                                               [], ITEM_MENU_WIDTH, close_button=True)
 
     def duel(self, attacker, target):
         damages = attacker.attack(target)
@@ -413,7 +498,7 @@ class Level:
             pos = foe.get_pos()
             possible_moves = self.get_possible_moves(pos, foe.get_max_moves())
             move = random.choice(list(possible_moves.keys()))
-            path = self.determine_path_to(pos, move, possible_moves)
+            path = self.determine_path_to(move, possible_moves)
             foe.set_move(path)
         elif foe.get_state() == 1:
             foe.move()
@@ -421,7 +506,7 @@ class Level:
             # Foe try to attack someone
             possible_attacks = self.get_possible_attacks([foe.get_pos()], 1, False)
             if possible_attacks:
-                ent_attacked = self.get_target_from_case(random.choice(list(possible_attacks)))
+                ent_attacked = self.get_entity_on_case(random.choice(list(possible_attacks)))
                 self.duel(foe, ent_attacked)
             foe.end_turn()
 
@@ -443,7 +528,6 @@ class Level:
     @staticmethod
     def create_equipment_entries(equipments):
         entries = []
-        row = []
         body_parts = [['head'], ['body'], ['wrist'], ['left_hand', 'right_hand'], ['legs'], ['feet']]
         for part in body_parts:
             row = []
@@ -466,6 +550,9 @@ class Level:
             self.active_menu = None
             if self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
+            else:
+                # Turn is finished
+                self.execute_action((3, None))
         # Attack action : Character has to choose a target
         elif method_id == 0:
             self.selected_player.choose_target()
@@ -484,7 +571,8 @@ class Level:
 
             entries = Level.create_inventory_entries(items)
 
-            self.active_menu = InfoBox("Inventory", "imgs/Interface/PopUpMenu.png", entries, ITEM_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox("Inventory", "imgs/Interface/PopUpMenu.png", entries,
+                                       ITEM_MENU_WIDTH, close_button=True)
         # Display player's status
         elif method_id == 2:
             self.background_menus.append([self.active_menu, True])
@@ -523,8 +611,9 @@ class Level:
             self.selected_item = None
             self.selected_player.turn_finished()
             self.selected_player = None
-            self.possible_moves = None
-            self.possible_attacks = None
+            self.possible_moves = []
+            self.possible_attacks = []
+            self.possible_interactions = []
             self.background_menus = []
             self.active_menu = None
         # Watch item action : Open a menu to act with a given item
@@ -565,7 +654,7 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
             description = self.selected_item.get_description()
 
-            entries = [[{'type' : 'text', 'text' : description, 'font' : ITEM_DESC_FONT, 'margin' : (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
         # Remove an item from the inventory
         elif method_id == 7:
@@ -627,7 +716,7 @@ class Level:
             #Try to equip the item
             equipped = self.selected_player.equip(self.selected_item)
 
-            result_msg = "The item can't be equipped : You already have an item of the same type equipped."
+            result_msg = "Item can't be equipped : You already wear an equipment of the same type."
             if equipped:
                 result_msg = "The item has been equipped"
 
@@ -658,7 +747,6 @@ class Level:
             self.active_menu = InfoBox("Equipment", "imgs/Interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
         # Unequip an item
         elif method_id == 11:
-            print("OK !")
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
@@ -680,8 +768,27 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
-                                       ITEM_INFO_MENU_WIDTH + 200, close_button=True)
+                                       ITEM_INFO_MENU_WIDTH, close_button=True)
+        # Open a chest
+        elif method_id == 12:
+            has_key = False
+            for it in self.selected_player.get_items():
+                if isinstance(it, Key):
+                    has_key = True
+                    break
 
+            if not has_key:
+                self.background_menus.append([self.active_menu, True])
+                self.active_menu = InfoBox("You have no key to open a chest", "imgs/Interface/PopUpMenu.png", [],
+                                           ITEM_MENU_WIDTH, close_button=True)
+            else:
+                self.background_menus.append([self.active_menu, False])
+                self.active_menu = None
+                self.selected_player.choose_interaction()
+                self.possible_interactions = []
+                for ent in self.get_next_cases(self.selected_player.get_pos()):
+                    if isinstance(ent, Chest) and not ent.is_open():
+                        self.possible_interactions.append(ent.get_pos())
 
     def begin_turn(self):
         if self.side_turn == 'P':
@@ -711,17 +818,23 @@ class Level:
                         if state == 1:
                             for move in self.possible_moves:
                                 if pg.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                    path = self.determine_path_to(self.selected_player.get_pos(), move, self.possible_moves)
+                                    path = self.determine_path_to(move, self.possible_moves)
                                     self.selected_player.set_move(path)
+                                    self.possible_moves = []
+                                    self.possible_attacks = []
                                     return
                         if state == 4:
                             for attack in self.possible_attacks:
                                 if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                    ent = self.get_target_from_case(attack, True)
+                                    ent = self.get_entity_on_case(attack)
                                     self.duel(self.selected_player, ent)
-                                    #Turn finished
+                                    #Turn is finished
                                     self.execute_action((3, None))
                                     return
+                            for interact in self.possible_interactions:
+                                if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                                    ent = self.get_entity_on_case(interact)
+                                    self.interact(self.selected_player, ent)
                     for player in self.players:
                         if player.is_on_pos(pos) and not player == self.selected_player:
                             player.set_selected(True)
@@ -734,11 +847,11 @@ class Level:
                 if self.selected_player and self.selected_player.get_state() == 1:
                     self.selected_player.set_selected(False)
                     self.selected_player = None
-                    self.possible_moves = None
+                    self.possible_moves = []
                 if self.watched_ent:
                     self.watched_ent = None
-                    self.possible_moves = False
-                    self.possible_attacks = False
+                    self.possible_moves = []
+                    self.possible_attacks = []
 
     def button_down(self, button, pos):
         # 3 is equals to right button

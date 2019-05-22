@@ -14,7 +14,7 @@ class Player(Character):
         - 1 : Waiting to be moved
         - 2 : On move
         - 3 : Waiting an action post-move
-        - 4 : Waiting a target selected to attack
+        - 4 : Waiting a target selected to attack OR waiting an target to interact with
         - 5 : Turn finished'''
         self.state = 0
         self.last_state = 5
@@ -47,7 +47,7 @@ class Player(Character):
         return damages
 
     def turn_finished(self):
-        if (self.state < 3):
+        if self.state < 3:
             print("Error ! Player could not had finished his turn now")
         self.state = self.last_state
         self.selected = False
@@ -56,4 +56,7 @@ class Player(Character):
         return self.state == self.last_state
 
     def choose_target(self):
+        self.state = 4
+
+    def choose_interaction(self):
         self.state = 4

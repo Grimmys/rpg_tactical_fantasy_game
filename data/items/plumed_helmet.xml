@@ -1,0 +1,26 @@
+<club>
+    <name>
+        Plumed helmet
+    </name>
+    <sprite>
+        armor/headgear/plumed_helmet.png
+    </sprite>
+    <info>
+        A helmet, with a nice plume.
+    </info>
+    <category>
+        armor
+    </category>
+    <bodypart>
+        head
+    </bodypart>
+    <def>
+        1
+    </def>
+    <weight>
+        2
+    </weight>
+    <equipped_sprite>
+        helm_plume.png
+    </equipped_sprite>
+</club>
