@@ -11,6 +11,12 @@ class Alteration:
     def get_name(self):
         return self.name
 
-    def time(self):
+    def get_effect(self):
+        return self.effect
+
+    def get_power(self):
+        return self.power
+
+    def increment(self):
         self.time += 1
-        return self.time == self.duration
+        return self.time > self.duration

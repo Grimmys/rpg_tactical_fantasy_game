@@ -21,8 +21,6 @@ class Movable(Destroyable):
         self.lvl = lvl
         self.xp = 0
         self.xp_next_lvl = self.determine_xp_goal()
-        self.alterations = []
-        self.lvl = lvl
         self.state = 0
         self.items = []
         self.nb_items_max = NB_ITEMS_MAX
@@ -37,7 +35,11 @@ class Movable(Destroyable):
         return self.defense
 
     def get_max_moves(self):
-        return self.max_move
+        alterations = self.get_alterations_effect('speed')
+        max = self.max_move
+        for alt in alterations:
+            max += alt.get_power()
+        return max
 
     def set_move(self, path):
         self.on_move = path
@@ -55,6 +57,12 @@ class Movable(Destroyable):
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
+
+    def set_alteration(self, alteration):
+        self.alterations.append(alteration)
+
+    def get_alterations_effect(self, eff):
+        return [alteration for alteration in self.alterations if alteration.get_effect() == eff]
 
     def get_lvl(self):
         return self.lvl
@@ -114,6 +122,7 @@ class Movable(Destroyable):
 
     def new_turn(self):
         self.state = 0
-
-    def set_alteration(self, alteration):
-        self.alterations.append(alteration)
+        # Verify if any alteration is finished
+        for alteration in self.alterations:
+            if alteration.increment():
+                self.alterations.remove(alteration)

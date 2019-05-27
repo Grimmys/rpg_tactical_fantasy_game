@@ -120,7 +120,7 @@ class Level:
                 Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
             ]
             lvl = 3
-            player = Player(name, pos, sprite, 20, 15, 1, ['warrior'], equipments, lvl)
+            player = Player(name, pos, sprite, 20, 5, 1, ['warrior'], equipments, lvl)
 
             items_id = ['life_potion', 'key', 'club']
             for name in items_id:
