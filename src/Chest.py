@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+random.seed()
 
 from src.Entity import Entity
 

@@ -53,7 +53,7 @@ class Movable(Destroyable):
     def get_formatted_alterations(self):
         formatted_string = ""
         for alteration in self.alterations:
-            formatted_string += alteration.get_name().capitalize() + ", "
+            formatted_string += alteration.get_formatted_name() + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]

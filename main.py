@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     from src.Level import Level
 
-    #Init the first level
+    # Init the first level
     level = Level('maps/level_test/')
 
     end = False
@@ -46,6 +46,6 @@ if __name__ == "__main__":
         screen.fill(GREY)
         update_screen_display(screen, level)
         pg.display.update()
-        clock.tick(60)
+        clock.tick(120)
     pg.quit()
     quit()

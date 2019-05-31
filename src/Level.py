@@ -29,10 +29,12 @@ BLUE = (0, 0, 255)
 MARINE_BLUE = (34, 61, 200)
 ORANGE = (255, 140, 0)
 YELLOW = (143, 143, 5)
+LIGHT_YELLOW = (255, 255, 0)
 GOLD = (200, 172, 34)
 BROWN = (139, 69, 19)
 MAROON = (128, 0, 0)
 BROWN_RED = (165, 42, 42)
+TURQUOISE = (64, 224, 208)
 
 
 TILE_SIZE = 48
@@ -69,6 +71,7 @@ ITEM_MENU_WIDTH = 500
 ITEM_INFO_MENU_WIDTH = 800
 ITEM_DELETE_MENU_WIDTH = 350
 STATUS_MENU_WIDTH = 300
+STATUS_INFO_MENU_WIDTH = 500
 EQUIPMENT_MENU_WIDTH = 500
 
 MARGINTOP = 10
@@ -98,7 +101,7 @@ class Level:
         self.players = []
         #Reading of the XML file
         tree = etree.parse(directory + "data.xml")
-        #Load player
+        #Load players
         for player in tree.xpath("/level/player"):
             name = player.find('name').text.strip()
             x = int(player.find('position/x').text) * TILE_SIZE
@@ -120,7 +123,7 @@ class Level:
                 Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
             ]
             lvl = 3
-            player = Player(name, pos, sprite, 20, 5, 1, ['warrior'], equipments, lvl)
+            player = Player(name, pos, sprite, 10, 5, 1, ['warrior'], equipments, lvl)
 
             items_id = ['life_potion', 'key', 'club']
             for name in items_id:
@@ -540,6 +543,48 @@ class Level:
             entries.append(row)
         return entries
 
+    @staticmethod
+    def create_status_entries(player):
+        # Health
+        hp = player.get_hp()
+        hp_max = player.get_hp_max()
+
+        # XP
+        xp = player.get_xp()
+        xp_next_level = player.get_next_lvl_xp()
+
+        entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': ITALIC_ITEM_FONT},
+                    {'type': 'text', 'text': player.get_formatted_name()}],
+                   [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': ITALIC_ITEM_FONT},
+                    {'type': 'text', 'text': player.get_formatted_classes()}],
+                   [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': ITALIC_ITEM_FONT},
+                    {'type': 'text', 'text': str(player.get_lvl())}],
+                   [{'type': 'text', 'color': GOLD, 'text': '    -> XP :', 'font': ITALIC_ITEM_FONT},
+                    {'type': 'text', 'text': str(xp) + ' / ' + str(xp_next_level)}],
+                   [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT, 'margin': (10, 0, 10, 0)}],
+                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'HP :'},
+                    {'type': 'text', 'text': str(hp) + ' / ' + str(hp_max), 'color': Level.determine_hp_color(hp, hp_max)}],
+                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'MOVE :'},
+                    {'type': 'text', 'text': str(player.get_max_moves())}],
+                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'ATTACK :'},
+                    {'type': 'text', 'text': str(player.get_strength())}],
+                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'DEFENSE :'},
+                    {'type': 'text', 'text': str(player.get_defense())}],
+                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'MAGICAL RES :'},
+                    {'type': 'text', 'text': str(player.get_resistance())}],
+                   [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': MENU_SUB_TITLE_FONT,
+                     'margin': (10, 0, 10, 0)}]]
+
+        alts = player.get_alterations()
+
+        if not alts:
+            entries.append([{'type': 'text', 'color': MARINE_BLUE, 'text': 'None'}])
+
+        for alt in alts:
+            entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': 13, 'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
+
+        return entries
+
     def execute_action(self, action):
         if not action:
             return
@@ -577,33 +622,7 @@ class Level:
         elif method_id == 2:
             self.background_menus.append([self.active_menu, True])
 
-            hp = self.selected_player.get_hp()
-            hp_max = self.selected_player.get_hp_max()
-
-            xp = self.selected_player.get_xp()
-            xp_next_level = self.selected_player.get_next_lvl_xp()
-
-            entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': ITALIC_ITEM_FONT},
-                        {'type': 'text', 'text': self.selected_player.get_formatted_name()}],
-                       [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': ITALIC_ITEM_FONT},
-                        {'type': 'text', 'text': self.selected_player.get_formatted_classes()}],
-                       [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': ITALIC_ITEM_FONT},
-                        {'type': 'text', 'text': str(self.selected_player.get_lvl())}],
-                       [{'type': 'text', 'color': GOLD, 'text': '    -> XP :', 'font': ITALIC_ITEM_FONT},
-                        {'type': 'text', 'text': str(xp) + ' / ' + str(xp_next_level)}],
-                       [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT, 'margin': (10, 0, 10, 0)}],
-                       [{'type': 'text', 'color': MARINE_BLUE, 'text': 'HP :'},
-                        {'type': 'text', 'text': str(hp) + ' / ' + str(hp_max), 'color': Level.determine_hp_color(hp, hp_max)}],
-                       [{'type': 'text', 'color': MARINE_BLUE, 'text': 'MOVE :'},
-                        {'type': 'text', 'text': str(self.selected_player.get_max_moves())}],
-                       [{'type': 'text', 'color': MARINE_BLUE, 'text': 'ATTACK :'},
-                        {'type': 'text', 'text': str(self.selected_player.get_strength())}],
-                       [{'type': 'text', 'color': MARINE_BLUE, 'text': 'DEFENSE :'},
-                        {'type': 'text', 'text': str(self.selected_player.get_defense())}],
-                       [{'type': 'text', 'color': MARINE_BLUE, 'text': 'MAGICAL RES :'},
-                        {'type': 'text', 'text': str(self.selected_player.get_resistance())}],
-                       [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': MENU_SUB_TITLE_FONT, 'margin': (10, 0, 10, 0)}],
-                       [{'type': 'text', 'color': MARINE_BLUE, 'text': self.selected_player.get_formatted_alterations()}]]
+            entries = Level.create_status_entries(self.selected_player)
 
             self.active_menu = InfoBox("Status", "imgs/Interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH, close_button=True)
         # Wait action : Given Character's turn is finished
@@ -789,6 +808,19 @@ class Level:
                 for ent in self.get_next_cases(self.selected_player.get_pos()):
                     if isinstance(ent, Chest) and not ent.is_open():
                         self.possible_interactions.append(ent.get_pos())
+        # Get infos about an alteration
+        elif method_id == 13:
+            self.background_menus.append([self.active_menu, True])
+
+            alteration = args[1]
+
+            formatted_name = alteration.get_formatted_name()
+            description = alteration.get_description()
+            turns_left = alteration.get_turns_left()
+
+            entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
+                       [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT, 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
+            self.active_menu = InfoBox(formatted_name, "imgs/Interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=True)
 
     def begin_turn(self):
         if self.side_turn == 'P':

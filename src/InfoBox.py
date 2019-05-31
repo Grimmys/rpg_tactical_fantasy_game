@@ -7,6 +7,7 @@ from src.ItemButton import ItemButton
 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
+ITEM_FONT_HOVER =  pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 17)
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 
 BLACK = (0, 0, 0)
@@ -24,7 +25,7 @@ BUTTON_ACTIVE = "imgs/interface/MenuButtonPreLight.png"
 BUTTON_SIZE = (150, 30)
 ITEM_BUTTON_SIZE = (180, TILE_SIZE + 30)
 EQUIP_BUTTON_SIZE = (150, TILE_SIZE + 10)
-CLOSE_BUTTON_SIZE = (150, 50)
+CLOSE_BUTTON_SIZE = (160, 40)
 CLOSE_ACTION_ID = -1
 CLOSE_BUTTON_MARGINTOP = 20
 
@@ -44,8 +45,7 @@ class InfoBox:
 
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), self.size)
 
-
-    @staticmethod
+    staticmethod
     def init_elements(entries, title):
         elements = []
         for row in entries:
@@ -55,7 +55,21 @@ class InfoBox:
                     entry['margin'] = (0, 0, 0, 0)
 
                 if entry['type'] == 'button':
-                    element.append(Button(entry['name'], entry['id'], BUTTON_SIZE, (0, 0), BUTTON_INACTIVE, BUTTON_ACTIVE, entry['margin']))
+                    name = ITEM_FONT.render(entry['name'], 1, WHITE)
+                    sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
+                    sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
+                                       sprite.get_height() // 2 - name.get_height() // 2))
+                    sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), BUTTON_SIZE)
+                    sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
+                                             sprite_hover.get_height() // 2 - name.get_height() // 2))
+                    element.append(Button(entry['id'], BUTTON_SIZE, (0, 0), sprite, sprite_hover, entry['margin']))
+                elif entry['type'] == 'text_button':
+                    name = ITEM_FONT.render(entry['name'], 1, entry['color'])
+                    name_hover = ITEM_FONT.render(entry['name'], 1, entry['color_hover'])
+                    if 'obj' not in entry:
+                        entry['obj'] = None
+                    element.append(Button(entry['id'], name.get_size(), (0, 0), name, name_hover, entry['margin'], entry['obj']))
+
                 elif entry['type'] == 'item_button':
                     button_size = ITEM_BUTTON_SIZE
                     disabled = 'disabled' in entry
@@ -87,9 +101,19 @@ class InfoBox:
         if close_button:
             close_button_height = CLOSE_BUTTON_SIZE[1] + MARGINTOP + CLOSE_BUTTON_MARGINTOP
             height += close_button_height
+
+            #Button sprites
+            name = ITEM_FONT.render("Close", 1, WHITE)
+            sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), CLOSE_BUTTON_SIZE)
+            sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
+                               sprite.get_height() // 2 - name.get_height() // 2))
+            sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), CLOSE_BUTTON_SIZE)
+            sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
+                                     sprite_hover.get_height() // 2 - name.get_height() // 2))
+
             self.elements.append([close_button_height,
-                                  Button("Close", CLOSE_ACTION_ID, CLOSE_BUTTON_SIZE, (0, 0), BUTTON_INACTIVE,
-                                         BUTTON_ACTIVE, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
+                                  Button(CLOSE_ACTION_ID, CLOSE_BUTTON_SIZE, (0, 0), sprite,
+                                         sprite_hover, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
 
         self.size = (width, height)
         self.pos = self.determine_pos(el_rect_linked)

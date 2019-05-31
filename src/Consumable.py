@@ -1,5 +1,8 @@
+from lxml import etree
+
 from src.Item import Item
 from src.Alteration import  Alteration
+
 
 class Consumable(Item):
     def __init__(self, name, sprite, description, effect, power, duration):
@@ -21,7 +24,9 @@ class Consumable(Item):
                 msg = player_name + " is at full health and can't be healed !"
                 used = False
         elif self.effect == 'speed':
-            alteration = Alteration('Speed up', self.effect, self.power, self.duration)
+            alteration_root = etree.parse("data/alterations/speed_up.xml").getroot()
+            desc = alteration_root.find("info").text.strip().replace('{val}', str(self.power))
+            alteration = Alteration('speed_up', self.effect, self.power, self.duration, desc)
             player.set_alteration(alteration)
             player.remove_item(self)
             msg = "The speed of " + player_name + " has been increased for " + str(self.duration) + " turns."
