@@ -13,7 +13,7 @@ from src.Character import Character
 from src.Player import Player
 from src.Foe import Foe
 from src.Chest import Chest
-from src.Portals import Portals
+from src.Portal import Portal
 from src.Fountain import Fountain
 from src.Breakable import Breakable
 from src.InfoBox import InfoBox
@@ -83,6 +83,53 @@ NEW_TURN_POS = (MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAP_HEIGHT / 2 - NEW_T
 NEW_TURN_TEXT = TITLE_FONT.render("New turn !", 1, WHITE)
 NEW_TURN_TEXT_POS = (NEW_TURN.get_width() / 2 - NEW_TURN_TEXT.get_width() / 2, NEW_TURN.get_height() / 2 - NEW_TURN_TEXT.get_height() / 2)
 
+# Interaction ids
+#  > Generic
+#    - To close any menu
+CLOSE_ACTION_ID = -1
+
+# > Main character menu
+MAIN_MENU_ID = 0
+#   - Access to inventory
+INV_ACTION_ID = 0
+#   - Access to equipment
+EQUIPMENT_ACTION_ID = 1
+#   - Access to status screen
+STATUS_ACTION_ID = 2
+#   - End character's turn
+WAIT_ACTION_ID = 3
+#   - Attack an opponent
+ATTACK_ACTION_ID = 4
+#   - Open a chest
+OPEN_CHEST_ACTION_ID = 5
+
+# > Inventory menu
+INV_MENU_ID = 1
+#   - Interact with item
+INTERAC_ITEM_ACTION_ID = 0
+
+# > Item menu
+ITEM_MENU_ID = 2
+#   - Use item
+USE_ITEM_ACTION_ID = 0
+#   - Get infos about item
+INFO_ITEM_ACTION_ID = 1
+#   - Throw item
+THROW_ITEM_ACTION_ID = 2
+#   - Equip item
+EQUIP_ITEM_ACTION_ID = 3
+#   - Unequip item
+UNEQUIP_ITEM_ACTION_ID = 4
+
+# > Status menu
+STATUS_MENU_ID = 3
+#   - Get infos about alteration
+INFO_ALTERATION_ACTION_ID = 0
+
+# > Equipment menu
+EQUIPMENT_MENU_ID = 4
+#   - Interact with equipment
+INTERAC_EQUIPMENT_ACTION_ID = 0
 
 def blit_alpha(target, source, location, opacity):
     x = location[0]
@@ -172,7 +219,11 @@ class Level:
             second_y = int(portal_couple.find('second/position/y').text) * TILE_SIZE
             second_pos = (second_x, second_y)
             sprite = 'imgs/dungeon_crawl/' + portal_couple.find('sprite').text.strip()
-            self.portals.append(Portals(name, first_pos, second_pos, sprite))
+            first_portal = Portal(name, first_pos, sprite)
+            second_portal = Portal(name, second_pos, sprite)
+            Portal.link_portals(first_portal, second_portal)
+            self.portals.append(first_portal)
+            self.portals.append(second_portal)
             i += 1
         #Load fountains
         fountains_infos = {}
@@ -407,23 +458,15 @@ class Level:
         ent_cases = []
         for ent in self.entities:
             pos = ent.get_pos()
-            if type(pos) == list:
-                for el in pos:
-                    ent_cases.append(el)
-            else:
-                ent_cases.append(pos)
+            ent_cases.append(pos)
         return case > (0, 0) and case < (MAP_WIDTH, MAP_HEIGHT) and case not in ent_cases and case not in self.obstacles
 
     def get_entity_on_case(self, case):
         # Check all entities
         for ent in self.entities:
             pos = ent.get_pos()
-            if type(pos) == list:
-                if case in pos:
-                    return ent
-            else:
-                if pos == case:
-                    return ent
+            if pos == case:
+                return ent
         return None
 
     def determine_path_to(self, case_to, distance):
@@ -442,20 +485,20 @@ class Level:
 
     def create_player_menu(self):
         player_rect = self.selected_player.get_rect()
-        entries = [[{'name': 'Inventory', 'id': 1}], [{'name': 'Equipment', 'id': 10}], [{'name': 'Status', 'id': 2}], [{'name': 'Wait', 'id': 3}]]
+        entries = [[{'name': 'Inventory', 'id': INV_ACTION_ID}], [{'name': 'Equipment', 'id': EQUIPMENT_ACTION_ID}], [{'name': 'Status', 'id': STATUS_ACTION_ID}], [{'name': 'Wait', 'id': WAIT_ACTION_ID}]]
 
         for case_content in self.get_next_cases((player_rect.x, player_rect.y)):
             if isinstance(case_content, Chest) and not case_content.is_open():
-                entries.insert(0, [{'name': 'Open', 'id': 12}])
+                entries.insert(0, [{'name': 'Open', 'id': OPEN_CHEST_ACTION_ID}])
                 break
 
         if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, 1, True):
-            entries.insert(0, [{'name': 'Attack', 'id': 0}])
+            entries.insert(0, [{'name': 'Attack', 'id': ATTACK_ACTION_ID}])
         for row in entries:
             for entry in row:
                 entry['type'] = 'button'
 
-        self.active_menu = InfoBox("Select an action", "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
+        self.active_menu = InfoBox("Select an action", MAIN_MENU_ID, "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
 
     def interact(self, actor, target):
         if isinstance(target, Chest):
@@ -474,12 +517,12 @@ class Level:
 
                     entries = [[entry_item],
                                [{'type': 'text', 'text': "Item has been added to your inventory", 'font': ITEM_DESC_FONT}]]
-                    self.active_menu = InfoBox(name, "imgs/interface/PopUpMenu.png",
+                    self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                                entries, ITEM_MENU_WIDTH, close_button=True)
                     # No more menu : turn is finished
                     self.background_menus = []
                 else:
-                    self.active_menu = InfoBox("You have no free space in your inventory.", "imgs/interface/PopUpMenu.png",
+                    self.active_menu = InfoBox("You have no free space in your inventory.", "", "imgs/interface/PopUpMenu.png",
                                                [], ITEM_MENU_WIDTH, close_button=True)
 
     def duel(self, attacker, target):
@@ -581,31 +624,19 @@ class Level:
             entries.append([{'type': 'text', 'color': MARINE_BLUE, 'text': 'None'}])
 
         for alt in alts:
-            entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': 13, 'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
+            entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': INFO_ALTERATION_ACTION_ID, 'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
 
         return entries
 
-    def execute_action(self, action):
-        if not action:
-            return
-        method_id = action[0]
-        args = action[1]
-        # Close menu : Active menu is closed
-        if method_id == -1:
-            self.active_menu = None
-            if self.background_menus:
-                self.active_menu = self.background_menus.pop()[0]
-            else:
-                # Turn is finished
-                self.execute_action((3, None))
+    def execute_main_menu_action(self, method_id, args):
         # Attack action : Character has to choose a target
-        elif method_id == 0:
+        if method_id == ATTACK_ACTION_ID:
             self.selected_player.choose_target()
             self.possible_attacks = self.get_possible_attacks([self.selected_player.get_pos()], 1, True)
             self.background_menus.append([self.active_menu, False])
             self.active_menu = None
         # Item action : Character's inventory is opened
-        elif method_id == 1:
+        elif method_id == INV_ACTION_ID:
             self.background_menus.append([self.active_menu, True])
 
             items_max = self.selected_player.get_nb_items_max()
@@ -616,17 +647,26 @@ class Level:
 
             entries = Level.create_inventory_entries(items)
 
-            self.active_menu = InfoBox("Inventory", "imgs/Interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox("Inventory", INV_MENU_ID, "imgs/Interface/PopUpMenu.png", entries,
                                        ITEM_MENU_WIDTH, close_button=True)
+        # Equipment action : open the equipment screen
+        elif method_id == EQUIPMENT_ACTION_ID:
+            self.background_menus.append([self.active_menu, True])
+
+            equipments = self.selected_player.get_equipments()
+            entries = Level.create_equipment_entries(equipments)
+
+            self.active_menu = InfoBox("Equipment", EQUIPMENT_MENU_ID, "imgs/Interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
         # Display player's status
-        elif method_id == 2:
+        elif method_id == STATUS_ACTION_ID:
             self.background_menus.append([self.active_menu, True])
 
             entries = Level.create_status_entries(self.selected_player)
 
-            self.active_menu = InfoBox("Status", "imgs/Interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox("Status", STATUS_MENU_ID, "imgs/Interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH,
+                                       close_button=True)
         # Wait action : Given Character's turn is finished
-        elif method_id == 3:
+        elif method_id == WAIT_ACTION_ID:
             self.selected_item = None
             self.selected_player.turn_finished()
             self.selected_player = None
@@ -635,8 +675,30 @@ class Level:
             self.possible_interactions = []
             self.background_menus = []
             self.active_menu = None
+        # Open a chest
+        elif method_id == OPEN_CHEST_ACTION_ID:
+            has_key = False
+            for it in self.selected_player.get_items():
+                if isinstance(it, Key):
+                    has_key = True
+                    break
+
+            if not has_key:
+                self.background_menus.append([self.active_menu, True])
+                self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/Interface/PopUpMenu.png", [],
+                                           ITEM_MENU_WIDTH, close_button=True)
+            else:
+                self.background_menus.append([self.active_menu, False])
+                self.active_menu = None
+                self.selected_player.choose_interaction()
+                self.possible_interactions = []
+                for ent in self.get_next_cases(self.selected_player.get_pos()):
+                    if isinstance(ent, Chest) and not ent.is_open():
+                        self.possible_interactions.append(ent.get_pos())
+
+    def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
-        elif method_id == 5:
+        if method_id == INTERAC_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, True])
 
             item_button_pos = args[0]
@@ -647,50 +709,91 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
 
             entries = [
-                [{'name': 'Info', 'id': 6}],
-                [{'name': 'Throw', 'id': 7}]
+                [{'name': 'Info', 'id': INFO_ITEM_ACTION_ID}],
+                [{'name': 'Throw', 'id': THROW_ITEM_ACTION_ID}]
             ]
 
             if isinstance(self.selected_item, Consumable):
-                entries.insert(0, [{'name': 'Use', 'id': 8}])
+                entries.insert(0, [{'name': 'Use', 'id': USE_ITEM_ACTION_ID}])
             elif isinstance(self.selected_item, Equipment):
                 if self.selected_player.has_equipment(self.selected_item):
-                    entries.insert(0, [{'name': 'Unequip', 'id': 11}])
+                    entries.insert(0, [{'name': 'Unequip', 'id': UNEQUIP_ITEM_ACTION_ID}])
                 else:
-                    entries.insert(0, [{'name': 'Equip', 'id': 9}])
+                    entries.insert(0, [{'name': 'Equip', 'id': EQUIP_ITEM_ACTION_ID}])
 
             for row in entries:
                 for entry in row:
                     entry['type'] = 'button'
 
-            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0], ITEM_BUTTON_MENU_SIZE[1])
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
+            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
+                                ITEM_BUTTON_MENU_SIZE[1])
+            self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/Interface/PopUpMenu.png",
+                                       entries,
                                        ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
+
+    def execute_equipment_action(self, method_id, args):
+        # Watch item action : Open a menu to act with a given item
+        if method_id == INTERAC_ITEM_ACTION_ID:
+            self.background_menus.append([self.active_menu, True])
+
+            item_button_pos = args[0]
+            item = args[1]
+
+            self.selected_item = item
+
+            formatted_item_name = self.selected_item.get_formatted_name()
+
+            entries = [
+                [{'name': 'Info', 'id': INFO_ITEM_ACTION_ID}],
+                [{'name': 'Throw', 'id': THROW_ITEM_ACTION_ID}]
+            ]
+
+            if isinstance(self.selected_item, Consumable):
+                entries.insert(0, [{'name': 'Use', 'id': USE_ITEM_ACTION_ID}])
+            elif isinstance(self.selected_item, Equipment):
+                if self.selected_player.has_equipment(self.selected_item):
+                    entries.insert(0, [{'name': 'Unequip', 'id': UNEQUIP_ITEM_ACTION_ID}])
+                else:
+                    entries.insert(0, [{'name': 'Equip', 'id': EQUIP_ITEM_ACTION_ID}])
+
+            for row in entries:
+                for entry in row:
+                    entry['type'] = 'button'
+
+            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
+                                ITEM_BUTTON_MENU_SIZE[1])
+            self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/Interface/PopUpMenu.png",
+                                       entries,
+                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
+
+    def execute_item_action(self, method_id, args):
         # Get info about an item
-        elif method_id == 6:
+        if method_id == INFO_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
             description = self.selected_item.get_description()
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
-        # Remove an item from the inventory
-        elif method_id == 7:
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
+        # Remove an item
+        elif method_id == THROW_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
 
-            # Remove item from inventory according to the index
-            self.selected_player.remove_item(self.selected_item)
-
-            items_max = self.selected_player.get_nb_items_max()
-
-            items = list(self.selected_player.get_items())
-            free_spaces = items_max - len(items)
-            items += [None] * free_spaces
-
-            entries = Level.create_inventory_entries(items)
+            # Remove item from inventory/equipment according to the index
+            if self.selected_player.has_equipment(self.selected_item):
+                self.selected_player.remove_equipment(self.selected_item)
+                equipments = self.selected_player.get_equipments()
+                entries = Level.create_equipment_entries(equipments)
+            else:
+                self.selected_player.remove_item(self.selected_item)
+                items_max = self.selected_player.get_nb_items_max()
+                items = self.selected_player.get_items()
+                free_spaces = items_max - len(items)
+                items += [None] * free_spaces
+                entries = Level.create_inventory_entries(items)
 
             # Cancel item menu
             self.background_menus.pop()
@@ -698,9 +801,9 @@ class Level:
             self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
             remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.', 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=True)
         # Use an item from the inventory
-        elif method_id == 8:
+        elif method_id == USE_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
@@ -724,10 +827,10 @@ class Level:
                 self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=True)
         # Equip an item
-        elif method_id == 9:
+        elif method_id == EQUIP_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
@@ -742,7 +845,7 @@ class Level:
                 #Item has been removed from inventory
                 items_max = self.selected_player.get_nb_items_max()
 
-                items = list(self.selected_player.get_items())
+                items = self.selected_player.get_items()
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
@@ -754,18 +857,10 @@ class Level:
                 self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=True)
-        # Equipment action : open the equipment screen
-        elif method_id == 10:
-            self.background_menus.append([self.active_menu, True])
-
-            equipments = self.selected_player.get_equipments()
-            entries = Level.create_equipment_entries(equipments)
-
-            self.active_menu = InfoBox("Equipment", "imgs/Interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
         # Unequip an item
-        elif method_id == 11:
+        elif method_id == UNEQUIP_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
@@ -786,30 +881,12 @@ class Level:
                 self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "imgs/Interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=True)
-        # Open a chest
-        elif method_id == 12:
-            has_key = False
-            for it in self.selected_player.get_items():
-                if isinstance(it, Key):
-                    has_key = True
-                    break
 
-            if not has_key:
-                self.background_menus.append([self.active_menu, True])
-                self.active_menu = InfoBox("You have no key to open a chest", "imgs/Interface/PopUpMenu.png", [],
-                                           ITEM_MENU_WIDTH, close_button=True)
-            else:
-                self.background_menus.append([self.active_menu, False])
-                self.active_menu = None
-                self.selected_player.choose_interaction()
-                self.possible_interactions = []
-                for ent in self.get_next_cases(self.selected_player.get_pos()):
-                    if isinstance(ent, Chest) and not ent.is_open():
-                        self.possible_interactions.append(ent.get_pos())
+    def execute_status_action(self, method_id, args):
         # Get infos about an alteration
-        elif method_id == 13:
+        if method_id == INFO_ALTERATION_ACTION_ID:
             self.background_menus.append([self.active_menu, True])
 
             alteration = args[1]
@@ -820,7 +897,37 @@ class Level:
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
                        [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT, 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
-            self.active_menu = InfoBox(formatted_name, "imgs/Interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox(formatted_name, "", "imgs/Interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=True)
+
+    def execute_action(self, menu_type, action):
+        if not action:
+            return
+        method_id = action[0]
+        args = action[1]
+
+        # Test if the action is a generic one (according to the method_id)
+        # Close menu : Active menu is closed
+        if method_id == CLOSE_ACTION_ID:
+            self.active_menu = None
+            if self.background_menus:
+                self.active_menu = self.background_menus.pop()[0]
+            else:
+                # Turn is finished
+                self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
+
+        # Search from which menu came the action
+        if menu_type == MAIN_MENU_ID:
+            self.execute_main_menu_action(method_id, args)
+        elif menu_type == INV_MENU_ID:
+            self.execute_inv_action(method_id, args)
+        elif menu_type == EQUIPMENT_MENU_ID:
+            self.execute_equipment_action(method_id, args)
+        elif menu_type == ITEM_MENU_ID:
+            self.execute_item_action(method_id, args)
+        elif menu_type == STATUS_MENU_ID:
+            self.execute_status_action(method_id, args)
+        else:
+            print("Unknown menu... : " + menu_type)
 
     def begin_turn(self):
         if self.side_turn == 'P':
@@ -843,7 +950,7 @@ class Level:
             #1 is equals to left button
             if button == 1:
                 if self.active_menu:
-                    self.execute_action(self.active_menu.click(pos))
+                    self.execute_action(self.active_menu.get_type(), self.active_menu.click(pos))
                 else:
                     if self.selected_player:
                         state = self.selected_player.get_state()
@@ -861,7 +968,7 @@ class Level:
                                     ent = self.get_entity_on_case(attack)
                                     self.duel(self.selected_player, ent)
                                     #Turn is finished
-                                    self.execute_action((3, None))
+                                    self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
                                     return
                             for interact in self.possible_interactions:
                                 if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):

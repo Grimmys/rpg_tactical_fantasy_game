@@ -33,8 +33,9 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
-    def __init__(self, name, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=False):
+    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=False):
         self.name = name
+        self.type = type_id
         self.element_linked = el_rect_linked
         self.close_button = close_button
 
@@ -45,7 +46,7 @@ class InfoBox:
 
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), self.size)
 
-    staticmethod
+    @staticmethod
     def init_elements(entries, title):
         elements = []
         for row in entries:
@@ -132,6 +133,9 @@ class InfoBox:
             pos[0] = el_rect_linked.x - self.size[0]
 
         return pos
+
+    def get_type(self):
+        return self.type
 
     def get_buttons(self):
         buttons = []
