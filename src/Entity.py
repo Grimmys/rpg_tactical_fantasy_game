@@ -14,6 +14,9 @@ class Entity:
     def get_pos(self):
         return self.pos
 
+    def set_pos(self, pos):
+        self.pos = pos
+
     def get_rect(self):
         return self.sprite.get_rect(topleft=(self.pos))
 

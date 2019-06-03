@@ -67,7 +67,7 @@ MENU_WIDTH = TILE_SIZE * 20
 MENU_HEIGHT = 100
 
 ACTION_MENU_WIDTH = 200
-ITEM_MENU_WIDTH = 500
+ITEM_MENU_WIDTH = 550
 ITEM_INFO_MENU_WIDTH = 800
 ITEM_DELETE_MENU_WIDTH = 350
 STATUS_MENU_WIDTH = 300
@@ -102,6 +102,8 @@ WAIT_ACTION_ID = 3
 ATTACK_ACTION_ID = 4
 #   - Open a chest
 OPEN_CHEST_ACTION_ID = 5
+#   - Use portal
+USE_PORTAL_ACTION_ID = 6
 
 # > Inventory menu
 INV_MENU_ID = 1
@@ -278,6 +280,7 @@ class Level:
         self.background_menus = []
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), SIDEBAR_SPRITE)
+        self.wait_for_dest_tp = False
 
     @staticmethod
     def parse_item_file(name):
@@ -487,22 +490,38 @@ class Level:
         player_rect = self.selected_player.get_rect()
         entries = [[{'name': 'Inventory', 'id': INV_ACTION_ID}], [{'name': 'Equipment', 'id': EQUIPMENT_ACTION_ID}], [{'name': 'Status', 'id': STATUS_ACTION_ID}], [{'name': 'Wait', 'id': WAIT_ACTION_ID}]]
 
+        # Options flags
+        chest_option = False
+        portal_option = False
         for case_content in self.get_next_cases((player_rect.x, player_rect.y)):
-            if isinstance(case_content, Chest) and not case_content.is_open():
+            if isinstance(case_content, Chest) and not case_content.is_open() and not chest_option:
                 entries.insert(0, [{'name': 'Open', 'id': OPEN_CHEST_ACTION_ID}])
-                break
+                chest_option = True
+            if isinstance(case_content, Portal) and not portal_option:
+                entries.insert(0, [{'name': 'Use Portal', 'id': USE_PORTAL_ACTION_ID}])
+                portal_option = True
 
         if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, 1, True):
             entries.insert(0, [{'name': 'Attack', 'id': ATTACK_ACTION_ID}])
+
         for row in entries:
             for entry in row:
                 entry['type'] = 'button'
 
         self.active_menu = InfoBox("Select an action", MAIN_MENU_ID, "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
 
-    def interact(self, actor, target):
-        if isinstance(target, Chest):
-            if isinstance(actor, Player):
+    def interact(self, actor, target, target_pos):
+        if isinstance(actor, Player):
+            # Check if target is an empty pos
+            if not target:
+                if self.wait_for_dest_tp:
+                    self.wait_for_dest_tp = False
+                    actor.set_pos(target_pos)
+
+                    # Turn is finished
+                    self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
+            # Check if player try to open a chest
+            if isinstance(target, Chest):
                 if actor.has_free_space():
                     # Key is used to open the chest
                     actor.remove_key()
@@ -524,6 +543,21 @@ class Level:
                 else:
                     self.active_menu = InfoBox("You have no free space in your inventory.", "", "imgs/interface/PopUpMenu.png",
                                                [], ITEM_MENU_WIDTH, close_button=True)
+            # Check if player try to use a portal
+            if isinstance(target, Portal):
+                print("yes")
+                new_based_pos = target.get_linked_portal().get_pos()
+                possible_pos = self.get_possible_moves(new_based_pos, 1)
+                # Remove portal pos since player cannot be on the portal
+                del possible_pos[new_based_pos]
+                if possible_pos:
+                    self.possible_interactions = possible_pos.keys()
+                    self.wait_for_dest_tp = True
+                else:
+                    self.active_menu = InfoBox("There is no free square around the other portal", "",
+                                               "imgs/interface/PopUpMenu.png",
+                                               [], ITEM_MENU_WIDTH, close_button=True)
+
 
     def duel(self, attacker, target):
         damages = attacker.attack(target)
@@ -667,6 +701,8 @@ class Level:
                                        close_button=True)
         # Wait action : Given Character's turn is finished
         elif method_id == WAIT_ACTION_ID:
+            print("What ?")
+            print(self.selected_player)
             self.selected_item = None
             self.selected_player.turn_finished()
             self.selected_player = None
@@ -677,6 +713,7 @@ class Level:
             self.active_menu = None
         # Open a chest
         elif method_id == OPEN_CHEST_ACTION_ID:
+            # Check if player has a key
             has_key = False
             for it in self.selected_player.get_items():
                 if isinstance(it, Key):
@@ -695,6 +732,14 @@ class Level:
                 for ent in self.get_next_cases(self.selected_player.get_pos()):
                     if isinstance(ent, Chest) and not ent.is_open():
                         self.possible_interactions.append(ent.get_pos())
+        elif method_id == USE_PORTAL_ACTION_ID:
+            self.background_menus.append([self.active_menu, False])
+            self.active_menu = None
+            self.selected_player.choose_interaction()
+            self.possible_interactions = []
+            for ent in self.get_next_cases(self.selected_player.get_pos()):
+                if isinstance(ent, Portal):
+                    self.possible_interactions.append(ent.get_pos())
 
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -973,9 +1018,10 @@ class Level:
                             for interact in self.possible_interactions:
                                 if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
                                     ent = self.get_entity_on_case(interact)
-                                    self.interact(self.selected_player, ent)
+                                    self.interact(self.selected_player, ent, interact)
+                                    return
                     for player in self.players:
-                        if player.is_on_pos(pos) and not player == self.selected_player:
+                        if player.is_on_pos(pos) and not player == self.selected_player and not player.turn_finished():
                             player.set_selected(True)
                             self.selected_player = player
                             self.possible_moves = self.get_possible_moves(player.get_pos(), player.get_max_moves())

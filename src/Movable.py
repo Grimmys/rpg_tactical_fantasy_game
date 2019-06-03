@@ -82,7 +82,8 @@ class Movable(Destroyable):
         return self.items[index]
 
     def get_items(self):
-        return self.items
+        # Return a new list based on items to avoid content alteration
+        return list(self.items)
 
     def has_free_space(self):
         return len(self.items) < NB_ITEMS_MAX

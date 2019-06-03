@@ -19,7 +19,8 @@ class Character(Movable):
         return None
 
     def get_equipments(self):
-        return self.equipments
+        # Return a new list based on equipments to avoid content alteration
+        return list(self.equipments)
 
     def get_equipment(self, index):
         if index not in range(len(self.equipments)):
