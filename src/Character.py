@@ -2,8 +2,8 @@ from src.Movable import Movable
 
 
 class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, max_move, strength, classes, equipments, lvl):
-        Movable.__init__(self, name, pos, sprite, hp, max_move, strength, lvl)
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl):
+        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl)
         self.equipments = equipments
         self.classes = classes
 

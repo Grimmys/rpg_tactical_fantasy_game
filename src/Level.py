@@ -11,6 +11,7 @@ from src.Potion import Potion
 from src.Consumable import Consumable
 from src.Spellbook import Spellbook
 from src.Character import Character
+from src.Movable import Movable
 from src.Player import Player
 from src.Foe import Foe
 from src.Chest import Chest
@@ -175,7 +176,12 @@ class Level:
                 Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
             ]
             lvl = 3
-            player = Player(name, pos, sprite, 10, 5, 1, ['warrior'], equipments, lvl)
+            defense = 0
+            res = 0
+            hp = 10
+            move = 5
+            strength = 1
+            player = Player(name, pos, sprite, hp, defense, res, move, strength, ['warrior'], equipments, lvl)
 
             items_id = ['life_potion', 'key', 'club']
             for name in items_id:
@@ -191,10 +197,17 @@ class Level:
             x = int(foe.find('position/x').text) * TILE_SIZE
             y = int(foe.find('position/y').text) * TILE_SIZE
             pos = (x, y)
+            lvl = int(foe.find('lvl').text.strip())
             if name not in foes_infos:
                 foes_infos[name] = etree.parse('data/foes/' + name + '.xml').getroot()
             sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
-            self.foes.append(Foe(name, pos, sprite, 5, 2, 1))
+            hp = int(foes_infos[name].find('hp').text.strip())
+            move = int(foes_infos[name].find('move').text.strip())
+            strength = int(foes_infos[name].find('strength').text.strip())
+            defense = int(foes_infos[name].find('def').text.strip())
+            res = int(foes_infos[name].find('res').text.strip())
+            xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
+            self.foes.append(Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, lvl))
         #Load chests
         self.chests = []
         for chest in tree.xpath("/level/chests/chest"):
@@ -256,8 +269,8 @@ class Level:
             y = int(breakable.find('position/y').text) * TILE_SIZE
             pos = (x, y)
             sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
-            res = int(breakable.find('resistance').text.strip())
-            self.breakables.append(Breakable(name, pos, sprite, res))
+            hp = int(breakable.find('resistance').text.strip())
+            self.breakables.append(Breakable(name, pos, sprite, hp, 0, 0))
 
         #Store all entities
         self.entities = self.players + self.foes + self.chests + self.portals + self.fountains + self.breakables
@@ -582,6 +595,12 @@ class Level:
         damages = attacker.attack(target)
         # If target has less than 0 HP at the end of the duel
         if not target.attacked(attacker, damages):
+
+            # XP up
+            if isinstance(target, Movable):
+                xp_gain = target.get_xp_obtained()
+                attacker.earn_xp(xp_gain)
+
             self.entities.remove(target)
             collec = None
             if isinstance(target, Foe):

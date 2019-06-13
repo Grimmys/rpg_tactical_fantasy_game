@@ -9,14 +9,12 @@ NB_ITEMS_MAX = 8
 class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
 
-    def __init__(self, name, pos, sprite, hp, max_move, strength, lvl=1):
-        Destroyable.__init__(self, name, pos, sprite, hp)
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl=1):
+        Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         self.max_move = max_move
         self.on_move = []
         self.timer = TIMER
         self.strength = strength
-        self.res = 0
-        self.defense = 0
         self.alterations = []
         self.lvl = lvl
         self.xp = 0
@@ -27,12 +25,6 @@ class Movable(Destroyable):
 
     def get_strength(self):
         return self.strength
-
-    def get_resistance(self):
-        return self.res
-
-    def get_defense(self):
-        return self.defense
 
     def get_max_moves(self):
         alterations = self.get_alterations_effect('speed')
@@ -70,11 +62,21 @@ class Movable(Destroyable):
     def get_xp(self):
         return self.xp
 
+    def earn_xp(self, xp):
+        self.xp += xp
+        if self.xp >= self.xp_next_lvl:
+            self.lvl_up()
+
     def determine_xp_goal(self):
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
 
     def get_next_lvl_xp(self):
         return self.xp_next_lvl
+
+    def lvl_up(self):
+        self.lvl += 1
+        self.xp -= self.xp_next_lvl
+        self.xp_next_lvl = self.determine_xp_goal()
 
     def get_item(self, index):
         if index not in range(len(self.items)):

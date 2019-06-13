@@ -7,8 +7,8 @@ SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
 SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
 class Player(Character):
-    def __init__(self, name, pos, sprite, hp, max_move, strength, classes, equipments, lvl=1):
-        Character.__init__(self, name, pos, sprite, hp, max_move, strength, classes, equipments, lvl)
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl=1):
+        Character.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl)
         '''Possible states :
         - 0 : Waiting to be selected
         - 1 : Waiting to be moved

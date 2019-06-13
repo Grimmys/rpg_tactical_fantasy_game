@@ -16,11 +16,20 @@ ALMOST_DEAD = pg.transform.scale(pg.image.load(ALMOST_DEAD_SPRITE).convert_alpha
 HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
 HP_BAR = pg.transform.scale(pg.image.load(HP_BAR_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
+
 class Destroyable(Entity):
-    def __init__(self, name, pos, sprite, hp):
+    def __init__(self, name, pos, sprite, hp, defense, res):
         Entity.__init__(self, name, pos, sprite)
         self.hp_max = hp
         self.hp = hp
+        self.defense = defense
+        self.res = res
+
+    def get_defense(self):
+        return self.defense
+
+    def get_resistance(self):
+        return self.res
 
     def display_hp(self, screen):
         if self.hp != self.hp_max:

@@ -47,6 +47,9 @@
                 <x>9</x>
                 <y>2</y>
             </position>
+            <lvl>
+                1
+            </lvl>
         </foe>
         <foe>
             <type>
@@ -56,6 +59,9 @@
                 <x>11</x>
                 <y>3</y>
             </position>
+            <lvl>
+                2
+            </lvl>
         </foe>
         <foe>
             <type>
@@ -65,6 +71,9 @@
                 <x>15</x>
                 <y>4</y>
             </position>
+            <lvl>
+                1
+            </lvl>
         </foe>
         <foe>
             <type>
@@ -74,6 +83,9 @@
                 <x>13</x>
                 <y>2</y>
             </position>
+            <lvl>
+                4
+            </lvl>
         </foe>
         <foe>
             <type>
@@ -83,6 +95,9 @@
                 <x>10</x>
                 <y>6</y>
             </position>
+            <lvl>
+                1
+            </lvl>
         </foe>
         <foe>
             <type>
@@ -92,6 +107,9 @@
                 <x>11</x>
                 <y>7</y>
             </position>
+            <lvl>
+                3
+            </lvl>
         </foe>
         <foe>
             <type>
@@ -101,6 +119,9 @@
                 <x>15</x>
                 <y>8</y>
             </position>
+            <lvl>
+                2
+            </lvl>
         </foe>
     </foes>
     <portals>
