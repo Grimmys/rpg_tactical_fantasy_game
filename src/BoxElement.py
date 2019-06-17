@@ -5,6 +5,7 @@ class BoxElement:
     def __init__(self, pos, content, margin=(0, 0, 0, 0)):
         self.pos = pos
         self.content = content
+        print(type(self.content))
         if self.content:
             self.size = (self.content.get_width(), self.content.get_height())
         else:

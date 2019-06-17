@@ -39,15 +39,18 @@ class InfoBox:
         self.element_linked = el_rect_linked
         self.close_button = close_button
 
-        self.elements = InfoBox.init_elements(entries, self.name)
-        self.determine_sizepos(width, el_rect_linked, close_button)
+        self.elements = InfoBox.init_elements(entries, self.name, width)
+        height = self.determine_sizepos(close_button)
+        self.size = (width, height)
+        self.pos = self.determine_pos(el_rect_linked)
+
         self.determine_elements_pos()
         self.buttons = self.get_buttons()
 
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), self.size)
 
     @staticmethod
-    def init_elements(entries, title):
+    def init_elements(entries, title, width):
         elements = []
         for row in entries:
             element = []
@@ -83,12 +86,12 @@ class InfoBox:
                         entry['font'] = ITEM_FONT
                     if 'color' not in entry:
                         entry['color'] = WHITE
-                    element.append(TextElement(entry['text'], (0, 0), entry['font'], entry['margin'], entry['color']))
+                    element.append(TextElement(entry['text'], width, (0, 0), entry['font'], entry['margin'], entry['color']))
             elements.append(element)
-        elements.insert(0, [TextElement(title, (0, 0), MENU_TITLE_FONT, (len(entries) + 5, 0, 0, 0), WHITE)])
+        elements.insert(0, [TextElement(title, width, (0, 0), MENU_TITLE_FONT, (len(entries) + 5, 0, 0, 0), WHITE)])
         return elements
 
-    def determine_sizepos(self, width, el_rect_linked, close_button):
+    def determine_sizepos(self, close_button):
         # Margin to be add at begin and at end
         height = MARGINBOX * 2
         for row in self.elements:
@@ -115,9 +118,7 @@ class InfoBox:
             self.elements.append([close_button_height,
                                   Button(CLOSE_ACTION_ID, CLOSE_BUTTON_SIZE, (0, 0), sprite,
                                          sprite_hover, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
-
-        self.size = (width, height)
-        self.pos = self.determine_pos(el_rect_linked)
+        return height
 
     def determine_pos(self, el_rect_linked):
         if el_rect_linked:
@@ -159,8 +160,8 @@ class InfoBox:
             y += row[0]
 
     def update_content(self, entries):
-        self.elements = InfoBox.init_elements(entries, self.name)
-        self.determine_sizepos(self.size[0], self.element_linked, self.close_button)
+        self.elements = InfoBox.init_elements(entries, self.name, self.size[0])
+        self.determine_sizepos(self.close_button)
         self.determine_elements_pos()
         self.buttons = self.get_buttons()
 
