@@ -1,0 +1,23 @@
+<snake>
+    <sprite>
+        animals/adder.png
+    </sprite>
+    <move>
+        2
+    </move>
+    <hp>
+        4
+    </hp>
+    <strength>
+        2
+    </strength>
+    <def>
+        0
+    </def>
+    <res>
+        0
+    </res>
+    <xp_gain>
+        10
+    </xp_gain>
+</snake>

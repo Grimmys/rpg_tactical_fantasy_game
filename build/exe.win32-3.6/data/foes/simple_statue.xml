@@ -1,0 +1,23 @@
+<simple_statue>
+    <sprite>
+        statues/statue_base_old.png
+    </sprite>
+    <move>
+        0
+    </move>
+    <hp>
+        5
+    </hp>
+    <strength>
+        1
+    </strength>
+    <def>
+        2
+    </def>
+    <res>
+        0
+    </res>
+    <xp_gain>
+        8
+    </xp_gain>
+</simple_statue>

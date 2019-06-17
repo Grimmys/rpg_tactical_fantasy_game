@@ -1,0 +1,17 @@
+<item>
+    <name>
+        Green Book
+    </name>
+    <sprite>
+        book/dark_green_new.png
+    </sprite>
+    <info>
+        A beautiful and polished green book...
+    </info>
+    <category>
+        spellbook
+    </category>
+    <effect>
+        poison_trap
+    </effect>
+</item>

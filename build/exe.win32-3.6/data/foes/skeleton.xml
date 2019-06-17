@@ -1,0 +1,23 @@
+<skeleton>
+    <sprite>
+        undead/skeletons/skeleton_humanoid_small_old.png
+    </sprite>
+    <move>
+        3
+    </move>
+    <hp>
+        4
+    </hp>
+    <strength>
+        1
+    </strength>
+    <def>
+        0
+    </def>
+    <res>
+        0
+    </res>
+    <xp_gain>
+        10
+    </xp_gain>
+</skeleton>

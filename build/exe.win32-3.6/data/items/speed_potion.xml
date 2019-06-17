@@ -1,0 +1,23 @@
+<item>
+    <name>
+        Speed Potion
+    </name>
+    <sprite>
+        potion/murky.png
+    </sprite>
+    <info>
+        Use it to boost speed.
+    </info>
+    <category>
+        potion
+    </category>
+    <effect>
+        speed
+    </effect>
+    <power>
+        2
+    </power>
+    <duration>
+        3
+    </duration>
+</item>

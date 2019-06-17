@@ -1,0 +1,23 @@
+<fire_eye>
+    <sprite>
+        eyes/eye_of_devastation_old.png
+    </sprite>
+    <move>
+        5
+    </move>
+    <hp>
+        3
+    </hp>
+    <strength>
+        1
+    </strength>
+    <def>
+        0
+    </def>
+    <res>
+        0
+    </res>
+    <xp_gain>
+        5
+    </xp_gain>
+</fire_eye>
