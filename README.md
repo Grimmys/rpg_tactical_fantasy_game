@@ -18,6 +18,8 @@ Type the following command in a shell at the project root :
 
 Make sure to have python and pygame installed.
 
+If you have not python, you can juste execute ``build/exe.win32-3.6/main.exe``.
+
 ## Keys
 
 * Left click : Select a player, choose a case to move, select an action to do etc. (main button)
