@@ -5,8 +5,6 @@
 The game is a RPG Tactical Fantasy game, turn-based and is in 2D.
 I'm currently looking for a name.
 
-Neither goal (i.e. no victory condition) nor defeat condition are available for now.
-
 <b>Version</b> : 0.0.3
 
 ![Main screen with possible moves and attack](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/player_moves_and_attacks_avalaibles.png)

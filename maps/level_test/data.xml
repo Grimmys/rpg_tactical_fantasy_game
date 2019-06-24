@@ -560,4 +560,16 @@
             </sprite>
         </breakable>
     </breakables>
+    <missions>
+        <main>
+            <type>position</type>
+            <description>
+                Take the stairs
+            </description>
+            <position>
+                <x>18</x>
+                <y>1</y>
+            </position>
+        </main>
+    </missions>
 </level>

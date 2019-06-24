@@ -30,7 +30,7 @@ if __name__ == "__main__":
     level = Level('maps/level_test/')
 
     end = False
-    while not end:
+    while not level.is_ended():
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 end = True
@@ -48,4 +48,4 @@ if __name__ == "__main__":
         pg.display.update()
         clock.tick(120)
     pg.quit()
-    quit()
+    raise SystemExit
