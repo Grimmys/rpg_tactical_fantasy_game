@@ -5,12 +5,11 @@ class BoxElement:
     def __init__(self, pos, content, margin=(0, 0, 0, 0)):
         self.pos = pos
         self.content = content
-        print(type(self.content))
         if self.content:
             self.size = (self.content.get_width(), self.content.get_height())
         else:
             self.size = (0, 0)
-        self.margin = {'TOP' : margin[0], 'BOTTOM' : margin[2], 'LEFT' : margin[3], 'RIGHT' : margin[1]}
+        self.margin = {'TOP': margin[0], 'BOTTOM': margin[2], 'LEFT': margin[3], 'RIGHT' : margin[1]}
 
     def set_pos(self, pos):
         self.pos = pos

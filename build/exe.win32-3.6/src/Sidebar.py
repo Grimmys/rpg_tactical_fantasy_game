@@ -7,6 +7,7 @@ from src.Breakable import Breakable
 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 18)
+MISSION_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 20)
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 
 TILE_SIZE = 48
@@ -32,10 +33,16 @@ FRAME_SPRITE = 'imgs/interface/frame.png'
 FRAME = pg.transform.scale(pg.image.load(FRAME_SPRITE).convert_alpha(), (TILE_SIZE + 10, TILE_SIZE + 10))
 
 class Sidebar():
-    def __init__(self, size, pos, sprite):
+    def __init__(self, size, pos, sprite, missions):
         self.size = size
         self.pos = pos
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), size)
+        self.missions = missions
+        for mission in self.missions:
+            if mission.is_main():
+                self.main_mission = mission
+                self.missions.remove(mission)
+                break
 
     @staticmethod
     def determine_hp_color(hp, hp_max):
@@ -57,6 +64,16 @@ class Sidebar():
         # Turn indication
         turn_text = MENU_TITLE_FONT.render("TURN " + str(nb_turn), 1, BLACK)
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 15))
+
+        # Missions
+        main_mission_text = MENU_TITLE_FONT.render("MAIN MISSION", 1, BLACK)
+        win.blit(main_mission_text, (self.pos[0] + self.size[0] - 250,
+                                     self.pos[1] + 10))
+
+        mission_color = GREEN if self.main_mission.is_ended else BROWN_RED
+        main_mission_desc = MISSION_FONT.render("> " + self.main_mission.get_description(), 1, BROWN_RED)
+        win.blit(main_mission_desc, (self.pos[0] + self.size[0] - 230,
+                                     self.pos[1] + 10 + main_mission_text.get_height()))
 
         # Display the current informations about the entity hovered
         if ent:
