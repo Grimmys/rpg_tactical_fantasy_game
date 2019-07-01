@@ -2,6 +2,12 @@ def update_screen_display(win, level):
     #Blit the current state of the level
     level.display(win)
 
+
+def show_fps(win, clock, font):
+    fps_text = font.render("FPS: " + str(int(clock.get_fps())), True, (255, 255, 0))
+    win.blit(fps_text, (2, 2))
+
+
 if __name__ == "__main__":
     import pygame as pg
     pg.init()
@@ -23,6 +29,7 @@ if __name__ == "__main__":
     pg.display.set_caption('On testing...')
 
     clock = pg.time.Clock()
+    fps_font = pg.font.SysFont("", 20, True)  # Use pygame's default font
 
     from src.Level import Level
 
@@ -45,6 +52,7 @@ if __name__ == "__main__":
         level.update_state()
         screen.fill(GREY)
         update_screen_display(screen, level)
+        show_fps(screen, clock, fps_font)
         pg.display.update()
         clock.tick(120)
     pg.quit()
