@@ -784,7 +784,7 @@ class Level:
 
                 entries = Level.create_inventory_entries(items)
 
-                self.active_menu = InfoBox("Inventory", INV_MENU_ID, "imgs/Interface/PopUpMenu.png", entries,
+                self.active_menu = InfoBox("Inventory", INV_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
                                            ITEM_MENU_WIDTH, close_button=True)
             # Equipment action : open the equipment screen
             elif method_id == EQUIPMENT_ACTION_ID:
@@ -793,14 +793,14 @@ class Level:
                 equipments = self.selected_player.get_equipments()
                 entries = Level.create_equipment_entries(equipments)
 
-                self.active_menu = InfoBox("Equipment", EQUIPMENT_MENU_ID, "imgs/Interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
+                self.active_menu = InfoBox("Equipment", EQUIPMENT_MENU_ID, "imgs/interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
             # Display player's status
             elif method_id == STATUS_ACTION_ID:
                 self.background_menus.append([self.active_menu, True])
 
                 entries = Level.create_status_entries(self.selected_player)
 
-                self.active_menu = InfoBox("Status", STATUS_MENU_ID, "imgs/Interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH,
+                self.active_menu = InfoBox("Status", STATUS_MENU_ID, "imgs/interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH,
                                            close_button=True)
             # Wait action : Given Character's turn is finished
             elif method_id == WAIT_ACTION_ID:
@@ -823,7 +823,7 @@ class Level:
 
                 if not has_key:
                     self.background_menus.append([self.active_menu, True])
-                    self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/Interface/PopUpMenu.png", [],
+                    self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/interface/PopUpMenu.png", [],
                                                ITEM_MENU_WIDTH, close_button=True)
                 else:
                     self.background_menus.append([self.active_menu, False])
@@ -895,7 +895,7 @@ class Level:
 
                 item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
                                     ITEM_BUTTON_MENU_SIZE[1])
-                self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/Interface/PopUpMenu.png",
+                self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/interface/PopUpMenu.png",
                                            entries,
                                            ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
 
@@ -930,7 +930,7 @@ class Level:
 
                 item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
                                     ITEM_BUTTON_MENU_SIZE[1])
-                self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/Interface/PopUpMenu.png",
+                self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/interface/PopUpMenu.png",
                                            entries,
                                            ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
 
@@ -943,7 +943,7 @@ class Level:
                 description = self.selected_item.get_description()
 
                 entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-                self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
+                self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
             # Remove an item
             elif method_id == THROW_ITEM_ACTION_ID:
                 self.background_menus.append([self.active_menu, False])
@@ -969,7 +969,7 @@ class Level:
                 self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
                 remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.', 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-                self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=True)
+                self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=True)
             # Use an item from the inventory
             elif method_id == USE_ITEM_ACTION_ID:
                 self.background_menus.append([self.active_menu, False])
@@ -995,7 +995,7 @@ class Level:
                     self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
                 entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-                self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries,
+                self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                            ITEM_INFO_MENU_WIDTH, close_button=True)
             # Equip an item
             elif method_id == EQUIP_ITEM_ACTION_ID:
@@ -1025,7 +1025,7 @@ class Level:
                     self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
                 entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-                self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries,
+                self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                            ITEM_INFO_MENU_WIDTH, close_button=True)
             # Unequip an item
             elif method_id == UNEQUIP_ITEM_ACTION_ID:
@@ -1049,7 +1049,7 @@ class Level:
                     self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
                 entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-                self.active_menu = InfoBox(formatted_item_name, "", "imgs/Interface/PopUpMenu.png", entries,
+                self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                            ITEM_INFO_MENU_WIDTH, close_button=True)
 
         def execute_status_action(self, method_id, args):
@@ -1065,7 +1065,7 @@ class Level:
 
                 entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
                            [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT, 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
-                self.active_menu = InfoBox(formatted_name, "", "imgs/Interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=True)
+                self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=True)
 
         def execute_action(self, menu_type, action):
             if not action:
