@@ -21,7 +21,7 @@ CRACKED = pg.transform.scale(pg.image.load(CRACKED_SPRITE).convert_alpha(), (TIL
 FRAME_SPRITE = 'imgs/interface/frame.png'
 FRAME = pg.transform.scale(pg.image.load(FRAME_SPRITE).convert_alpha(), (TILE_SIZE + 10, TILE_SIZE + 10))
 
-class Sidebar():
+class Sidebar:
     def __init__(self, size, pos, sprite, missions):
         self.size = size
         self.pos = pos
@@ -64,7 +64,7 @@ class Sidebar():
         win.blit(main_mission_desc, (self.pos[0] + self.size[0] - 230,
                                      self.pos[1] + 10 + main_mission_text.get_height()))
 
-        # Display the current informations about the entity hovered
+        # Display the current information about the entity hovered
         if ent:
             # Display the ent sprite in a frame
             frame_pos = (self.pos[0] + self.size[0] / 3, self.pos[1] + self.size[1] / 2 - FRAME.get_height() / 2)
@@ -79,7 +79,7 @@ class Sidebar():
             elif isinstance(ent, Breakable):
                 win.blit(CRACKED, ent_pos)
 
-            # Display basic informations about the ent
+            # Display basic information about the ent
             # Name
             text_pos_x = frame_pos[0] + FRAME.get_width() + 15
             name_pre_text = ITEM_FONT.render("NAME : ", 1, MIDNIGHT_BLUE)
@@ -98,7 +98,7 @@ class Sidebar():
             hp_post_text = ITEM_FONT.render("      " + " " * len(str(hp)) + " / " + str(hp_max), 1, BLACK)
             win.blit(hp_post_text, hp_text_pos)
 
-            # Display more informations if it is a movable entity
+            # Display more information if it is a movable entity
             if isinstance(ent, Movable):
                 # Level
                 level_text = ITEM_FONT.render("LVL : " + str(ent.get_lvl()), 1, BLACK)
@@ -111,7 +111,7 @@ class Sidebar():
                 status_text = ITEM_FONT.render("                  " + ent.get_formatted_alterations(), 1, BLACK)
                 win.blit(status_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
 
-            # Display more informations if it is a character
+            # Display more information if it is a character
             if isinstance(ent, Character):
                 classes = ent.get_formatted_classes()
                 classes_pre_text = ITEM_FONT.render("CLASS : ", 1, MIDNIGHT_BLUE)

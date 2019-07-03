@@ -8,7 +8,7 @@ from src.constants import TILE_SIZE, WHITE
 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
-ITEM_FONT_HOVER =  pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 17)
+ITEM_FONT_HOVER = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 17)
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 
 MARGINTOP = 10
