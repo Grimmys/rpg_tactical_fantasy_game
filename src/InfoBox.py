@@ -3,6 +3,7 @@ import pygame as pg
 from src.TextElement import TextElement
 from src.Button import Button
 from src.ItemButton import ItemButton
+from src.constants import TILE_SIZE, WHITE
 
 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
@@ -10,12 +11,9 @@ ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 1
 ITEM_FONT_HOVER =  pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 17)
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
 MARGINTOP = 10
 MARGINBOX = 20
 
-TILE_SIZE = 48
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 

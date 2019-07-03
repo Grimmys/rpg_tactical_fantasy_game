@@ -1,11 +1,9 @@
 import pygame as pg
 
 from src.BoxElement import BoxElement
+from src.constants import BLACK, WHITE
 
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
 
 
 class Button(BoxElement):

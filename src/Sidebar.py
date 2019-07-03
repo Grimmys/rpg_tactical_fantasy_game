@@ -3,26 +3,15 @@ import pygame as pg
 from src.Character import Character
 from src.Movable import Movable
 from src.Breakable import Breakable
-
+from src.constants import *
 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 18)
 MISSION_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 20)
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 
-TILE_SIZE = 48
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREY = (128, 128, 128)
-RED = (255, 0, 0)
-ORANGE = (255, 140, 0)
-YELLOW = (143, 143, 5)
-BROWN = (139, 69, 19)
-MAROON = (128, 0, 0)
-BROWN_RED = (165, 42, 42)
+# Overwrite these colors from constants.py
 GREEN = (0, 150, 0)
-BLUE = (0, 0, 255)
 MIDNIGHT_BLUE = (25, 25, 112)
 
 CRACKED_SPRITE = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"

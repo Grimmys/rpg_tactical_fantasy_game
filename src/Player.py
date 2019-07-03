@@ -1,8 +1,8 @@
 import pygame as pg
 
 from src.Character import Character
+from src.constants import TILE_SIZE
 
-TILE_SIZE = 48
 SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
 SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
