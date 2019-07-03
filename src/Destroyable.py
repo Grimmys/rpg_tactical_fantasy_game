@@ -1,8 +1,8 @@
 import pygame as pg
 
 from src.Entity import Entity
+from src.constants import TILE_SIZE
 
-TILE_SIZE = 48
 LIGHTLY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png'
 LIGHTLY_DAMAGED = pg.transform.scale(pg.image.load(LIGHTLY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 MODERATELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png'

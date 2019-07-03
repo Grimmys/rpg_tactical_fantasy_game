@@ -1,10 +1,11 @@
 import pygame as pg
 import random
-random.seed()
 
 from src.Entity import Entity
+from src.constants import TILE_SIZE
 
-TILE_SIZE = 48
+random.seed()
+
 
 class Chest(Entity):
     def __init__(self, name, pos, sprite_close, sprite_open, potential_items):

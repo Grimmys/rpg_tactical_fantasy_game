@@ -1,8 +1,8 @@
 import pygame as pg
 
 from src.Destroyable import Destroyable
+from src.constants import TILE_SIZE
 
-TILE_SIZE = 48
 CRACKED_SPRITE = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
 CRACKED = pg.transform.scale(pg.image.load(CRACKED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 

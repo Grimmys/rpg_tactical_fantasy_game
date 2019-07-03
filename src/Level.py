@@ -22,25 +22,8 @@ from src.InfoBox import InfoBox
 from src.Sidebar import Sidebar
 from src.Animation import Animation
 from src.Mission import Mission
+from src.constants import *
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREY = (128, 128, 128)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-MARINE_BLUE = (34, 61, 200)
-ORANGE = (255, 140, 0)
-YELLOW = (143, 143, 5)
-LIGHT_YELLOW = (255, 255, 0)
-GOLD = (200, 172, 34)
-BROWN = (139, 69, 19)
-MAROON = (128, 0, 0)
-BROWN_RED = (165, 42, 42)
-TURQUOISE = (64, 224, 208)
-
-
-TILE_SIZE = 48
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 

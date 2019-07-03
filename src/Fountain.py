@@ -1,8 +1,7 @@
 import pygame as pg
 
 from src.Entity import Entity
-
-TILE_SIZE = 48
+from src.constants import TILE_SIZE
 
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 

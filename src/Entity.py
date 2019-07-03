@@ -1,6 +1,6 @@
 import pygame as pg
+from src.constants import TILE_SIZE
 
-TILE_SIZE = 48
 
 class Entity:
     def __init__(self, name, pos, sprite):

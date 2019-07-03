@@ -1,17 +1,13 @@
 import pygame as pg
 
 from src.Button import Button
+from src.constants import *
 
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 18)
 ITEM_FONT_HOVER = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 16)
 ITALIC_ITEM_FONT_HOVER = pg.font.Font('fonts/minya_nouvelle_it.ttf', 16)
 
-MIDNIGHT_BLUE = (75, 75, 212)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
-TILE_SIZE = 48
 FRAME_SPRITE = 'imgs/interface/grey_frame.png'
 FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.png'
 ITEM_SPRITE = 'imgs/interface/item_frame.png'

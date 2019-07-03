@@ -9,20 +9,9 @@ def show_fps(win, clock, font):
 
 
 if __name__ == "__main__":
+    from src.constants import *
     import pygame as pg
     pg.init()
-
-    TILE_SIZE = 48
-    MENU_WIDTH = TILE_SIZE * 20
-    MENU_HEIGHT = 100
-    WIN_WIDTH = TILE_SIZE * 20
-    WIN_HEIGHT = TILE_SIZE * 10 + MENU_HEIGHT
-
-    WHITE = (255, 255, 255)
-    GREY = (128, 128, 128)
-    RED = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE = (0, 0, 255)
 
     #Window paramaters
     screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.RESIZABLE)
