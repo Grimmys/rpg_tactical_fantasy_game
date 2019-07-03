@@ -33,7 +33,6 @@ class TextElement(BoxElement):
         sep_i = TextElement.get_middle_text(txt)
         return txt[:sep_i], txt[sep_i:]
 
-
     @staticmethod
     def get_middle_text(txt):
         absolute_middle = len(txt) // 2

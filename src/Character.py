@@ -56,7 +56,6 @@ class Character(Movable):
             return True
         return False
 
-
     def remove_equipment(self, eq):
         id = eq.get_id()
         for index, equip in enumerate(self.equipments):
