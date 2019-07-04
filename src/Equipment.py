@@ -1,8 +1,7 @@
 import pygame as pg
 
 from src.Item import Item
-
-TILE_SIZE = 48
+from src.constants import TILE_SIZE
 
 
 class Equipment(Item):

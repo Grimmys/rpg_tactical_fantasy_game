@@ -2,11 +2,9 @@ import pygame as pg
 from pygame.locals import *
 
 from src.BoxElement import BoxElement
+from src.constants import WHITE, BLACK
 
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
 
 
 class TextElement(BoxElement):
@@ -34,7 +32,6 @@ class TextElement(BoxElement):
     def divide_text(txt):
         sep_i = TextElement.get_middle_text(txt)
         return txt[:sep_i], txt[sep_i:]
-
 
     @staticmethod
     def get_middle_text(txt):
