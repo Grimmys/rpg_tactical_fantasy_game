@@ -26,7 +26,7 @@ if __name__ == "__main__":
     level = Level('maps/level_test/')
 
     end = False
-    while not level.is_ended():
+    while not (level.is_ended() or end):
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 end = True
