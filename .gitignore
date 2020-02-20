@@ -1,4 +1,6 @@
 __pycache__/
+build
+*.zip
 
 # For those who use PyCharm
 .idea/
