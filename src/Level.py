@@ -182,12 +182,10 @@ class Level:
             feet = 'imgs/dungeon_crawl/item/' + player.find('equipment/feet').text.strip()
             head_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/head_equipped').text.strip()
             body_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/body_equipped').text.strip()
-            gloves_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/gloves_equipped').text.strip()
             feet_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/feet_equipped').text.strip()
             equipments = [
                 Equipment('Gold Helmet', head, "", head_equipped, "head", 0, 0, 0, 0),
                 Equipment('Gold Armor', body, "", body_equipped, "body", 0, 0, 0, 0),
-                Equipment('Gold Gloves', gloves, "", gloves_equipped, "wrist", 0, 0, 0, 0),
                 Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
             ]
             lvl = 3
@@ -711,7 +709,7 @@ class Level:
     @staticmethod
     def create_equipment_entries(equipments):
         entries = []
-        body_parts = [['head'], ['body'], ['wrist'], ['left_hand', 'right_hand'], ['legs'], ['feet']]
+        body_parts = [['head'], ['body'], ['left_hand', 'right_hand'], ['feet']]
         for part in body_parts:
             row = []
             for member in part:

@@ -18,9 +18,6 @@
             <body_equipped>
                 body/armor_mummy.png
             </body_equipped>
-            <gloves_equipped>
-                gloves/glove_gold.png
-            </gloves_equipped>
             <feet_equipped>
                 boots/middle_gold.png
             </feet_equipped>
