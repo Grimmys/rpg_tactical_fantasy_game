@@ -203,116 +203,35 @@ class Level:
 
             self.players.append(player)
         #Load foes
-        foes_infos = {}
         self.foes = []
-        for foe in tree.xpath("/level/foes/foe"):
-            name = foe.find('type').text.strip()
-            x = int(foe.find('position/x').text) * TILE_SIZE
-            y = int(foe.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            lvl = int(foe.find('lvl').text.strip())
-            if name not in foes_infos:
-                foes_infos[name] = etree.parse('data/foes/' + name + '.xml').getroot()
-            sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
-            hp = int(foes_infos[name].find('hp').text.strip())
-            move = int(foes_infos[name].find('move').text.strip())
-            strength = int(foes_infos[name].find('strength').text.strip())
-            defense = int(foes_infos[name].find('def').text.strip())
-            res = int(foes_infos[name].find('res').text.strip())
-            xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
-            self.foes.append(Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, lvl))
+        self.load_foes(tree)
+
         #Load chests
         self.chests = []
-        for chest in tree.xpath("/level/chests/chest"):
-            name = "Chest"
-            x = int(chest.find('position/x').text) * TILE_SIZE
-            y = int(chest.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            sprite_closed = 'imgs/dungeon_crawl/' + chest.find('closed/sprite').text.strip()
-            sprite_opened = 'imgs/dungeon_crawl/' + chest.find('opened/sprite').text.strip()
-            potential_items = []
-            for item in chest.xpath("contains/item"):
-                name = item.find('name').text.strip()
-                it = Level.parse_item_file(name)
-                proba = float(item.find('probability').text)
+        self.load_chests(tree)
 
-                potential_items.append((proba, it))
-            self.chests.append(Chest(name, pos, sprite_closed, sprite_opened, potential_items))
         #Load portals
         self.portals = []
-        i = 0
-        for portal_couple in tree.xpath("/level/portals/couple"):
-            name = "Portal " + str(i)
-            first_x = int(portal_couple.find('first/position/x').text) * TILE_SIZE
-            first_y = int(portal_couple.find('first/position/y').text) * TILE_SIZE
-            first_pos = (first_x, first_y)
-            second_x = int(portal_couple.find('second/position/x').text) * TILE_SIZE
-            second_y = int(portal_couple.find('second/position/y').text) * TILE_SIZE
-            second_pos = (second_x, second_y)
-            sprite = 'imgs/dungeon_crawl/' + portal_couple.find('sprite').text.strip()
-            first_portal = Portal(name, first_pos, sprite)
-            second_portal = Portal(name, second_pos, sprite)
-            Portal.link_portals(first_portal, second_portal)
-            self.portals.append(first_portal)
-            self.portals.append(second_portal)
-            i += 1
+        self.load_portals(tree)
+
         #Load fountains
-        fountains_infos = {}
         self.fountains = []
-        for fountain in tree.xpath("/level/fountains/fountain"):
-            name = fountain.find('type').text.strip()
-            x = int(fountain.find('position/x').text) * TILE_SIZE
-            y = int(fountain.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            if name not in fountains_infos:
-                fountains_infos[name] = etree.parse('data/fountains/' + name + '.xml').getroot()
-            sprite = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite').text.strip()
-            sprite_empty = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite_empty').text.strip()
-            effect_name = fountains_infos[name].find('effect').text.strip()
-            power = int(fountains_infos[name].find('power').text.strip())
-            duration = int(fountains_infos[name].find('duration').text.strip())
-            effect = Effect(effect_name, power, duration)
-            times = int(fountains_infos[name].find('times').text.strip())
-            self.fountains.append(Fountain(name, pos, sprite, sprite_empty, effect, times))
+        self.load_fountains(tree)
+
         #Load breakables
         self.breakables = []
-        for breakable in tree.xpath("/level/breakables/breakable"):
-            name = "Breakable"
-            x = int(breakable.find('position/x').text) * TILE_SIZE
-            y = int(breakable.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
-            hp = int(breakable.find('resistance').text.strip())
-            self.breakables.append(Breakable(name, pos, sprite, hp, 0, 0))
+        self.load_breakables(tree)
 
         #Store all entities
         self.entities = self.players + self.foes + self.chests + self.portals + self.fountains + self.breakables
 
         #Load obstacles
         self.obstacles = []
-        for obstacle in tree.xpath("/level/obstacles/position"):
-            x = int(obstacle.find('x').text) * TILE_SIZE
-            y = int(obstacle.find('y').text) * TILE_SIZE
-            pos = (x, y)
-            self.obstacles.append(pos)
+        self.load_obstacles(tree)
+
         # Load missions
         self.missions = []
-
-        #  > Load main mission
-        main_mission = tree.find('missions/main')
-        nature = main_mission.find('type').text
-        main = True
-        positions = []
-        desc = main_mission.find('description').text.strip()
-        nb_players = len(self.players)
-        if nature == 'position':
-            for coords in main_mission.xpath('position'):
-                x = int(coords.find('x').text) * TILE_SIZE
-                y = int(coords.find('y').text) * TILE_SIZE
-                pos = (x, y)
-                positions.append(pos)
-            mission = Mission(main, nature, positions, desc, nb_players)
-        self.missions.append(mission)
+        self.load_missions(tree)
 
         # Booleans for end game
         self.victory = False
@@ -339,6 +258,113 @@ class Level:
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), SIDEBAR_SPRITE, self.missions.copy())
         self.wait_for_dest_tp = False
+
+    def load_foes(self, tree):
+        foes_infos = {}
+        for foe in tree.xpath("/level/foes/foe"):
+            name = foe.find('type').text.strip()
+            x = int(foe.find('position/x').text) * TILE_SIZE
+            y = int(foe.find('position/y').text) * TILE_SIZE
+            pos = (x, y)
+            lvl = int(foe.find('lvl').text.strip())
+            if name not in foes_infos:
+                foes_infos[name] = etree.parse('data/foes/' + name + '.xml').getroot()
+            sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
+            hp = int(foes_infos[name].find('hp').text.strip())
+            move = int(foes_infos[name].find('move').text.strip())
+            strength = int(foes_infos[name].find('strength').text.strip())
+            defense = int(foes_infos[name].find('def').text.strip())
+            res = int(foes_infos[name].find('res').text.strip())
+            xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
+            self.foes.append(Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, lvl))
+
+    def load_chests(self, tree):
+        for chest in tree.xpath("/level/chests/chest"):
+            name = "Chest"
+            x = int(chest.find('position/x').text) * TILE_SIZE
+            y = int(chest.find('position/y').text) * TILE_SIZE
+            pos = (x, y)
+            sprite_closed = 'imgs/dungeon_crawl/' + chest.find('closed/sprite').text.strip()
+            sprite_opened = 'imgs/dungeon_crawl/' + chest.find('opened/sprite').text.strip()
+            potential_items = []
+            for item in chest.xpath("contains/item"):
+                name = item.find('name').text.strip()
+                it = Level.parse_item_file(name)
+                proba = float(item.find('probability').text)
+
+                potential_items.append((proba, it))
+            self.chests.append(Chest(name, pos, sprite_closed, sprite_opened, potential_items))
+
+    def load_portals(self, tree):
+        i = 0
+        for portal_couple in tree.xpath("/level/portals/couple"):
+            name = "Portal " + str(i)
+            first_x = int(portal_couple.find('first/position/x').text) * TILE_SIZE
+            first_y = int(portal_couple.find('first/position/y').text) * TILE_SIZE
+            first_pos = (first_x, first_y)
+            second_x = int(portal_couple.find('second/position/x').text) * TILE_SIZE
+            second_y = int(portal_couple.find('second/position/y').text) * TILE_SIZE
+            second_pos = (second_x, second_y)
+            sprite = 'imgs/dungeon_crawl/' + portal_couple.find('sprite').text.strip()
+            first_portal = Portal(name, first_pos, sprite)
+            second_portal = Portal(name, second_pos, sprite)
+            Portal.link_portals(first_portal, second_portal)
+            self.portals.append(first_portal)
+            self.portals.append(second_portal)
+            i += 1
+
+    def load_fountains(self, tree):
+        fountains_infos = {}
+        for fountain in tree.xpath("/level/fountains/fountain"):
+            name = fountain.find('type').text.strip()
+            x = int(fountain.find('position/x').text) * TILE_SIZE
+            y = int(fountain.find('position/y').text) * TILE_SIZE
+            pos = (x, y)
+            if name not in fountains_infos:
+                fountains_infos[name] = etree.parse('data/fountains/' + name + '.xml').getroot()
+            sprite = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite').text.strip()
+            sprite_empty = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite_empty').text.strip()
+            effect_name = fountains_infos[name].find('effect').text.strip()
+            power = int(fountains_infos[name].find('power').text.strip())
+            duration = int(fountains_infos[name].find('duration').text.strip())
+            effect = Effect(effect_name, power, duration)
+            times = int(fountains_infos[name].find('times').text.strip())
+            self.fountains.append(Fountain(name, pos, sprite, sprite_empty, effect, times))
+
+    def load_breakables(self, tree):
+        for breakable in tree.xpath("/level/breakables/breakable"):
+            name = "Breakable"
+            x = int(breakable.find('position/x').text) * TILE_SIZE
+            y = int(breakable.find('position/y').text) * TILE_SIZE
+            pos = (x, y)
+            sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
+            hp = int(breakable.find('resistance').text.strip())
+            self.breakables.append(Breakable(name, pos, sprite, hp, 0, 0))
+
+    def load_obstacles(self, tree):
+        for obstacle in tree.xpath("/level/obstacles/position"):
+            x = int(obstacle.find('x').text) * TILE_SIZE
+            y = int(obstacle.find('y').text) * TILE_SIZE
+            pos = (x, y)
+            self.obstacles.append(pos)
+
+    def load_missions(self, tree):
+        #  > Load main mission
+        main_mission = tree.find('missions/main')
+        nature = main_mission.find('type').text
+        main = True
+        positions = []
+        desc = main_mission.find('description').text.strip()
+        nb_players = len(self.players)
+        if nature == 'position':
+            for coords in main_mission.xpath('position'):
+                x = int(coords.find('x').text) * TILE_SIZE
+                y = int(coords.find('y').text) * TILE_SIZE
+                pos = (x, y)
+                positions.append(pos)
+            mission = Mission(main, nature, positions, desc, nb_players)
+        self.missions.append(mission)
+
 
     @staticmethod
     def parse_item_file(name):
