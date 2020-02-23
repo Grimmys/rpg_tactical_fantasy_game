@@ -368,7 +368,9 @@ class Level:
 
     @staticmethod
     def parse_item_file(name):
-        it_tree_root = etree.parse('data/items/' + name + '.xml').getroot()
+        print(name)
+        it_tree_root = etree.parse('data/items.xml').getroot().find('.//' + name)
+        print(it_tree_root)
 
         sprite = 'imgs/dungeon_crawl/item/' + it_tree_root.find('sprite').text.strip()
         info = it_tree_root.find('info').text.strip()
