@@ -42,7 +42,8 @@ class InfoBox:
         self.size = (width, height)
         self.pos = self.determine_pos(el_rect_linked)
 
-        self.determine_elements_pos()
+        if self.pos:
+            self.determine_elements_pos()
         self.buttons = self.get_buttons()
 
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), self.size)
@@ -121,17 +122,15 @@ class InfoBox:
     def determine_pos(self, el_rect_linked):
         if el_rect_linked:
             pos = [el_rect_linked.x + el_rect_linked.width, el_rect_linked.y + el_rect_linked.height - self.size[1] // 2]
-        else:
-            pos = [MAP_WIDTH // 2 - self.size[0] // 2, MAP_HEIGHT // 2 - self.size[1] // 2]
-
-        if pos[1] < 0:
-            pos[1] = 0
-        elif pos[1] + self.size[1] > MAP_HEIGHT:
-            pos[1] = MAP_HEIGHT - self.size[1]
-        if pos[0] + self.size[0] > MAP_WIDTH:
-            pos[0] = el_rect_linked.x - self.size[0]
-
-        return pos
+            if pos[1] < 0:
+                pos[1] = 0
+            elif pos[1] + self.size[1] > MAP_HEIGHT:
+                pos[1] = MAP_HEIGHT - self.size[1]
+            if pos[0] + self.size[0] > MAP_WIDTH:
+                pos[0] = el_rect_linked.x - self.size[0]
+            return pos
+        return []
+            #pos = [MAP_WIDTH // 2 - self.size[0] // 2, MAP_HEIGHT // 2 - self.size[1] // 2]
 
     def get_type(self):
         return self.type
@@ -164,7 +163,15 @@ class InfoBox:
         self.buttons = self.get_buttons()
 
     def display(self, win):
-        win.blit(self.sprite, self.pos)
+        if self.pos:
+            win.blit(self.sprite, self.pos)
+        else:
+            win_size = win.get_size()
+            self.pos = (win_size[0] // 2 - self.size[0] // 2, win_size[1] // 2 - self.size[1] // 2)
+            win.blit(self.sprite, self.pos)
+            self.determine_elements_pos()
+            self.pos = []
+
         for row in self.elements:
             for el in row[1:]:
                 el.display(win)
