@@ -31,7 +31,7 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
-    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=False):
+    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0):
         self.name = name
         self.type = type_id
         self.element_linked = el_rect_linked
@@ -64,13 +64,13 @@ class InfoBox:
                     sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), BUTTON_SIZE)
                     sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
                                              sprite_hover.get_height() // 2 - name.get_height() // 2))
-                    element.append(Button(entry['id'], BUTTON_SIZE, (0, 0), sprite, sprite_hover, entry['margin']))
+                    element.append(Button(entry['id'], [], BUTTON_SIZE, (0, 0), sprite, sprite_hover, entry['margin']))
                 elif entry['type'] == 'text_button':
                     name = ITEM_FONT.render(entry['name'], 1, entry['color'])
                     name_hover = ITEM_FONT.render(entry['name'], 1, entry['color_hover'])
                     if 'obj' not in entry:
                         entry['obj'] = None
-                    element.append(Button(entry['id'], name.get_size(), (0, 0), name, name_hover, entry['margin'], entry['obj']))
+                    element.append(Button(entry['id'], [], name.get_size(), (0, 0), name, name_hover, entry['margin'], entry['obj']))
 
                 elif entry['type'] == 'item_button':
                     button_size = ITEM_BUTTON_SIZE
@@ -100,7 +100,7 @@ class InfoBox:
                     max_height = el_height
             height += max_height
             row.insert(0, max_height)
-        if close_button:
+        if close_button > 0:
             close_button_height = CLOSE_BUTTON_SIZE[1] + MARGINTOP + CLOSE_BUTTON_MARGINTOP
             height += close_button_height
 
@@ -114,7 +114,7 @@ class InfoBox:
                                      sprite_hover.get_height() // 2 - name.get_height() // 2))
 
             self.elements.append([close_button_height,
-                                  Button(CLOSE_ACTION_ID, CLOSE_BUTTON_SIZE, (0, 0), sprite,
+                                  Button(CLOSE_ACTION_ID, [close_button], CLOSE_BUTTON_SIZE, (0, 0), sprite,
                                          sprite_hover, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
         return height
 

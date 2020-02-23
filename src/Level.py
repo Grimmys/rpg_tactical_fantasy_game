@@ -97,6 +97,9 @@ DEFEAT_POS = NEW_TURN_POS
 DEFEAT_TEXT = TITLE_FONT.render("DEFEAT !", 1, WHITE)
 DEFEAT_TEXT_POS = (DEFEAT.get_width() / 2 - DEFEAT_TEXT.get_width() / 2, DEFEAT.get_height() / 2 - DEFEAT_TEXT.get_height() / 2)
 
+UNFINAL_ACTION = 1
+FINAL_ACTION = 2
+
 # Interaction ids
 #  > Generic
 #    - To close any menu
@@ -653,12 +656,12 @@ class Level:
                     entries = [[entry_item],
                                [{'type': 'text', 'text': "Item has been added to your inventory", 'font': ITEM_DESC_FONT}]]
                     self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
-                                               entries, ITEM_MENU_WIDTH, close_button=True)
+                                               entries, ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
                     # No more menu : turn is finished
                     self.background_menus = []
                 else:
                     self.active_menu = InfoBox("You have no free space in your inventory.", "", "imgs/interface/PopUpMenu.png",
-                                               [], ITEM_MENU_WIDTH, close_button=True)
+                                               [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             # Check if player try to use a portal
             elif isinstance(target, Portal):
                 new_based_pos = target.get_linked_portal().get_pos()
@@ -671,11 +674,11 @@ class Level:
                 else:
                     self.active_menu = InfoBox("There is no free square around the other portal", "",
                                                "imgs/interface/PopUpMenu.png",
-                                               [], ITEM_MENU_WIDTH, close_button=True)
+                                               [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             elif isinstance(target, Fountain):
                 entries = target.drink(actor)
                 self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
-                                           entries, ITEM_MENU_WIDTH, close_button=True)
+                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
                 # No more menu : turn is finished
                 self.background_menus = []
@@ -809,7 +812,7 @@ class Level:
             entries = Level.create_inventory_entries(items)
 
             self.active_menu = InfoBox("Inventory", INV_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
-                                       ITEM_MENU_WIDTH, close_button=True)
+                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equipment action : open the equipment screen
         elif method_id == EQUIPMENT_ACTION_ID:
             self.background_menus.append([self.active_menu, True])
@@ -825,7 +828,7 @@ class Level:
             entries = Level.create_status_entries(self.selected_player)
 
             self.active_menu = InfoBox("Status", STATUS_MENU_ID, "imgs/interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH,
-                                       close_button=True)
+                                       close_button=UNFINAL_ACTION)
         # Wait action : Given Character's turn is finished
         elif method_id == WAIT_ACTION_ID:
             self.selected_item = None
@@ -848,7 +851,7 @@ class Level:
             if not has_key:
                 self.background_menus.append([self.active_menu, True])
                 self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/interface/PopUpMenu.png", [],
-                                           ITEM_MENU_WIDTH, close_button=True)
+                                           ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             else:
                 self.background_menus.append([self.active_menu, False])
                 self.active_menu = None
@@ -921,7 +924,7 @@ class Level:
                                 ITEM_BUTTON_MENU_SIZE[1])
             self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/interface/PopUpMenu.png",
                                        entries,
-                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
+                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
     def execute_equipment_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -956,7 +959,7 @@ class Level:
                                 ITEM_BUTTON_MENU_SIZE[1])
             self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/interface/PopUpMenu.png",
                                        entries,
-                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=True)
+                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
     def execute_item_action(self, method_id, args):
         # Get info about an item
@@ -967,7 +970,7 @@ class Level:
             description = self.selected_item.get_description()
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Remove an item
         elif method_id == THROW_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
@@ -993,7 +996,7 @@ class Level:
             self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
             remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.', 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Use an item from the inventory
         elif method_id == USE_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
@@ -1020,7 +1023,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=True)
+                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equip an item
         elif method_id == EQUIP_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
@@ -1050,7 +1053,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=True)
+                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Unequip an item
         elif method_id == UNEQUIP_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
@@ -1074,7 +1077,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=True)
+                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
     def execute_status_action(self, method_id, args):
         # Get infos about an alteration
@@ -1089,7 +1092,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
                        [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT, 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
-            self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
     def execute_action(self, menu_type, action):
         if not action:
@@ -1104,8 +1107,9 @@ class Level:
             if self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
             else:
-                # Turn is finished
-                self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
+                if len(args) >= 3 and args[2][0] == FINAL_ACTION:
+                    # Turn is finished
+                    self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
             return
 
         # Search from which menu came the action
@@ -1177,10 +1181,20 @@ class Level:
                             return
             # 3 is equals to right button
             if button == 3:
-                if self.selected_player and self.selected_player.get_state() == 1:
-                    self.selected_player.set_selected(False)
-                    self.selected_player = None
-                    self.possible_moves = []
+                if self.selected_player:
+                    state = self.selected_player.get_state()
+                    if state == 1:
+                        self.selected_player.set_selected(False)
+                        self.selected_player = None
+                        self.possible_moves = []
+                    elif state == 3:
+                        self.execute_action(self.active_menu.get_type, (CLOSE_ACTION_ID, ""))
+                        # Test if player was on main menu, in this case, current move should be cancelled
+                        if not self.active_menu:
+                            self.selected_player.cancel_move()
+                            self.selected_player.set_selected(False)
+                            self.selected_player = None
+                            self.possible_moves = []
                 if self.watched_ent:
                     self.watched_ent = None
                     self.possible_moves = []

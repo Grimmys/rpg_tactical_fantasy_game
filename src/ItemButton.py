@@ -46,7 +46,7 @@ class ItemButton(Button):
             item_sprite_hover = ITALIC_ITEM_FONT_HOVER.render(name, 1, MIDNIGHT_BLUE)
             item_frame_hover.blit(item_sprite_hover, (frame.get_width() + padding * 2, item_frame.get_height() / 2 - ITALIC_ITEM_FONT.get_height() / 2))
 
-        Button.__init__(self, INTERAC_ITEM_ACTION_ID, size, pos, item_frame, item_frame_hover, margin)
+        Button.__init__(self, INTERAC_ITEM_ACTION_ID, [], size, pos, item_frame, item_frame_hover, margin)
         self.item = item
         self.index = index
         self.disabled = disabled

@@ -19,6 +19,7 @@ class Player(Character):
         self.state = 0
         self.last_state = 5
         self.selected = False
+        self.old_pos = pos
 
     def display(self, screen):
         Character.display(self, screen)
@@ -34,12 +35,17 @@ class Player(Character):
 
     def set_move(self, pos):
         Character.set_move(self, pos)
+        self.old_pos = self.pos
         self.state = 2
 
     def move(self):
         Character.move(self)
         if not self.on_move:
             self.state = 3
+
+    def cancel_move(self):
+        self.state = 0
+        self.pos = self.old_pos
 
     def attack(self, ent):
         damages = Character.attack(self, ent)
