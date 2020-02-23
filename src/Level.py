@@ -167,9 +167,9 @@ class Level:
         self.map = pg.image.load(directory + 'map.png')
 
         self.players = []
-        #Reading of the XML file
+        # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
-        #Load players
+        # Load players
         for player in tree.xpath("/level/player"):
             name = player.find('name').text.strip()
             x = int(player.find('position/x').text) * TILE_SIZE
@@ -178,7 +178,6 @@ class Level:
             sprite = 'imgs/dungeon_crawl/player/' + player.find('sprite').text.strip()
             head = 'imgs/dungeon_crawl/item/' + player.find('equipment/head').text.strip()
             body = 'imgs/dungeon_crawl/item/' + player.find('equipment/body').text.strip()
-            gloves = 'imgs/dungeon_crawl/item/' + player.find('equipment/gloves').text.strip()
             feet = 'imgs/dungeon_crawl/item/' + player.find('equipment/feet').text.strip()
             head_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/head_equipped').text.strip()
             body_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/body_equipped').text.strip()
@@ -202,30 +201,30 @@ class Level:
                 player.set_item(item)
 
             self.players.append(player)
-        #Load foes
+        # Load foes
         self.foes = []
         self.load_foes(tree)
 
-        #Load chests
+        # Load chests
         self.chests = []
         self.load_chests(tree)
 
-        #Load portals
+        # Load portals
         self.portals = []
         self.load_portals(tree)
 
-        #Load fountains
+        # Load fountains
         self.fountains = []
         self.load_fountains(tree)
 
-        #Load breakables
+        # Load breakables
         self.breakables = []
         self.load_breakables(tree)
 
-        #Store all entities
+        # Store all entities
         self.entities = self.players + self.foes + self.chests + self.portals + self.fountains + self.breakables
 
-        #Load obstacles
+        # Load obstacles
         self.obstacles = []
         self.load_obstacles(tree)
 
@@ -368,9 +367,8 @@ class Level:
 
     @staticmethod
     def parse_item_file(name):
-        print(name)
+        # Retrieve data root for item
         it_tree_root = etree.parse('data/items.xml').getroot().find('.//' + name)
-        print(it_tree_root)
 
         sprite = 'imgs/dungeon_crawl/item/' + it_tree_root.find('sprite').text.strip()
         info = it_tree_root.find('info').text.strip()
@@ -533,7 +531,7 @@ class Level:
                         case_x = tile[0] + (x * TILE_SIZE)
                         case_y = tile[1] + (y * TILE_SIZE)
                         case_pos = (case_x, case_y)
-                        if self.case_is_empty(case_pos) and not case_pos in tiles:
+                        if self.case_is_empty(case_pos) and case_pos not in tiles:
                             tiles_next_level[case_pos] = i
             tiles.update(tiles_prev_level)
             tiles_prev_level = tiles_next_level
@@ -765,18 +763,18 @@ class Level:
                     {'type': 'text', 'text': player.get_formatted_classes()}],
                    [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': str(player.get_lvl())}],
-                   [{'type': 'text', 'color': GOLD, 'text': '    -> XP :', 'font': ITALIC_ITEM_FONT},
+                   [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': str(xp) + ' / ' + str(xp_next_level)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT, 'margin': (10, 0, 10, 0)}],
-                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'HP :'},
+                   [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
                     {'type': 'text', 'text': str(hp) + ' / ' + str(hp_max), 'color': Level.determine_hp_color(hp, hp_max)}],
-                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'MOVE :'},
+                   [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
                     {'type': 'text', 'text': str(player.get_max_moves())}],
-                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'ATTACK :'},
+                   [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
                     {'type': 'text', 'text': str(player.get_strength())}],
-                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'DEFENSE :'},
+                   [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},
                     {'type': 'text', 'text': str(player.get_defense())}],
-                   [{'type': 'text', 'color': MARINE_BLUE, 'text': 'MAGICAL RES :'},
+                   [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
                     {'type': 'text', 'text': str(player.get_resistance())}],
                    [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': MENU_SUB_TITLE_FONT,
                      'margin': (10, 0, 10, 0)}]]
@@ -784,7 +782,7 @@ class Level:
         alts = player.get_alterations()
 
         if not alts:
-            entries.append([{'type': 'text', 'color': MARINE_BLUE, 'text': 'None'}])
+            entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
 
         for alt in alts:
             entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': INFO_ALTERATION_ACTION_ID, 'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
@@ -1108,6 +1106,7 @@ class Level:
             else:
                 # Turn is finished
                 self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
+            return
 
         # Search from which menu came the action
         if menu_type == MAIN_MENU_ID:
