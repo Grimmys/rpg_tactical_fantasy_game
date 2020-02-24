@@ -36,6 +36,46 @@ def show_fps(win, inner_clock, font):
     win.blit(fps_text, (2, 2))
 
 
+def init_player(name):
+    # -- Reading of the XML file
+    tree = etree.parse("data/characters.xml").getroot()
+    player = tree.xpath(name)[0]
+    print(player)
+    name = player.find('name').text.strip()
+    sprite = 'imgs/dungeon_crawl/player/' + player.find('sprite').text.strip()
+    head = 'imgs/dungeon_crawl/item/' + player.find('equipment/head').text.strip()
+    body = 'imgs/dungeon_crawl/item/' + player.find('equipment/body').text.strip()
+    feet = 'imgs/dungeon_crawl/item/' + player.find('equipment/feet').text.strip()
+    head_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/head_equipped').text.strip()
+    body_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/body_equipped').text.strip()
+    feet_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/feet_equipped').text.strip()
+    equipments = [
+        Equipment('Gold Helmet', head, "", head_equipped, "head", 0, 0, 0, 0),
+        Equipment('Gold Armor', body, "", body_equipped, "body", 0, 0, 0, 0),
+        Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
+    ]
+    lvl = 3
+    defense = 0
+    res = 0
+    hp = 10
+    move = 5
+    strength = 1
+
+    # Creating player instance
+    player = Player(name, sprite, hp, defense, res, move, strength, ['warrior'], equipments, lvl)
+
+    items_id = ['life_potion', 'key', 'club']
+    for name in items_id:
+        item = Level.parse_item_file(name)
+        player.set_item(item)
+
+    return player
+
+
+def load_level(level, team):
+    return Level('maps/level_' + level + '/', team)
+
+
 def execute_action(menu_type, action):
     if not action:
         return
@@ -66,8 +106,13 @@ def new_game():
     # Modify screen
     screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 
+    # Init player's team (one character at beginning)
+
+    team = [init_player("john")]
+
     # Init the first level
-    level = Level('maps/level_test/')
+    level = load_level("test", team)
+
     end = False
     while not (level.is_ended() or end):
         for e in pg.event.get():
@@ -104,6 +149,7 @@ def exit_game():
 
 
 if __name__ == "__main__":
+    from lxml import etree
     from src.constants import *
     import pygame as pg
     pg.init()
@@ -112,6 +158,8 @@ if __name__ == "__main__":
     screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     from src.Level import Level
+    from src.Equipment import Equipment
+    from src.Player import Player
     from src.InfoBox import InfoBox
 
     clock = pg.time.Clock()

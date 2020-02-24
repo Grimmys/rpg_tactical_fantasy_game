@@ -1,0 +1,33 @@
+<characters>
+    <john>
+        <name>
+            John
+        </name>
+        <sprite>
+            base/human_male.png
+        </sprite>
+        <equipment>
+            <head_equipped>
+                head/full_gold.png
+            </head_equipped>
+            <body_equipped>
+                body/armor_mummy.png
+            </body_equipped>
+            <feet_equipped>
+                boots/middle_gold.png
+            </feet_equipped>
+            <head>
+                armor/headgear/helmet_3_old.png
+            </head>
+            <body>
+                armor/torso/gold_dragon_armor_new.png
+            </body>
+            <gloves>
+                armor/hands/glove_3_new.png
+            </gloves>
+            <feet>
+                armor/feet/boots_iron_2.png
+            </feet>
+        </equipment>
+    </john>
+</characters>

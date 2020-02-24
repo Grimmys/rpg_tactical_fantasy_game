@@ -166,44 +166,17 @@ def blit_alpha(target, source, location, opacity):
 
 
 class Level:
-    def __init__(self, directory):
+    def __init__(self, directory, players):
         self.map = pg.image.load(directory + 'map.png')
 
-        self.players = []
+        self.players = players
+
+        # Set initial pos of unique player (temp)
+        self.players[0].set_initial_pos((2 * TILE_SIZE, 2 * TILE_SIZE))
+
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
-        # Load players
-        for player in tree.xpath("/level/player"):
-            name = player.find('name').text.strip()
-            x = int(player.find('position/x').text) * TILE_SIZE
-            y = int(player.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            sprite = 'imgs/dungeon_crawl/player/' + player.find('sprite').text.strip()
-            head = 'imgs/dungeon_crawl/item/' + player.find('equipment/head').text.strip()
-            body = 'imgs/dungeon_crawl/item/' + player.find('equipment/body').text.strip()
-            feet = 'imgs/dungeon_crawl/item/' + player.find('equipment/feet').text.strip()
-            head_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/head_equipped').text.strip()
-            body_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/body_equipped').text.strip()
-            feet_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/feet_equipped').text.strip()
-            equipments = [
-                Equipment('Gold Helmet', head, "", head_equipped, "head", 0, 0, 0, 0),
-                Equipment('Gold Armor', body, "", body_equipped, "body", 0, 0, 0, 0),
-                Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
-            ]
-            lvl = 3
-            defense = 0
-            res = 0
-            hp = 10
-            move = 5
-            strength = 1
-            player = Player(name, pos, sprite, hp, defense, res, move, strength, ['warrior'], equipments, lvl)
 
-            items_id = ['life_potion', 'key', 'club']
-            for name in items_id:
-                item = Level.parse_item_file(name)
-                player.set_item(item)
-
-            self.players.append(player)
         # Load foes
         self.foes = []
         self.load_foes(tree)
@@ -238,7 +211,13 @@ class Level:
         # Booleans for end game
         self.victory = False
         self.defeat = False
-        self.game_ended = False
+
+        '''Possible game phase :
+            - I : Level initialization ; player should prepare his team
+            - G : Level is active
+            - F : Level is ended
+        '''
+        self.game_phase = 'I'
 
         self.item_infos = {}
         self.selected_item = None
@@ -407,7 +386,7 @@ class Level:
         return item
 
     def is_ended(self):
-        return not self.animation and self.game_ended
+        return not self.animation and self.game_phase == 'F'
 
     def update_state(self):
         if self.animation:
@@ -417,7 +396,7 @@ class Level:
             self.background_menus = []
             VICTORY.blit(VICTORY_TEXT, VICTORY_TEXT_POS)
             self.animation = Animation([{'sprite': VICTORY, 'pos': DEFEAT_POS}], 180)
-            self.game_ended = True
+            self.game_phase = 'F'
             return
         if not self.players:
             self.defeat = True
@@ -426,7 +405,7 @@ class Level:
             self.background_menus = []
             DEFEAT.blit(DEFEAT_TEXT, DEFEAT_TEXT_POS)
             self.animation = Animation([{'sprite': DEFEAT, 'pos': VICTORY_POS}], 180)
-            self.game_ended = True
+            self.game_phase = 'F'
             return
         if self.selected_player:
             if self.selected_player.get_move():
@@ -510,6 +489,10 @@ class Level:
     def show_possible_interactions(self, win):
         for tile in self.possible_interactions:
             blit_alpha(win, INTERACTION, tile, INTERACTION_OPACITY)
+
+    def show_possible_placements(self, win):
+        for tile in self.possible_placements:
+            blit_alpha(win, LANDING, tile, LANDING_OPACITY)
 
     def get_next_cases(self, pos):
         tiles = []
@@ -1004,10 +987,10 @@ class Level:
 
             formatted_item_name = self.selected_item.get_formatted_name()
 
-            #Try to use the object
+            # Try to use the object
             used, result_msg = self.selected_player.use_item(self.selected_item)
 
-            #Inventory display is update if object has been used
+            # Inventory display is update if object has been used
             if used:
                 items_max = self.selected_player.get_nb_items_max()
 
@@ -1031,14 +1014,14 @@ class Level:
 
             formatted_item_name = self.selected_item.get_formatted_name()
 
-            #Try to equip the item
+            # Try to equip the item
             equipped = self.selected_player.equip(self.selected_item)
 
             result_msg = "Item can't be equipped : You already wear an equipment of the same type."
             if equipped:
                 result_msg = "The item has been equipped"
 
-                #Item has been removed from inventory
+                # Item has been removed from inventory
                 items_max = self.selected_player.get_nb_items_max()
 
                 items = self.selected_player.get_items()
@@ -1216,7 +1199,8 @@ class Level:
                         pos = ent.get_pos()
                         self.watched_ent = ent
                         self.possible_moves = self.get_possible_moves(pos, ent.get_max_moves())
-                        self.possible_attacks = self.get_possible_attacks(self.possible_moves, 1, isinstance(ent, Character))
+                        self.possible_attacks = self.get_possible_attacks(self.possible_moves,
+                                                                          1, isinstance(ent, Character))
                         return
 
     def motion(self, pos):
