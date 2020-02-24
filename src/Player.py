@@ -47,6 +47,9 @@ class Player(Character):
         self.state = 0
         self.pos = self.old_pos
 
+    def cancel_interaction(self):
+        self.state = 3
+
     def attack(self, ent):
         damages = Character.attack(self, ent)
         self.state = self.last_state

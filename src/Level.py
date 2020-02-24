@@ -682,6 +682,7 @@ class Level:
 
                 # No more menu : turn is finished
                 self.background_menus = []
+                self.possible_interactions = []
 
     def duel(self, attacker, target):
         damages = attacker.attack(target)
@@ -1164,7 +1165,7 @@ class Level:
                                 if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
                                     ent = self.get_entity_on_case(attack)
                                     self.duel(self.selected_player, ent)
-                                    #Turn is finished
+                                    # Turn is finished
                                     self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
                                     return
                             for interact in self.possible_interactions:
@@ -1195,6 +1196,12 @@ class Level:
                             self.selected_player.set_selected(False)
                             self.selected_player = None
                             self.possible_moves = []
+                    # Want to cancel an interaction (not already performed)
+                    elif state == 4 and (self.possible_interactions or self.possible_attacks):
+                        print(self.active_menu)
+                        print("Other menus : " + str(self.background_menus))
+                        self.selected_player.cancel_interaction()
+                        self.active_menu = self.background_menus.pop()[0]
                 if self.watched_ent:
                     self.watched_ent = None
                     self.possible_moves = []
