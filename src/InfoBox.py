@@ -40,7 +40,7 @@ class InfoBox:
         self.elements = InfoBox.init_elements(entries, self.name, width)
         height = self.determine_sizepos(close_button)
         self.size = (width, height)
-        self.pos = self.determine_pos(el_rect_linked)
+        self.pos = self.determine_pos()
 
         if self.pos:
             self.determine_elements_pos()
@@ -105,7 +105,7 @@ class InfoBox:
             close_button_height = CLOSE_BUTTON_SIZE[1] + MARGINTOP + CLOSE_BUTTON_MARGINTOP
             height += close_button_height
 
-            #Button sprites
+            # Button sprites
             name = ITEM_FONT.render("Close", 1, WHITE)
             sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), CLOSE_BUTTON_SIZE)
             sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
@@ -119,15 +119,15 @@ class InfoBox:
                                          sprite_hover, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
         return height
 
-    def determine_pos(self, el_rect_linked):
-        if el_rect_linked:
-            pos = [el_rect_linked.x + el_rect_linked.width, el_rect_linked.y + el_rect_linked.height - self.size[1] // 2]
+    def determine_pos(self):
+        if self.element_linked:
+            pos = [self.element_linked.x + self.element_linked.width, self.element_linked.y + self.element_linked.height - self.size[1] // 2]
             if pos[1] < 0:
                 pos[1] = 0
             elif pos[1] + self.size[1] > MAP_HEIGHT:
                 pos[1] = MAP_HEIGHT - self.size[1]
             if pos[0] + self.size[0] > MAP_WIDTH:
-                pos[0] = el_rect_linked.x - self.size[0]
+                pos[0] = self.element_linked.x - self.size[0]
             return pos
         return []
             #pos = [MAP_WIDTH // 2 - self.size[0] // 2, MAP_HEIGHT // 2 - self.size[1] // 2]

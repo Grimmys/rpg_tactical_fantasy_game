@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level>
+    <placementArea>
+        <position>
+            <x>2</x>
+            <y>2</y>
+        </position>
+        <position>
+            <x>1</x>
+            <y>1</y>
+        </position>
+        <position>
+            <x>1</x>
+            <y>2</y>
+        </position>
+        <position>
+            <x>2</x>
+            <y>1</y>
+        </position>
+    </placementArea>
     <foes>
         <foe>
             <type>

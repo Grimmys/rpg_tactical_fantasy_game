@@ -105,8 +105,13 @@ FINAL_ACTION = 2
 #    - To close any menu
 CLOSE_ACTION_ID = -1
 
-# > Main character menu
+# > Main menu
 MAIN_MENU_ID = 0
+#   - Start game
+START_ACTION_ID = 0
+
+# > Main character menu
+CHARACTER_MENU_ID = 1
 #   - Access to inventory
 INV_ACTION_ID = 0
 #   - Access to equipment
@@ -127,12 +132,12 @@ DRINK_ACTION_ID = 7
 TAKE_ACTION_ID = 8
 
 # > Inventory menu
-INV_MENU_ID = 1
+INV_MENU_ID = 2
 #   - Interact with item
 INTERAC_ITEM_ACTION_ID = 0
 
 # > Item menu
-ITEM_MENU_ID = 2
+ITEM_MENU_ID = 3
 #   - Use item
 USE_ITEM_ACTION_ID = 0
 #   - Get infos about item
@@ -145,12 +150,12 @@ EQUIP_ITEM_ACTION_ID = 3
 UNEQUIP_ITEM_ACTION_ID = 4
 
 # > Status menu
-STATUS_MENU_ID = 3
+STATUS_MENU_ID = 4
 #   - Get infos about alteration
 INFO_ALTERATION_ACTION_ID = 0
 
 # > Equipment menu
-EQUIPMENT_MENU_ID = 4
+EQUIPMENT_MENU_ID = 5
 #   - Interact with equipment
 INTERAC_EQUIPMENT_ACTION_ID = 0
 
@@ -172,7 +177,7 @@ class Level:
         self.players = players
 
         # Set initial pos of unique player (temp)
-        self.players[0].set_initial_pos((2 * TILE_SIZE, 2 * TILE_SIZE))
+        #self.players[0].set_initial_pos((2 * TILE_SIZE, 2 * TILE_SIZE))
 
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
@@ -208,6 +213,17 @@ class Level:
         self.missions = []
         self.load_missions(tree)
 
+        # Load available tiles for characters' placement
+        self.possible_placements = []
+        self.load_placements(tree)
+
+        # Set initial pos of players arbitrarily
+        for player in self.players:
+            for tile in self.possible_placements:
+                if self.case_is_empty(tile):
+                    player.set_initial_pos(tile)
+                    break
+
         # Booleans for end game
         self.victory = False
         self.defeat = False
@@ -221,7 +237,7 @@ class Level:
 
         self.item_infos = {}
         self.selected_item = None
-        self.turn = 1
+        self.turn = 0
         self.animation = None
         '''Possible turn :
                 - P : Player's turn
@@ -323,7 +339,7 @@ class Level:
             self.breakables.append(Breakable(name, pos, sprite, hp, 0, 0))
 
     def load_obstacles(self, tree):
-        for obstacle in tree.xpath("/level/obstacles/position"):
+        for obstacle in tree.xpath('/level/obstacles/position'):
             x = int(obstacle.find('x').text) * TILE_SIZE
             y = int(obstacle.find('y').text) * TILE_SIZE
             pos = (x, y)
@@ -346,6 +362,13 @@ class Level:
             mission = Mission(main, nature, positions, desc, nb_players)
         self.missions.append(mission)
 
+    def load_placements(self, tree):
+        positions = tree.findall('placementArea/position')
+        for coords in positions:
+            x = int(coords.find('x').text) * TILE_SIZE
+            y = int(coords.find('y').text) * TILE_SIZE
+            pos = (x, y)
+            self.possible_placements.append(pos)
 
     @staticmethod
     def parse_item_file(name):
@@ -436,17 +459,8 @@ class Level:
             ent.display(win)
             if isinstance(ent, Destroyable):
                 ent.display_hp(win)
-        if self.selected_player:
-            # If player is waiting to move
-            state = self.selected_player.get_state()
-            if state == 1:
-                self.show_possible_actions(self.selected_player, win)
-            elif state == 4:
-                if self.possible_attacks:
-                    self.show_possible_attacks(self.selected_player, win)
-                elif self.possible_interactions:
-                    self.show_possible_interactions(win)
-        elif self.watched_ent:
+
+        if self.watched_ent:
             self.show_possible_actions(self.watched_ent, win)
 
         if self.animation:
@@ -458,6 +472,24 @@ class Level:
                 menu[0].display(win)
         if self.active_menu:
             self.active_menu.display(win)
+
+        # If the game hasn't yet started
+        if self.game_phase == 'I':
+            self.show_possible_placements(win)
+        else:
+            if self.selected_player:
+                # If player is waiting to move
+                state = self.selected_player.get_state()
+                if state == 1:
+                    self.show_possible_actions(self.selected_player, win)
+                elif state == 4:
+                    if self.possible_attacks:
+                        self.show_possible_attacks(self.selected_player, win)
+                    elif self.possible_interactions:
+                        self.show_possible_interactions(win)
+
+
+
 
     @staticmethod
     def determine_hp_color(hp, hp_max):
@@ -576,6 +608,23 @@ class Level:
                         path.insert(0, current_case)
         return path
 
+    def create_main_menu(self, pos):
+        # Transform pos tuple into rect
+        tile = pg.Rect(pos[0], pos[1], 1, 1)
+        entries = []
+
+        if self.game_phase == 'I':
+            entries.append([{'name': 'Start', 'id': START_ACTION_ID}])
+
+        for row in entries:
+            for entry in row:
+                entry['type'] = 'button'
+
+        # Avoid to create empty menu
+        if entries:
+            self.active_menu = InfoBox("Main Menu", MAIN_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
+                                   ACTION_MENU_WIDTH, el_rect_linked=tile)
+
     def create_player_menu(self):
         player_rect = self.selected_player.get_rect()
         entries = [[{'name': 'Inventory', 'id': INV_ACTION_ID}], [{'name': 'Equipment', 'id': EQUIPMENT_ACTION_ID}],
@@ -610,7 +659,7 @@ class Level:
             for entry in row:
                 entry['type'] = 'button'
 
-        self.active_menu = InfoBox("Select an action", MAIN_MENU_ID, "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
+        self.active_menu = InfoBox("Select an action", CHARACTER_MENU_ID, "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
 
     def interact(self, actor, target, target_pos):
         if isinstance(actor, Player):
@@ -621,7 +670,7 @@ class Level:
                     actor.set_pos(target_pos)
 
                     # Turn is finished
-                    self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
+                    self.execute_action(CHARACTER_MENU_ID, (WAIT_ACTION_ID, None))
             # Check if player try to open a chest
             elif isinstance(target, Chest):
                 if actor.has_free_space():
@@ -777,6 +826,12 @@ class Level:
         return entries
 
     def execute_main_menu_action(self, method_id, args):
+        if method_id == START_ACTION_ID:
+            self.game_phase = 'G'
+            self.active_menu = None
+            self.new_turn()
+
+    def execute_character_menu_action(self, method_id, args):
         # Attack action : Character has to choose a target
         if method_id == ATTACK_ACTION_ID:
             self.selected_player.choose_target()
@@ -1093,12 +1148,12 @@ class Level:
             else:
                 if len(args) >= 3 and args[2][0] == FINAL_ACTION:
                     # Turn is finished
-                    self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
+                    self.execute_action(CHARACTER_MENU_ID, (WAIT_ACTION_ID, None))
             return
 
         # Search from which menu came the action
-        if menu_type == MAIN_MENU_ID:
-            self.execute_main_menu_action(method_id, args)
+        if menu_type == CHARACTER_MENU_ID:
+            self.execute_character_menu_action(method_id, args)
         elif menu_type == INV_MENU_ID:
             self.execute_inv_action(method_id, args)
         elif menu_type == EQUIPMENT_MENU_ID:
@@ -1107,6 +1162,8 @@ class Level:
             self.execute_item_action(method_id, args)
         elif menu_type == STATUS_MENU_ID:
             self.execute_status_action(method_id, args)
+        elif menu_type == MAIN_MENU_ID:
+            self.execute_main_menu_action(method_id, args)
         else:
             print("Unknown menu... : " + menu_type)
 
@@ -1134,27 +1191,34 @@ class Level:
                     self.execute_action(self.active_menu.get_type(), self.active_menu.click(pos))
                 else:
                     if self.selected_player:
-                        state = self.selected_player.get_state()
-                        if state == 1:
-                            for move in self.possible_moves:
-                                if pg.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                    path = self.determine_path_to(move, self.possible_moves)
-                                    self.selected_player.set_move(path)
-                                    self.possible_moves = []
-                                    self.possible_attacks = []
-                                    return
-                        if state == 4:
-                            for attack in self.possible_attacks:
-                                if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                    ent = self.get_entity_on_case(attack)
-                                    self.duel(self.selected_player, ent)
-                                    # Turn is finished
-                                    self.execute_action(MAIN_MENU_ID, (WAIT_ACTION_ID, None))
-                                    return
-                            for interact in self.possible_interactions:
-                                if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                    ent = self.get_entity_on_case(interact)
-                                    self.interact(self.selected_player, ent, interact)
+                        if self.game_phase != 'I':
+                            state = self.selected_player.get_state()
+                            if state == 1:
+                                for move in self.possible_moves:
+                                    if pg.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                                        path = self.determine_path_to(move, self.possible_moves)
+                                        self.selected_player.set_move(path)
+                                        self.possible_moves = []
+                                        self.possible_attacks = []
+                                        return
+                            if state == 4:
+                                for attack in self.possible_attacks:
+                                    if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                                        ent = self.get_entity_on_case(attack)
+                                        self.duel(self.selected_player, ent)
+                                        # Turn is finished
+                                        self.execute_action(CHARACTER_MENU_ID, (WAIT_ACTION_ID, None))
+                                        return
+                                for interact in self.possible_interactions:
+                                    if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                                        ent = self.get_entity_on_case(interact)
+                                        self.interact(self.selected_player, ent, interact)
+                                        return
+                        else:
+                            # Initialization phase : player try to change the place of the selected character
+                            for tile in self.possible_placements:
+                                if pg.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                                    self.selected_player.set_initial_pos(tile)
                                     return
                     for player in self.players:
                         if player.is_on_pos(pos) and not player == self.selected_player and not player.turn_is_finished():
@@ -1163,6 +1227,14 @@ class Level:
                             self.possible_moves = self.get_possible_moves(player.get_pos(), player.get_max_moves())
                             self.possible_attacks = self.get_possible_attacks(self.possible_moves, 1, True)
                             return
+                    # Last case : player clicked on nothing interesting ; current player should be unselected if any,
+                    # else main menu should be open
+                    if self.selected_player:
+                        self.selected_player.set_selected(False)
+                        self.selected_player = None
+                    else:
+                        self.create_main_menu(pos)
+                    return
             # 3 is equals to right button
             if button == 3:
                 if self.selected_player:
@@ -1173,7 +1245,7 @@ class Level:
                         self.possible_moves = []
                     elif state == 3:
                         self.execute_action(self.active_menu.get_type, (CLOSE_ACTION_ID, ""))
-                        # Test if player was on main menu, in this case, current move should be cancelled
+                        # Test if player was on character's main menu, in this case, current move should be cancelled
                         if not self.active_menu:
                             self.selected_player.cancel_move()
                             self.selected_player.set_selected(False)
@@ -1181,14 +1253,15 @@ class Level:
                             self.possible_moves = []
                     # Want to cancel an interaction (not already performed)
                     elif state == 4 and (self.possible_interactions or self.possible_attacks):
-                        print(self.active_menu)
-                        print("Other menus : " + str(self.background_menus))
                         self.selected_player.cancel_interaction()
                         self.active_menu = self.background_menus.pop()[0]
                 if self.watched_ent:
                     self.watched_ent = None
                     self.possible_moves = []
                     self.possible_attacks = []
+                # Test if player is on main menu
+                if self.active_menu:
+                    self.execute_action(self.active_menu.get_type, (CLOSE_ACTION_ID, ""))
 
     def button_down(self, button, pos):
         # 3 is equals to right button
