@@ -15,7 +15,7 @@ Please, don't hesitate about suggesting ideas : it's my first " serious " game p
 
 ![Main screen with possible moves and attack](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/player_moves_and_attacks_avalaibles.png)
 ![Inventory menu](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/inventory_weapon_interaction_menu.png)
-![Status window](https://raw.ggithubusercontent.com/Grimmys/rpg_tactical_fantasy_game/master/screenshots/status_screen.png)
+![Status window](https://raw.githubusercontent.com/Grimmys/rpg_tactical_fantasy_game/blob/master/screenshots/status_screen.png)
 
 ## How to start the game
 
