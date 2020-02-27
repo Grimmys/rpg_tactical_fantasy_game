@@ -10,27 +10,56 @@
         <move> 5 </move>
         <sprite> base/human_male.png </sprite>
         <equipment>
-            <head_equipped>
-                head/full_gold.png
-            </head_equipped>
-            <body_equipped>
-                body/armor_mummy.png
-            </body_equipped>
-            <feet_equipped>
-                boots/middle_gold.png
-            </feet_equipped>
             <head>
-                armor/headgear/helmet_3_old.png
+                gold_helmet
             </head>
             <body>
-                armor/torso/gold_dragon_armor_new.png
+                gold_armor
             </body>
-            <gloves>
-                armor/hands/glove_3_new.png
-            </gloves>
             <feet>
-                armor/feet/boots_iron_2.png
+                gold_boots
             </feet>
         </equipment>
+        <inventory>
+                <item>
+                    life_potion
+                </item>
+                <item>
+                    key
+                </item>
+                <item>
+                    club
+                </item>
+        </inventory>
     </john>
+    <archer>
+        <name> Archer </name>
+        <class> ranger </class>
+        <initStrength> 1 </initStrength>
+        <initDef> 1 </initDef>
+        <initRes> 0 </initRes>
+        <initHP> 8 </initHP>
+        <move> 5 </move>
+        <sprite> base/human_female.png </sprite>
+        <complementSprite> legs/pants_short_brown.png </complementSprite>
+        <equipment>
+            <head>
+                plumed_helmet
+            </head>
+            <body>
+                chainmail
+            </body>
+            <feet>
+                brown_boots
+            </feet>
+        </equipment>
+        <inventory>
+                <item>
+                    life_potion
+                </item>
+                <item>
+                    basic_bow
+                </item>
+        </inventory>
+    </archer>
 </characters>

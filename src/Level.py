@@ -372,16 +372,17 @@ class Level:
             body_part = it_tree_root.find('bodypart').text.strip()
             defense = int(it_tree_root.find('def').text.strip())
             weight = int(it_tree_root.find('weight').text.strip())
-            equipped_sprite = 'imgs/dungeon_crawl/player/' + body_part + '/' + it_tree_root.find(
+            equipped_sprite = 'imgs/dungeon_crawl/player/' + it_tree_root.find(
                 'equipped_sprite').text.strip()
             item = Equipment(name, sprite, info, equipped_sprite, body_part, defense, 0, 0, weight)
         elif category == 'weapon':
             power = int(it_tree_root.find('power').text.strip())
             weight = int(it_tree_root.find('weight').text.strip())
             fragility = int(it_tree_root.find('fragility').text.strip())
+            w_range = int(it_tree_root.find('range').text.strip())
             equipped_sprite = 'imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
                 'equipped_sprite').text.strip()
-            item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, range)
+            item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, w_range)
         elif category == 'key':
             item = Key(name, sprite, info)
         elif category == 'spellbook':
@@ -557,6 +558,8 @@ class Level:
                         if case_pos in possible_moves:
                             tiles.append(ent.get_pos())
 
+        print(tiles)
+
         return set(tiles)
 
     def case_is_empty(self, case):
@@ -633,7 +636,12 @@ class Level:
                 if mission.pos_is_valid(player_pos):
                     entries.insert(0, [{'name': 'Take', 'id': TAKE_ACTION_ID}])
 
-        if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, 1, True):
+        # Check if player could attack something, according to weapon range
+        weapon = self.selected_player.get_weapon()
+        w_range = 1
+        if weapon:
+            w_range = weapon.get_range()
+        if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, w_range, True):
             entries.insert(0, [{'name': 'Attack', 'id': ATTACK_ACTION_ID}])
 
         for row in entries:
@@ -822,7 +830,11 @@ class Level:
         # Attack action : Character has to choose a target
         if method_id == ATTACK_ACTION_ID:
             self.selected_player.choose_target()
-            self.possible_attacks = self.get_possible_attacks([self.selected_player.get_pos()], 1, True)
+            w = self.selected_player.get_weapon()
+            w_range = 1
+            if w:
+                w_range = self.selected_player.get_weapon().get_range()
+            self.possible_attacks = self.get_possible_attacks([self.selected_player.get_pos()], w_range, True)
             self.background_menus.append([self.active_menu, False])
             self.active_menu = None
         # Item action : Character's inventory is opened
@@ -1210,6 +1222,11 @@ class Level:
                             # Initialization phase : player try to change the place of the selected character
                             for tile in self.possible_placements:
                                 if pg.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                                    # Test if a character is on the tile, in this case, characters are swapped
+                                    ent = self.get_entity_on_case(tile)
+                                    if ent:
+                                        ent.set_initial_pos(self.selected_player.get_pos())
+
                                     self.selected_player.set_initial_pos(tile)
                                     return
                     for player in self.players:
@@ -1217,13 +1234,18 @@ class Level:
                             player.set_selected(True)
                             self.selected_player = player
                             self.possible_moves = self.get_possible_moves(player.get_pos(), player.get_max_moves())
-                            self.possible_attacks = self.get_possible_attacks(self.possible_moves, 1, True)
+                            w = self.selected_player.get_weapon()
+                            w_range = 1
+                            if w:
+                                w_range = w.get_range()
+                            self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
                             return
                     # Last case : player clicked on nothing interesting ; current player should be unselected if any,
                     # else main menu should be open
                     if self.selected_player:
-                        self.selected_player.set_selected(False)
-                        self.selected_player = None
+                        if self.selected_player.get_state() == 1:
+                            self.selected_player.set_selected(False)
+                            self.selected_player = None
                     else:
                         self.create_main_menu(pos)
                     return

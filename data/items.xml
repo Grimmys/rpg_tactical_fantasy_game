@@ -113,10 +113,39 @@
                     club_slant.png
                 </equipped_sprite>
             </club>
+            <basic_bow>
+                <name>
+                    Wooden Bow
+                </name>
+                <sprite>
+                    weapon/ranged/bow_1.png
+                </sprite>
+                <info>
+                    A simple wooden bow, effective at a short distance.
+                </info>
+                <category>
+                    weapon
+                </category>
+                 <power>
+                    1
+                </power>
+                <range>
+                    2
+                </range>
+                <fragility>
+                    10
+                </fragility>
+                <weight>
+                    2
+                </weight>
+                <equipped_sprite>
+                    bow_2.png
+                </equipped_sprite>
+            </basic_bow>
         </weapons>
         <plumed_helmet>
             <name>
-                Plumed helmet
+                Plumed Helmet
             </name>
             <sprite>
                 armor/headgear/plumed_helmet.png
@@ -137,8 +166,139 @@
                 2
             </weight>
             <equipped_sprite>
-                helm_plume.png
+                head/helm_plume.png
             </equipped_sprite>
         </plumed_helmet>
+        <gold_helmet>
+            <name>
+                Gold Helmet
+            </name>
+            <sprite>
+                armor/headgear/helmet_3_old.png
+            </sprite>
+            <info>
+                A full gold helmet... Seems really nice.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                head
+            </bodypart>
+            <def>
+                2
+            </def>
+            <weight>
+                4
+            </weight>
+            <equipped_sprite>
+                head/full_gold.png
+            </equipped_sprite>
+        </gold_helmet>
+        <chainmail>
+            <name>
+                Chainmail
+            </name>
+            <sprite>
+                armor/torso/chain_mail_3.png
+            </sprite>
+            <info>
+                A basic chainmail... Useful to have a good defense
+                and keep an average speed.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                body
+            </bodypart>
+            <def>
+                3
+            </def>
+            <weight>
+                4
+            </weight>
+            <equipped_sprite>
+                body/chainmail.png
+            </equipped_sprite>
+        </chainmail>
+        <gold_armor>
+            <name>
+                Gold Armor
+            </name>
+            <sprite>
+                armor/torso/gold_dragon_armor_new.png
+            </sprite>
+            <info>
+                An armor inspired from a gold dragon.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                body
+            </bodypart>
+            <def>
+                5
+            </def>
+            <weight>
+                6
+            </weight>
+            <equipped_sprite>
+                body/armor_mummy.png
+            </equipped_sprite>
+        </gold_armor>
+         <brown_boots>
+            <name>
+                Brown Boots
+            </name>
+            <sprite>
+                armor/feet/boots_1_brown_new.png
+            </sprite>
+            <info>
+                Brown boots, most basic boots you can find.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                feet
+            </bodypart>
+            <def>
+                1
+            </def>
+            <weight>
+                1
+            </weight>
+            <equipped_sprite>
+                boots/short_brown_2.png
+            </equipped_sprite>
+        </brown_boots>
+        <gold_boots>
+            <name>
+                Gold Boots
+            </name>
+            <sprite>
+                armor/feet/boots_iron_2.png
+            </sprite>
+            <info>
+                Beautiful boots with golden style.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                feet
+            </bodypart>
+            <def>
+                2
+            </def>
+            <weight>
+                4
+            </weight>
+            <equipped_sprite>
+                boots/middle_gold.png
+            </equipped_sprite>
+        </gold_boots>
     </equipments>
 </items>

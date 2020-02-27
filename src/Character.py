@@ -4,8 +4,9 @@ import random as rd
 
 
 class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl)
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl,
+                 compl_sprite=None):
+        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl, compl_sprite)
         self.equipments = equipments
         self.classes = classes
 
@@ -29,12 +30,16 @@ class Character(Movable):
 
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):
-            print("One up")
             if self.classes[0] == 'warrior':
                 self.hp_max += rd.randrange(0, 5)  # Gain between 0 and 4
                 self.defense += rd.randrange(0, 3)  # Gain between 0 and 2
                 self.res += rd.randrange(0, 2)  # Gain between 0 and 1
                 self.strength += rd.randrange(0, 3)  # Gain between 0 and 2
+            elif self.classes[0] == 'ranger':
+                self.hp_max += rd.randrange(0, 5)  # Gain between 0 and 4
+                self.defense += rd.randrange(0, 4)  # Gain between 0 and 3
+                self.res += rd.randrange(0, 2)  # Gain between 0 and 1
+                self.strength += rd.randrange(0, 2)  # Gain between 0 and 1
             else:
                 print("Error : Invalid class")
 

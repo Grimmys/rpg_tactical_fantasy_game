@@ -39,43 +39,42 @@ def show_fps(win, inner_clock, font):
 def init_player(name):
     # -- Reading of the XML file
     tree = etree.parse("data/characters.xml").getroot()
-    player = tree.xpath(name)[0]
-    name = player.find('name').text.strip()
-    player_class = player.find('class').text.strip()
-    lvl = int(player.find('lvl').text.strip())
-    if not lvl:
+    player_t = tree.xpath(name)[0]
+    name = player_t.find('name').text.strip()
+    player_class = player_t.find('class').text.strip()
+    lvl = player_t.find('lvl')
+    if lvl is None:
         # If lvl is not informed, default value is assumes to be 1
         lvl = 1
-    defense = int(player.find('initDef').text.strip())
-    res = int(player.find('initRes').text.strip())
-    hp = int(player.find('initHP').text.strip())
-    strength = int(player.find('initStrength').text.strip())
-    move = int(player.find('move').text.strip())
-    sprite = 'imgs/dungeon_crawl/player/' + player.find('sprite').text.strip()
+    else:
+        lvl = int(lvl.text.strip())
+    defense = int(player_t.find('initDef').text.strip())
+    res = int(player_t.find('initRes').text.strip())
+    hp = int(player_t.find('initHP').text.strip())
+    strength = int(player_t.find('initStrength').text.strip())
+    move = int(player_t.find('move').text.strip())
+    sprite = 'imgs/dungeon_crawl/player/' + player_t.find('sprite').text.strip()
+    compl_sprite = player_t.find('complementSprite')
+    if compl_sprite is not None:
+        compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
 
-    head = 'imgs/dungeon_crawl/item/' + player.find('equipment/head').text.strip()
-    body = 'imgs/dungeon_crawl/item/' + player.find('equipment/body').text.strip()
-    feet = 'imgs/dungeon_crawl/item/' + player.find('equipment/feet').text.strip()
-    head_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/head_equipped').text.strip()
-    body_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/body_equipped').text.strip()
-    feet_equipped = 'imgs/dungeon_crawl/player/' + player.find('equipment/feet_equipped').text.strip()
-    equipments = [
-        Equipment('Gold Helmet', head, "", head_equipped, "head", 0, 0, 0, 0),
-        Equipment('Gold Armor', body, "", body_equipped, "body", 0, 0, 0, 0),
-        Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
-    ]
+    equipment = player_t.find('equipment')
+    equipments = []
+    for eq in equipment.findall('*'):
+        equipments.append(Level.parse_item_file(eq.text.strip()))
 
     # Creating player instance
-    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, lvl)
+    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, lvl,
+                    compl_sprite=compl_sprite)
 
     # Up stats according to current lvl
     player.stats_up(lvl - 1)
     # Restore hp due to lvl up
     player.healed()
 
-    items_id = ['life_potion', 'key', 'club']
-    for name in items_id:
-        item = Level.parse_item_file(name)
+    inventory = player_t.find('inventory')
+    for it in inventory.findall('item'):
+        item = Level.parse_item_file(it.text.strip())
         player.set_item(item)
 
     return player
@@ -117,7 +116,7 @@ def new_game():
 
     # Init player's team (one character at beginning)
 
-    team = [init_player("john")]
+    team = [init_player("john"), init_player("archer")]
 
     # Init the first level
     level = load_level("test", team)

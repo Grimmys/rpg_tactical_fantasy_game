@@ -10,6 +10,9 @@ class Weapon(Equipment):
     def get_power(self):
         return self.atk
 
+    def get_range(self):
+        return self.range
+
     def used(self):
         self.durability -= 1
         return self.durability

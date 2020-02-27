@@ -1,3 +1,5 @@
+import pygame as pg
+from src.constants import TILE_SIZE
 from src.Destroyable import Destroyable
 from src.Key import Key
 
@@ -9,7 +11,7 @@ NB_ITEMS_MAX = 8
 class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl=1):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl=1, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         self.max_move = max_move
         self.on_move = []
@@ -22,6 +24,9 @@ class Movable(Destroyable):
         self.state = 0
         self.items = []
         self.nb_items_max = NB_ITEMS_MAX
+        if compl_sprite:
+            compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+            self.sprite.blit(compl, (0, 0))
 
     def get_strength(self):
         return self.strength
