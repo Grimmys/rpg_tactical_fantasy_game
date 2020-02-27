@@ -41,7 +41,18 @@ def init_player(name):
     tree = etree.parse("data/characters.xml").getroot()
     player = tree.xpath(name)[0]
     name = player.find('name').text.strip()
+    player_class = player.find('class').text.strip()
+    lvl = int(player.find('lvl').text.strip())
+    if not lvl:
+        # If lvl is not informed, default value is assumes to be 1
+        lvl = 1
+    defense = int(player.find('initDef').text.strip())
+    res = int(player.find('initRes').text.strip())
+    hp = int(player.find('initHP').text.strip())
+    strength = int(player.find('initStrength').text.strip())
+    move = int(player.find('move').text.strip())
     sprite = 'imgs/dungeon_crawl/player/' + player.find('sprite').text.strip()
+
     head = 'imgs/dungeon_crawl/item/' + player.find('equipment/head').text.strip()
     body = 'imgs/dungeon_crawl/item/' + player.find('equipment/body').text.strip()
     feet = 'imgs/dungeon_crawl/item/' + player.find('equipment/feet').text.strip()
@@ -53,15 +64,14 @@ def init_player(name):
         Equipment('Gold Armor', body, "", body_equipped, "body", 0, 0, 0, 0),
         Equipment('Gold Boots', feet, "", feet_equipped, "feet", 0, 0, 0, 0)
     ]
-    lvl = 3
-    defense = 0
-    res = 0
-    hp = 10
-    move = 5
-    strength = 1
 
     # Creating player instance
-    player = Player(name, sprite, hp, defense, res, move, strength, ['warrior'], equipments, lvl)
+    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, lvl)
+
+    # Up stats according to current lvl
+    player.stats_up(lvl - 1)
+    # Restore hp due to lvl up
+    player.healed()
 
     items_id = ['life_potion', 'key', 'club']
     for name in items_id:

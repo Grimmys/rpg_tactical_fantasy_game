@@ -56,7 +56,11 @@ class Destroyable(Entity):
         self.hp -= damages
         return self.hp > 0
 
-    def healed(self, value):
-        hp_recovered = value if self.hp + value <= self.hp_max else self.hp_max - self.hp
+    def healed(self, value=None):
+        if not value:
+            # Full heal
+            hp_recovered = self.hp_max - self.hp
+        else:
+            hp_recovered = value if self.hp + value <= self.hp_max else self.hp_max - self.hp
         self.hp += hp_recovered
         return hp_recovered

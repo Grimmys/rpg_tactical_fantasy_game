@@ -1,5 +1,7 @@
 from src.Movable import Movable
 
+import random as rd
+
 
 class Character(Movable):
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl):
@@ -11,6 +13,30 @@ class Character(Movable):
         Movable.display(self, screen)
         for eq in self.equipments:
             eq.display(screen, self.pos, True)
+
+    def lvl_up(self):
+        Movable.lvl_up()
+        self.stats_up()
+
+    def attack(self, ent):
+        damages = self.strength
+        weapon = self.get_weapon()
+        if weapon:
+            damages += weapon.get_power()
+            if weapon.used() == 0:
+                self.remove_equipment(weapon)
+        return damages
+
+    def stats_up(self, nb_lvl=1):
+        for i in range(nb_lvl):
+            print("One up")
+            if self.classes[0] == 'warrior':
+                self.hp_max += rd.randrange(0, 5)  # Gain between 0 and 4
+                self.defense += rd.randrange(0, 3)  # Gain between 0 and 2
+                self.res += rd.randrange(0, 2)  # Gain between 0 and 1
+                self.strength += rd.randrange(0, 3)  # Gain between 0 and 2
+            else:
+                print("Error : Invalid class")
 
     def get_weapon(self):
         for eq in self.equipments:
@@ -61,12 +87,3 @@ class Character(Movable):
         for index, equip in enumerate(self.equipments):
             if equip.get_id() == id:
                 return self.equipments.pop(index)
-
-    def attack(self, ent):
-        damages = self.strength
-        weapon = self.get_weapon()
-        if weapon:
-            damages += weapon.get_power()
-            if weapon.used() == 0:
-                self.remove_equipment(weapon)
-        return damages

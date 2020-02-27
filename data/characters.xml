@@ -1,11 +1,14 @@
 <characters>
     <john>
-        <name>
-            John
-        </name>
-        <sprite>
-            base/human_male.png
-        </sprite>
+        <name> John </name>
+        <class> warrior </class>
+        <lvl> 3 </lvl>
+        <initStrength> 1 </initStrength>
+        <initDef> 0 </initDef>
+        <initRes> 0 </initRes>
+        <initHP> 10 </initHP>
+        <move> 5 </move>
+        <sprite> base/human_male.png </sprite>
         <equipment>
             <head_equipped>
                 head/full_gold.png
