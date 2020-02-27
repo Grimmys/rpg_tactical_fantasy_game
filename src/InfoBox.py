@@ -159,7 +159,8 @@ class InfoBox:
     def update_content(self, entries):
         self.elements = InfoBox.init_elements(entries, self.name, self.size[0])
         self.determine_sizepos(self.close_button)
-        self.determine_elements_pos()
+        if self.pos:
+            self.determine_elements_pos()
         self.buttons = self.get_buttons()
 
     def display(self, win):

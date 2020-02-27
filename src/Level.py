@@ -2,6 +2,7 @@ import pygame as pg
 from lxml import etree
 import random
 
+from src.constants import *
 from src.Destroyable import Destroyable
 from src.Key import Key
 from src.Equipment import Equipment
@@ -23,24 +24,6 @@ from src.Sidebar import Sidebar
 from src.Animation import Animation
 from src.Mission import Mission
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREY = (128, 128, 128)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-MARINE_BLUE = (34, 61, 200)
-ORANGE = (255, 140, 0)
-YELLOW = (143, 143, 5)
-LIGHT_YELLOW = (255, 255, 0)
-GOLD = (200, 172, 34)
-BROWN = (139, 69, 19)
-MAROON = (128, 0, 0)
-BROWN_RED = (165, 42, 42)
-TURQUOISE = (64, 224, 208)
-
-
-TILE_SIZE = 48
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
@@ -66,8 +49,6 @@ INTERACTION_OPACITY = 100
 BUTTON_MENU_SIZE = (150, 30)
 CLOSE_BUTTON_SIZE = (150, 50)
 ITEM_BUTTON_MENU_SIZE = (180, TILE_SIZE + 30)
-MENU_WIDTH = TILE_SIZE * 20
-MENU_HEIGHT = 100
 
 ACTION_MENU_WIDTH = 200
 ITEM_MENU_WIDTH = 550
@@ -90,12 +71,16 @@ NEW_TURN_TEXT_POS = (NEW_TURN.get_width() / 2 - NEW_TURN_TEXT.get_width() / 2, N
 VICTORY = NEW_TURN.copy()
 VICTORY_POS = NEW_TURN_POS
 VICTORY_TEXT = TITLE_FONT.render("VICTORY !", 1, WHITE)
-VICTORY_TEXT_POS = (VICTORY.get_width() / 2 - VICTORY_TEXT.get_width() / 2, VICTORY.get_height() / 2 - VICTORY_TEXT.get_height() / 2)
+VICTORY_TEXT_POS = (VICTORY.get_width() / 2 - VICTORY_TEXT.get_width() / 2,
+                    VICTORY.get_height() / 2 - VICTORY_TEXT.get_height() / 2)
+VICTORY.blit(VICTORY_TEXT, VICTORY_TEXT_POS)
 
 DEFEAT = NEW_TURN.copy()
 DEFEAT_POS = NEW_TURN_POS
 DEFEAT_TEXT = TITLE_FONT.render("DEFEAT !", 1, WHITE)
-DEFEAT_TEXT_POS = (DEFEAT.get_width() / 2 - DEFEAT_TEXT.get_width() / 2, DEFEAT.get_height() / 2 - DEFEAT_TEXT.get_height() / 2)
+DEFEAT_TEXT_POS = (DEFEAT.get_width() / 2 - DEFEAT_TEXT.get_width() / 2,
+                   DEFEAT.get_height() / 2 - DEFEAT_TEXT.get_height() / 2)
+DEFEAT.blit(DEFEAT_TEXT, DEFEAT_TEXT_POS)
 
 UNFINAL_ACTION = 1
 FINAL_ACTION = 2
@@ -176,9 +161,6 @@ class Level:
 
         self.players = players
 
-        # Set initial pos of unique player (temp)
-        #self.players[0].set_initial_pos((2 * TILE_SIZE, 2 * TILE_SIZE))
-
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
 
@@ -235,16 +217,16 @@ class Level:
         '''
         self.game_phase = 'I'
 
-        self.item_infos = {}
-        self.selected_item = None
-        self.turn = 0
-        self.animation = None
         '''Possible turn :
                 - P : Player's turn
                 - O : Opponent's turn
                 - A : Ally's turn
         '''
         self.side_turn = 'P'
+
+        self.selected_item = None
+        self.turn = 0
+        self.animation = None
         self.selected_player = None
         self.watched_ent = None
         self.possible_moves = []
@@ -411,24 +393,22 @@ class Level:
     def is_ended(self):
         return not self.animation and self.game_phase == 'F'
 
+    def end_level(self, anim_surf, pos):
+        self.active_menu = None
+        self.background_menus = []
+        self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
+        self.game_phase = 'F'
+
     def update_state(self):
         if self.animation:
             return
-        if self.victory:
-            self.active_menu = None
-            self.background_menus = []
-            VICTORY.blit(VICTORY_TEXT, VICTORY_TEXT_POS)
-            self.animation = Animation([{'sprite': VICTORY, 'pos': DEFEAT_POS}], 180)
-            self.game_phase = 'F'
-            return
         if not self.players:
             self.defeat = True
-        if self.defeat:
-            self.active_menu = None
-            self.background_menus = []
-            DEFEAT.blit(DEFEAT_TEXT, DEFEAT_TEXT_POS)
-            self.animation = Animation([{'sprite': DEFEAT, 'pos': VICTORY_POS}], 180)
-            self.game_phase = 'F'
+        if self.victory or self.defeat:
+            if self.victory:
+                self.end_level(VICTORY, VICTORY_POS)
+            else:
+                self.end_level(DEFEAT, DEFEAT_POS)
             return
         if self.selected_player:
             if self.selected_player.get_move():
@@ -436,6 +416,7 @@ class Level:
             if self.selected_player.get_state() == 3 and not self.active_menu:
                 self.create_player_menu()
         if self.side_turn == 'P':
+            # DO a for else ?
             turn_finished = True
             for player in self.players:
                 if not player.turn_is_finished():
@@ -533,7 +514,7 @@ class Level:
                 case_x = pos[0] + (x * TILE_SIZE)
                 case_y = pos[1] + (y * TILE_SIZE)
                 case_pos = (case_x, case_y)
-                if case_pos > (0, 0) and case_pos < (MAP_WIDTH, MAP_HEIGHT):
+                if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
                     case = self.get_entity_on_case(case_pos)
                     tiles.append(case)
         return tiles
@@ -584,7 +565,7 @@ class Level:
         for ent in self.entities:
             pos = ent.get_pos()
             ent_cases.append(pos)
-        return case > (0, 0) and case < (MAP_WIDTH, MAP_HEIGHT) and case not in ent_cases and case not in self.obstacles
+        return (0, 0) < case < (MAP_WIDTH, MAP_HEIGHT) and case not in ent_cases and case not in self.obstacles
 
     def get_entity_on_case(self, case):
         # Check all entities
@@ -659,7 +640,8 @@ class Level:
             for entry in row:
                 entry['type'] = 'button'
 
-        self.active_menu = InfoBox("Select an action", CHARACTER_MENU_ID, "imgs/interface/PopUpMenu.png", entries, ACTION_MENU_WIDTH, el_rect_linked=player_rect)
+        self.active_menu = InfoBox("Select an action", CHARACTER_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
+                                   ACTION_MENU_WIDTH, el_rect_linked=player_rect)
 
     def interact(self, actor, target, target_pos):
         if isinstance(actor, Player):
@@ -686,14 +668,16 @@ class Level:
                     entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True}
 
                     entries = [[entry_item],
-                               [{'type': 'text', 'text': "Item has been added to your inventory", 'font': ITEM_DESC_FONT}]]
+                               [{'type': 'text', 'text': "Item has been added to your inventory",
+                                 'font': ITEM_DESC_FONT}]]
                     self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                                entries, ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
                     # No more menu : turn is finished
                     self.background_menus = []
                 else:
-                    self.active_menu = InfoBox("You have no free space in your inventory.", "", "imgs/interface/PopUpMenu.png",
-                                               [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                    self.active_menu = InfoBox("You have no free space in your inventory.", "",
+                                               "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
+                                               close_button=UNFINAL_ACTION)
             # Check if player try to use a portal
             elif isinstance(target, Portal):
                 new_based_pos = target.get_linked_portal().get_pos()
@@ -801,9 +785,11 @@ class Level:
                     {'type': 'text', 'text': str(player.get_lvl())}],
                    [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': str(xp) + ' / ' + str(xp_next_level)}],
-                   [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT, 'margin': (10, 0, 10, 0)}],
+                   [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT,
+                     'margin': (10, 0, 10, 0)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
-                    {'type': 'text', 'text': str(hp) + ' / ' + str(hp_max), 'color': Level.determine_hp_color(hp, hp_max)}],
+                    {'type': 'text', 'text': str(hp) + ' / ' + str(hp_max),
+                     'color': Level.determine_hp_color(hp, hp_max)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
                     {'type': 'text', 'text': str(player.get_max_moves())}],
                    [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
@@ -821,7 +807,8 @@ class Level:
             entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
 
         for alt in alts:
-            entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': INFO_ALTERATION_ACTION_ID, 'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
+            entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': INFO_ALTERATION_ACTION_ID,
+                             'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
 
         return entries
 
@@ -859,15 +846,16 @@ class Level:
             equipments = self.selected_player.get_equipments()
             entries = Level.create_equipment_entries(equipments)
 
-            self.active_menu = InfoBox("Equipment", EQUIPMENT_MENU_ID, "imgs/interface/PopUpMenu.png", entries, EQUIPMENT_MENU_WIDTH, close_button=True)
+            self.active_menu = InfoBox("Equipment", EQUIPMENT_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
+                                       EQUIPMENT_MENU_WIDTH, close_button=True)
         # Display player's status
         elif method_id == STATUS_ACTION_ID:
             self.background_menus.append([self.active_menu, True])
 
             entries = Level.create_status_entries(self.selected_player)
 
-            self.active_menu = InfoBox("Status", STATUS_MENU_ID, "imgs/interface/PopUpMenu.png", entries, STATUS_MENU_WIDTH,
-                                       close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox("Status", STATUS_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
+                                       STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Wait action : Given Character's turn is finished
         elif method_id == WAIT_ACTION_ID:
             self.selected_item = None
@@ -1009,7 +997,8 @@ class Level:
             description = self.selected_item.get_description()
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries, ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Remove an item
         elif method_id == THROW_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
@@ -1034,8 +1023,10 @@ class Level:
             # Update the inventory menu (i.e. first menu backward)
             self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
 
-            remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.', 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries, ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.', 'font': ITEM_DESC_FONT,
+                                    'margin': (20, 0, 20, 0)}]]
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries,
+                                       ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Use an item from the inventory
         elif method_id == USE_ITEM_ACTION_ID:
             self.background_menus.append([self.active_menu, False])
@@ -1131,7 +1122,8 @@ class Level:
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
                        [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT, 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
-            self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries, STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+                                       STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
     def execute_action(self, menu_type, action):
         if not action:

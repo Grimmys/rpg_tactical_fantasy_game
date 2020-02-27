@@ -40,7 +40,6 @@ def init_player(name):
     # -- Reading of the XML file
     tree = etree.parse("data/characters.xml").getroot()
     player = tree.xpath(name)[0]
-    print(player)
     name = player.find('name').text.strip()
     sprite = 'imgs/dungeon_crawl/player/' + player.find('sprite').text.strip()
     head = 'imgs/dungeon_crawl/item/' + player.find('equipment/head').text.strip()
@@ -133,6 +132,9 @@ def new_game():
         show_fps(screen, clock, fps_font)
         pg.display.update()
         clock.tick(120)
+
+    # Restore default window
+    pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
 
 def load_game():
