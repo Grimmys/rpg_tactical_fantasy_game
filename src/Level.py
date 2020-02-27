@@ -94,6 +94,8 @@ CLOSE_ACTION_ID = -1
 MAIN_MENU_ID = 0
 #   - Start game
 START_ACTION_ID = 0
+#   - End current turn
+END_TURN_ACTION_ID = 1
 
 # > Main character menu
 CHARACTER_MENU_ID = 1
@@ -379,7 +381,7 @@ class Level:
             power = int(it_tree_root.find('power').text.strip())
             weight = int(it_tree_root.find('weight').text.strip())
             fragility = int(it_tree_root.find('fragility').text.strip())
-            w_range = int(it_tree_root.find('range').text.strip())
+            w_range = [int(it_tree_root.find('range').text.strip())]
             equipped_sprite = 'imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
                 'equipped_sprite').text.strip()
             item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, w_range)
@@ -549,16 +551,14 @@ class Level:
 
         for ent in ents:
             pos = ent.get_pos()
-            for i in range(1, reach + 1):
-                for x in range(-1, i + 1):
+            for i in reach:
+                for x in range(-i, i + 1):
                     for y in {i - abs(x), -i + abs(x)}:
                         case_x = pos[0] + (x * TILE_SIZE)
                         case_y = pos[1] + (y * TILE_SIZE)
                         case_pos = (case_x, case_y)
                         if case_pos in possible_moves:
                             tiles.append(ent.get_pos())
-
-        print(tiles)
 
         return set(tiles)
 
@@ -599,6 +599,8 @@ class Level:
 
         if self.game_phase == 'I':
             entries.append([{'name': 'Start', 'id': START_ACTION_ID}])
+        elif self.game_phase == 'G':
+            entries.append([{'name': 'End Turn', 'id': END_TURN_ACTION_ID}])
 
         for row in entries:
             for entry in row:
@@ -638,7 +640,7 @@ class Level:
 
         # Check if player could attack something, according to weapon range
         weapon = self.selected_player.get_weapon()
-        w_range = 1
+        w_range = [1]
         if weapon:
             w_range = weapon.get_range()
         if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, w_range, True):
@@ -739,7 +741,7 @@ class Level:
             foe.move()
         elif foe.get_state() == 2:
             # Foe try to attack someone
-            possible_attacks = self.get_possible_attacks([foe.get_pos()], 1, False)
+            possible_attacks = self.get_possible_attacks([foe.get_pos()], [1], False)
             if possible_attacks:
                 ent_attacked = self.get_entity_on_case(random.choice(list(possible_attacks)))
                 self.duel(foe, ent_attacked)
@@ -825,13 +827,20 @@ class Level:
             self.game_phase = 'G'
             self.active_menu = None
             self.new_turn()
+        elif method_id == END_TURN_ACTION_ID:
+            self.active_menu = None
+            self.side_turn = 'O'
+            self.begin_turn()
+        else:
+            print("Unknown action in main menu... : " + method_id)
+
 
     def execute_character_menu_action(self, method_id, args):
         # Attack action : Character has to choose a target
         if method_id == ATTACK_ACTION_ID:
             self.selected_player.choose_target()
             w = self.selected_player.get_weapon()
-            w_range = 1
+            w_range = [1]
             if w:
                 w_range = self.selected_player.get_weapon().get_range()
             self.possible_attacks = self.get_possible_attacks([self.selected_player.get_pos()], w_range, True)
@@ -1235,7 +1244,7 @@ class Level:
                             self.selected_player = player
                             self.possible_moves = self.get_possible_moves(player.get_pos(), player.get_max_moves())
                             w = self.selected_player.get_weapon()
-                            w_range = 1
+                            w_range = [1]
                             if w:
                                 w_range = w.get_range()
                             self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
@@ -1286,8 +1295,16 @@ class Level:
                         pos = ent.get_pos()
                         self.watched_ent = ent
                         self.possible_moves = self.get_possible_moves(pos, ent.get_max_moves())
+
+                        w_range = [1]
+                        # TEMPO : Foes don't currently have weapon so it's impossible to test their range
+                        if isinstance(self.watched_ent, Character):
+                            w = self.watched_ent.get_weapon()
+                            if w:
+                                w_range = w.get_range()
+
                         self.possible_attacks = self.get_possible_attacks(self.possible_moves,
-                                                                          1, isinstance(ent, Character))
+                                                                          w_range, isinstance(ent, Character))
                         return
 
     def motion(self, pos):

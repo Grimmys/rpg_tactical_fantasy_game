@@ -219,7 +219,7 @@
                 4
             </weight>
             <equipped_sprite>
-                body/chainmail.png
+                body/chainmail_3.png
             </equipped_sprite>
         </chainmail>
         <gold_armor>
