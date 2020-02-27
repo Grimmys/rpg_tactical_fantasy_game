@@ -35,12 +35,36 @@ def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
 
+def play(screen, level):
+    end = False
+    while not (level.is_ended() or end):
+        for e in pg.event.get():
+            if e.type == pg.QUIT:
+                end = True
+                exit_game()
+            elif e.type == pg.MOUSEBUTTONUP:
+                if e.button == 1 or e.button == 3:
+                    level.click(e.button, e.pos)
+            elif e.type == pg.MOUSEMOTION:
+                level.motion(e.pos)
+            elif e.type == pg.MOUSEBUTTONDOWN:
+                if e.button == 1 or e.button == 3:
+                    level.button_down(e.button, e.pos)
+        level.update_state()
+        screen.fill(GREY)
+        update_screen_display(screen, level)
+        show_fps(screen, clock, fps_font)
+        pg.display.update()
+        clock.tick(120)
+
+    # Restore default window
+    pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+
 
 def init_player(name):
     # -- Reading of the XML file
     tree = etree.parse("data/characters.xml").getroot()
     player_t = tree.xpath(name)[0]
-    name = player_t.find('name').text.strip()
     player_class = player_t.find('class').text.strip()
     lvl = player_t.find('lvl')
     if lvl is None:
@@ -121,33 +145,67 @@ def new_game():
     # Init the first level
     level = load_level("test", team)
 
-    end = False
-    while not (level.is_ended() or end):
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                end = True
-                exit_game()
-            elif e.type == pg.MOUSEBUTTONUP:
-                if e.button == 1 or e.button == 3:
-                    level.click(e.button, e.pos)
-            elif e.type == pg.MOUSEMOTION:
-                level.motion(e.pos)
-            elif e.type == pg.MOUSEBUTTONDOWN:
-                if e.button == 1 or e.button == 3:
-                    level.button_down(e.button, e.pos)
-        level.update_state()
-        screen.fill(GREY)
-        update_screen_display(screen, level)
-        show_fps(screen, clock, fps_font)
-        pg.display.update()
-        clock.tick(120)
-
-    # Restore default window
-    pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+    play(screen, level)
 
 
 def load_game():
-    print("Load game !")
+    # Test if there is a current saved game
+    save = open("saves/main_save.xml", "r")
+    if save:
+        tree_root = etree.parse("saves/main_save.xml").getroot()
+        level_name = tree_root.find("level/name").text.strip()
+        game_status = tree_root.find("level/phase").text.strip()
+        team = []
+        for player in tree_root.findall("team/player"):
+            name = player.find("name").text.strip()
+            level = int(player.find("level").text.strip())
+            p_class = player.find("class").text.strip()
+            exp = int(player.find("exp").text.strip())
+            hp = int(player.find("hp").text.strip())
+            strength = int(player.find("strength").text.strip())
+            defense = int(player.find("defense").text.strip())
+            res = int(player.find("res").text.strip())
+            move = int(player.find("move").text.strip())
+            currentHp = int(player.find("currentHp").text.strip())
+            pos = (int(player.find("pos/x").text.strip()),
+                   int(player.find("pos/y").text.strip()))
+            inv = []
+            for it in player.findall("inventory/item"):
+                it_name = it.find("name").text.strip()
+                item = Level.parse_item_file(it_name)
+                inv.append(item)
+
+            equipments = []
+            for eq in player.findall("equipments/equipment"):
+                eq_name = eq.find("name").text.strip()
+                eq = Level.parse_item_file(eq_name)
+                equipments.append(eq)
+
+            # -- Reading of the XML file for default character's values (i.e. sprites)
+            tree = etree.parse("data/characters.xml").getroot()
+            player_t = tree.xpath(name)[0]
+
+            sprite = 'imgs/dungeon_crawl/player/' + player_t.find('sprite').text.strip()
+            compl_sprite = player_t.find('complementSprite')
+            if compl_sprite is not None:
+                compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
+
+            p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, level,
+                    compl_sprite=compl_sprite)
+            p.earn_xp(exp)
+            p.set_items(inv)
+            p.set_current_hp(currentHp)
+            p.set_pos(pos)
+
+            team.append(p)
+
+        level = Level(level_name, team, game_status)
+        screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+        play(screen, level)
+    else :
+        print("Error : no saved game")
+
+    save.close()
 
 
 def options_menu():

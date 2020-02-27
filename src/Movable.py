@@ -101,6 +101,9 @@ class Movable(Destroyable):
         self.items.append(item)
         return True
 
+    def set_items(self, items):
+        self.items = items
+
     def remove_item(self, item):
         id = item.get_id()
         for index, it in enumerate(self.items):

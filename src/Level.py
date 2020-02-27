@@ -94,8 +94,10 @@ CLOSE_ACTION_ID = -1
 MAIN_MENU_ID = 0
 #   - Start game
 START_ACTION_ID = 0
+#   - Save game
+SAVE_ACTION_ID = 1
 #   - End current turn
-END_TURN_ACTION_ID = 1
+END_TURN_ACTION_ID = 2
 
 # > Main character menu
 CHARACTER_MENU_ID = 1
@@ -158,7 +160,9 @@ def blit_alpha(target, source, location, opacity):
 
 
 class Level:
-    def __init__(self, directory, players):
+    def __init__(self, directory, players, status=None):
+        # Store directory path if player wants to save and exit game
+        self.directory = directory
         self.map = pg.image.load(directory + 'map.png')
 
         self.players = players
@@ -197,16 +201,20 @@ class Level:
         self.missions = []
         self.load_missions(tree)
 
-        # Load available tiles for characters' placement
-        self.possible_placements = []
-        self.load_placements(tree)
+        if status != 'G':
+            # Load available tiles for characters' placement
+            self.possible_placements = []
+            self.load_placements(tree)
 
-        # Set initial pos of players arbitrarily
-        for player in self.players:
-            for tile in self.possible_placements:
-                if self.case_is_empty(tile):
-                    player.set_initial_pos(tile)
-                    break
+        # Game is new, players' positions should be initialized
+        if not status:
+            status = 'I'
+            # Set initial pos of players arbitrarily
+            for player in self.players:
+                for tile in self.possible_placements:
+                    if self.case_is_empty(tile):
+                        player.set_initial_pos(tile)
+                        break
 
         # Booleans for end game
         self.victory = False
@@ -217,7 +225,7 @@ class Level:
             - G : Level is active
             - F : Level is ended
         '''
-        self.game_phase = 'I'
+        self.game_phase = status
 
         '''Possible turn :
                 - P : Player's turn
@@ -354,6 +362,30 @@ class Level:
             pos = (x, y)
             self.possible_placements.append(pos)
 
+    def save_game(self):
+        save_file = open("saves/main_save.xml", "w+")
+
+        # Build XML tree
+        tree = etree.Element('save')
+
+        level = etree.Element('level')
+        name = etree.SubElement(level, 'name')
+        name.text = self.directory
+        phase = etree.SubElement(level, 'phase')
+        phase.text = self.game_phase
+
+        team = etree.Element('team')
+        for player in self.players:
+            p_el = team.append(player.save_player())
+
+        tree.append(level)
+        tree.append(team)
+
+        # Store XML tree in file
+        save_file.write(etree.tostring(tree, pretty_print=True, encoding="unicode"))
+
+        save_file.close()
+
     @staticmethod
     def parse_item_file(name):
         # Retrieve data root for item
@@ -451,12 +483,6 @@ class Level:
             if self.animation.anim(win):
                 self.animation = None
 
-        for menu in self.background_menus:
-            if menu[1]:
-                menu[0].display(win)
-        if self.active_menu:
-            self.active_menu.display(win)
-
         # If the game hasn't yet started
         if self.game_phase == 'I':
             self.show_possible_placements(win)
@@ -471,6 +497,12 @@ class Level:
                         self.show_possible_attacks(self.selected_player, win)
                     elif self.possible_interactions:
                         self.show_possible_interactions(win)
+
+        for menu in self.background_menus:
+            if menu[1]:
+                menu[0].display(win)
+        if self.active_menu:
+            self.active_menu.display(win)
 
 
 
@@ -595,7 +627,7 @@ class Level:
     def create_main_menu(self, pos):
         # Transform pos tuple into rect
         tile = pg.Rect(pos[0], pos[1], 1, 1)
-        entries = []
+        entries = [[{'name': 'Save Game', 'id': SAVE_ACTION_ID}]]
 
         if self.game_phase == 'I':
             entries.append([{'name': 'Start', 'id': START_ACTION_ID}])
@@ -827,13 +859,14 @@ class Level:
             self.game_phase = 'G'
             self.active_menu = None
             self.new_turn()
+        elif method_id == SAVE_ACTION_ID:
+            self.save_game()
         elif method_id == END_TURN_ACTION_ID:
             self.active_menu = None
             self.side_turn = 'O'
             self.begin_turn()
         else:
             print("Unknown action in main menu... : " + method_id)
-
 
     def execute_character_menu_action(self, method_id, args):
         # Attack action : Character has to choose a target

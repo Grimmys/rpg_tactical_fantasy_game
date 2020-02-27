@@ -1,4 +1,5 @@
 import pygame as pg
+from lxml import etree
 
 from src.Character import Character
 from src.constants import TILE_SIZE
@@ -76,3 +77,62 @@ class Player(Character):
 
     def choose_interaction(self):
         self.state = 4
+
+    def save_player(self):
+        # Build XML tree
+        tree = etree.Element('player')
+
+        # Save name
+        name = etree.SubElement(tree, 'name')
+        name.text = self.name
+
+        # Save level
+        level = etree.SubElement(tree, 'level')
+        level.text = str(self.lvl)
+
+        # Save class
+        class_el = etree.SubElement(tree, 'class')
+        class_el.text = self.classes[0]  # Currently, only first class is saved
+
+        # Save exp
+        exp = etree.SubElement(tree, 'exp')
+        exp.text = str(self.xp)
+
+        # Save stats
+        hp_m = etree.SubElement(tree, 'hp')
+        hp_m.text = str(self.hp_max)
+        atk = etree.SubElement(tree, 'strength')
+        atk.text = str(self.strength)
+        defense = etree.SubElement(tree, 'defense')
+        defense.text = str(self.defense)
+        res = etree.SubElement(tree, 'res')
+        res.text = str(self.res)
+        move = etree.SubElement(tree, 'move')
+        move.text = str(self.max_move)
+
+        # Save current hp
+        hp = etree.SubElement(tree, 'currentHp')
+        hp.text = str(self.hp)
+
+        # Save position
+        pos = etree.SubElement(tree, 'pos')
+        x = etree.SubElement(pos, 'x')
+        x.text = str(self.pos[0])
+        y = etree.SubElement(pos, 'y')
+        y.text = str(self.pos[1])
+
+         # Save inventory
+        inv = etree.SubElement(tree, 'inventory')
+        for it in self.items:
+            it_el = etree.SubElement(inv, 'item')
+            it_name = etree.SubElement(it_el, 'name')
+            it_name.text = it.get_name()
+
+        # Save equipment
+        equip = etree.SubElement(tree, 'equipments')
+        for eq in self.equipments:
+            eq_el = etree.SubElement(equip, 'equipment')
+            eq_name = etree.SubElement(eq_el, 'name')
+            eq_name.text = eq.get_name()
+
+        return tree

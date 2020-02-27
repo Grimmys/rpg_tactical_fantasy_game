@@ -52,6 +52,9 @@ class Destroyable(Entity):
     def get_hp_max(self):
         return self.hp_max
 
+    def set_current_hp(self, hp):
+        self.hp = hp
+
     def attacked(self, ent, damages):
         self.hp -= damages
         return self.hp > 0
