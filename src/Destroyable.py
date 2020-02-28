@@ -1,4 +1,5 @@
 import pygame as pg
+from lxml import etree
 
 from src.Entity import Entity
 from src.constants import TILE_SIZE
@@ -67,3 +68,14 @@ class Destroyable(Entity):
             hp_recovered = value if self.hp + value <= self.hp_max else self.hp_max - self.hp
         self.hp += hp_recovered
         return hp_recovered
+
+    def save(self):
+        tree = Entity.save(self)
+
+        # Save current hp
+        hp = etree.SubElement(tree, 'currentHp')
+        hp.text = str(self.hp)
+
+        return tree
+
+

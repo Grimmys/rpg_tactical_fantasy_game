@@ -1,4 +1,5 @@
 import pygame as pg
+from lxml import etree
 
 from src.Entity import Entity
 from src.constants import TILE_SIZE
@@ -26,3 +27,17 @@ class Fountain(Entity):
         else:
             entries.append([{'type': 'text', 'text': 'The fountain is empty...', 'font': ITEM_DESC_FONT}])
         return entries
+
+    def set_times(self, times):
+        self.times = times
+        if self.times == 0:
+            self.sprite = self.sprite_empty
+
+    def save(self):
+        tree = Entity.save(self)
+
+        # Save remaining uses
+        times = etree.SubElement(tree, 'times')
+        times.text = str(self.times)
+
+        return tree

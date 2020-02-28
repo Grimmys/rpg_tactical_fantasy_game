@@ -20,88 +20,88 @@
     </placementArea>
     <foes>
         <foe>
-            <type>
+            <name>
                 snake
-            </type>
+            </name>
             <position>
                 <x>9</x>
                 <y>2</y>
             </position>
-            <lvl>
+            <level>
                 1
-            </lvl>
+            </level>
         </foe>
         <foe>
-            <type>
+            <name>
                 snake
-            </type>
+            </name>
             <position>
                 <x>11</x>
                 <y>3</y>
             </position>
-            <lvl>
+            <level>
                 2
-            </lvl>
+            </level>
         </foe>
         <foe>
-            <type>
+            <name>
                 fire_eye
-            </type>
+            </name>
             <position>
                 <x>15</x>
                 <y>4</y>
             </position>
-            <lvl>
+            <level>
                 1
-            </lvl>
+            </level>
         </foe>
         <foe>
-            <type>
+            <name>
                 fire_eye
-            </type>
+            </name>
             <position>
                 <x>13</x>
                 <y>2</y>
             </position>
-            <lvl>
+            <level>
                 4
-            </lvl>
+            </level>
         </foe>
         <foe>
-            <type>
+            <name>
                 skeleton
-            </type>
+            </name>
             <position>
                 <x>10</x>
                 <y>6</y>
             </position>
-            <lvl>
+            <level>
                 1
-            </lvl>
+            </level>
         </foe>
         <foe>
-            <type>
+            <name>
                 skeleton
-            </type>
+            </name>
             <position>
                 <x>11</x>
                 <y>7</y>
             </position>
-            <lvl>
+            <level>
                 3
-            </lvl>
+            </level>
         </foe>
         <foe>
-            <type>
+            <name>
                 simple_statue
-            </type>
+            </name>
             <position>
                 <x>15</x>
                 <y>8</y>
             </position>
-            <lvl>
+            <level>
                 2
-            </lvl>
+            </level>
         </foe>
     </foes>
     <portals>
@@ -128,6 +128,7 @@
             <type>
                 healer
             </type>
+            <id> 1 </id>
             <position>
                 <x>6</x>
                 <y>7</y>
@@ -136,6 +137,7 @@
     </fountains>
     <chests>
         <chest>
+            <id> 1 </id>
             <closed>
                 <sprite>
                     dungeon/chest_2_closed.png
@@ -170,6 +172,7 @@
             </position>
         </chest>
         <chest>
+            <id> 2 </id>
             <closed>
                 <sprite>
                     dungeon/chest_2_closed.png
@@ -528,9 +531,8 @@
     </obstacles>
     <breakables>
         <breakable>
-            <resistance>
-                5
-            </resistance>
+            <id> 1 </id>
+            <resistance> 5 </resistance>
             <position>
                <x>8</x>
                <y>8</y>

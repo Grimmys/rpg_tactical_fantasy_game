@@ -1,4 +1,6 @@
 import pygame as pg
+from lxml import etree
+
 from src.constants import TILE_SIZE
 from src.Destroyable import Destroyable
 from src.Key import Key
@@ -137,3 +139,36 @@ class Movable(Destroyable):
         for alteration in self.alterations:
             if alteration.increment():
                 self.alterations.remove(alteration)
+
+    def save(self):
+        tree = Destroyable.save(self)
+
+        # Save position
+        pos = etree.SubElement(tree, 'position')
+        x = etree.SubElement(pos, 'x')
+        x.text = str(self.pos[0] // TILE_SIZE)
+        y = etree.SubElement(pos , 'y')
+        y.text = str(self.pos[1] // TILE_SIZE)
+
+        # Save level
+        level = etree.SubElement(tree, 'level')
+        level.text = str(self.lvl)
+
+        # Save exp
+        exp = etree.SubElement(tree, 'exp')
+        exp.text = str(self.xp)
+
+        # Save stats
+        hp_m = etree.SubElement(tree, 'hp')
+        hp_m.text = str(self.hp_max)
+        atk = etree.SubElement(tree, 'strength')
+        atk.text = str(self.strength)
+        defense = etree.SubElement(tree, 'def')
+        defense.text = str(self.defense)
+        res = etree.SubElement(tree, 'res')
+        res.text = str(self.res)
+        move = etree.SubElement(tree, 'move')
+        move.text = str(self.max_move)
+
+        return tree
+

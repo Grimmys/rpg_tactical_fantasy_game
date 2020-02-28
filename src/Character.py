@@ -16,7 +16,7 @@ class Character(Movable):
             eq.display(screen, self.pos, True)
 
     def lvl_up(self):
-        Movable.lvl_up()
+        Movable.lvl_up(self)
         self.stats_up()
 
     def attack(self, ent):

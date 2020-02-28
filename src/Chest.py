@@ -1,4 +1,5 @@
 import pygame as pg
+from lxml import etree
 import random
 
 from src.Entity import Entity
@@ -32,3 +33,13 @@ class Chest(Entity):
         self.sprite = self.sprite_open
         self.opened = True
         return self.item
+
+    def save(self):
+        print(self.name)
+        tree = Entity.save(self)
+
+        # Save state
+        state = etree.SubElement(tree, 'state')
+        state.text = str(self.opened)
+
+        return tree

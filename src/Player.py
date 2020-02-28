@@ -78,7 +78,7 @@ class Player(Character):
     def choose_interaction(self):
         self.state = 4
 
-    def save_player(self):
+    def save(self):
         # Build XML tree
         tree = etree.Element('player')
 
@@ -115,7 +115,7 @@ class Player(Character):
         hp.text = str(self.hp)
 
         # Save position
-        pos = etree.SubElement(tree, 'pos')
+        pos = etree.SubElement(tree, 'position')
         x = etree.SubElement(pos, 'x')
         x.text = str(self.pos[0])
         y = etree.SubElement(pos, 'y')

@@ -35,6 +35,7 @@ def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
 
+
 def play(screen, level):
     end = False
     while not (level.is_ended() or end):
@@ -166,9 +167,9 @@ def load_game():
             defense = int(player.find("defense").text.strip())
             res = int(player.find("res").text.strip())
             move = int(player.find("move").text.strip())
-            currentHp = int(player.find("currentHp").text.strip())
-            pos = (int(player.find("pos/x").text.strip()),
-                   int(player.find("pos/y").text.strip()))
+            current_hp = int(player.find("currentHp").text.strip())
+            pos = (int(player.find("position/x").text.strip()),
+                   int(player.find("position/y").text.strip()))
             inv = []
             for it in player.findall("inventory/item"):
                 it_name = it.find("name").text.strip()
@@ -194,12 +195,13 @@ def load_game():
                     compl_sprite=compl_sprite)
             p.earn_xp(exp)
             p.set_items(inv)
-            p.set_current_hp(currentHp)
+            p.set_current_hp(current_hp)
             p.set_pos(pos)
 
             team.append(p)
 
-        level = Level(level_name, team, game_status)
+        # Load level with current game status, foes states, and team
+        level = Level(level_name, team, game_status, tree_root.find("level/entities"))
         screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         play(screen, level)
     else :
@@ -223,7 +225,7 @@ if __name__ == "__main__":
     import pygame as pg
     pg.init()
 
-    # Window paramaters
+    # Window parameters
     screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     from src.Level import Level

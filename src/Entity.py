@@ -1,4 +1,6 @@
 import pygame as pg
+from lxml import etree
+
 from src.constants import TILE_SIZE
 
 
@@ -34,3 +36,14 @@ class Entity:
 
     def is_on_pos(self, pos):
         return self.get_rect().collidepoint(pos)
+
+    def save(self):
+        # Build XML tree
+        tree = etree.Element('entity')
+
+        # Save name
+        name = etree.SubElement(tree, 'name')
+        name.text = self.name
+
+        return tree
+
