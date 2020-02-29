@@ -156,6 +156,9 @@ def load_game():
         tree_root = etree.parse("saves/main_save.xml").getroot()
         level_name = tree_root.find("level/name").text.strip()
         game_status = tree_root.find("level/phase").text.strip()
+        turn_nb = 0
+        if game_status != 'I':
+            turn_nb = int(tree_root.find("level/turn").text.strip())
         team = []
         for player in tree_root.findall("team/player"):
             name = player.find("name").text.strip()
@@ -201,7 +204,7 @@ def load_game():
             team.append(p)
 
         # Load level with current game status, foes states, and team
-        level = Level(level_name, team, game_status, tree_root.find("level/entities"))
+        level = Level(level_name, team, game_status, turn_nb, tree_root.find("level/entities"))
         screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         play(screen, level)
     else :

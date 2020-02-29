@@ -160,7 +160,7 @@ def blit_alpha(target, source, location, opacity):
 
 
 class Level:
-    def __init__(self, directory, players, status=None, data=None):
+    def __init__(self, directory, players, status=None, turn=0, data=None):
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.map = pg.image.load(directory + 'map.png')
@@ -251,8 +251,8 @@ class Level:
         '''
         self.side_turn = 'P'
 
+        self.turn = turn
         self.selected_item = None
-        self.turn = 0
         self.animation = None
         self.selected_player = None
         self.watched_ent = None
@@ -436,10 +436,19 @@ class Level:
         tree = etree.Element('save')
 
         level = etree.Element('level')
+        # Save level identity
         name = etree.SubElement(level, 'name')
         name.text = self.directory
+
+        # Save game phase
         phase = etree.SubElement(level, 'phase')
         phase.text = self.game_phase
+
+        # Save turn if game has started
+        print(self.game_phase)
+        if self.game_phase != 'I':
+            turn = etree.SubElement(level, 'turn')
+            turn.text = str(self.turn)
 
         entities = etree.SubElement(level, 'entities')
         foes = etree.SubElement(entities, 'foes')
