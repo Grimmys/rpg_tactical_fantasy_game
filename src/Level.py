@@ -1281,6 +1281,9 @@ class Level:
             self.active_menu = None
             if self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
+                # Test if active menu is main character's menu, in this case, it should be reloaded
+                if self.active_menu.get_type() == CHARACTER_MENU_ID:
+                    self.create_player_menu()
             else:
                 if len(args) >= 3 and args[2][0] == FINAL_ACTION:
                     # Turn is finished
