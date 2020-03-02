@@ -9,6 +9,13 @@ from src.InfoBox import InfoBox
 
 START_MENU_WIDTH = 600
 
+ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
+
+# Interaction ids
+#  > Generic
+#    - To close any menu
+CLOSE_ACTION_ID = -1
+
 # > Start menu
 START_MENU_ID = 0
 #   - Launch new game
@@ -31,6 +38,7 @@ class StartScreen:
 
         # Creating menu
         self.active_menu = StartScreen.create_menu()
+        self.background_menus = []
 
         # Memorize if a game is currently being performed
         self.started_game = False
@@ -50,7 +58,11 @@ class StartScreen:
 
     def display(self):
         self.screen.blit(self.background, (0, 0))
-        self.active_menu.display(self.screen)
+        for menu in self.background_menus:
+            if menu[1]:
+                menu[0].display(self.screen)
+        if self.active_menu:
+            self.active_menu.display(self.screen)
 
     def play(self, level):
         self.started_game = True
@@ -69,7 +81,8 @@ class StartScreen:
     def level_is_ended(self):
         return self.level.is_ended()
 
-    def init_player(self, name):
+    @staticmethod
+    def init_player(name):
         # -- Reading of the XML file
         tree = etree.parse("data/characters.xml").getroot()
         player_t = tree.xpath(name)[0]
@@ -186,12 +199,19 @@ class StartScreen:
                 # Load level with current game status, foes states, and team
                 level = Level(level_name, team, game_status, turn_nb, tree_root.find("level/entities"))
                 self.play(level)
-            else:
-                print("Error : no saved game")
-
-            save.close()
+                save.close()
+                return
         except FileNotFoundError as err:
-            print("Error while opening saved game :", err)
+            pass
+
+        # No saved game
+        self.background_menus.append([self.active_menu, True])
+
+        name = "Load Game"
+        entries = [[{'type': 'text', 'text': "No saved game.", 'font': ITEM_DESC_FONT}]]
+        width = self.screen.get_width() // 2
+        self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
+                                   entries, width, close_button=1)
 
     @staticmethod
     def options_menu():
@@ -221,6 +241,14 @@ class StartScreen:
         method_id = action[0]
         args = action[1]
 
+        # Test if the action is a generic one (according to the method_id)
+        # Close menu : Active menu is closed
+        if method_id == CLOSE_ACTION_ID:
+            self.active_menu = None
+            if self.background_menus:
+                self.active_menu = self.background_menus.pop()[0]
+            return
+
         if menu_type == START_MENU_ID:
             self.main_menu_action(method_id, args)
         else:
@@ -231,7 +259,6 @@ class StartScreen:
             self.active_menu.motion(pos)
         else:
             self.level.motion(pos)
-
 
     def click(self, button, pos):
         if self.level is None:
