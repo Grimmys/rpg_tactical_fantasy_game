@@ -1,17 +1,17 @@
 import pygame as pg
 from lxml import etree
 
-from src.constants import TILE_SIZE
+from src.constants import *
 from src.Destroyable import Destroyable
 from src.Key import Key
 
-ANIMATION_SPEED = 4
 TIMER = 60
 NB_ITEMS_MAX = 8
 
 
 class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
+    move_speed = ANIMATION_SPEED
 
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl=1, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
@@ -124,7 +124,7 @@ class Movable(Destroyable):
         return self.nb_items_max
 
     def move(self):
-        self.timer -= ANIMATION_SPEED
+        self.timer -= Movable.move_speed
         if self.timer <= 0:
             self.pos = self.on_move.pop(0)
             self.timer = TIMER
@@ -147,7 +147,7 @@ class Movable(Destroyable):
         pos = etree.SubElement(tree, 'position')
         x = etree.SubElement(pos, 'x')
         x.text = str(self.pos[0] // TILE_SIZE)
-        y = etree.SubElement(pos , 'y')
+        y = etree.SubElement(pos, 'y')
         y.text = str(self.pos[1] // TILE_SIZE)
 
         # Save level

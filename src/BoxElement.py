@@ -9,7 +9,7 @@ class BoxElement:
             self.size = (self.content.get_width(), self.content.get_height())
         else:
             self.size = (0, 0)
-        self.margin = {'TOP': margin[0], 'BOTTOM': margin[2], 'LEFT': margin[3], 'RIGHT' : margin[1]}
+        self.margin = {'TOP': margin[0], 'BOTTOM': margin[2], 'LEFT': margin[3], 'RIGHT': margin[1]}
 
     def set_pos(self, pos):
         self.pos = pos

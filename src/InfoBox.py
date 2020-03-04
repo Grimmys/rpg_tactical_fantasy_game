@@ -2,6 +2,7 @@ import pygame as pg
 
 from src.TextElement import TextElement
 from src.Button import Button
+from src.DynamicButton import DynamicButton
 from src.ItemButton import ItemButton
 from src.constants import TILE_SIZE, WHITE
 
@@ -66,6 +67,19 @@ class InfoBox:
                     sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
                                              sprite_hover.get_height() // 2 - name.get_height() // 2))
                     element.append(Button(entry['id'], [], BUTTON_SIZE, (0, 0), sprite, sprite_hover, entry['margin']))
+                elif entry['type'] == 'parameter_button':
+                    name = ITEM_FONT.render(entry['name'] + ' ' + entry['values'][entry['current_value_ind']]['label'], 1, WHITE)
+                    base_sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
+                    sprite = base_sprite.copy()
+                    sprite.blit(name, (base_sprite.get_width() // 2 - name.get_width() // 2,
+                                       base_sprite.get_height() // 2 - name.get_height() // 2))
+                    base_sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), BUTTON_SIZE)
+                    sprite_hover = base_sprite_hover.copy()
+                    sprite_hover.blit(name, (base_sprite_hover.get_width() // 2 - name.get_width() // 2,
+                                             base_sprite_hover.get_height() // 2 - name.get_height() // 2))
+                    element.append(DynamicButton(entry['id'], [], BUTTON_SIZE, (0, 0), sprite, sprite_hover,
+                                                 entry['margin'], entry['values'], entry['current_value_ind'], entry['name'],
+                                                 base_sprite, base_sprite_hover))
                 elif entry['type'] == 'text_button':
                     name = ITEM_FONT.render(entry['name'], 1, entry['color'])
                     name_hover = ITEM_FONT.render(entry['name'], 1, entry['color_hover'])
@@ -130,7 +144,6 @@ class InfoBox:
                 pos[0] = self.element_linked.x - self.size[0]
             return pos
         return []
-            #pos = [MAP_WIDTH // 2 - self.size[0] // 2, MAP_HEIGHT // 2 - self.size[1] // 2]
 
     def get_type(self):
         return self.type

@@ -3,9 +3,9 @@ from src.constants import *
 import pygame as pg
 
 from src.Level import Level
-from src.Equipment import Equipment
 from src.Player import Player
 from src.InfoBox import InfoBox
+from src.Movable import Movable
 
 START_MENU_WIDTH = 600
 
@@ -27,6 +27,11 @@ OPTIONS_ACTION_ID = 2
 #   - Exit game
 EXIT_ACTION_ID = 3
 
+# > Options menu
+OPTIONS_MENU_ID = 1
+#   - Modify movement speed
+CHANGE_MOVE_SPEED = 0
+
 
 class StartScreen:
     def __init__(self, screen):
@@ -44,6 +49,13 @@ class StartScreen:
         self.started_game = False
         self.level = None
 
+        # Load current saved parameters
+        self.load_options()
+
+    def load_options(self):
+        # Load current move speed
+        Movable.move_speed = int(self.read_options_file("move_speed"))
+
     @staticmethod
     def create_menu():
         entries = [[{'name': 'New game', 'id': NEW_GAME_ACTION_ID}], [{'name': 'Load game', 'id': LOAD_GAME_ACTION_ID}],
@@ -55,6 +67,47 @@ class StartScreen:
 
         return InfoBox("In the name of the Five Cats", START_MENU_ID,
                        "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
+
+    @staticmethod
+    def load_parameter_entry(param, formatted_name, values, id):
+        val = int(StartScreen.read_options_file(param))
+
+        entry = {'name': formatted_name, 'values': values, 'id': id, 'current_value_ind': 0}
+
+        for i in range(len(entry['values'])):
+            if entry['values'][i]['value'] == val:
+                entry['current_value_ind'] = i
+
+        return entry
+
+    @staticmethod
+    def create_options_menu():
+        entries = [[StartScreen.load_parameter_entry("move_speed", "Move speed : ",
+                                                        [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
+                                                         {'label': 'Normal', 'value': ANIMATION_SPEED},
+                                                         {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
+                                                     CHANGE_MOVE_SPEED)]]
+        for row in entries:
+            for entry in row:
+                entry['type'] = 'parameter_button'
+
+        return InfoBox("Options", OPTIONS_MENU_ID,
+                       "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+
+    @staticmethod
+    def modify_options_file(el_to_edit, new_value):
+        tree = etree.parse("saves/options.xml")
+        print(tree)
+        el = tree.find(".//" + el_to_edit)
+        el.text = str(new_value)
+        tree.write("saves/options.xml")
+
+    @staticmethod
+    def read_options_file(el_to_read):
+        tree = etree.parse("saves/options.xml").getroot()
+
+        el = tree.find(".//" + el_to_read)
+        return el.text.strip()
 
     def display(self):
         self.screen.blit(self.background, (0, 0))
@@ -124,7 +177,8 @@ class StartScreen:
 
         return player
 
-    def load_level(self, level, team):
+    @staticmethod
+    def load_level(level, team):
         return Level('maps/level_' + level + '/', team)
 
     def new_game(self):
@@ -136,7 +190,7 @@ class StartScreen:
         team = [self.init_player("john"), self.init_player("archer")]
 
         # Init the first level
-        level = self.load_level("test", team)
+        level = StartScreen.load_level("test", team)
 
         self.play(level)
 
@@ -213,9 +267,9 @@ class StartScreen:
         self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                    entries, width, close_button=1)
 
-    @staticmethod
-    def options_menu():
-        print("Access to options menu !")
+    def options_menu(self):
+        self.background_menus.append([self.active_menu, False])
+        self.active_menu = StartScreen.create_options_menu()
 
     @staticmethod
     def exit_game():
@@ -233,7 +287,15 @@ class StartScreen:
         elif method_id == EXIT_ACTION_ID:
             self.exit_game()
         else:
-            print("Unknown action... : " + method_id)
+            print("Unknown action... : ", method_id)
+
+    def options_menu_action(self, method_id, args):
+        # Execute action
+        if method_id == CHANGE_MOVE_SPEED:
+            Movable.move_speed = args[2][0]
+            StartScreen.modify_options_file("move_speed", args[2][0])
+        else:
+            print("Unknown action... : ", method_id)
 
     def execute_action(self, menu_type, action):
         if not action:
@@ -251,8 +313,10 @@ class StartScreen:
 
         if menu_type == START_MENU_ID:
             self.main_menu_action(method_id, args)
+        elif menu_type == OPTIONS_MENU_ID:
+            self.options_menu_action(method_id, args)
         else:
-            print("Unknown menu... : " + menu_type)
+            print("Unknown menu... : ", menu_type)
 
     def motion(self, pos):
         if self.level is None:
