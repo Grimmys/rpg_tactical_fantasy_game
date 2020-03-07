@@ -98,6 +98,8 @@ START_ACTION_ID = 0
 SAVE_ACTION_ID = 1
 #   - End current turn
 END_TURN_ACTION_ID = 2
+#   - Go back to start screen
+SUSPEND_ACTION_ID = 3
 
 # > Main character menu
 CHARACTER_MENU_ID = 1
@@ -164,6 +166,8 @@ class Level:
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.map = pg.image.load(directory + 'map.png')
+
+        self.quit_request = False
 
         self.players = players
 
@@ -429,6 +433,10 @@ class Level:
             pos = (x, y)
             self.possible_placements.append(pos)
 
+    def exit_game(self):
+        # At next update, level will be destroyed
+        self.quit_request = True
+
     def save_game(self):
         save_file = open("saves/main_save.xml", "w+")
 
@@ -525,8 +533,10 @@ class Level:
         self.game_phase = 'F'
 
     def update_state(self):
+        if self.quit_request:
+            return True
         if self.animation:
-            return
+            return False
         if not self.players:
             self.defeat = True
         if self.victory or self.defeat:
@@ -534,7 +544,7 @@ class Level:
                 self.end_level(VICTORY, VICTORY_POS)
             else:
                 self.end_level(DEFEAT, DEFEAT_POS)
-            return
+            return False
         if self.selected_player:
             if self.selected_player.get_move():
                 self.selected_player.move()
@@ -557,6 +567,7 @@ class Level:
                     break
             else:
                 self.new_turn()
+        return False
 
     def display(self, win):
         win.blit(self.map, (0, 0))
@@ -717,7 +728,8 @@ class Level:
     def create_main_menu(self, pos):
         # Transform pos tuple into rect
         tile = pg.Rect(pos[0], pos[1], 1, 1)
-        entries = [[{'name': 'Save Game', 'id': SAVE_ACTION_ID}]]
+        entries = [[{'name': 'Save', 'id': SAVE_ACTION_ID}],
+                    [{'name': 'Suspend', 'id': SUSPEND_ACTION_ID}]]
 
         if self.game_phase == 'I':
             entries.append([{'name': 'Start', 'id': START_ACTION_ID}])
@@ -955,8 +967,10 @@ class Level:
             self.active_menu = None
             self.side_turn = 'O'
             self.begin_turn()
+        elif method_id == SUSPEND_ACTION_ID:
+            self.exit_game()
         else:
-            print("Unknown action in main menu... : " + method_id)
+            print("Unknown action in main menu... : " + str(method_id))
 
     def execute_character_menu_action(self, method_id, args):
         # Attack action : Character has to choose a target

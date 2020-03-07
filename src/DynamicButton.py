@@ -40,7 +40,6 @@ class DynamicButton(Button):
             self.current_value_ind = 0
         self.update_sprite()
         self.args[0] = self.values[self.current_value_ind]['value']
-        print(self.args)
         return self.method_id, (self.pos, self.linked_object, self.args)
 
     def display(self, win):

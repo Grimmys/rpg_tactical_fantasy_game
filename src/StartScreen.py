@@ -36,6 +36,7 @@ CHANGE_MOVE_SPEED = 0
 class StartScreen:
     def __init__(self, screen):
         self.screen = screen
+        self.menu_screen = self.screen.copy()
 
         # Start screen loop
         bg_image = pg.image.load('imgs/interface/main_menu_background.jpg').convert_alpha()
@@ -97,7 +98,6 @@ class StartScreen:
     @staticmethod
     def modify_options_file(el_to_edit, new_value):
         tree = etree.parse("saves/options.xml")
-        print(tree)
         el = tree.find(".//" + el_to_edit)
         el.text = str(new_value)
         tree.write("saves/options.xml")
@@ -110,26 +110,29 @@ class StartScreen:
         return el.text.strip()
 
     def display(self):
-        self.screen.blit(self.background, (0, 0))
-        for menu in self.background_menus:
-            if menu[1]:
-                menu[0].display(self.screen)
-        if self.active_menu:
-            self.active_menu.display(self.screen)
+        if self.level:
+            self.screen.fill(GREY)
+            self.level.display(self.screen)
+        else:
+            self.screen.blit(self.background, (0, 0))
+            for menu in self.background_menus:
+                if menu[1]:
+                    menu[0].display(self.screen)
+            if self.active_menu:
+                self.active_menu.display(self.screen)
 
     def play(self, level):
+        # Modify screen
+        self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.started_game = True
         self.level = level
 
-    def update_screen_display(self):
-        # Blit the current state of the level
-        self.level.display(self.screen)
-
     def update_state(self):
         if self.level:
-            self.level.update_state()
-            self.screen.fill(GREY)
-            self.update_screen_display()
+            exit = self.level.update_state()
+            if exit:
+                self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
+                self.level = None
 
     def level_is_ended(self):
         return self.level.is_ended()
@@ -182,11 +185,7 @@ class StartScreen:
         return Level('maps/level_' + level + '/', team)
 
     def new_game(self):
-        # Modify screen
-        screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-
         # Init player's team (one character at beginning)
-
         team = [self.init_player("john"), self.init_player("archer")]
 
         # Init the first level
