@@ -9,8 +9,8 @@ class Animation:
 
     def anim(self, win):
         self.timer -= 1
-        if (self.timer == 0):
-            if (self.sprites_pos):
+        if self.timer == 0:
+            if self.sprites_pos:
                 self.timer = self.timer_max
                 self.current_frame = self.sprites_pos.pop(0)
             else:

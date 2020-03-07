@@ -453,7 +453,6 @@ class Level:
         phase.text = self.game_phase
 
         # Save turn if game has started
-        print(self.game_phase)
         if self.game_phase != 'I':
             turn = etree.SubElement(level, 'turn')
             turn.text = str(self.turn)
@@ -963,6 +962,10 @@ class Level:
             self.new_turn()
         elif method_id == SAVE_ACTION_ID:
             self.save_game()
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.png",
+                                       [[{'type': 'text', 'text': "Game has been saved",
+                                          'font': ITEM_DESC_FONT}]], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         elif method_id == END_TURN_ACTION_ID:
             self.active_menu = None
             self.side_turn = 'O'
@@ -981,11 +984,11 @@ class Level:
             if w:
                 w_range = self.selected_player.get_weapon().get_range()
             self.possible_attacks = self.get_possible_attacks([self.selected_player.get_pos()], w_range, True)
-            self.background_menus.append([self.active_menu, False])
+            self.background_menus.append((self.active_menu, False))
             self.active_menu = None
         # Item action : Character's inventory is opened
         elif method_id == INV_ACTION_ID:
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
 
             items_max = self.selected_player.get_nb_items_max()
 
@@ -999,7 +1002,7 @@ class Level:
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equipment action : open the equipment screen
         elif method_id == EQUIPMENT_ACTION_ID:
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
 
             equipments = self.selected_player.get_equipments()
             entries = Level.create_equipment_entries(equipments)
@@ -1008,7 +1011,7 @@ class Level:
                                        EQUIPMENT_MENU_WIDTH, close_button=True)
         # Display player's status
         elif method_id == STATUS_ACTION_ID:
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
 
             entries = Level.create_status_entries(self.selected_player)
 
@@ -1034,11 +1037,11 @@ class Level:
                     break
 
             if not has_key:
-                self.background_menus.append([self.active_menu, True])
+                self.background_menus.append((self.active_menu, True))
                 self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/interface/PopUpMenu.png", [],
                                            ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             else:
-                self.background_menus.append([self.active_menu, False])
+                self.background_menus.append((self.active_menu, False))
                 self.active_menu = None
                 self.selected_player.choose_interaction()
                 self.possible_interactions = []
@@ -1047,7 +1050,7 @@ class Level:
                         self.possible_interactions.append(ent.get_pos())
         # Use a portal
         elif method_id == USE_PORTAL_ACTION_ID:
-            self.background_menus.append([self.active_menu, False])
+            self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_interaction()
             self.possible_interactions = []
@@ -1056,7 +1059,7 @@ class Level:
                     self.possible_interactions.append(ent.get_pos())
         # Drink into a fountain
         elif method_id == DRINK_ACTION_ID:
-            self.background_menus.append([self.active_menu, False])
+            self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_interaction()
             self.possible_interactions = []
@@ -1079,7 +1082,7 @@ class Level:
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
         if method_id == INTERAC_ITEM_ACTION_ID:
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
 
             item_button_pos = args[0]
             item = args[1]
