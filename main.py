@@ -34,7 +34,7 @@ if __name__ == "__main__":
                 startScreen.motion(e.pos)
             elif e.type == pg.MOUSEBUTTONUP:
                 if e.button == 1 or e.button == 3:
-                    startedGame = startScreen.click(e.button, e.pos)
+                    startScreen.click(e.button, e.pos)
             elif e.type == pg.MOUSEBUTTONDOWN:
                 if e.button == 1 or e.button == 3:
                     startScreen.button_down(e.button, e.pos)

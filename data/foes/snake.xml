@@ -6,7 +6,7 @@
         2
     </move>
     <hp>
-        4
+        6
     </hp>
     <strength>
         2
@@ -20,4 +20,7 @@
     <xp_gain>
         10
     </xp_gain>
+    <strategy>
+        semi_active
+    </strategy>
 </snake>

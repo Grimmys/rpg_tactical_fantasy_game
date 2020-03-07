@@ -2,7 +2,7 @@
     <john>
         <name> John </name>
         <class> warrior </class>
-        <lvl> 3 </lvl>
+        <lvl> 1 </lvl>
         <initStrength> 1 </initStrength>
         <initDef> 0 </initDef>
         <initRes> 0 </initRes>

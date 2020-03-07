@@ -6,7 +6,7 @@
         0
     </move>
     <hp>
-        5
+        10
     </hp>
     <strength>
         1
@@ -20,4 +20,7 @@
     <xp_gain>
         8
     </xp_gain>
+    <strategy>
+        static
+    </strategy>
 </simple_statue>

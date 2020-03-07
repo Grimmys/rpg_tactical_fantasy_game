@@ -14,7 +14,7 @@ from src.Spellbook import Spellbook
 from src.Character import Character
 from src.Movable import Movable
 from src.Player import Player
-from src.Foe import Foe
+from src.Foe import *
 from src.Chest import Chest
 from src.Portal import Portal
 from src.Fountain import Fountain
@@ -294,8 +294,11 @@ class Level:
             strength = int(stats_tree.find('strength').text.strip())
             defense = int(stats_tree.find('def').text.strip())
             res = int(stats_tree.find('res').text.strip())
+            strategy = stats_tree.find('strategy').text.strip()
+            if strategy == "semi_active":
+                strategy = SEMI_ACTIVE
 
-            loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, lvl)
+            loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, strategy, lvl)
 
             if from_save:
                 current_hp = int(foe.find('currentHp').text.strip())
@@ -583,6 +586,10 @@ class Level:
             if self.animation.anim(win):
                 self.animation = None
 
+        # End game animation is finished, level can be quit
+        if self.game_phase == 'F':
+            self.exit_game()
+
         # If the game hasn't yet started
         if self.game_phase == 'I':
             self.show_possible_placements(win)
@@ -603,8 +610,6 @@ class Level:
                 menu[0].display(win)
         if self.active_menu:
             self.active_menu.display(win)
-
-
 
 
     @staticmethod
@@ -847,7 +852,6 @@ class Level:
         damages = attacker.attack(target)
         # If target has less than 0 HP at the end of the duel
         if not target.attacked(attacker, damages):
-
             # XP up
             if isinstance(target, Movable) and isinstance(attacker, Player):
                 xp_gain = target.get_xp_obtained()
@@ -867,7 +871,10 @@ class Level:
         if foe.get_state() == 0:
             pos = foe.get_pos()
             possible_moves = self.get_possible_moves(pos, foe.get_max_moves())
-            move = random.choice(list(possible_moves.keys()))
+            # TEMPO : foe's range can't be different from one actually
+            reach = [1]
+            possible_attacks = self.get_possible_attacks(possible_moves, reach, False)
+            move = foe.determine_move(self.players, possible_moves, possible_attacks)
             path = self.determine_path_to(move, possible_moves)
             foe.set_move(path)
         elif foe.get_state() == 1:
@@ -1076,8 +1083,11 @@ class Level:
                             # Check if player is able to complete this objective
                             if mission.update_state(self.selected_player):
                                 self.players.remove(self.selected_player)
-                                if not self.players:
+                                self.entities.remove(self.selected_player)
+                                if mission.is_main() and mission.is_ended():
                                     self.victory = True
+                                # Turn is finished
+                                self.execute_action(CHARACTER_MENU_ID, (WAIT_ACTION_ID, None))
 
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item

@@ -47,7 +47,6 @@ class StartScreen:
         self.background_menus = []
 
         # Memorize if a game is currently being performed
-        self.started_game = False
         self.level = None
 
         # Load current saved parameters
@@ -111,7 +110,7 @@ class StartScreen:
 
     def display(self):
         if self.level:
-            self.screen.fill(GREY)
+            self.screen.fill(BLACK)
             self.level.display(self.screen)
         else:
             self.screen.blit(self.background, (0, 0))
@@ -124,7 +123,6 @@ class StartScreen:
     def play(self, level):
         # Modify screen
         self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-        self.started_game = True
         self.level = level
 
     def update_state(self):
@@ -189,7 +187,7 @@ class StartScreen:
         team = [self.init_player("john"), self.init_player("archer")]
 
         # Init the first level
-        level = StartScreen.load_level("test", team)
+        level = StartScreen.load_level("0", team)
 
         self.play(level)
 
@@ -330,7 +328,6 @@ class StartScreen:
         if self.level is None:
             if button == 1:
                 self.execute_action(self.active_menu.get_type(), self.active_menu.click(pos))
-                return self.started_game
         else:
             self.level.click(button, pos)
 
