@@ -219,6 +219,7 @@ class StartScreen:
                     current_hp = int(player.find("currentHp").text.strip())
                     pos = (int(player.find("position/x").text.strip()),
                            int(player.find("position/y").text.strip()))
+                    state = player.find("turnFinished").text.strip()
                     inv = []
                     for it in player.findall("inventory/item"):
                         it_name = it.find("name").text.strip()
@@ -246,6 +247,8 @@ class StartScreen:
                     p.set_items(inv)
                     p.set_current_hp(current_hp)
                     p.set_pos(pos)
+                    if state == "True":
+                        p.turn_finished()
 
                     team.append(p)
 

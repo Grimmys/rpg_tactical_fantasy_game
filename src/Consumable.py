@@ -1,7 +1,4 @@
-from lxml import etree
-
 from src.Item import Item
-from src.Alteration import Alteration
 
 
 class Consumable(Item):

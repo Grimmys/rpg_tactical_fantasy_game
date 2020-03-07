@@ -35,7 +35,6 @@ class Chest(Entity):
         return self.item
 
     def save(self):
-        print(self.name)
         tree = Entity.save(self)
 
         # Save state

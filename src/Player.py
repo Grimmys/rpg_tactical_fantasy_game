@@ -2,7 +2,7 @@ import pygame as pg
 from lxml import etree
 
 from src.Character import Character
-from src.constants import TILE_SIZE
+from src.constants import  *
 
 SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
 SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
@@ -24,6 +24,15 @@ class Player(Character):
         self.state = 0
         self.last_state = 5
         self.selected = False
+
+        # Sprite displayed when player cannot be selected
+        self.sprite_unavaible = self.sprite.copy()
+        color_image = pg.Surface(self.sprite.get_size()).convert_alpha()
+        color_image.fill(LIGHT_GREY)
+        self.sprite_unavaible.blit(color_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+
+        # Memorize normal state sprite
+        self.normal_sprite = self.sprite
 
     def set_initial_pos(self, pos):
         self.pos = pos
@@ -64,10 +73,17 @@ class Player(Character):
         return damages
 
     def turn_finished(self):
-        if self.state < 3:
-            print("Error ! Player could not had finished his turn now")
         self.state = self.last_state
         self.selected = False
+        self.sprite = self.sprite_unavaible
+        for eq in self.equipments:
+            eq.set_grey()
+
+    def new_turn(self):
+        Character.new_turn(self)
+        self.sprite = self.normal_sprite
+        for eq in self.equipments:
+            eq.unset_grey()
 
     def turn_is_finished(self):
         return self.state == self.last_state
@@ -121,7 +137,11 @@ class Player(Character):
         y = etree.SubElement(pos, 'y')
         y.text = str(self.pos[1])
 
-         # Save inventory
+        # Save if turn is finished or not
+        state = etree.SubElement(tree, 'turnFinished')
+        state.text = str(self.turn_is_finished())
+
+        # Save inventory
         inv = etree.SubElement(tree, 'inventory')
         for it in self.items:
             it_el = etree.SubElement(inv, 'item')
