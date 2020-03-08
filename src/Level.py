@@ -14,7 +14,8 @@ from src.Consumable import Consumable
 from src.Spellbook import Spellbook
 from src.Character import Character
 from src.Player import Player
-from src.Foe import *
+from src.Foe import Foe
+from src.Movable import *
 from src.Chest import Chest
 from src.Portal import Portal
 from src.Fountain import Fountain
@@ -175,6 +176,7 @@ class Level:
 
         self.entities = [] + self.players
 
+        self.allies = []
         self.foes = []
         self.chests = []
         self.portals = []
@@ -228,11 +230,14 @@ class Level:
         # Load portals
         self.load_portals(tree)
 
+        # Load allies
+        self.load_allies(tree.findall('allies/ally'))
+
         # Load buildings
         self.load_buildings(tree)
 
         # Store all entities
-        self.entities += self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
+        self.entities += self.allies + self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
 
         # Load obstacles
         self.load_obstacles(tree)
@@ -274,6 +279,38 @@ class Level:
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), SIDEBAR_SPRITE, self.missions.copy())
         self.wait_for_dest_tp = False
 
+    def load_allies(self, allies, from_save=False):
+        for ally in allies:
+            name = ally.find('name').text.strip()
+            x = int(ally.find('position/x').text) * TILE_SIZE
+            y = int(ally.find('position/y').text) * TILE_SIZE
+            pos = (x, y)
+            lvl = int(ally.find('level').text.strip())
+
+            infos = etree.parse('data/characters.xml').find(name)
+
+            # Static data
+            sprite = 'imgs/characs/' + infos.find('sprite').text.strip()
+            race = infos.find('race').text.strip()
+            strategy = infos.find('strategy').text.strip()
+            if strategy == "semi_active":
+                strategy = SEMI_ACTIVE
+            elif strategy == "static":
+                strategy = STATIC
+
+            stats_tree = infos
+            if from_save:
+                stats_tree = ally
+            hp = int(stats_tree.find('hp').text.strip())
+            move = int(stats_tree.find('move').text.strip())
+            strength = int(stats_tree.find('strength').text.strip())
+            defense = int(stats_tree.find('def').text.strip())
+            res = int(stats_tree.find('res').text.strip())
+
+            self.allies.append(Character(name, pos, sprite, hp, defense, res, move, strength,
+                                         [], [], strategy, lvl, race, 0))
+
+
     def load_foes(self, foes, from_save=False):
         foes_infos = {}
         for foe in foes:
@@ -292,6 +329,8 @@ class Level:
             strategy = foes_infos[name].find('strategy').text.strip()
             if strategy == "semi_active":
                 strategy = SEMI_ACTIVE
+            elif strategy == "static":
+                strategy = STATIC
 
             stats_tree = foes_infos[name]
             if from_save:
@@ -1546,7 +1585,7 @@ class Level:
             self.active_menu.motion(pos)
         else:
             self.hovered_ent = None
-            for ent in self.foes + self.players + self.breakables:
+            for ent in self.foes + self.allies + self.players + self.breakables:
                 if ent.get_rect().collidepoint(pos):
                     self.hovered_ent = ent
                     return

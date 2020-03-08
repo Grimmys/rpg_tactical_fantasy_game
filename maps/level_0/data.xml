@@ -18,6 +18,20 @@
             <y>8</y>
         </position>
     </placementArea>
+    <allies>
+        <ally>
+            <name>
+                jist
+            </name>
+            <position>
+                <x>15</x>
+                <y>6</y>
+            </position>
+            <level>
+                1
+            </level>
+        </ally>
+    </allies>
     <foes>
         <foe>
             <name>

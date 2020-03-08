@@ -1,5 +1,6 @@
 import pygame as pg
 from lxml import etree
+import math
 
 from src.constants import *
 from src.Destroyable import Destroyable
@@ -8,12 +9,17 @@ from src.Key import Key
 TIMER = 60
 NB_ITEMS_MAX = 8
 
+STATIC = 0
+PASSIVE = 1
+SEMI_ACTIVE = 2
+ACTIVE = 3
+
 
 class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
     move_speed = ANIMATION_SPEED
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl=1, compl_sprite=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, strategy, lvl=1, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         self.max_move = max_move
         self.on_move = []
@@ -29,6 +35,13 @@ class Movable(Destroyable):
         if compl_sprite:
             compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
             self.sprite.blit(compl, (0, 0))
+
+        '''Possible strategies :
+                - STATIC : Entity will never move, just attack if possible
+                - PASSIVE : Entity will react to attacks, and pursue opponent if it's trying to flee
+                - SEMI_ACTIVE : Entity will only move if an opponent is at reach
+                - ACTIVE : Entity always move to get closer from opponents'''
+        self.strategy = strategy
 
     def get_strength(self):
         return self.strength
@@ -128,6 +141,21 @@ class Movable(Destroyable):
         if self.timer <= 0:
             self.pos = self.on_move.pop(0)
             self.timer = TIMER
+
+    def determine_move(self, targets, possible_moves, possible_attacks):
+        if self.strategy == SEMI_ACTIVE:
+            for attack in possible_attacks:
+                for move in possible_moves:
+                    # Try to find move next to possible attack
+                    if abs(move[0] - attack[0]) + abs(move[1] - attack[1]) == TILE_SIZE:
+                        return move
+        if self.strategy == ACTIVE:
+            # TODO
+            pass
+        elif self.strategy == PASSIVE:
+            # TODO
+            pass
+        return self.pos
 
     # Should return damage dealt
     def attack(self, ent):

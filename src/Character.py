@@ -4,9 +4,9 @@ import random as rd
 
 
 class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl, race, gold,
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, strategy, lvl, race, gold,
                  compl_sprite=None):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl, compl_sprite)
+        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, strategy, lvl, compl_sprite)
         self.equipments = equipments
         self.classes = classes
         self.race = race
