@@ -1,5 +1,6 @@
 import random as rd
 import pygame as pg
+from lxml import etree
 
 from src.Movable import Movable
 from src.constants import *
@@ -131,3 +132,12 @@ class Character(Movable):
         for index, equip in enumerate(self.equipments):
             if equip.get_id() == id:
                 return self.equipments.pop(index)
+
+    def save(self):
+        tree = Movable.save(self)
+
+        # Save gold
+        gold = etree.SubElement(tree, 'gold')
+        gold.text = str(self.gold)
+
+        return tree

@@ -204,6 +204,8 @@ class Level:
                         if self.case_is_empty(tile):
                             player.set_initial_pos(tile)
                             break
+            # Load allies
+            self.load_allies(tree.findall('allies/ally'))
 
             # Load foes
             self.load_foes(tree.findall('foes/foe'))
@@ -217,6 +219,9 @@ class Level:
             # Load fountains
             self.load_fountains(tree)
         else:
+            # Load allies
+            self.load_allies(data.findall('allies/entity'), from_save=True)
+
             # Load saved foes
             self.load_foes(data.findall('foes/entity'), from_save=True)
 
@@ -231,9 +236,6 @@ class Level:
 
         # Load portals
         self.load_portals(tree)
-
-        # Load allies
-        self.load_allies(tree.findall('allies/ally'))
 
         # Load buildings
         self.load_buildings(tree)
@@ -312,9 +314,19 @@ class Level:
             strength = int(stats_tree.find('strength').text.strip())
             defense = int(stats_tree.find('def').text.strip())
             res = int(stats_tree.find('res').text.strip())
+            gold = int(stats_tree.find('gold').text.strip())
 
-            self.allies.append(Character(name, pos, sprite, hp, defense, res, move, strength,
-                                         [], [], strategy, lvl, race, 0, dialog))
+            loaded_ally = Character(name, pos, sprite, hp, defense, res, move, strength,
+                                         [], [], strategy, lvl, race, gold, dialog)
+
+            if from_save:
+                current_hp = int(ally.find('currentHp').text.strip())
+                loaded_ally.set_current_hp(current_hp)
+
+                xp = int(ally.find('exp').text.strip())
+                loaded_ally.earn_xp(xp)
+
+            self.allies.append(loaded_ally)
 
 
     def load_foes(self, foes, from_save=False):
@@ -540,6 +552,9 @@ class Level:
             turn.text = str(self.turn)
 
         entities = etree.SubElement(level, 'entities')
+        allies = etree.SubElement(entities, 'allies')
+        for ent in self.allies:
+            allies.append(ent.save())
         foes = etree.SubElement(entities, 'foes')
         for ent in self.foes:
             foes.append(ent.save())

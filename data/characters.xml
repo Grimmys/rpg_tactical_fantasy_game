@@ -18,6 +18,7 @@
                 The clock is ticking... The ogre's bones must be returned to their original place.
             </talk>
         </talks>
+        <gold> 100 </gold>
         <strategy> static </strategy>
     </jist>
     <john>
