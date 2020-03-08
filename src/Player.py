@@ -110,6 +110,10 @@ class Player(Character):
         class_el = etree.SubElement(tree, 'class')
         class_el.text = self.classes[0]  # Currently, only first class is saved
 
+        # Save race
+        race = etree.SubElement(tree, 'race')
+        race.text = self.race
+
         # Save exp
         exp = etree.SubElement(tree, 'exp')
         exp.text = str(self.xp)

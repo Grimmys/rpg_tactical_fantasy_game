@@ -2,6 +2,7 @@ import pygame as pg
 from lxml import etree
 import random
 
+from src.Building import Building
 from src.constants import *
 from src.Destroyable import Destroyable
 from src.Key import Key
@@ -12,7 +13,6 @@ from src.Potion import Potion
 from src.Consumable import Consumable
 from src.Spellbook import Spellbook
 from src.Character import Character
-from src.Movable import Movable
 from src.Player import Player
 from src.Foe import *
 from src.Chest import Chest
@@ -44,7 +44,7 @@ ATTACKABLE = pg.transform.scale(pg.image.load(ATTACKABLE_SPRITE).convert_alpha()
 ATTACKABLE_OPACITY = 80
 INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
 INTERACTION = pg.transform.scale(pg.image.load(INTERACTION_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-INTERACTION_OPACITY = 100
+INTERACTION_OPACITY = 500
 
 BUTTON_MENU_SIZE = (150, 30)
 CLOSE_BUTTON_SIZE = (150, 50)
@@ -119,8 +119,10 @@ OPEN_CHEST_ACTION_ID = 5
 USE_PORTAL_ACTION_ID = 6
 #   - Drink in fountain
 DRINK_ACTION_ID = 7
+#   - Visit a building
+VISIT_ACTION_ID = 8
 #   - Valid mission position
-TAKE_ACTION_ID = 8
+TAKE_ACTION_ID = 9
 
 # > Inventory menu
 INV_MENU_ID = 2
@@ -178,6 +180,7 @@ class Level:
         self.portals = []
         self.fountains = []
         self.breakables = []
+        self.buildings = []
         self.obstacles = []
 
         # Reading of the XML file
@@ -225,8 +228,11 @@ class Level:
         # Load portals
         self.load_portals(tree)
 
+        # Load buildings
+        self.load_buildings(tree)
+
         # Store all entities
-        self.entities += self.foes + self.chests + self.portals + self.fountains + self.breakables
+        self.entities += self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
 
         # Load obstacles
         self.load_obstacles(tree)
@@ -283,6 +289,9 @@ class Level:
             # Static data
             sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
             xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
+            strategy = foes_infos[name].find('strategy').text.strip()
+            if strategy == "semi_active":
+                strategy = SEMI_ACTIVE
 
             stats_tree = foes_infos[name]
             if from_save:
@@ -293,9 +302,6 @@ class Level:
             strength = int(stats_tree.find('strength').text.strip())
             defense = int(stats_tree.find('def').text.strip())
             res = int(stats_tree.find('res').text.strip())
-            strategy = stats_tree.find('strategy').text.strip()
-            if strategy == "semi_active":
-                strategy = SEMI_ACTIVE
 
             loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, strategy, lvl)
 
@@ -381,7 +387,7 @@ class Level:
             self.fountains.append(loaded_fountain)
 
     def load_breakables(self, tree, data=None):
-        for breakable in tree.xpath("breakables/breakable"):
+        for breakable in tree.xpath('breakables/breakable'):
             # Static data
             name = breakable.find('id').text.strip()
             x = int(breakable.find('position/x').text) * TILE_SIZE
@@ -402,6 +408,17 @@ class Level:
                 current_hp = int(el.find('currentHp').text.strip())
                 loaded_breakable.set_current_hp(current_hp)
             self.breakables.append(loaded_breakable)
+
+    def load_buildings(self, tree):
+        for building in tree.xpath('buildings/building'):
+            # Static data
+            name = building.find('name').text.strip()
+            x = int(building.find('position/x').text) * TILE_SIZE
+            y = int(building.find('position/y').text) * TILE_SIZE
+            pos = (x, y)
+            sprite = 'imgs/houses/' + building.find('sprite').text.strip()
+
+            self.buildings.append(Building(name, pos, sprite))
 
     def load_obstacles(self, tree):
         for positions in tree.xpath('/level/obstacles/positions'):
@@ -785,6 +802,15 @@ class Level:
         chest_option = False
         portal_option = False
         fountain_option = False
+
+        case_x = player_rect.x
+        case_y = player_rect.y - TILE_SIZE
+        case_pos = (case_x, case_y)
+        if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
+            case = self.get_entity_on_case(case_pos)
+            if isinstance(case, Building):
+                entries.insert(0, [{'name': 'Visit', 'id': VISIT_ACTION_ID}])
+
         for case_content in self.get_next_cases((player_rect.x, player_rect.y)):
             if isinstance(case_content, Chest) and not case_content.is_open() and not chest_option:
                 entries.insert(0, [{'name': 'Open', 'id': OPEN_CHEST_ACTION_ID}])
@@ -828,7 +854,7 @@ class Level:
 
                     # Turn is finished
                     self.execute_action(CHARACTER_MENU_ID, (WAIT_ACTION_ID, None))
-            # Check if player try to open a chest
+            # Check if player tries to open a chest
             elif isinstance(target, Chest):
                 if actor.has_free_space():
                     # Key is used to open the chest
@@ -853,7 +879,7 @@ class Level:
                     self.active_menu = InfoBox("You have no free space in your inventory.", "",
                                                "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
                                                close_button=UNFINAL_ACTION)
-            # Check if player try to use a portal
+            # Check if player tries to use a portal
             elif isinstance(target, Portal):
                 new_based_pos = target.get_linked_portal().get_pos()
                 possible_pos = self.get_possible_moves(new_based_pos, 1)
@@ -866,11 +892,20 @@ class Level:
                     self.active_menu = InfoBox("There is no free square around the other portal", "",
                                                "imgs/interface/PopUpMenu.png",
                                                [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            # Check if player tries to drink in a fountain
             elif isinstance(target, Fountain):
                 entries = target.drink(actor)
                 self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
                                            entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
+                # No more menu : turn is finished
+                self.background_menus = []
+                self.possible_interactions = []
+            # Check if player tries to visit a building
+            elif isinstance(target, Building):
+                entry = [{'type': 'text', 'text': target.interact(actor), 'font': ITEM_DESC_FONT}]
+                self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                                           [entry], ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                 # No more menu : turn is finished
                 self.background_menus = []
                 self.possible_interactions = []
@@ -1108,6 +1143,13 @@ class Level:
             for ent in self.get_next_cases(self.selected_player.get_pos()):
                 if isinstance(ent, Fountain):
                     self.possible_interactions.append(ent.get_pos())
+        # Visit a house
+        elif method_id == VISIT_ACTION_ID:
+            self.background_menus.append((self.active_menu, False))
+            self.active_menu = None
+            self.selected_player.choose_interaction()
+            pos = self.selected_player.get_pos()
+            self.possible_interactions = [(pos[0], pos[1] - TILE_SIZE)]
         # Valid a mission position
         elif method_id == TAKE_ACTION_ID:
             for mission in self.missions:

@@ -14,6 +14,8 @@ ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 GREEN = (0, 150, 0)
 MIDNIGHT_BLUE = (25, 25, 112)
 
+SHIFT = 2
+
 CRACKED_SPRITE = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
 CRACKED = pg.transform.scale(pg.image.load(CRACKED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
@@ -115,6 +117,12 @@ class Sidebar:
             if isinstance(ent, Character):
                 classes = ent.get_formatted_classes()
                 classes_pre_text = ITEM_FONT.render("CLASS : ", 1, MIDNIGHT_BLUE)
-                win.blit(classes_pre_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height()))
+                win.blit(classes_pre_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height() - SHIFT))
                 classes_text = ITEM_FONT.render("         " + classes, 1, BLACK)
-                win.blit(classes_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height()))
+                win.blit(classes_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height() - SHIFT))
+
+                race = ent.get_formatted_race()
+                race_pre_text = ITEM_FONT.render("RACE : ", 1, MIDNIGHT_BLUE)
+                win.blit(race_pre_text, (text_pos_x, frame_pos[1] + (ITEM_FONT.get_height() - SHIFT) * 2))
+                race_text = ITEM_FONT.render("        " + race, 1, BLACK)
+                win.blit(race_text, (text_pos_x, frame_pos[1] + (ITEM_FONT.get_height() - SHIFT) * 2))

@@ -140,6 +140,80 @@
             </level>
         </foe>
     </foes>
+    <buildings>
+        <building>
+            <name>
+                house
+            </name>
+            <id> 1 </id>
+            <position>
+                <x>6</x>
+                <y>6</y>
+            </position>
+            <sprite>blue_house.png</sprite>
+            <uninteractable />
+        </building>
+        <building>
+            <name>
+                house
+            </name>
+            <id> 2 </id>
+            <position>
+                <x>7</x>
+                <y>1</y>
+            </position>
+            <sprite>blue_house_side.png</sprite>
+            <uninteractable />
+        </building>
+        <building>
+            <name>
+                house
+            </name>
+            <id> 3 </id>
+            <position>
+                <x>9</x>
+                <y>2</y>
+            </position>
+            <sprite>yellow_house.png</sprite>
+            <uninteractable />
+        </building>
+        <building>
+            <name>
+                house
+            </name>
+            <id> 4 </id>
+            <position>
+                <x>11</x>
+                <y>4</y>
+            </position>
+            <sprite>red_house.png</sprite>
+            <uninteractable />
+        </building>
+        <building>
+            <name>
+                tavern
+            </name>
+            <id> 1 </id>
+            <position>
+                <x>15</x>
+                <y>5</y>
+            </position>
+            <sprite>tavern.png</sprite>
+            <uninteractable />
+        </building>
+        <building>
+            <name>
+                armory
+            </name>
+            <id> 1 </id>
+            <position>
+                <x>13</x>
+                <y>0</y>
+            </position>
+            <sprite>armory.png</sprite>
+            <uninteractable />
+        </building>
+    </buildings>
     <obstacles>
         <positions>
             <x>0</x>
