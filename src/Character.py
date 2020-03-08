@@ -1,16 +1,47 @@
-from src.Movable import Movable
-
 import random as rd
+import pygame as pg
 
+from src.Movable import Movable
+from src.constants import *
+
+ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
 
 class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, strategy, lvl, race, gold,
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, strategy, lvl,
+                 race, gold, talk,
                  compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, strategy, lvl, compl_sprite)
+        '''Possible states :
+                - 0 : Have to act
+                - 1 : On move
+                - 2 : Have to attack
+                - 3 : Turn finished
+        '''
+
         self.equipments = equipments
         self.classes = classes
         self.race = race
         self.gold = gold
+        self.dialog = talk
+
+    def talk(self, actor):
+        entries = []
+        for s in self.dialog:
+            entry = [{'type': 'text', 'text': s, 'font': ITEM_DESC_FONT}]
+            entries.append(entry)
+        return entries
+
+    def set_move(self, pos):
+        Movable.set_move(self, pos)
+        self.state = 1
+
+    def move(self):
+        Movable.move(self)
+        if not self.on_move:
+            self.state = 2
+
+    def end_turn(self):
+        self.state = 3
 
     def display(self, screen):
         Movable.display(self, screen)

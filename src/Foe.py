@@ -10,11 +10,8 @@ class Foe(Movable):
                 - 2 : Have to attack
                 - 3 : Turn finished
         '''
-        self.state = 0
-        self.xp_gain = xp_gain
 
-    def get_state(self):
-        return self.state
+        self.xp_gain = xp_gain
 
     def get_xp_obtained(self):
         return self.xp_gain

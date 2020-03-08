@@ -122,8 +122,10 @@ USE_PORTAL_ACTION_ID = 6
 DRINK_ACTION_ID = 7
 #   - Visit a building
 VISIT_ACTION_ID = 8
+#   - Talk to an ally or neutral character
+TALK_ACTION_ID = 9
 #   - Valid mission position
-TAKE_ACTION_ID = 9
+TAKE_ACTION_ID = 10
 
 # > Inventory menu
 INV_MENU_ID = 2
@@ -293,6 +295,10 @@ class Level:
             sprite = 'imgs/characs/' + infos.find('sprite').text.strip()
             race = infos.find('race').text.strip()
             strategy = infos.find('strategy').text.strip()
+            talks = infos.find('talks')
+            dialog = []
+            for talk in talks.findall('talk'):
+                dialog.append(talk.text.strip())
             if strategy == "semi_active":
                 strategy = SEMI_ACTIVE
             elif strategy == "static":
@@ -308,7 +314,7 @@ class Level:
             res = int(stats_tree.find('res').text.strip())
 
             self.allies.append(Character(name, pos, sprite, hp, defense, res, move, strength,
-                                         [], [], strategy, lvl, race, 0))
+                                         [], [], strategy, lvl, race, 0, dialog))
 
 
     def load_foes(self, foes, from_save=False):
@@ -643,13 +649,22 @@ class Level:
                 if not player.turn_is_finished():
                     turn_finished = False
             if turn_finished:
+                self.side_turn = 'A'
+                self.begin_turn()
+        elif self.side_turn == 'A':
+            for ally in self.allies:
+                state = ally.get_state()
+                if state != 3:
+                    self.entity_action(ally, True)
+                    break
+            else:
                 self.side_turn = 'O'
                 self.begin_turn()
         elif self.side_turn == 'O':
             for foe in self.foes:
                 state = foe.get_state()
                 if state != 3:
-                    self.foe_action(foe)
+                    self.entity_action(foe, False)
                     break
             else:
                 self.new_turn()
@@ -767,7 +782,7 @@ class Level:
         if from_ally_side:
             ents += self.foes
         else:
-            ents += self.players
+            ents += self.allies + self.players
 
         for ent in ents:
             pos = ent.get_pos()
@@ -841,6 +856,7 @@ class Level:
         chest_option = False
         portal_option = False
         fountain_option = False
+        talk_option = False
 
         case_x = player_rect.x
         case_y = player_rect.y - TILE_SIZE
@@ -860,6 +876,9 @@ class Level:
             if isinstance(case_content, Fountain) and not fountain_option:
                 entries.insert(0, [{'name': 'Drink', 'id': DRINK_ACTION_ID}])
                 fountain_option = True
+            if isinstance(case_content, Character) and not isinstance(case_content, Player) and not talk_option:
+                entries.insert(0, [{'name': 'Talk', 'id': TALK_ACTION_ID}])
+                talk_option = True
 
         # Check if player is on mission position
         player_pos = self.selected_player.get_pos()
@@ -940,6 +959,14 @@ class Level:
                 # No more menu : turn is finished
                 self.background_menus = []
                 self.possible_interactions = []
+            # Check if player tries to talk to a character
+            elif isinstance(target, Character):
+                entries = target.talk(actor)
+                self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+                # No more menu : turn is finished
+                self.background_menus = []
+                self.possible_interactions = []
             # Check if player tries to visit a building
             elif isinstance(target, Building):
                 entry = [{'type': 'text', 'text': target.interact(actor), 'font': ITEM_DESC_FONT}]
@@ -966,27 +993,29 @@ class Level:
                 collec = self.players
             elif isinstance(target, Breakable):
                 collec = self.breakables
+            elif isinstance(target, Character):
+                collec = self.allies
             collec.remove(target)
 
-    def foe_action(self, foe):
-        if foe.get_state() == 0:
-            pos = foe.get_pos()
-            possible_moves = self.get_possible_moves(pos, foe.get_max_moves())
-            # TEMPO : foe's range can't be different from one actually
+    def entity_action(self, ent, side):
+        if ent.get_state() == 0:
+            pos = ent.get_pos()
+            possible_moves = self.get_possible_moves(pos, ent.get_max_moves())
+            # TEMPO : entity's range can't be different from one actually
             reach = [1]
-            possible_attacks = self.get_possible_attacks(possible_moves, reach, False)
-            move = foe.determine_move(self.players, possible_moves, possible_attacks)
+            possible_attacks = self.get_possible_attacks(possible_moves, reach, side)
+            move = ent.determine_move(self.players, possible_moves, possible_attacks)
             path = self.determine_path_to(move, possible_moves)
-            foe.set_move(path)
-        elif foe.get_state() == 1:
-            foe.move()
-        elif foe.get_state() == 2:
-            # Foe try to attack someone
-            possible_attacks = self.get_possible_attacks([foe.get_pos()], [1], False)
+            ent.set_move(path)
+        elif ent.get_state() == 1:
+            ent.move()
+        elif ent.get_state() == 2:
+            # Entity try to attack someone
+            possible_attacks = self.get_possible_attacks([ent.get_pos()], [1], side)
             if possible_attacks:
                 ent_attacked = self.get_entity_on_case(random.choice(list(possible_attacks)))
-                self.duel(foe, ent_attacked)
-            foe.end_turn()
+                self.duel(ent, ent_attacked)
+            ent.end_turn()
 
     @staticmethod
     def create_inventory_entries(items, gold):
@@ -1082,7 +1111,7 @@ class Level:
                                           'font': ITEM_DESC_FONT}]], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         elif method_id == END_TURN_ACTION_ID:
             self.active_menu = None
-            self.side_turn = 'O'
+            self.side_turn = 'A'
             self.begin_turn()
         elif method_id == SUSPEND_ACTION_ID:
             self.exit_game()
@@ -1181,6 +1210,14 @@ class Level:
             self.possible_interactions = []
             for ent in self.get_next_cases(self.selected_player.get_pos()):
                 if isinstance(ent, Fountain):
+                    self.possible_interactions.append(ent.get_pos())
+        elif method_id == TALK_ACTION_ID:
+            self.background_menus.append((self.active_menu, False))
+            self.active_menu = None
+            self.selected_player.choose_interaction()
+            self.possible_interactions = []
+            for ent in self.get_next_cases(self.selected_player.get_pos()):
+                if isinstance(ent, Character):
                     self.possible_interactions.append(ent.get_pos())
         # Visit a house
         elif method_id == VISIT_ACTION_ID:
@@ -1457,6 +1494,9 @@ class Level:
         if self.side_turn == 'P':
             for player in self.players:
                 player.new_turn()
+        elif self.side_turn == 'A':
+            for ally in self.allies:
+                ally.new_turn()
         elif self.side_turn == 'O':
             for foe in self.foes:
                 foe.new_turn()
@@ -1512,7 +1552,9 @@ class Level:
                                     self.selected_player.set_initial_pos(tile)
                                     return
                     for player in self.players:
-                        if player.is_on_pos(pos) and not player == self.selected_player and not player.turn_is_finished():
+                        if player.is_on_pos(pos) and not player.turn_is_finished():
+                            if self.selected_player:
+                                self.selected_player.set_selected(False)
                             player.set_selected(True)
                             self.selected_player = player
                             self.possible_moves = self.get_possible_moves(player.get_pos(), player.get_max_moves())

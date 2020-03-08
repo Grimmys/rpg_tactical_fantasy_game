@@ -45,5 +45,12 @@ class Entity:
         name = etree.SubElement(tree, 'name')
         name.text = self.name
 
+        # Save position
+        pos = etree.SubElement(tree, 'position')
+        x = etree.SubElement(pos, 'x')
+        x.text = str(self.pos[0] // TILE_SIZE)
+        y = etree.SubElement(pos, 'y')
+        y.text = str(self.pos[1] // TILE_SIZE)
+
         return tree
 

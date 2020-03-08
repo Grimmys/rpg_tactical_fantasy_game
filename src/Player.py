@@ -52,8 +52,8 @@ class Player(Character):
 
     def set_move(self, pos):
         Character.set_move(self, pos)
-        self.old_pos = self.pos
         self.state = 2
+        self.old_pos = self.pos
 
     def move(self):
         Character.move(self)

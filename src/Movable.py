@@ -98,6 +98,9 @@ class Movable(Destroyable):
         self.xp -= self.xp_next_lvl
         self.xp_next_lvl = self.determine_xp_goal()
 
+    def get_state(self):
+        return self.state
+
     def get_item(self, index):
         if index not in range(len(self.items)):
             return False
@@ -170,13 +173,6 @@ class Movable(Destroyable):
 
     def save(self):
         tree = Destroyable.save(self)
-
-        # Save position
-        pos = etree.SubElement(tree, 'position')
-        x = etree.SubElement(pos, 'x')
-        x.text = str(self.pos[0] // TILE_SIZE)
-        y = etree.SubElement(pos, 'y')
-        y.text = str(self.pos[1] // TILE_SIZE)
 
         # Save level
         level = etree.SubElement(tree, 'level')

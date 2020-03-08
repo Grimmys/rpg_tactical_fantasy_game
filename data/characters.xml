@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <characters>
     <jist>
         <name> Jist </name>
@@ -9,6 +10,14 @@
         <hp> 10 </hp>
         <move> 0 </move>
         <sprite> jist.png </sprite>
+        <talks>
+            <talk>
+                Hurry up ! Leave the village from the west, and enter the necropolis.
+            </talk>
+            <talk>
+                The clock is ticking... The ogre's bones must be returned to their original place.
+            </talk>
+        </talks>
         <strategy> static </strategy>
     </jist>
     <john>
