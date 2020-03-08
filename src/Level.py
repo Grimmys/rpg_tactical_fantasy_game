@@ -405,6 +405,28 @@ class Level:
             self.breakables.append(loaded_breakable)
 
     def load_obstacles(self, tree):
+        for positions in tree.xpath('/level/obstacles/positions'):
+            print(positions)
+            fixed_y = positions.find('y')
+            print(fixed_y)
+            if fixed_y is not None:
+                print("Test")
+                fixed_y = int(fixed_y.text) * TILE_SIZE
+                from_x = int(positions.find('from_x').text) * TILE_SIZE
+                to_x = int(positions.find('to_x').text) * TILE_SIZE
+                for i in range(from_x, to_x + TILE_SIZE, TILE_SIZE):
+                    pos = (i, fixed_y)
+                    print(pos)
+                    self.obstacles.append(pos)
+            else:
+                fixed_x = int(positions.find('x').text) * TILE_SIZE
+                from_y = int(positions.find('from_y').text) * TILE_SIZE
+                to_y = int(positions.find('to_y').text) * TILE_SIZE
+                for i in range(from_y, to_y + TILE_SIZE, TILE_SIZE):
+                    pos = (fixed_x, i)
+                    print(pos)
+                    self.obstacles.append(pos)
+
         for obstacle in tree.xpath('/level/obstacles/position'):
             x = int(obstacle.find('x').text) * TILE_SIZE
             y = int(obstacle.find('y').text) * TILE_SIZE

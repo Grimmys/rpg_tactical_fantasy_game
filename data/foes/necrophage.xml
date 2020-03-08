@@ -1,12 +1,12 @@
-<skeleton>
+<necrophage>
     <sprite>
-        undead/skeletons/skeleton_humanoid_small_old.png
+        undead/necrophage_new.png
     </sprite>
     <move>
-        2
+        1
     </move>
     <hp>
-        5
+        8
     </hp>
     <strength>
         1
@@ -18,9 +18,9 @@
         0
     </res>
     <xp_gain>
-        10
+        13
     </xp_gain>
     <strategy>
         semi_active
     </strategy>
-</skeleton>
+</necrophage>
