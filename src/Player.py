@@ -9,10 +9,10 @@ SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alp
 
 
 class Player(Character):
-    def __init__(self, name, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl=1,
+    def __init__(self, name, sprite, hp, defense, res, max_move, strength, classes, equipments, race, gold, lvl=1,
                  compl_sprite=None):
-        Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, classes, equipments, lvl,
-                           compl_sprite)
+        Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, classes, equipments, lvl, race,
+                           gold, compl_sprite)
         '''Possible states :
         - 0 : Waiting to be selected
         - 1 : Waiting to be moved
@@ -136,6 +136,10 @@ class Player(Character):
         x.text = str(self.pos[0])
         y = etree.SubElement(pos, 'y')
         y.text = str(self.pos[1])
+
+        # Save gold
+        gold = etree.SubElement(tree, 'gold')
+        gold.text = str(self.gold)
 
         # Save if turn is finished or not
         state = etree.SubElement(tree, 'turnFinished')

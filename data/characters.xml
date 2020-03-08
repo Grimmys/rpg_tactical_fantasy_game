@@ -2,6 +2,7 @@
     <john>
         <name> John </name>
         <class> warrior </class>
+        <race> human </race>
         <lvl> 1 </lvl>
         <initStrength> 1 </initStrength>
         <initDef> 0 </initDef>
@@ -11,40 +12,7 @@
         <sprite> base/human_male.png </sprite>
         <equipment>
             <head>
-                gold_helmet
-            </head>
-            <body>
-                gold_armor
-            </body>
-            <feet>
-                gold_boots
-            </feet>
-        </equipment>
-        <inventory>
-                <item>
-                    life_potion
-                </item>
-                <item>
-                    key
-                </item>
-                <item>
-                    club
-                </item>
-        </inventory>
-    </john>
-    <archer>
-        <name> Archer </name>
-        <class> ranger </class>
-        <initStrength> 1 </initStrength>
-        <initDef> 1 </initDef>
-        <initRes> 0 </initRes>
-        <initHP> 8 </initHP>
-        <move> 5 </move>
-        <sprite> base/human_female.png </sprite>
-        <complementSprite> legs/pants_short_brown.png </complementSprite>
-        <equipment>
-            <head>
-                plumed_helmet
+                helmet
             </head>
             <body>
                 chainmail
@@ -58,8 +26,44 @@
                     life_potion
                 </item>
                 <item>
+                    key
+                </item>
+                <item>
+                    club
+                </item>
+        </inventory>
+        <gold> 100 </gold>
+    </john>
+    <archer>
+        <name> Archer </name>
+        <class> ranger </class>
+        <race> elf </race>
+        <initStrength> 1 </initStrength>
+        <initDef> 1 </initDef>
+        <initRes> 0 </initRes>
+        <initHP> 8 </initHP>
+        <move> 5 </move>
+        <sprite> base/human_female.png </sprite>
+        <complementSprite> legs/pants_short_brown.png </complementSprite>
+        <equipment>
+            <head>
+                plumed_helmet
+            </head>
+            <body>
+                leather_armor
+            </body>
+            <feet>
+                brown_boots
+            </feet>
+        </equipment>
+        <inventory>
+                <item>
+                    life_potion
+                </item>
+                <item>
                     basic_bow
                 </item>
         </inventory>
+        <gold> 100 </gold>
     </archer>
 </characters>

@@ -17,6 +17,9 @@ class Mission:
     def is_ended(self):
         return self.ended
 
+    def get_chars(self):
+        return self.succeeded_chars
+
     def get_description(self):
         return self.desc
 

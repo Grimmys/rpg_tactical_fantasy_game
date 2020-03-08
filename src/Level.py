@@ -32,16 +32,16 @@ TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 MENU_SUB_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
-ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
+ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
 ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 
 
 LANDING_SPRITE = 'imgs/dungeon_crawl/misc/move.png'
 LANDING = pg.transform.scale(pg.image.load(LANDING_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-LANDING_OPACITY = 40
+LANDING_OPACITY = 80
 ATTACKABLE_SPRITE = 'imgs/dungeon_crawl/misc/attackable.png'
 ATTACKABLE = pg.transform.scale(pg.image.load(ATTACKABLE_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-ATTACKABLE_OPACITY = 40
+ATTACKABLE_OPACITY = 80
 INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
 INTERACTION = pg.transform.scale(pg.image.load(INTERACTION_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 INTERACTION_OPACITY = 100
@@ -222,8 +222,6 @@ class Level:
             # Load fountains
             self.load_fountains(tree, data.find('fountains'))
 
-
-
         # Load portals
         self.load_portals(tree)
 
@@ -235,6 +233,7 @@ class Level:
 
         # Load missions
         self.missions = []
+        self.main_mission = None
         self.load_missions(tree)
 
         # Booleans for end game
@@ -406,17 +405,13 @@ class Level:
 
     def load_obstacles(self, tree):
         for positions in tree.xpath('/level/obstacles/positions'):
-            print(positions)
             fixed_y = positions.find('y')
-            print(fixed_y)
             if fixed_y is not None:
-                print("Test")
                 fixed_y = int(fixed_y.text) * TILE_SIZE
                 from_x = int(positions.find('from_x').text) * TILE_SIZE
                 to_x = int(positions.find('to_x').text) * TILE_SIZE
                 for i in range(from_x, to_x + TILE_SIZE, TILE_SIZE):
                     pos = (i, fixed_y)
-                    print(pos)
                     self.obstacles.append(pos)
             else:
                 fixed_x = int(positions.find('x').text) * TILE_SIZE
@@ -424,7 +419,6 @@ class Level:
                 to_y = int(positions.find('to_y').text) * TILE_SIZE
                 for i in range(from_y, to_y + TILE_SIZE, TILE_SIZE):
                     pos = (fixed_x, i)
-                    print(pos)
                     self.obstacles.append(pos)
 
         for obstacle in tree.xpath('/level/obstacles/position'):
@@ -449,6 +443,7 @@ class Level:
                 positions.append(pos)
             mission = Mission(main, nature, positions, desc, nb_players)
         self.missions.append(mission)
+        self.main_mission = mission
 
     def load_placements(self, tree):
         positions = tree.findall('placementArea/position')
@@ -528,16 +523,22 @@ class Level:
             body_part = it_tree_root.find('bodypart').text.strip()
             defense = int(it_tree_root.find('def').text.strip())
             weight = int(it_tree_root.find('weight').text.strip())
-            equipped_sprite = 'imgs/dungeon_crawl/player/' + it_tree_root.find(
-                'equipped_sprite').text.strip()
-            item = Equipment(name, sprite, info, equipped_sprite, body_part, defense, 0, 0, weight)
+            eq_sprites = it_tree_root.find('equipped_sprites')
+            if eq_sprites is not None:
+                equipped_sprites = []
+                for eq_sprite in eq_sprites.findall('sprite'):
+                    equipped_sprites.append('imgs/dungeon_crawl/player/' + eq_sprite.text.strip())
+            else:
+                equipped_sprites = ['imgs/dungeon_crawl/player/' + it_tree_root.find(
+                'equipped_sprite').text.strip()]
+            item = Equipment(name, sprite, info, equipped_sprites, body_part, defense, 0, 0, weight)
         elif category == 'weapon':
             power = int(it_tree_root.find('power').text.strip())
             weight = int(it_tree_root.find('weight').text.strip())
             fragility = int(it_tree_root.find('fragility').text.strip())
             w_range = [int(it_tree_root.find('range').text.strip())]
-            equipped_sprite = 'imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
-                'equipped_sprite').text.strip()
+            equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
+                'equipped_sprite').text.strip()]
             item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, w_range)
         elif category == 'key':
             item = Key(name, sprite, info)
@@ -561,13 +562,18 @@ class Level:
             return True
         if self.animation:
             return False
-        if not self.players:
+        if not self.players and self.game_phase == 'G' and not self.main_mission.get_chars():
             self.defeat = True
         if self.victory or self.defeat:
             if self.victory:
                 self.end_level(VICTORY, VICTORY_POS)
             else:
                 self.end_level(DEFEAT, DEFEAT_POS)
+            # Set values to False to avoid infinite repetitions
+            self.victory = False
+            self.defeat = False
+            return False
+        if self.game_phase == 'F':
             return False
         if self.selected_player:
             if self.selected_player.get_move():
@@ -607,9 +613,8 @@ class Level:
         if self.animation:
             if self.animation.anim(win):
                 self.animation = None
-
-        # End game animation is finished, level can be quit
-        if self.game_phase == 'F':
+        elif self.game_phase == 'F':
+            # End game animation is finished, level can be quit
             self.exit_game()
 
         # If the game hasn't yet started
@@ -910,7 +915,7 @@ class Level:
             foe.end_turn()
 
     @staticmethod
-    def create_inventory_entries(items):
+    def create_inventory_entries(items, gold):
         entries = []
         row = []
         for i, it in enumerate(items):
@@ -921,6 +926,10 @@ class Level:
                 row = []
         if row:
             entries.append(row)
+
+        # Gold at end
+        entry = [{'type': 'text', 'text': 'Gold : ' + str(gold), 'font': ITEM_DESC_FONT}]
+        entries.append(entry)
 
         return entries
 
@@ -953,6 +962,8 @@ class Level:
                     {'type': 'text', 'text': player.get_formatted_name()}],
                    [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': player.get_formatted_classes()}],
+                   [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': ITALIC_ITEM_FONT},
+                    {'type': 'text', 'text': player.get_formatted_race()}],
                    [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': str(player.get_lvl())}],
                    [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': ITALIC_ITEM_FONT},
@@ -1025,7 +1036,9 @@ class Level:
             free_spaces = items_max - len(items)
             items += [None] * free_spaces
 
-            entries = Level.create_inventory_entries(items)
+            gold = self.selected_player.get_gold()
+
+            entries = Level.create_inventory_entries(items, gold)
 
             self.active_menu = InfoBox("Inventory", INV_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
@@ -1237,7 +1250,9 @@ class Level:
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                entries = Level.create_inventory_entries(items)
+                gold = self.selected_player.get_gold()
+
+                entries = Level.create_inventory_entries(items, gold)
 
                 # Cancel item menu
                 self.background_menus.pop()
@@ -1267,7 +1282,9 @@ class Level:
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                entries = Level.create_inventory_entries(items)
+                gold = self.selected_player.get_gold()
+
+                entries = Level.create_inventory_entries(items, gold)
 
                 # Cancel item menu
                 self.background_menus.pop()

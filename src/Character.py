@@ -4,11 +4,13 @@ import random as rd
 
 
 class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl,
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, lvl, race, gold,
                  compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, lvl, compl_sprite)
         self.equipments = equipments
         self.classes = classes
+        self.race = race
+        self.gold = gold
 
     def display(self, screen):
         Movable.display(self, screen)
@@ -58,6 +60,9 @@ class Character(Movable):
             return False
         return self.equipments[index]
 
+    def get_gold(self):
+        return self.gold
+
     def has_equipment(self, eq):
         return eq in self.equipments
 
@@ -71,6 +76,9 @@ class Character(Movable):
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
+
+    def get_formatted_race(self):
+        return self.race.capitalize()
 
     def equip(self, eq):
         for equip in self.equipments:

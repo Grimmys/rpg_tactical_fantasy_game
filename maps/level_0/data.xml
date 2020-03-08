@@ -142,6 +142,11 @@
     </foes>
     <obstacles>
         <positions>
+            <x>0</x>
+            <from_y>2</from_y>
+            <to_y>3</to_y>
+        </positions>
+        <positions>
             <x>18</x>
             <from_y>0</from_y>
             <to_y>9</to_y>

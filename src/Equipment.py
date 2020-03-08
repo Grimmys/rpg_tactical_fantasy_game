@@ -6,15 +6,19 @@ from src.constants import *
 
 class Equipment(Item):
 
-    def __init__(self, name, sprite, description, equipped_sprite, body_part, res, magic_res, atk, weight):
+    def __init__(self, name, sprite, description, equipped_sprites, body_part, res, magic_res, atk, weight):
         Item.__init__(self, name, sprite, description)
         self.res = res
         self.magic_res = magic_res
         self.atk = atk
         self.weight = weight
         self.body_part = body_part
-        self.equipped_sprite = pg.transform.scale(pg.image.load(equipped_sprite).convert_alpha(),
+        self.equipped_sprite = pg.transform.scale(pg.image.load(equipped_sprites[0]).convert_alpha(),
                                                   (TILE_SIZE, TILE_SIZE))
+        if len(equipped_sprites) > 1:
+            for sp in equipped_sprites[1:]:
+                self.equipped_sprite.blit(pg.transform.scale(pg.image.load(sp).convert_alpha(),
+                                          (TILE_SIZE, TILE_SIZE)), (0, 0))
 
         # Used when character wearing the equipment cannot be selected
         self.sprite_unavailable = self.equipped_sprite.copy()

@@ -169,6 +169,32 @@
                 head/helm_plume.png
             </equipped_sprite>
         </plumed_helmet>
+        <helmet>
+            <name>
+                Helmet
+            </name>
+            <sprite>
+                armor/headgear/helmet_1.png
+            </sprite>
+            <info>
+                A very basic helmet.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                head
+            </bodypart>
+            <def>
+                1
+            </def>
+            <weight>
+                2
+            </weight>
+            <equipped_sprite>
+                head/iron_2.png
+            </equipped_sprite>
+        </helmet>
         <gold_helmet>
             <name>
                 Gold Helmet
@@ -222,6 +248,33 @@
                 body/chainmail_3.png
             </equipped_sprite>
         </chainmail>
+        <leather_armor>
+            <name>
+                Leather Armor
+            </name>
+            <sprite>
+                armor/torso/leather_armor_2.png
+            </sprite>
+            <info>
+                A basic light armor, useful for beginning an adventure !
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                body
+            </bodypart>
+            <def>
+                2
+            </def>
+            <weight>
+                2
+            </weight>
+            <equipped_sprites>
+                <sprite>body/leather_armor_3.png</sprite>
+                <sprite>legs/pants_short_brown.png</sprite>
+            </equipped_sprites>
+        </leather_armor>
         <gold_armor>
             <name>
                 Gold Armor
@@ -248,7 +301,7 @@
                 body/armor_mummy.png
             </equipped_sprite>
         </gold_armor>
-         <brown_boots>
+        <brown_boots>
             <name>
                 Brown Boots
             </name>

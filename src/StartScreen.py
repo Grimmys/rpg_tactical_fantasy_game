@@ -141,6 +141,7 @@ class StartScreen:
         tree = etree.parse("data/characters.xml").getroot()
         player_t = tree.xpath(name)[0]
         player_class = player_t.find('class').text.strip()
+        race = player_t.find('race').text.strip()
         lvl = player_t.find('lvl')
         if lvl is None:
             # If lvl is not informed, default value is assumes to be 1
@@ -161,9 +162,10 @@ class StartScreen:
         equipments = []
         for eq in equipment.findall('*'):
             equipments.append(Level.parse_item_file(eq.text.strip()))
+        gold = int(player_t.find('gold').text.strip())
 
         # Creating player instance
-        player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, lvl,
+        player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, race, gold, lvl,
                         compl_sprite=compl_sprite)
 
         # Up stats according to current lvl
@@ -208,6 +210,8 @@ class StartScreen:
                     name = player.find("name").text.strip()
                     level = int(player.find("level").text.strip())
                     p_class = player.find("class").text.strip()
+                    race = player.find("race").text.strip()
+                    gold = int(player.find("gold").text.strip())
                     exp = int(player.find("exp").text.strip())
                     hp = int(player.find("hp").text.strip())
                     strength = int(player.find("strength").text.strip())
@@ -239,7 +243,7 @@ class StartScreen:
                     if compl_sprite is not None:
                         compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
 
-                    p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, level,
+                    p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, race, gold, level,
                                compl_sprite=compl_sprite)
                     p.earn_xp(exp)
                     p.set_items(inv)
