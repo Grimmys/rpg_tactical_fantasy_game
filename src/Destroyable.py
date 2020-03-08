@@ -2,7 +2,7 @@ import pygame as pg
 from lxml import etree
 
 from src.Entity import Entity
-from src.constants import TILE_SIZE
+from src.constants import *
 
 LIGHTLY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png'
 LIGHTLY_DAMAGED = pg.transform.scale(pg.image.load(LIGHTLY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
@@ -16,7 +16,6 @@ ALMOST_DEAD_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_almost_dead.png'
 ALMOST_DEAD = pg.transform.scale(pg.image.load(ALMOST_DEAD_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
 HP_BAR = pg.transform.scale(pg.image.load(HP_BAR_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-
 
 class Destroyable(Entity):
     def __init__(self, name, pos, sprite, hp, defense, res):
@@ -56,8 +55,14 @@ class Destroyable(Entity):
     def set_current_hp(self, hp):
         self.hp = hp
 
-    def attacked(self, ent, damages):
-        self.hp -= damages
+    def attacked(self, ent, damages, kind):
+        if kind == SPIRITUAL:
+            real_damages = damages - self.res
+        elif kind == PHYSICAL:
+            real_damages = damages - self.defense
+        if real_damages < 0:
+            real_damages = 0
+        self.hp -= real_damages
         return self.hp > 0
 
     def healed(self, value=None):

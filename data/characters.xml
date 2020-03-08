@@ -5,7 +5,7 @@
         <race> human </race>
         <lvl> 1 </lvl>
         <strength> 0 </strength>
-        <def> 0 </def>
+        <def> 2 </def>
         <res> 0 </res>
         <hp> 10 </hp>
         <move> 0 </move>
@@ -20,6 +20,7 @@
         </talks>
         <gold> 100 </gold>
         <strategy> static </strategy>
+        <attack_kind> physical </attack_kind>
     </jist>
     <john>
         <name> John </name>

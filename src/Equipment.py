@@ -6,10 +6,10 @@ from src.constants import *
 
 class Equipment(Item):
 
-    def __init__(self, name, sprite, description, equipped_sprites, body_part, res, magic_res, atk, weight):
+    def __init__(self, name, sprite, description, equipped_sprites, body_part, defense, res, atk, weight):
         Item.__init__(self, name, sprite, description)
+        self.defense = defense
         self.res = res
-        self.magic_res = magic_res
         self.atk = atk
         self.weight = weight
         self.body_part = body_part
@@ -27,6 +27,15 @@ class Equipment(Item):
         self.sprite_unavailable.blit(color_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
 
         self.normal_sprite = self.equipped_sprite
+
+    def get_def(self):
+        return self.defense
+
+    def get_res(self):
+        return self.res
+
+    def get_power(self):
+        return self.atk
 
     def display(self, screen, pos, equipped=False):
         sprite_to_blit = self.sprite

@@ -28,3 +28,7 @@ MAROON = (128, 0, 0)
 TURQUOISE = (64, 224, 208)
 
 ANIMATION_SPEED = 4
+
+# Types of damages
+PHYSICAL = 0
+SPIRITUAL = 1

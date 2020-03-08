@@ -8,7 +8,7 @@ from src.constants import *
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
 
 class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, classes, equipments, strategy, lvl,
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments, strategy, lvl,
                  race, gold, talk,
                  compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, strategy, lvl, compl_sprite)
@@ -24,6 +24,7 @@ class Character(Movable):
         self.race = race
         self.gold = gold
         self.dialog = talk
+        self.attack_kind = attack_kind
 
     def talk(self, actor):
         entries = []
@@ -31,6 +32,9 @@ class Character(Movable):
             entry = [{'type': 'text', 'text': s, 'font': ITEM_DESC_FONT}]
             entries.append(entry)
         return entries
+
+    def get_attack_kind(self):
+        return self.attack_kind
 
     def set_move(self, pos):
         Movable.set_move(self, pos)
@@ -53,6 +57,14 @@ class Character(Movable):
         Movable.lvl_up(self)
         self.stats_up()
 
+    def attacked(self, ent, damages, kind):
+        for eq in self.equipments:
+            if kind == PHYSICAL:
+                damages -= eq.get_def()
+            elif kind == SPIRITUAL:
+                damages -= eq.get_res()
+        return Movable.attacked(self, ent, damages, kind)
+
     def attack(self, ent):
         damages = self.strength
         weapon = self.get_weapon()
@@ -65,12 +77,12 @@ class Character(Movable):
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):
             if self.classes[0] == 'warrior':
-                self.hp_max += rd.randrange(0, 5)  # Gain between 0 and 4
+                self.hp_max += rd.randrange(1, 5)  # Gain between 0 and 4
                 self.defense += rd.randrange(0, 3)  # Gain between 0 and 2
                 self.res += rd.randrange(0, 2)  # Gain between 0 and 1
                 self.strength += rd.randrange(0, 3)  # Gain between 0 and 2
             elif self.classes[0] == 'ranger':
-                self.hp_max += rd.randrange(0, 5)  # Gain between 0 and 4
+                self.hp_max += rd.randrange(1, 5)  # Gain between 0 and 4
                 self.defense += rd.randrange(0, 4)  # Gain between 0 and 3
                 self.res += rd.randrange(0, 2)  # Gain between 0 and 1
                 self.strength += rd.randrange(0, 2)  # Gain between 0 and 1

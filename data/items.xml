@@ -92,7 +92,7 @@
                     weapon/club_new.png
                 </sprite>
                 <info>
-                    Not a real weapon, but you could hurt someone with.
+                    Not a real weapon, but you could hurt someone with. Very frail.
                 </info>
                 <category>
                     weapon
@@ -100,6 +100,9 @@
                 <power>
                     1
                 </power>
+                <kind>
+                    physical
+                </kind>
                 <range>
                     1
                 </range>
@@ -129,6 +132,9 @@
                 <power>
                     1
                 </power>
+                <kind>
+                    physical
+                </kind>
                 <range>
                     2
                 </range>
@@ -239,7 +245,7 @@
                 body
             </bodypart>
             <def>
-                3
+                2
             </def>
             <weight>
                 4
@@ -265,7 +271,7 @@
                 body
             </bodypart>
             <def>
-                2
+                1
             </def>
             <weight>
                 2

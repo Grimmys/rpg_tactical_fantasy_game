@@ -11,7 +11,7 @@ SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alp
 class Player(Character):
     def __init__(self, name, sprite, hp, defense, res, max_move, strength, classes, equipments, race, gold, lvl=1,
                  compl_sprite=None):
-        Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, classes, equipments, None, lvl, race,
+        Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, None, classes, equipments, None, lvl, race,
                            gold, compl_sprite)
         '''Possible states :
         - 0 : Waiting to be selected

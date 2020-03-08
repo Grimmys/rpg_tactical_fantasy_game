@@ -20,4 +20,7 @@
     <xp_gain>
         5
     </xp_gain>
+    <attack_kind>
+        physical
+    </attack_kind>
 </fire_eye>

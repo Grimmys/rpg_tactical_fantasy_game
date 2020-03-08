@@ -18,6 +18,35 @@
             <y>8</y>
         </position>
     </placementArea>
+    <chests>
+        <chest>
+            <id> 1 </id>
+            <closed>
+                <sprite>
+                    dungeon/chest_2_closed.png
+                </sprite>
+            </closed>
+            <opened>
+                <sprite>
+                    dungeon/chest_2_open.png
+                </sprite>
+            </opened>
+            <contains>
+                <item>
+                    <probability>
+                        1.0
+                    </probability>
+                    <name>
+                        life_potion
+                    </name>
+                </item>
+            </contains>
+            <position>
+                <x>10</x>
+                <y>1</y>
+            </position>
+        </chest>
+    </chests>
     <allies>
         <ally>
             <name>
@@ -66,7 +95,7 @@
                 <y>1</y>
             </position>
             <level>
-                1
+                3
             </level>
         </foe>
         <foe>
@@ -90,7 +119,7 @@
                 <y>5</y>
             </position>
             <level>
-                1
+                2
             </level>
         </foe>
         <foe>
@@ -102,7 +131,7 @@
                 <y>1</y>
             </position>
             <level>
-                1
+                3
             </level>
         </foe>
         <foe>
@@ -138,7 +167,7 @@
                 <y>2</y>
             </position>
             <level>
-                1
+                2
             </level>
         </foe>
         <foe>

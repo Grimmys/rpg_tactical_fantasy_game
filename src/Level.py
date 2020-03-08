@@ -296,15 +296,27 @@ class Level:
             # Static data
             sprite = 'imgs/characs/' + infos.find('sprite').text.strip()
             race = infos.find('race').text.strip()
-            strategy = infos.find('strategy').text.strip()
+
             talks = infos.find('talks')
             dialog = []
             for talk in talks.findall('talk'):
                 dialog.append(talk.text.strip())
+
+            strategy = infos.find('strategy').text.strip()
             if strategy == "semi_active":
                 strategy = SEMI_ACTIVE
             elif strategy == "static":
                 strategy = STATIC
+            else:
+                print("Error : Invalid strategy : ", strategy)
+
+            attack_kind = infos.find('attack_kind').text.strip()
+            if attack_kind == "physical":
+                attack_kind = PHYSICAL
+            elif attack_kind == "spiritual":
+                attack_kind = SPIRITUAL
+            else:
+                print("Error : Invalid attack kind : ", attack_kind)
 
             stats_tree = infos
             if from_save:
@@ -316,8 +328,8 @@ class Level:
             res = int(stats_tree.find('res').text.strip())
             gold = int(stats_tree.find('gold').text.strip())
 
-            loaded_ally = Character(name, pos, sprite, hp, defense, res, move, strength,
-                                         [], [], strategy, lvl, race, gold, dialog)
+            loaded_ally = Character(name, pos, sprite, hp, defense, res, move, strength, attack_kind,
+                                    [], [], strategy, lvl, race, gold, dialog)
 
             if from_save:
                 current_hp = int(ally.find('currentHp').text.strip())
@@ -349,6 +361,15 @@ class Level:
                 strategy = SEMI_ACTIVE
             elif strategy == "static":
                 strategy = STATIC
+            else:
+                print("Error : Invalid strategy : ", strategy)
+            attack_kind = foes_infos[name].find('attack_kind').text.strip()
+            if attack_kind == "physical":
+                attack_kind = PHYSICAL
+            elif attack_kind == "spiritual":
+                attack_kind = SPIRITUAL
+            else:
+                print("Error : Invalid attack kind : ", attack_kind)
 
             stats_tree = foes_infos[name]
             if from_save:
@@ -360,7 +381,7 @@ class Level:
             defense = int(stats_tree.find('def').text.strip())
             res = int(stats_tree.find('res').text.strip())
 
-            loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, xp_gain, strategy, lvl)
+            loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, xp_gain, strategy, lvl)
 
             if from_save:
                 current_hp = int(foe.find('currentHp').text.strip())
@@ -368,6 +389,11 @@ class Level:
 
                 xp = int(foe.find('exp').text.strip())
                 loaded_foe.earn_xp(xp)
+            else:
+                # Up stats according to current lvl
+                loaded_foe.stats_up(lvl - 1)
+                # Restore hp due to lvl up
+                loaded_foe.healed()
 
             self.foes.append(loaded_foe)
 
@@ -611,12 +637,19 @@ class Level:
             item = Equipment(name, sprite, info, equipped_sprites, body_part, defense, 0, 0, weight)
         elif category == 'weapon':
             power = int(it_tree_root.find('power').text.strip())
+            attack_kind = it_tree_root.find('kind').text.strip()
+            if attack_kind == "physical":
+                attack_kind = PHYSICAL
+            elif attack_kind == "spiritual":
+                attack_kind = SPIRITUAL
+            else:
+                print("Error : Invalid attack kind : ", attack_kind)
             weight = int(it_tree_root.find('weight').text.strip())
             fragility = int(it_tree_root.find('fragility').text.strip())
             w_range = [int(it_tree_root.find('range').text.strip())]
             equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
                 'equipped_sprite').text.strip()]
-            item = Weapon(name, sprite, info, equipped_sprite, power, weight, fragility, w_range)
+            item = Weapon(name, sprite, info, equipped_sprite, power, attack_kind, weight, fragility, w_range)
         elif category == 'key':
             item = Key(name, sprite, info)
         elif category == 'spellbook':
@@ -991,10 +1024,10 @@ class Level:
                 self.background_menus = []
                 self.possible_interactions = []
 
-    def duel(self, attacker, target):
+    def duel(self, attacker, target, kind):
         damages = attacker.attack(target)
         # If target has less than 0 HP at the end of the duel
-        if not target.attacked(attacker, damages):
+        if not target.attacked(attacker, damages, kind):
             # XP up
             if isinstance(target, Movable) and isinstance(attacker, Player):
                 xp_gain = target.get_xp_obtained()
@@ -1029,7 +1062,7 @@ class Level:
             possible_attacks = self.get_possible_attacks([ent.get_pos()], [1], side)
             if possible_attacks:
                 ent_attacked = self.get_entity_on_case(random.choice(list(possible_attacks)))
-                self.duel(ent, ent_attacked)
+                self.duel(ent, ent_attacked, ent.get_attack_kind())
             ent.end_turn()
 
     @staticmethod
@@ -1546,7 +1579,11 @@ class Level:
                                 for attack in self.possible_attacks:
                                     if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
                                         ent = self.get_entity_on_case(attack)
-                                        self.duel(self.selected_player, ent)
+                                        attack_kind = PHYSICAL
+                                        w = self.selected_player.get_weapon()
+                                        if w is not None:
+                                            attack_kind = self.selected_player.get_weapon().get_attack_kind()
+                                        self.duel(self.selected_player, ent, attack_kind)
                                         # Turn is finished
                                         self.execute_action(CHARACTER_MENU_ID, (WAIT_ACTION_ID, None))
                                         return

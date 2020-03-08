@@ -23,4 +23,7 @@
     <strategy>
         semi_active
     </strategy>
+    <attack_kind>
+        physical
+    </attack_kind>
 </snake>
