@@ -13,7 +13,7 @@ class Foe(Movable):
                 - 3 : Turn finished
         '''
 
-        self.xp_gain = xp_gain * (1.1 * lvl - 1)
+        self.xp_gain = int(xp_gain * ((1.1) ** (lvl - 1)))
         self.attack_kind = attack_kind
 
     def get_xp_obtained(self):

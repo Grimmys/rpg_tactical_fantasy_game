@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <characters>
     <jist>
-        <name> Jist </name>
+        <name> jist </name>
+        <class> innkeeper </class>
         <race> human </race>
         <lvl> 1 </lvl>
         <strength> 0 </strength>

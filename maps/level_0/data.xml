@@ -245,16 +245,25 @@
             <uninteractable />
         </building>
         <building>
+            <type>
+                shop
+            </type>
             <name>
-                armory
+                shop
             </name>
             <id> 1 </id>
             <position>
                 <x>13</x>
                 <y>0</y>
             </position>
-            <sprite>armory.png</sprite>
-            <uninteractable />
+            <sprite>shop.png</sprite>
+            <items>
+                <item>
+                    <name>
+                        life_potion
+                    </name>
+                </item>
+            </items>
         </building>
     </buildings>
     <obstacles>

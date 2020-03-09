@@ -1,3 +1,5 @@
+import re
+
 import pygame as pg
 from lxml import etree
 
@@ -26,7 +28,8 @@ class Entity:
         return self.name
 
     def get_formatted_name(self):
-        return self.name.replace('_', ' ').title()
+        s = self.name.replace('_', ' ').title()
+        return re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
 
     def get_max_moves(self):
         return 0

@@ -10,7 +10,7 @@ random.seed()
 
 class Chest(Entity):
     def __init__(self, name, pos, sprite_close, sprite_open, potential_items):
-        Entity.__init__(self, name, pos, sprite_close)
+        Entity.__init__(self, "Chest" + name, pos, sprite_close)
         self.sprite_open = pg.transform.scale(pg.image.load(sprite_open).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         self.item = Chest.determine_item(potential_items)
         self.opened = False

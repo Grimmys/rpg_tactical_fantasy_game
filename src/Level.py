@@ -296,6 +296,7 @@ class Level:
             # Static data
             sprite = 'imgs/characs/' + infos.find('sprite').text.strip()
             race = infos.find('race').text.strip()
+            formatted_name = infos.find('name').text.strip()
 
             talks = infos.find('talks')
             dialog = []
@@ -328,7 +329,7 @@ class Level:
             res = int(stats_tree.find('res').text.strip())
             gold = int(stats_tree.find('gold').text.strip())
 
-            loaded_ally = Character(name, pos, sprite, hp, defense, res, move, strength, attack_kind,
+            loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
                                     [], [], strategy, lvl, race, gold, dialog)
 
             if from_save:
@@ -417,7 +418,7 @@ class Level:
 
             # Dynamic data
             if data:
-                el = data.xpath("entity[name/text() =" + name + "]")[0]
+                el = data.xpath("entity[name/text() ='Chest" + name + "']")[0]
                 opened = el.find('state').text.strip()
                 if opened == "True":
                     loaded_chest.open()
@@ -1011,7 +1012,7 @@ class Level:
             elif isinstance(target, Character):
                 entries = target.talk(actor)
                 self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
-                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
                 # No more menu : turn is finished
                 self.background_menus = []
                 self.possible_interactions = []
@@ -1679,7 +1680,7 @@ class Level:
             self.active_menu.motion(pos)
         else:
             self.hovered_ent = None
-            for ent in self.foes + self.allies + self.players + self.breakables:
+            for ent in self.entities:
                 if ent.get_rect().collidepoint(pos):
                     self.hovered_ent = ent
                     return

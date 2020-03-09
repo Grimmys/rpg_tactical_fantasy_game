@@ -32,13 +32,15 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
-    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0):
+    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0,
+                 title_color=WHITE):
         self.name = name
         self.type = type_id
         self.element_linked = el_rect_linked
         self.close_button = close_button
+        self.title_color = title_color
 
-        self.elements = InfoBox.init_elements(entries, self.name, width)
+        self.elements = self.init_elements(entries, width)
         height = self.determine_sizepos(close_button)
         self.size = (width, height)
         self.pos = self.determine_pos()
@@ -49,8 +51,7 @@ class InfoBox:
 
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), self.size)
 
-    @staticmethod
-    def init_elements(entries, title, width):
+    def init_elements(self, entries, width):
         elements = []
         for row in entries:
             element = []
@@ -101,7 +102,8 @@ class InfoBox:
                         entry['color'] = WHITE
                     element.append(TextElement(entry['text'], width, (0, 0), entry['font'], entry['margin'], entry['color']))
             elements.append(element)
-        elements.insert(0, [TextElement(title, width, (0, 0), MENU_TITLE_FONT, (len(entries) + 5, 0, 0, 0), WHITE)])
+        elements.insert(0, [TextElement(self.name, width, (0, 0), MENU_TITLE_FONT, (len(entries) + 5, 0, 0, 0),
+                                        self.title_color)])
         return elements
 
     def determine_sizepos(self, close_button):
@@ -170,7 +172,7 @@ class InfoBox:
             y += row[0]
 
     def update_content(self, entries):
-        self.elements = InfoBox.init_elements(entries, self.name, self.size[0])
+        self.elements = self.init_elements(entries, self.size[0])
         self.determine_sizepos(self.close_button)
         if self.pos:
             self.determine_elements_pos()

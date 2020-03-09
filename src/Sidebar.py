@@ -1,5 +1,6 @@
 import pygame as pg
 
+from src.Destroyable import Destroyable
 from src.Player import Player
 from src.Character import Character
 from src.Movable import Movable
@@ -90,44 +91,45 @@ class Sidebar:
             name_text = ITEM_FONT.render("         " + ent.get_formatted_name(), 1, BLACK)
             win.blit(name_text, (text_pos_x, frame_pos[1]))
 
-            # HP
-            hp = ent.get_hp()
-            hp_max = ent.get_hp_max()
-            hp_pre_text = ITEM_FONT.render("HP : ", 1, MIDNIGHT_BLUE)
-            hp_text_pos = (text_pos_x, frame_pos[1] + FRAME.get_height() - hp_pre_text.get_height())
-            win.blit(hp_pre_text, hp_text_pos)
-            hp_text = ITEM_FONT.render("      " + str(hp), 1, Sidebar.determine_hp_color(hp, hp_max))
-            win.blit(hp_text, hp_text_pos)
-            hp_post_text = ITEM_FONT.render("      " + " " * len(str(hp)) + " / " + str(hp_max), 1, BLACK)
-            win.blit(hp_post_text, hp_text_pos)
+            # HP if it's a destroyable entity
+            if isinstance(ent, Destroyable):
+                hp = ent.get_hp()
+                hp_max = ent.get_hp_max()
+                hp_pre_text = ITEM_FONT.render("HP : ", 1, MIDNIGHT_BLUE)
+                hp_text_pos = (text_pos_x, frame_pos[1] + FRAME.get_height() - hp_pre_text.get_height())
+                win.blit(hp_pre_text, hp_text_pos)
+                hp_text = ITEM_FONT.render("      " + str(hp), 1, Sidebar.determine_hp_color(hp, hp_max))
+                win.blit(hp_text, hp_text_pos)
+                hp_post_text = ITEM_FONT.render("      " + " " * len(str(hp)) + " / " + str(hp_max), 1, BLACK)
+                win.blit(hp_post_text, hp_text_pos)
 
-            # Display more information if it is a movable entity
-            if isinstance(ent, Movable):
-                # Level
-                level_text = ITEM_FONT.render("LVL : " + str(ent.get_lvl()), 1, BLACK)
-                lvl_text_pos_x = frame_pos[0] + FRAME.get_width() / 2 - level_text.get_width() / 2
-                win.blit(level_text, (lvl_text_pos_x, frame_pos[1] + FRAME.get_height()))
+                # Display more information if it is a movable entity
+                if isinstance(ent, Movable):
+                    # Level
+                    level_text = ITEM_FONT.render("LVL : " + str(ent.get_lvl()), 1, BLACK)
+                    lvl_text_pos_x = frame_pos[0] + FRAME.get_width() / 2 - level_text.get_width() / 2
+                    win.blit(level_text, (lvl_text_pos_x, frame_pos[1] + FRAME.get_height()))
 
-                # Status
-                status_pre_text = ITEM_FONT.render("ALTERATIONS : ", 1, MIDNIGHT_BLUE)
-                win.blit(status_pre_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
-                status_text = ITEM_FONT.render("                  " + ent.get_formatted_alterations(), 1, BLACK)
-                win.blit(status_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
+                    # Status
+                    status_pre_text = ITEM_FONT.render("ALTERATIONS : ", 1, MIDNIGHT_BLUE)
+                    win.blit(status_pre_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
+                    status_text = ITEM_FONT.render("                  " + ent.get_formatted_alterations(), 1, BLACK)
+                    win.blit(status_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
 
-                # Display more information if it is a character
-                if isinstance(ent, Character):
-                    race = ent.get_formatted_race()
-                    race_pre_text = ITEM_FONT.render("RACE : ", 1, MIDNIGHT_BLUE)
-                    win.blit(race_pre_text, (text_pos_x, frame_pos[1] + (ITEM_FONT.get_height() - SHIFT) * 2))
-                    race_text = ITEM_FONT.render("        " + race, 1, BLACK)
-                    win.blit(race_text, (text_pos_x, frame_pos[1] + (ITEM_FONT.get_height() - SHIFT) * 2))
+                    # Display more information if it is a character
+                    if isinstance(ent, Character):
+                        race = ent.get_formatted_race()
+                        race_pre_text = ITEM_FONT.render("RACE : ", 1, MIDNIGHT_BLUE)
+                        win.blit(race_pre_text, (text_pos_x, frame_pos[1] + (ITEM_FONT.get_height() - SHIFT) * 2))
+                        race_text = ITEM_FONT.render("        " + race, 1, BLACK)
+                        win.blit(race_text, (text_pos_x, frame_pos[1] + (ITEM_FONT.get_height() - SHIFT) * 2))
 
-                    # Display more information if it is a player
-                    if isinstance(ent, Player):
-                        classes = ent.get_formatted_classes()
-                        classes_pre_text = ITEM_FONT.render("CLASS : ", 1, MIDNIGHT_BLUE)
-                        win.blit(classes_pre_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height() - SHIFT))
-                        classes_text = ITEM_FONT.render("         " + classes, 1, BLACK)
-                        win.blit(classes_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height() - SHIFT))
+                        # Display more information if it is a player
+                        if isinstance(ent, Player):
+                            classes = ent.get_formatted_classes()
+                            classes_pre_text = ITEM_FONT.render("CLASS : ", 1, MIDNIGHT_BLUE)
+                            win.blit(classes_pre_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height() - SHIFT))
+                            classes_text = ITEM_FONT.render("         " + classes, 1, BLACK)
+                            win.blit(classes_text, (text_pos_x, frame_pos[1] + ITEM_FONT.get_height() - SHIFT))
 
 
