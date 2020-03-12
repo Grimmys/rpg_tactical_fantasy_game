@@ -6,8 +6,8 @@ from src.constants import *
 
 class Equipment(Item):
 
-    def __init__(self, name, sprite, description, equipped_sprites, body_part, defense, res, atk, weight):
-        Item.__init__(self, name, sprite, description)
+    def __init__(self, name, sprite, description, price, equipped_sprites, body_part, defense, res, atk, weight):
+        Item.__init__(self, name, sprite, description, price)
         self.defense = defense
         self.res = res
         self.atk = atk

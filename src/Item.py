@@ -3,14 +3,15 @@ from src.constants import TILE_SIZE
 
 
 class Item:
-    id = 0
+    internal_id = 0
 
-    def __init__(self, name, sprite, description):
+    def __init__(self, name, sprite, description, price=0):
         self.name = name
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         self.desc = description
-        self.id = Item.id
-        Item.id += 1
+        self.price = price
+        self.id = Item.internal_id
+        Item.internal_id += 1
 
     def get_name(self):
         return self.name
@@ -26,3 +27,6 @@ class Item:
 
     def get_id(self):
         return self.id
+
+    def get_price(self):
+        return self.price

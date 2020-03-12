@@ -17,7 +17,7 @@ class TextElement(BoxElement):
     @staticmethod
     def verify_rendered_text_size(rendered_txt, txt, container_width, font, color):
         final_render = rendered_txt
-        if final_render.get_width() > container_width:
+        if final_render.get_width() > container_width - 25:
             first_part, second_part = TextElement.divide_text(txt)
             first_part_render = font.render(first_part, 1, color)
             first_part_render = TextElement.verify_rendered_text_size(first_part_render, first_part, container_width, font, color)

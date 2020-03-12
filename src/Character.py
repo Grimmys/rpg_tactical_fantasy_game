@@ -107,6 +107,9 @@ class Character(Movable):
     def get_gold(self):
         return self.gold
 
+    def set_gold(self, new_gold):
+        self.gold = new_gold
+
     def has_equipment(self, eq):
         return eq in self.equipments
 

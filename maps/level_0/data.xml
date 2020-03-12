@@ -62,7 +62,7 @@
         </ally>
     </allies>
     <foes>
-        <foe>
+        <!--<foe>
             <name>
                 skeleton
             </name>
@@ -181,7 +181,7 @@
             <level>
                 1
             </level>
-        </foe>
+        </foe>-->
     </foes>
     <buildings>
         <building>
@@ -194,7 +194,19 @@
                 <y>6</y>
             </position>
             <sprite>blue_house.png</sprite>
-            <uninteractable />
+            <interaction>
+                <talks>
+                    <talk>
+                        Are you the group of adventurers in charge of saving us from this hordes of undeads ?
+                    </talk>
+                    <talk>
+                        Please, take this gold... I'm sure you will use it well.
+                    </talk>
+                </talks>
+                <gold>
+                    500
+                </gold>
+            </interaction>
         </building>
         <building>
             <name>
@@ -261,6 +273,16 @@
                 <item>
                     <name>
                         life_potion
+                    </name>
+                </item>
+                <item>
+                    <name>
+                        short_sword
+                    </name>
+                </item>
+                <item>
+                    <name>
+                        wooden_shield
                     </name>
                 </item>
             </items>

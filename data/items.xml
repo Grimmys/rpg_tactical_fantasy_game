@@ -23,6 +23,9 @@
                 <duration>
                     0
                 </duration>
+                <price>
+                    150
+                </price>
             </life_potion>
             <speed_potion>
                 <name>
@@ -46,6 +49,9 @@
                 <duration>
                     3
                 </duration>
+                <price>
+                    250
+                </price>
             </speed_potion>
         </potions>
         <key>
@@ -80,6 +86,9 @@
             <effect>
                 poison_trap
             </effect>
+            <price>
+                500
+            </price>
         </green_book>
     </books>
     <equipments>
@@ -115,7 +124,45 @@
                 <equipped_sprite>
                     club_slant.png
                 </equipped_sprite>
+                <price>
+                    300
+                </price>
             </club>
+            <short_sword>
+                <name>
+                    Short Sword
+                </name>
+                <sprite>
+                    weapon/short_sword_2_old.png
+                </sprite>
+                <info>
+                    A basic little sword, but one that can already prove very useful.
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    3
+                </power>
+                <kind>
+                    physical
+                </kind>
+                <range>
+                    1
+                </range>
+                <fragility>
+                    30
+                </fragility>
+                <weight>
+                    2
+                </weight>
+                <equipped_sprite>
+                    short_sword.png
+                </equipped_sprite>
+                <price>
+                    500
+                </price>
+            </short_sword>
             <basic_bow>
                 <name>
                     Wooden Bow
@@ -147,6 +194,9 @@
                 <equipped_sprite>
                     bow_2.png
                 </equipped_sprite>
+                <price>
+                    350
+                </price>
             </basic_bow>
         </weapons>
         <plumed_helmet>
@@ -200,6 +250,9 @@
             <equipped_sprite>
                 head/iron_2.png
             </equipped_sprite>
+            <price>
+                250
+            </price>
         </helmet>
         <gold_helmet>
             <name>
@@ -280,6 +333,9 @@
                 <sprite>body/leather_armor_3.png</sprite>
                 <sprite>legs/pants_short_brown.png</sprite>
             </equipped_sprites>
+            <price>
+                350
+            </price>
         </leather_armor>
         <gold_armor>
             <name>
@@ -332,6 +388,9 @@
             <equipped_sprite>
                 boots/short_brown_2.png
             </equipped_sprite>
+            <price>
+                250
+            </price>
         </brown_boots>
         <gold_boots>
             <name>
@@ -359,5 +418,37 @@
                 boots/middle_gold.png
             </equipped_sprite>
         </gold_boots>
+        <wooden_shield>
+                <name>
+                    Wooden Shield
+                </name>
+                <sprite>
+                    armor/shields/buckler_1_new.png
+                </sprite>
+                <info>
+                    A small light shield that could help dodging attacks.
+                </info>
+                <category>
+                    armor
+                </category>
+                <bodypart>
+                    left_hand
+                </bodypart>
+                <dodge_rate>
+                    0.15
+                </dodge_rate>
+                <fragility>
+                    15
+                </fragility>
+                <weight>
+                    2
+                </weight>
+                <equipped_sprite>
+                    hand_left/buckler_round_3.png
+                </equipped_sprite>
+                <price>
+                    400
+                </price>
+            </wooden_shield>
     </equipments>
 </items>

@@ -39,8 +39,9 @@ class InfoBox:
         self.element_linked = el_rect_linked
         self.close_button = close_button
         self.title_color = title_color
+        self.entries = entries
 
-        self.elements = self.init_elements(entries, width)
+        self.elements = self.init_elements(self.entries, width)
         height = self.determine_sizepos(close_button)
         self.size = (width, height)
         self.pos = self.determine_pos()
@@ -67,7 +68,11 @@ class InfoBox:
                     sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), BUTTON_SIZE)
                     sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
                                              sprite_hover.get_height() // 2 - name.get_height() // 2))
-                    element.append(Button(entry['id'], [], BUTTON_SIZE, (0, 0), sprite, sprite_hover, entry['margin']))
+                    if 'args' not in entry:
+                        entry['args'] = []
+
+                    element.append(Button(entry['id'], entry['args'], BUTTON_SIZE, (0, 0), sprite, sprite_hover,
+                                          entry['margin']))
                 elif entry['type'] == 'parameter_button':
                     name = ITEM_FONT.render(entry['name'] + ' ' + entry['values'][entry['current_value_ind']]['label'], 1, WHITE)
                     base_sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
@@ -94,7 +99,10 @@ class InfoBox:
                     if 'subtype' in entry:
                         if entry['subtype'] == 'equip':
                             button_size = EQUIP_BUTTON_SIZE
-                    element.append(ItemButton(button_size, (0, 0), entry['item'], entry['margin'], entry['index'], disabled))
+                    if 'price' not in entry:
+                        entry['price'] = 0
+                    element.append(ItemButton(button_size, (0, 0), entry['item'], entry['margin'], entry['index'],
+                                              entry['price'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
                         entry['font'] = ITEM_FONT
@@ -157,6 +165,9 @@ class InfoBox:
                 if isinstance(el, Button):
                     buttons.append(el)
         return buttons
+
+    def get_entries(self):
+        return self.entries
 
     def determine_elements_pos(self):
         y = self.pos[1] + MARGINBOX

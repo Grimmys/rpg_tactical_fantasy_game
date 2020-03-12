@@ -8,7 +8,6 @@ def show_fps(win, inner_clock, font):
 
 
 if __name__ == "__main__":
-    from src.constants import *
     import pygame as pg
 
     pg.init()
@@ -17,6 +16,7 @@ if __name__ == "__main__":
     screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     from src.StartScreen import StartScreen
+    from src.constants import *
 
     clock = pg.time.Clock()
     fps_font = pg.font.SysFont(None, 20, True)  # Use pygame's default font

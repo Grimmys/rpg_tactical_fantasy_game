@@ -16,10 +16,13 @@ INTERAC_ITEM_ACTION_ID = 0
 
 
 class ItemButton(Button):
-    def __init__(self, size, pos, item, margin, index, disabled=False):
+    def __init__(self, size, pos, item, margin, index, price, disabled=False):
         name = ""
         if item:
             name = item.get_formatted_name()
+        price_text = ""
+        if price > 0:
+            price_text = "(" + str(price) + " gold)"
 
         padding = size[1] // 10
         frame_pos = (padding, padding)
@@ -34,24 +37,46 @@ class ItemButton(Button):
         if item:
             item_frame.blit(pg.transform.scale(item.get_sprite(), (frame_size[0] - padding * 2, frame_size[1] - padding * 2)),
                             (frame_pos[0] + padding, frame_pos[1] + padding))
-        item_sprite = ITALIC_ITEM_FONT.render(name, 1, BLACK)
-        item_frame.blit(item_sprite, (frame.get_width() + padding * 2, item_frame.get_height() / 2 - ITALIC_ITEM_FONT.get_height() / 2))
+
+        name_rendering = ITALIC_ITEM_FONT.render(name, 1, BLACK)
+        if price_text:
+            price_rendering = ITALIC_ITEM_FONT.render(price_text, 1, BLACK)
+            item_frame.blit(name_rendering, (frame.get_width() + padding * 2,
+                                             item_frame.get_height() / 3 - ITALIC_ITEM_FONT.get_height() / 2))
+            item_frame.blit(price_rendering, (frame.get_width() + padding * 2,
+                                              2 * item_frame.get_height() / 3 - ITALIC_ITEM_FONT.get_height() / 2))
+        else:
+            item_frame.blit(name_rendering, (frame.get_width() + padding * 2,
+                                             item_frame.get_height() / 2 - ITALIC_ITEM_FONT.get_height() / 2))
 
         item_frame_hover = item_frame
         if item and not disabled:
             item_frame_hover = pg.transform.scale(pg.image.load(ITEM_SPRITE).convert_alpha(), size)
             item_frame_hover.blit(frame_hover, frame_pos)
-            item_frame_hover.blit(pg.transform.scale(item.get_sprite(), (frame_size[0] - padding * 2, frame_size[1] - padding * 2)),
+            item_frame_hover.blit(pg.transform.scale(item.get_sprite(), (frame_size[0] - padding * 2,
+                                                                         frame_size[1] - padding * 2)),
                                   (frame_pos[0] + padding, frame_pos[1] + padding))
-            item_sprite_hover = ITALIC_ITEM_FONT_HOVER.render(name, 1, MIDNIGHT_BLUE)
-            item_frame_hover.blit(item_sprite_hover, (frame.get_width() + padding * 2, item_frame.get_height() / 2 - ITALIC_ITEM_FONT.get_height() / 2))
+            name_rendering_hover = ITALIC_ITEM_FONT_HOVER.render(name, 1, MIDNIGHT_BLUE)
+            if price_text:
+                price_rendering_hover = ITALIC_ITEM_FONT_HOVER.render(price_text, 1, MIDNIGHT_BLUE)
+                item_frame_hover.blit(name_rendering_hover, (frame.get_width() + padding * 2,
+                                                             item_frame.get_height() / 3
+                                                             - ITALIC_ITEM_FONT_HOVER.get_height() / 2))
+                item_frame_hover.blit(price_rendering_hover, (frame.get_width() + padding * 2,
+                                                              2 * item_frame.get_height() / 3
+                                                              - ITALIC_ITEM_FONT_HOVER.get_height() / 2))
+            else:
+                item_frame_hover.blit(name_rendering_hover, (frame.get_width() + padding * 2,
+                                                             item_frame.get_height() / 2
+                                                             - ITALIC_ITEM_FONT_HOVER.get_height() / 2))
 
         Button.__init__(self, INTERAC_ITEM_ACTION_ID, [], size, pos, item_frame, item_frame_hover, margin)
         self.item = item
+        self.price = price
         self.index = index
         self.disabled = disabled
 
     def action_triggered(self):
         if not self.item or self.disabled:
             return False
-        return self.method_id, (self.pos, self.item)
+        return self.method_id, (self.pos, self.item, self.price)

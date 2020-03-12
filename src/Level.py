@@ -3,9 +3,8 @@ from lxml import etree
 import random
 
 from src.Building import Building
+from src.Shop import Shop
 from src.constants import *
-from src.Destroyable import Destroyable
-from src.Key import Key
 from src.Equipment import Equipment
 from src.Weapon import Weapon
 from src.Effect import Effect
@@ -83,9 +82,6 @@ DEFEAT_TEXT_POS = (DEFEAT.get_width() / 2 - DEFEAT_TEXT.get_width() / 2,
                    DEFEAT.get_height() / 2 - DEFEAT_TEXT.get_height() / 2)
 DEFEAT.blit(DEFEAT_TEXT, DEFEAT_TEXT_POS)
 
-UNFINAL_ACTION = 1
-FINAL_ACTION = 2
-
 # Interaction ids
 #  > Generic
 #    - To close any menu
@@ -144,6 +140,10 @@ THROW_ITEM_ACTION_ID = 2
 EQUIP_ITEM_ACTION_ID = 3
 #   - Unequip item
 UNEQUIP_ITEM_ACTION_ID = 4
+#   - Buy item
+BUY_ITEM_ACTION_ID = 5
+#   - Sell item
+SELL_ITEM_ACTION_ID = 6
 
 # > Status menu
 STATUS_MENU_ID = 4
@@ -154,6 +154,23 @@ INFO_ALTERATION_ACTION_ID = 0
 EQUIPMENT_MENU_ID = 5
 #   - Interact with equipment
 INTERAC_EQUIPMENT_ACTION_ID = 0
+
+# > Shop menu
+SHOP_MENU_ID = 6
+#   - Accessing buy menu
+BUY_ACTION_ID = 0
+#   - Accessing sell menu
+SELL_ACTION_ID = 1
+
+# > Buy menu
+BUY_MENU_ID = 7
+#   - Interact with item
+INTERAC_BUY_ACTION_ID = 0
+
+# > Sell menu
+SELL_MENU_ID = 8
+#   - Interact with item
+INTERAC_SELL_ACTION_ID = 0
 
 
 def blit_alpha(target, source, location, opacity):
@@ -501,8 +518,35 @@ class Level:
             y = int(building.find('position/y').text) * TILE_SIZE
             pos = (x, y)
             sprite = 'imgs/houses/' + building.find('sprite').text.strip()
+            interaction = building.find('interaction')
+            interaction_el = {}
+            if interaction is not None:
+                talks = interaction.find('talks')
+                if talks is not None:
+                    interaction_el['talks'] = []
+                    for talk in talks.findall('talk'):
+                        interaction_el['talks'].append(talk.text.strip())
+                else:
+                    interaction_el['talks'] = []
+                interaction_el['gold'] = \
+                    int(interaction.find('gold').text.strip()) if interaction.find('gold') is not None else 0
+                interaction_el['item'] = Level.parse_item_file(interaction.find('item').text.strip()) \
+                    if interaction.find('item') is not None else None
 
-            self.buildings.append(Building(name, pos, sprite))
+            type = building.find('type')
+            if type is not None:
+                type = type.text.strip()
+                if type == "shop":
+                    items = []
+                    for it in building.findall('items/item/name'):
+                        items.append(Level.parse_item_file(it.text.strip()))
+                    build = Shop(name, pos, sprite, None, items)
+                else:
+                    print("Error : building type isn't recognized : ", type)
+            else:
+                build = Building(name, pos, sprite, interaction_el)
+
+            self.buildings.append(build)
 
     def load_obstacles(self, tree):
         for positions in tree.xpath('/level/obstacles/positions'):
@@ -614,6 +658,11 @@ class Level:
 
         sprite = 'imgs/dungeon_crawl/item/' + it_tree_root.find('sprite').text.strip()
         info = it_tree_root.find('info').text.strip()
+        price = it_tree_root.find('price')
+        if price is not None:
+            price = int(price.text.strip())
+        else:
+            price = 0
         category = it_tree_root.find('category').text.strip()
 
         item = None
@@ -622,10 +671,11 @@ class Level:
             power = int(it_tree_root.find('power').text.strip())
             duration = int(it_tree_root.find('duration').text.strip())
             effect = Effect(effect_name, power, duration)
-            item = Potion(name, sprite, info, effect)
+            item = Potion(name, sprite, info, price, effect)
         elif category == 'armor':
             body_part = it_tree_root.find('bodypart').text.strip()
-            defense = int(it_tree_root.find('def').text.strip())
+            defense = it_tree_root.find('def')
+            defense = int(defense.text.strip()) if defense is not None else 0
             weight = int(it_tree_root.find('weight').text.strip())
             eq_sprites = it_tree_root.find('equipped_sprites')
             if eq_sprites is not None:
@@ -635,7 +685,7 @@ class Level:
             else:
                 equipped_sprites = ['imgs/dungeon_crawl/player/' + it_tree_root.find(
                 'equipped_sprite').text.strip()]
-            item = Equipment(name, sprite, info, equipped_sprites, body_part, defense, 0, 0, weight)
+            item = Equipment(name, sprite, info, price, equipped_sprites, body_part, defense, 0, 0, weight)
         elif category == 'weapon':
             power = int(it_tree_root.find('power').text.strip())
             attack_kind = it_tree_root.find('kind').text.strip()
@@ -650,12 +700,12 @@ class Level:
             w_range = [int(it_tree_root.find('range').text.strip())]
             equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
                 'equipped_sprite').text.strip()]
-            item = Weapon(name, sprite, info, equipped_sprite, power, attack_kind, weight, fragility, w_range)
+            item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility, w_range)
         elif category == 'key':
-            item = Key(name, sprite, info)
+            item = Key(name, sprite, info, price)
         elif category == 'spellbook':
             spell = it_tree_root.find('effect').text.strip()
-            item = Spellbook(name, sprite, info, spell)
+            item = Spellbook(name, sprite, info, price, spell)
 
         return item
 
@@ -1018,9 +1068,15 @@ class Level:
                 self.possible_interactions = []
             # Check if player tries to visit a building
             elif isinstance(target, Building):
-                entry = [{'type': 'text', 'text': target.interact(actor), 'font': ITEM_DESC_FONT}]
-                self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
-                                           [entry], ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+                type = ""
+                # Check if player tries to visit a shop
+                if isinstance(target, Shop):
+                    type = SHOP_MENU_ID
+
+                entries = target.interact(actor)
+                self.active_menu = InfoBox(target.get_formatted_name(), type, "imgs/interface/PopUpMenu.png",
+                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
+
                 # No more menu : turn is finished
                 self.background_menus = []
                 self.possible_interactions = []
@@ -1067,11 +1123,34 @@ class Level:
             ent.end_turn()
 
     @staticmethod
-    def create_inventory_entries(items, gold):
+    def create_shop_entries(items, gold):
+        entries = []
+        row = []
+        for i, it in enumerate(items):
+            entry = {'type': 'item_button', 'item': it, 'price': it.get_price(), 'index': i}
+            row.append(entry)
+            if len(row) == 2:
+                entries.append(row)
+                row = []
+
+        if row:
+            entries.append(row)
+
+        # Gold at end
+        entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': ITEM_DESC_FONT}]
+        entries.append(entry)
+
+        return entries
+
+    @staticmethod
+    def create_inventory_entries(items, gold, price=False):
         entries = []
         row = []
         for i, it in enumerate(items):
             entry = {'type': 'item_button', 'item': it, 'index': i}
+            # Test if price should appeared
+            if price and it:
+                entry['price'] = it.get_price() // 2 if it.get_price() != 0 else 0
             row.append(entry)
             if len(row) == 2:
                 entries.append(row)
@@ -1080,7 +1159,7 @@ class Level:
             entries.append(row)
 
         # Gold at end
-        entry = [{'type': 'text', 'text': 'Gold : ' + str(gold), 'font': ITEM_DESC_FONT}]
+        entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': ITEM_DESC_FONT}]
         entries.append(entry)
 
         return entries
@@ -1146,6 +1225,81 @@ class Level:
                              'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
 
         return entries
+
+    def execute_buy_action(self, method_id, args):
+        if method_id == INTERAC_BUY_ACTION_ID:
+            item_button_pos = args[0]
+            item = args[1]
+            price = args[2]
+
+            self.selected_item = item
+            formatted_item_name = self.selected_item.get_formatted_name()
+
+            self.background_menus.append((self.active_menu, True))
+
+            entries = [
+                [{'name': 'Buy', 'id': BUY_ITEM_ACTION_ID, 'type': 'button', 'args': [price]}],
+                [{'name': 'Info', 'id': INFO_ITEM_ACTION_ID, 'type': 'button'}]
+            ]
+            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
+                                ITEM_BUTTON_MENU_SIZE[1])
+
+            self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/interface/PopUpMenu.png",
+                                       entries,
+                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+        else:
+            print("Unknown action in buy menu... : " + str(method_id))
+
+    def execute_sell_action(self, method_id, args):
+        if method_id == INTERAC_SELL_ACTION_ID:
+            item_button_pos = args[0]
+            item = args[1]
+            price = args[2]
+
+            self.selected_item = item
+            formatted_item_name = self.selected_item.get_formatted_name()
+
+            self.background_menus.append((self.active_menu, True))
+
+            entries = [
+                [{'name': 'Sell', 'id': SELL_ITEM_ACTION_ID, 'type': 'button', 'args': [price]}],
+                [{'name': 'Info', 'id': INFO_ITEM_ACTION_ID, 'type': 'button'}]
+
+            ]
+            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
+                                ITEM_BUTTON_MENU_SIZE[1])
+
+            self.active_menu = InfoBox(formatted_item_name, ITEM_MENU_ID, "imgs/interface/PopUpMenu.png",
+                                       entries,
+                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+        else:
+            print("Unknown action in sell menu... : " + str(method_id))
+
+    def execute_shop_action(self, method_id, args):
+        if method_id == BUY_ACTION_ID:
+            shop = args[2][0]
+            items = shop.get_items()
+            gold = self.selected_player.get_gold()
+
+            self.background_menus.append((self.active_menu, False))
+            entries = Level.create_shop_entries(items, gold)
+            self.active_menu = InfoBox("Shop - Buying", BUY_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
+                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+        elif method_id == SELL_ACTION_ID:
+            items_max = self.selected_player.get_nb_items_max()
+
+            items = list(self.selected_player.get_items())
+            free_spaces = items_max - len(items)
+            items += [None] * free_spaces
+
+            gold = self.selected_player.get_gold()
+
+            self.background_menus.append((self.active_menu, False))
+            entries = Level.create_inventory_entries(items, gold, price=True)
+            self.active_menu = InfoBox("Shop - Selling", SELL_MENU_ID, "imgs/interface/PopUpMenu.png", entries,
+                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+        else:
+            print("Unknown action in shop menu... : " + str(method_id))
 
     def execute_main_menu_action(self, method_id, args):
         if method_id == START_ACTION_ID:
@@ -1389,7 +1543,10 @@ class Level:
                 items = self.selected_player.get_items()
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
-                entries = Level.create_inventory_entries(items)
+
+                gold = self.selected_player.get_gold()
+
+                entries = Level.create_inventory_entries(items, gold)
 
             # Cancel item menu
             self.background_menus.pop()
@@ -1485,6 +1642,75 @@ class Level:
             entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        # Buy an item
+        elif method_id == BUY_ITEM_ACTION_ID:
+            price = args[2][0]
+            formatted_item_name = self.selected_item.get_formatted_name()
+
+            # Try to buy the item
+            actual_gold = self.selected_player.get_gold()
+            if actual_gold >= price:
+                if len(self.selected_player.get_items()) < self.selected_player.get_nb_items_max():
+                    # Item can be bought
+                    self.selected_player.set_item(self.selected_item)
+                    actual_gold -= price
+                    self.selected_player.set_gold(actual_gold)
+                    result_msg = "The item has been bought."
+
+                    # Update shop screen content (gold total amount has been reduced)
+                    shop_menu = self.background_menus[len(self.background_menus) - 1][0]
+                    entries = shop_menu.get_entries()
+
+                    for row in entries:
+                        for entry in row:
+                            if entry['type'] == 'text':
+                                entry['text'] = 'Your gold : ' + str(actual_gold)
+
+                    shop_menu.update_content(entries)
+                else:
+                    # Not enough space in inventory
+                    result_msg = "Not enough space in inventory to buy this item."
+            else:
+                # Not enough gold to purchase item
+                result_msg = "Not enough gold to buy this item."
+
+            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        # Sell an item
+        elif method_id == SELL_ITEM_ACTION_ID:
+            price = args[2][0]
+            formatted_item_name = self.selected_item.get_formatted_name()
+
+            # Sell the item
+            new_gold = self.selected_player.get_gold()
+            if price > 0:
+                self.selected_player.remove_item(self.selected_item)
+                self.selected_item = None
+                new_gold += price
+                self.selected_player.set_gold(new_gold)
+                result_msg = "The item has been selled."
+
+                # Update shop screen content (item has been removed from inventory)
+                items_max = self.selected_player.get_nb_items_max()
+
+                items = self.selected_player.get_items()
+                free_spaces = items_max - len(items)
+                items += [None] * free_spaces
+
+                entries = Level.create_inventory_entries(items, new_gold, price=True)
+
+                # Update the inventory menu (i.e. first menu backward)
+                self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
+            else:
+                result_msg = "This item can't be selled !"
+                self.background_menus.append([self.active_menu, False])
+
+            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        else:
+            print("Unknown action in item menu... : " + str(method_id))
 
     def execute_status_action(self, method_id, args):
         # Get infos about an alteration
@@ -1536,8 +1762,14 @@ class Level:
             self.execute_status_action(method_id, args)
         elif menu_type == MAIN_MENU_ID:
             self.execute_main_menu_action(method_id, args)
+        elif menu_type == SHOP_MENU_ID:
+            self.execute_shop_action(method_id, args)
+        elif menu_type == BUY_MENU_ID:
+            self.execute_buy_action(method_id, args)
+        elif menu_type == SELL_MENU_ID:
+            self.execute_sell_action(method_id, args)
         else:
-            print("Unknown menu... : " + menu_type)
+            print("Unknown menu... : " + str(menu_type))
 
     def begin_turn(self):
         if self.side_turn == 'P':
