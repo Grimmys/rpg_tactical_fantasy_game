@@ -62,7 +62,7 @@
         </ally>
     </allies>
     <foes>
-        <!--<foe>
+        <foe>
             <name>
                 skeleton
             </name>
@@ -181,7 +181,7 @@
             <level>
                 1
             </level>
-        </foe>-->
+        </foe>
     </foes>
     <buildings>
         <building>
@@ -230,7 +230,22 @@
                 <y>2</y>
             </position>
             <sprite>yellow_house.png</sprite>
-            <uninteractable />
+            <interaction>
+                <talks>
+                    <talk>
+                        No ! I won't let undeads like you kill me !
+                    </talk>
+                    <talk>
+                        GO AWAY !!!
+                    </talk>
+                    <talk>
+                        [A knife is thrown at you]
+                    </talk>
+                </talks>
+                <item>
+                    pocket_knife
+                </item>
+            </interaction>
         </building>
         <building>
             <name>
@@ -242,7 +257,16 @@
                 <y>4</y>
             </position>
             <sprite>red_house.png</sprite>
-            <uninteractable />
+            <interaction>
+                <talks>
+                    <talk>
+                        I'm sorry, but I can't let you enter in my house...
+                    </talk>
+                    <talk>
+                        It's not safe here anymore ! I have to stay locked up for a while.
+                    </talk>
+                </talks>
+            </interaction>
         </building>
         <building>
             <name>

@@ -32,7 +32,7 @@
         <initDef> 0 </initDef>
         <initRes> 0 </initRes>
         <initHP> 10 </initHP>
-        <move> 30 </move> <!-- 5 -->
+        <move> 5 </move>
         <sprite> base/human_male.png </sprite>
         <equipment>
             <head>
@@ -66,7 +66,7 @@
         <initDef> 1 </initDef>
         <initRes> 0 </initRes>
         <initHP> 8 </initHP>
-        <move> 30 </move> <!-- 5 -->
+        <move> 5 </move>
         <sprite> base/human_female.png </sprite>
         <complementSprite> legs/pants_short_brown.png </complementSprite>
         <equipment>

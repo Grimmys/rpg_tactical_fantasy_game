@@ -93,6 +93,41 @@
     </books>
     <equipments>
         <weapons>
+            <pocket_knife>
+                <name>
+                    Pocket Knife
+                </name>
+                <sprite>
+                    weapon/knife.png
+                </sprite>
+                <info>
+                    A very fast blade, with discretion guaranteed.
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    1
+                </power>
+                <kind>
+                    physical
+                </kind>
+                <range>
+                    1
+                </range>
+                <fragility>
+                    20
+                </fragility>
+                <weight>
+                    1
+                </weight>
+                <equipped_sprite>
+                    knife.png
+                </equipped_sprite>
+                <price>
+                    200
+                </price>
+            </pocket_knife>
             <club>
                 <name>
                     Club
