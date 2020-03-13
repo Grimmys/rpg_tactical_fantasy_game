@@ -233,6 +233,9 @@ class Level:
             # Load chests
             self.load_chests(tree)
 
+            # Load buildings
+            self.load_buildings(tree)
+
             # Load fountains
             self.load_fountains(tree)
         else:
@@ -248,14 +251,14 @@ class Level:
             # Load chests
             self.load_chests(tree, data.find('chests'))
 
+            # Load buildings
+            self.load_buildings(tree, data.find('buildings'))
+
             # Load fountains
             self.load_fountains(tree, data.find('fountains'))
 
         # Load portals
         self.load_portals(tree)
-
-        # Load buildings
-        self.load_buildings(tree)
 
         # Store all entities
         self.entities += self.allies + self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
@@ -434,7 +437,7 @@ class Level:
             loaded_chest = Chest(name, pos, sprite_closed, sprite_opened, potential_items)
 
             # Dynamic data
-            if data:
+            if data is not None:
                 el = data.xpath("entity[name/text() ='Chest" + name + "']")[0]
                 opened = el.find('state').text.strip()
                 if opened == "True":
@@ -510,10 +513,10 @@ class Level:
                 loaded_breakable.set_current_hp(current_hp)
             self.breakables.append(loaded_breakable)
 
-    def load_buildings(self, tree):
+    def load_buildings(self, tree, data=None):
         for building in tree.xpath('buildings/building'):
             # Static data
-            name = building.find('name').text.strip()
+            name = building.find('name').text.strip() + building.find('id').text.strip()
             x = int(building.find('position/x').text) * TILE_SIZE
             y = int(building.find('position/y').text) * TILE_SIZE
             pos = (x, y)
@@ -545,6 +548,13 @@ class Level:
                     print("Error : building type isn't recognized : ", type)
             else:
                 build = Building(name, pos, sprite, interaction_el)
+
+            # Dynamic data
+            if data is not None:
+                el = data.xpath("entity[name/text() ='" + name + "']")[0]
+                locked = el.find('state').text.strip()
+                if locked == "True":
+                    build.remove_interaction()
 
             self.buildings.append(build)
 
@@ -638,6 +648,9 @@ class Level:
         fountains = etree.SubElement(entities, 'fountains')
         for ent in self.fountains:
             fountains.append(ent.save())
+        buildings = etree.SubElement(entities, 'buildings')
+        for ent in self.buildings:
+            buildings.append(ent.save())
 
         team = etree.Element('team')
         for player in self.players:

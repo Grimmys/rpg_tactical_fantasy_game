@@ -1,3 +1,4 @@
+from lxml import etree
 
 from src.Entity import Entity
 from src.constants import *
@@ -32,3 +33,12 @@ class Building(Entity):
 
     def remove_interaction(self):
         self.interaction = {}
+
+    def save(self):
+        tree = Entity.save(self)
+
+        # Save state
+        state = etree.SubElement(tree, 'state')
+        state.text = str(self.interaction == {})
+
+        return tree
