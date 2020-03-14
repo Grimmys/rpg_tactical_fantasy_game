@@ -13,7 +13,7 @@ Please, don't hesitate about suggesting ideas : it's my first " serious " game p
 
 <b>Version</b> : 0.0.5
 
-![Main screen with possible moves and attack](/screenshots/moves_and_attacks.png?raw=True)
+![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
 ![Inventory menu](/screenshots/inventory_screen.png?raw=True)
 ![Status window](/screenshots/status_screen.png?raw=True)
 
