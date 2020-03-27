@@ -184,12 +184,14 @@ def blit_alpha(target, source, location, opacity):
 
 
 class Level:
-    def __init__(self, directory, players, status=None, turn=0, data=None):
+    def __init__(self, directory, players, nb_level, status=None, turn=0, data=None):
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.map = pg.image.load(directory + 'map.png')
 
         self.quit_request = False
+
+        self.nb_level = nb_level
 
         self.players = players
 
@@ -278,7 +280,8 @@ class Level:
         '''Possible game phase :
             - I : Level initialization ; player should prepare his team
             - G : Level is active
-            - F : Level is ended
+            - V : Level is ended victoriously
+            - F : Level is ended by defeat or quit
         '''
         self.game_phase = status
 
@@ -729,13 +732,18 @@ class Level:
         self.active_menu = None
         self.background_menus = []
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
-        self.game_phase = 'F'
+        if pos == VICTORY_POS:
+            self.game_phase = 'V'
+        else:
+            self.game_phase = 'F'
 
     def update_state(self):
+        if self.game_phase == 'V':
+            return 'V'
         if self.quit_request:
-            return True
+            return 'F'
         if self.animation:
-            return False
+            return 'I'
         if not self.players and self.game_phase == 'G' and not self.main_mission.get_chars():
             self.defeat = True
         if self.victory or self.defeat:
@@ -746,9 +754,9 @@ class Level:
             # Set values to False to avoid infinite repetitions
             self.victory = False
             self.defeat = False
-            return False
+            return 'I'
         if self.game_phase == 'F':
-            return False
+            return 'I'
         if self.selected_player:
             if self.selected_player.get_move():
                 self.selected_player.move()
@@ -780,11 +788,11 @@ class Level:
                     break
             else:
                 self.new_turn()
-        return False
+        return 'I'
 
     def display(self, win):
         win.blit(self.map, (0, 0))
-        self.sidebar.display(win, self.turn, self.hovered_ent)
+        self.sidebar.display(win, self.turn, self.hovered_ent, self.nb_level)
         for ent in self.entities:
             ent.display(win)
             if isinstance(ent, Destroyable):

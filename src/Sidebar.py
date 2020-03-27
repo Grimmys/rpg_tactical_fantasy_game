@@ -50,13 +50,17 @@ class Sidebar:
         else:
             return RED
 
-    def display(self, win, nb_turn, ent):
+    def display(self, win, nb_turn, ent, nb_level):
         # Sidebar background
         win.blit(self.sprite, self.pos)
 
         # Turn indication
         turn_text = MENU_TITLE_FONT.render("TURN " + str(nb_turn), 1, BLACK)
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 15))
+
+        # Level indication
+        turn_text = MENU_TITLE_FONT.render("Level " + str(nb_level), 1, BLACK)
+        win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 50))
 
         # Missions
         main_mission_text = MENU_TITLE_FONT.render("MAIN MISSION", 1, BLACK)

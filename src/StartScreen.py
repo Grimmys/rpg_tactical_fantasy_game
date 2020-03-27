@@ -49,6 +49,10 @@ class StartScreen:
         # Memorize if a game is currently being performed
         self.level = None
 
+        # Memorize if a game is currently being performed
+        self.levels = [0, 1, 2]
+        self.current_level = 0
+
         # Load current saved parameters
         self.load_options()
 
@@ -128,7 +132,16 @@ class StartScreen:
     def update_state(self):
         if self.level:
             exit = self.level.update_state()
-            if exit:
+            if exit == 'V':
+                self.current_level = self.current_level + 1
+                if self.current_level in self.levels:
+                    team = [self.init_player("john"), self.init_player("archer")]
+                    self.play(StartScreen.load_level(self.current_level, team))
+                else:
+                    # TODO: Game win dialog?
+                    self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
+                    self.level = None
+            elif exit == 'F':
                 self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
                 self.level = None
 
@@ -182,16 +195,15 @@ class StartScreen:
 
     @staticmethod
     def load_level(level, team):
-        return Level('maps/level_' + level + '/', team)
+        return Level('maps/level_' + str(level) + '/', team, level)
 
     def new_game(self):
         # Init player's team (one character at beginning)
         team = [self.init_player("john"), self.init_player("archer")]
 
         # Init the first level
-        level = StartScreen.load_level("0", team)
-
-        self.play(level)
+        self.current_level = 0
+        self.play(StartScreen.load_level(self.current_level, team))
 
     def load_game(self):
         try:
