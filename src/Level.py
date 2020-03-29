@@ -623,8 +623,8 @@ class Level:
 
         level = etree.Element('level')
         # Save level identity
-        name = etree.SubElement(level, 'name')
-        name.text = self.directory
+        index = etree.SubElement(level, 'index')
+        index.text = str(self.nb_level)
 
         # Save game phase
         phase = etree.SubElement(level, 'phase')

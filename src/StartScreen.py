@@ -212,7 +212,8 @@ class StartScreen:
             # Test if there is a current saved game
             if save:
                 tree_root = etree.parse("saves/main_save.xml").getroot()
-                level_name = tree_root.find("level/name").text.strip()
+                index = tree_root.find("level/index").text.strip()
+                level_name = 'maps/level_' + index + '/'
                 game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = 0
                 if game_status != 'I':
@@ -267,7 +268,8 @@ class StartScreen:
                     team.append(p)
 
                 # Load level with current game status, foes states, and team
-                level = Level(level_name, team, game_status, turn_nb, tree_root.find("level/entities"))
+                self.current_level = int(index)
+                level = Level(level_name, team, self.current_level, game_status, turn_nb, tree_root.find("level/entities"))
                 self.play(level)
                 save.close()
                 return
