@@ -1,4 +1,5 @@
 from src.Equipment import Equipment
+from src.Destroyable import DamageKind
 
 
 class Weapon(Equipment):
@@ -7,7 +8,7 @@ class Weapon(Equipment):
         self.durability_max = durability
         self.durability = self.durability_max
         self.reach = reach
-        self.attack_kind = attack_kind
+        self.attack_kind = DamageKind[attack_kind]
 
     def get_attack_kind(self):
         return self.attack_kind

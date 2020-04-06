@@ -1,30 +1,23 @@
-import random as rd
 import pygame as pg
 from lxml import etree
+import random as rd
 
 from src.Movable import Movable
+from src.Destroyable import DamageKind
 from src.constants import *
 
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
 
-class Character(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments, strategy, lvl,
-                 race, gold, talk,
-                 compl_sprite=None):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, strategy, lvl, compl_sprite)
-        '''Possible states :
-                - 0 : Have to act
-                - 1 : On move
-                - 2 : Have to attack
-                - 3 : Turn finished
-        '''
 
+class Character(Movable):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments,
+                 strategy, lvl, race, gold, talk, compl_sprite=None):
+        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl, compl_sprite)
         self.equipments = equipments
         self.classes = classes
         self.race = race
         self.gold = gold
         self.dialog = talk
-        self.attack_kind = attack_kind
 
     def talk(self, actor):
         entries = []
@@ -32,21 +25,6 @@ class Character(Movable):
             entry = [{'type': 'text', 'text': s, 'font': ITEM_DESC_FONT}]
             entries.append(entry)
         return entries
-
-    def get_attack_kind(self):
-        return self.attack_kind
-
-    def set_move(self, pos):
-        Movable.set_move(self, pos)
-        self.state = 1
-
-    def move(self):
-        Movable.move(self)
-        if not self.on_move:
-            self.state = 2
-
-    def end_turn(self):
-        self.state = 3
 
     def display(self, screen):
         Movable.display(self, screen)
@@ -59,9 +37,9 @@ class Character(Movable):
 
     def attacked(self, ent, damages, kind):
         for eq in self.equipments:
-            if kind == PHYSICAL:
+            if kind is DamageKind.PHYSICAL:
                 damages -= eq.get_def()
-            elif kind == SPIRITUAL:
+            elif kind == DamageKind.SPIRITUAL:
                 damages -= eq.get_res()
         return Movable.attacked(self, ent, damages, kind)
 

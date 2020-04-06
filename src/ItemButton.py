@@ -1,6 +1,8 @@
 import pygame as pg
+from enum import Enum
 
 from src.Button import Button
+from src.Menus import InventoryMenu
 from src.constants import *
 
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 18)
@@ -11,9 +13,6 @@ ITALIC_ITEM_FONT_HOVER = pg.font.Font('fonts/minya_nouvelle_it.ttf', 16)
 FRAME_SPRITE = 'imgs/interface/grey_frame.png'
 FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.png'
 ITEM_SPRITE = 'imgs/interface/item_frame.png'
-
-INTERAC_ITEM_ACTION_ID = 0
-
 
 class ItemButton(Button):
     def __init__(self, size, pos, item, margin, index, price, disabled=False):
@@ -70,7 +69,7 @@ class ItemButton(Button):
                                                              item_frame.get_height() / 2
                                                              - ITALIC_ITEM_FONT_HOVER.get_height() / 2))
 
-        Button.__init__(self, INTERAC_ITEM_ACTION_ID, [], size, pos, item_frame, item_frame_hover, margin)
+        Button.__init__(self, InventoryMenu.INTERAC_ITEM, [], size, pos, item_frame, item_frame_hover, margin)
         self.item = item
         self.price = price
         self.index = index

@@ -1,5 +1,6 @@
 import pygame as pg
 from lxml import etree
+from enum import Enum, auto
 
 from src.Entity import Entity
 from src.constants import *
@@ -16,6 +17,12 @@ ALMOST_DEAD_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_almost_dead.png'
 ALMOST_DEAD = pg.transform.scale(pg.image.load(ALMOST_DEAD_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
 HP_BAR = pg.transform.scale(pg.image.load(HP_BAR_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+
+
+class DamageKind(Enum):
+    PHYSICAL = auto(),
+    SPIRITUAL = auto()
+
 
 class Destroyable(Entity):
     def __init__(self, name, pos, sprite, hp, defense, res):
@@ -56,9 +63,9 @@ class Destroyable(Entity):
         self.hp = hp
 
     def attacked(self, ent, damages, kind):
-        if kind == SPIRITUAL:
+        if kind is DamageKind.SPIRITUAL:
             real_damages = damages - self.res
-        elif kind == PHYSICAL:
+        elif kind is DamageKind.PHYSICAL:
             real_damages = damages - self.defense
         if real_damages < 0:
             real_damages = 0

@@ -3,8 +3,9 @@ from lxml import etree
 import math
 
 from src.constants import *
-from src.Destroyable import Destroyable
+from src.Destroyable import *
 from src.Key import Key
+from enum import IntEnum, Enum, auto
 
 TIMER = 60
 NB_ITEMS_MAX = 8
@@ -15,11 +16,31 @@ SEMI_ACTIVE = 2
 ACTIVE = 3
 
 
+class EntityState(IntEnum):
+    HAVE_TO_ACT = 0,
+    ON_MOVE = 1,
+    HAVE_TO_ATTACK = 2,
+    FINISHED = 3
+
+
+class EntityStrategy(Enum):
+    # Entity will never move, just attack if possible
+    STATIC = auto(),
+    # Entity will react to attacks, and pursue opponent if it's trying to flee
+    PASSIVE = auto(),
+    # Entity will only move if an opponent is at reach
+    SEMI_ACTIVE = auto(),
+    # Entity always move to get closer from opponents
+    ACTIVE = auto(),
+    # Entity is controlled by an human player
+    MANUAL = auto()
+
+
 class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
     move_speed = ANIMATION_SPEED
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, strategy, lvl=1, compl_sprite=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl=1, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         self.max_move = max_move
         self.on_move = []
@@ -29,19 +50,24 @@ class Movable(Destroyable):
         self.lvl = lvl
         self.xp = 0
         self.xp_next_lvl = self.determine_xp_goal()
-        self.state = 0
         self.items = []
         self.nb_items_max = NB_ITEMS_MAX
+        self.state = EntityState.HAVE_TO_ACT
         if compl_sprite:
             compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
             self.sprite.blit(compl, (0, 0))
 
-        '''Possible strategies :
-                - STATIC : Entity will never move, just attack if possible
-                - PASSIVE : Entity will react to attacks, and pursue opponent if it's trying to flee
-                - SEMI_ACTIVE : Entity will only move if an opponent is at reach
-                - ACTIVE : Entity always move to get closer from opponents'''
-        self.strategy = strategy
+        self.attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
+        self.strategy = EntityStrategy[strategy]
+
+    def get_attack_kind(self):
+        return self.attack_kind
+
+    def end_turn(self):
+        self.state = EntityState.FINISHED
+
+    def turn_is_finished(self):
+        return self.state == EntityState.FINISHED
 
     def get_strength(self):
         return self.strength
@@ -55,6 +81,7 @@ class Movable(Destroyable):
 
     def set_move(self, path):
         self.on_move = path
+        self.state = EntityState.ON_MOVE
 
     def get_move(self):
         return self.on_move
@@ -97,9 +124,6 @@ class Movable(Destroyable):
         self.lvl += 1
         self.xp -= self.xp_next_lvl
         self.xp_next_lvl = self.determine_xp_goal()
-
-    def get_state(self):
-        return self.state
 
     def get_item(self, index):
         if index not in range(len(self.items)):
@@ -144,18 +168,20 @@ class Movable(Destroyable):
         if self.timer <= 0:
             self.pos = self.on_move.pop(0)
             self.timer = TIMER
+        if not self.on_move:
+            self.state = EntityState.HAVE_TO_ATTACK
 
     def determine_move(self, targets, possible_moves, possible_attacks):
-        if self.strategy == SEMI_ACTIVE:
+        if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for attack in possible_attacks:
                 for move in possible_moves:
                     # Try to find move next to possible attack
                     if abs(move[0] - attack[0]) + abs(move[1] - attack[1]) == TILE_SIZE:
                         return move
-        if self.strategy == ACTIVE:
+        if self.strategy is EntityStrategy.ACTIVE:
             # TODO
             pass
-        elif self.strategy == PASSIVE:
+        elif self.strategy is EntityStrategy.PASSIVE:
             # TODO
             pass
         return self.pos
@@ -165,11 +191,14 @@ class Movable(Destroyable):
         return self.strength
 
     def new_turn(self):
-        self.state = 0
+        self.state = EntityState.HAVE_TO_ACT
         # Verify if any alteration is finished
         for alteration in self.alterations:
             if alteration.increment():
                 self.alterations.remove(alteration)
+
+    def get_state(self):
+        return self.state
 
     def save(self):
         tree = Destroyable.save(self)

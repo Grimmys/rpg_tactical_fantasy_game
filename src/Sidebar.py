@@ -59,7 +59,7 @@ class Sidebar:
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 15))
 
         # Level indication
-        turn_text = MENU_TITLE_FONT.render("Level " + str(nb_level), 1, BLACK)
+        turn_text = MENU_TITLE_FONT.render("LEVEL " + str(nb_level), 1, BLACK)
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 50))
 
         # Missions

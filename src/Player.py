@@ -1,28 +1,31 @@
 import pygame as pg
 from lxml import etree
+from enum import IntEnum
+
 
 from src.Character import Character
-from src.constants import  *
+from src.constants import *
 
 SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
 SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
 
+class PlayerState(IntEnum):
+    WAITING_SELECTION = 0,
+    WAITING_MOVE = 1,
+    ON_MOVE = 2,
+    WAITING_POST_ACTION = 3,
+    WAITING_TARGET = 4,
+    FINISHED = 5
+
+
 class Player(Character):
     def __init__(self, name, sprite, hp, defense, res, max_move, strength, classes, equipments, race, gold, lvl=1,
                  compl_sprite=None):
-        Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, None, classes, equipments, None, lvl, race,
-                           gold, compl_sprite)
-        '''Possible states :
-        - 0 : Waiting to be selected
-        - 1 : Waiting to be moved
-        - 2 : On move
-        - 3 : Waiting an action post-move
-        - 4 : Waiting a target selected to attack OR waiting an target to interact with
-        - 5 : Turn finished'''
+        Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, None,
+                           classes, equipments, 'MANUAL', lvl, race, gold, compl_sprite)
+        self.state = PlayerState.WAITING_SELECTION
         self.old_pos = ()
-        self.state = 0
-        self.last_state = 5
         self.selected = False
 
         # Sprite displayed when player cannot be selected
@@ -40,40 +43,37 @@ class Player(Character):
 
     def display(self, screen):
         Character.display(self, screen)
-        if self.state in range(1, 4):
+        if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET):
             screen.blit(SELECTED_DISPLAY, self.pos)
 
     def set_selected(self, is_selected):
         self.selected = is_selected
-        self.state = 1 if is_selected else 0
-
-    def get_state(self):
-        return self.state
+        self.state = PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
 
     def set_move(self, pos):
         Character.set_move(self, pos)
-        self.state = 2
+        self.state = PlayerState.ON_MOVE
         self.old_pos = self.pos
 
     def move(self):
         Character.move(self)
         if not self.on_move:
-            self.state = 3
+            self.state = PlayerState.WAITING_POST_ACTION
 
     def cancel_move(self):
-        self.state = 0
+        self.state = PlayerState.WAITING_SELECTION
         self.pos = self.old_pos
 
     def cancel_interaction(self):
-        self.state = 3
+        self.state = PlayerState.WAITING_POST_ACTION
 
     def attack(self, ent):
         damages = Character.attack(self, ent)
-        self.state = self.last_state
+        self.state = PlayerState.FINISHED
         return damages
 
     def turn_finished(self):
-        self.state = self.last_state
+        self.state = PlayerState.FINISHED
         self.selected = False
         self.sprite = self.sprite_unavaible
         for eq in self.equipments:
@@ -81,18 +81,16 @@ class Player(Character):
 
     def new_turn(self):
         Character.new_turn(self)
+        self.state = PlayerState.WAITING_SELECTION
         self.sprite = self.normal_sprite
         for eq in self.equipments:
             eq.unset_grey()
 
     def turn_is_finished(self):
-        return self.state == self.last_state
+        return self.state == PlayerState.FINISHED
 
     def choose_target(self):
-        self.state = 4
-
-    def choose_interaction(self):
-        self.state = 4
+        self.state = PlayerState.WAITING_TARGET
 
     def save(self):
         # Build XML tree

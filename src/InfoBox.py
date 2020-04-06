@@ -5,7 +5,7 @@ from src.Button import Button
 from src.DynamicButton import DynamicButton
 from src.ItemButton import ItemButton
 from src.constants import TILE_SIZE, WHITE
-
+from src.Menus import GenericActions
 
 MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
@@ -25,7 +25,6 @@ BUTTON_SIZE = (150, 30)
 ITEM_BUTTON_SIZE = (180, TILE_SIZE + 30)
 EQUIP_BUTTON_SIZE = (150, TILE_SIZE + 10)
 CLOSE_BUTTON_SIZE = (160, 40)
-CLOSE_ACTION_ID = -1
 CLOSE_BUTTON_MARGINTOP = 20
 
 DEFAULT_WIDTH = 400
@@ -139,7 +138,7 @@ class InfoBox:
                                      sprite_hover.get_height() // 2 - name.get_height() // 2))
 
             self.elements.append([close_button_height,
-                                  Button(CLOSE_ACTION_ID, [close_button], CLOSE_BUTTON_SIZE, (0, 0), sprite,
+                                  Button(GenericActions.CLOSE, [close_button], CLOSE_BUTTON_SIZE, (0, 0), sprite,
                                          sprite_hover, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
         return height
 

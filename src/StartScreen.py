@@ -2,36 +2,15 @@ from lxml import etree
 from src.constants import *
 import pygame as pg
 
-from src.Level import Level
+from src.Level import Level, Status
 from src.Player import Player
 from src.InfoBox import InfoBox
 from src.Movable import Movable
+from src.Menus import StartMenu, OptionsMenu, GenericActions
 
 START_MENU_WIDTH = 600
 
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
-
-# Interaction ids
-#  > Generic
-#    - To close any menu
-CLOSE_ACTION_ID = -1
-
-# > Start menu
-START_MENU_ID = 0
-#   - Launch new game
-NEW_GAME_ACTION_ID = 0
-#   - Load game
-LOAD_GAME_ACTION_ID = 1
-#   - Access to options screen
-OPTIONS_ACTION_ID = 2
-#   - Exit game
-EXIT_ACTION_ID = 3
-
-# > Options menu
-OPTIONS_MENU_ID = 1
-#   - Modify movement speed
-CHANGE_MOVE_SPEED = 0
-
 
 class StartScreen:
     def __init__(self, screen):
@@ -62,14 +41,14 @@ class StartScreen:
 
     @staticmethod
     def create_menu():
-        entries = [[{'name': 'New game', 'id': NEW_GAME_ACTION_ID}], [{'name': 'Load game', 'id': LOAD_GAME_ACTION_ID}],
-                   [{'name': 'Options', 'id': OPTIONS_ACTION_ID}], [{'name': 'Exit game', 'id': EXIT_ACTION_ID}]]
+        entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}], [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
+                   [{'name': 'Options', 'id': StartMenu.OPTIONS}], [{'name': 'Exit game', 'id': StartMenu.EXIT}]]
 
         for row in entries:
             for entry in row:
                 entry['type'] = 'button'
 
-        return InfoBox("In the name of the Five Cats", START_MENU_ID,
+        return InfoBox("In the name of the Five Cats", StartMenu,
                        "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
 
     @staticmethod
@@ -90,12 +69,12 @@ class StartScreen:
                                                         [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
                                                          {'label': 'Normal', 'value': ANIMATION_SPEED},
                                                          {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
-                                                     CHANGE_MOVE_SPEED)]]
+                                                     OptionsMenu.CHANGE_MOVE_SPEED)]]
         for row in entries:
             for entry in row:
                 entry['type'] = 'parameter_button'
 
-        return InfoBox("Options", OPTIONS_MENU_ID,
+        return InfoBox("Options", OptionsMenu,
                        "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
 
     @staticmethod
@@ -132,7 +111,7 @@ class StartScreen:
     def update_state(self):
         if self.level:
             exit = self.level.update_state()
-            if exit == 'V':
+            if exit is Status.ENDED_VICTORY:
                 self.current_level = self.current_level + 1
                 if self.current_level in self.levels:
                     team = [self.init_player("john"), self.init_player("archer")]
@@ -141,12 +120,9 @@ class StartScreen:
                     # TODO: Game win dialog?
                     self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
                     self.level = None
-            elif exit == 'F':
+            elif exit is Status.ENDED_DEFEAT:
                 self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
                 self.level = None
-
-    def level_is_ended(self):
-        return self.level.is_ended()
 
     @staticmethod
     def init_player(name):
@@ -296,20 +272,20 @@ class StartScreen:
 
     def main_menu_action(self, method_id, args):
         # Execute action
-        if method_id == NEW_GAME_ACTION_ID:
+        if method_id is StartMenu.NEW_GAME:
             self.new_game()
-        elif method_id == LOAD_GAME_ACTION_ID:
+        elif method_id is StartMenu.LOAD_GAME:
             self.load_game()
-        elif method_id == OPTIONS_ACTION_ID:
+        elif method_id is StartMenu.OPTIONS:
             self.options_menu()
-        elif method_id == EXIT_ACTION_ID:
+        elif method_id is StartMenu.EXIT:
             self.exit_game()
         else:
-            print("Unknown action... : ", method_id)
+            print("Unknown action... : ", str(method_id))
 
     def options_menu_action(self, method_id, args):
         # Execute action
-        if method_id == CHANGE_MOVE_SPEED:
+        if method_id is OptionsMenu.CHANGE_MOVE_SPEED:
             Movable.move_speed = args[2][0]
             StartScreen.modify_options_file("move_speed", args[2][0])
         else:
@@ -323,18 +299,18 @@ class StartScreen:
 
         # Test if the action is a generic one (according to the method_id)
         # Close menu : Active menu is closed
-        if method_id == CLOSE_ACTION_ID:
+        if method_id is GenericActions.CLOSE:
             self.active_menu = None
             if self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
             return
 
-        if menu_type == START_MENU_ID:
+        if menu_type is StartMenu:
             self.main_menu_action(method_id, args)
-        elif menu_type == OPTIONS_MENU_ID:
+        elif menu_type is OptionsMenu:
             self.options_menu_action(method_id, args)
         else:
-            print("Unknown menu... : ", menu_type)
+            print("Unknown menu... : ", str(menu_type))
 
     def motion(self, pos):
         if self.level is None:

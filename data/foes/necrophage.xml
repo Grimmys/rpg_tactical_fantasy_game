@@ -21,9 +21,9 @@
         13
     </xp_gain>
     <strategy>
-        semi_active
+        SEMI_ACTIVE
     </strategy>
     <attack_kind>
-        physical
+        PHYSICAL
     </attack_kind>
 </necrophage>

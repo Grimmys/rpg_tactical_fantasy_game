@@ -21,9 +21,9 @@
         8
     </xp_gain>
     <strategy>
-        static
+        STATIC
     </strategy>
     <attack_kind>
-        physical
+        PHYSICAL
     </attack_kind>
 </simple_statue>

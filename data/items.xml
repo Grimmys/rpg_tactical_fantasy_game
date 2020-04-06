@@ -110,7 +110,7 @@
                     1
                 </power>
                 <kind>
-                    physical
+                    PHYSICAL
                 </kind>
                 <range>
                     1
@@ -145,7 +145,7 @@
                     1
                 </power>
                 <kind>
-                    physical
+                    PHYSICAL
                 </kind>
                 <range>
                     1
@@ -180,7 +180,7 @@
                     3
                 </power>
                 <kind>
-                    physical
+                    PHYSICAL
                 </kind>
                 <range>
                     1
@@ -215,7 +215,7 @@
                     1
                 </power>
                 <kind>
-                    physical
+                    PHYSICAL
                 </kind>
                 <range>
                     2

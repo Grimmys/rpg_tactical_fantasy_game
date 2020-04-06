@@ -20,8 +20,8 @@
             </talk>
         </talks>
         <gold> 100 </gold>
-        <strategy> static </strategy>
-        <attack_kind> physical </attack_kind>
+        <strategy> STATIC </strategy>
+        <attack_kind> PHYSICAL </attack_kind>
     </jist>
     <john>
         <name> John </name>
