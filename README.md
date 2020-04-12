@@ -3,7 +3,7 @@
 <b>WARNING</b> : This game is entirely under construction.
 
 The game is an RPG Tactical Fantasy game, turn-based and is in 2D.
-I'm currently looking for a good name (temporary : " In the name of the Five Cats ").
+I'm currently looking for a good name.
 
 ## How to help development
 
