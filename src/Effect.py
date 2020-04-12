@@ -9,12 +9,6 @@ class Effect:
         self.power = power
         self.duration = duration
 
-    def get_name(self):
-        return self.name
-
-    def get_duration(self):
-        return self.duration
-
     def apply_on_ent(self, ent):
         msg = ""
         success = True

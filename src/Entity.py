@@ -15,27 +15,12 @@ class Entity:
     def display(self, screen):
         screen.blit(self.sprite, self.pos)
 
-    def get_pos(self):
-        return self.pos
-
-    def set_pos(self, pos):
-        self.pos = pos
-
     def get_rect(self):
         return self.sprite.get_rect(topleft=self.pos)
-
-    def get_name(self):
-        return self.name
 
     def get_formatted_name(self):
         s = self.name.replace('_', ' ').title()
         return re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
-
-    def get_max_moves(self):
-        return 0
-
-    def get_sprite(self):
-        return self.sprite
 
     def is_on_pos(self, pos):
         return self.get_rect().collidepoint(pos)

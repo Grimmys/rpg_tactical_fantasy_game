@@ -32,12 +32,6 @@ class Destroyable(Entity):
         self.defense = defense
         self.res = res
 
-    def get_defense(self):
-        return self.defense
-
-    def get_resistance(self):
-        return self.res
-
     def display_hp(self, screen):
         if self.hp != self.hp_max:
             damage_bar = LIGHTLY_DAMAGED
@@ -52,12 +46,6 @@ class Destroyable(Entity):
             damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * self.hp / self.hp_max), damage_bar.get_height()))
             screen.blit(HP_BAR, self.pos)
             screen.blit(damage_bar, self.pos)
-
-    def get_hp(self):
-        return self.hp
-
-    def get_hp_max(self):
-        return self.hp_max
 
     def set_current_hp(self, hp):
         self.hp = hp

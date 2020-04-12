@@ -40,9 +40,9 @@ class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
     move_speed = ANIMATION_SPEED
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl=1, compl_sprite=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
-        self.max_move = max_move
+        self._max_moves = max_moves
         self.on_move = []
         self.timer = TIMER
         self.strength = strength
@@ -60,24 +60,19 @@ class Movable(Destroyable):
         self.attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
         self.strategy = EntityStrategy[strategy]
 
-    def get_attack_kind(self):
-        return self.attack_kind
-
     def end_turn(self):
         self.state = EntityState.FINISHED
 
     def turn_is_finished(self):
         return self.state == EntityState.FINISHED
 
-    def get_strength(self):
-        return self.strength
-
-    def get_max_moves(self):
+    @property
+    def max_moves(self):
         alterations = self.get_alterations_effect('speed')
-        max = self.max_move
+        maximum = self._max_moves
         for alt in alterations:
-            max += alt.get_power()
-        return max
+            maximum += alt.power
+        return maximum
 
     def set_move(self, path):
         self.on_move = path
@@ -85,9 +80,6 @@ class Movable(Destroyable):
 
     def get_move(self):
         return self.on_move
-
-    def get_alterations(self):
-        return self.alterations
 
     def get_formatted_alterations(self):
         formatted_string = ""
@@ -103,12 +95,6 @@ class Movable(Destroyable):
     def get_alterations_effect(self, eff):
         return [alteration for alteration in self.alterations if alteration.get_effect() == eff]
 
-    def get_lvl(self):
-        return self.lvl
-
-    def get_xp(self):
-        return self.xp
-
     def earn_xp(self, xp):
         self.xp += xp
         if self.xp >= self.xp_next_lvl:
@@ -116,9 +102,6 @@ class Movable(Destroyable):
 
     def determine_xp_goal(self):
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
-
-    def get_next_lvl_xp(self):
-        return self.xp_next_lvl
 
     def lvl_up(self):
         self.lvl += 1
@@ -130,10 +113,6 @@ class Movable(Destroyable):
             return False
         return self.items[index]
 
-    def get_items(self):
-        # Return a new list based on items to avoid content alteration
-        return list(self.items)
-
     def has_free_space(self):
         return len(self.items) < NB_ITEMS_MAX
 
@@ -143,13 +122,9 @@ class Movable(Destroyable):
         self.items.append(item)
         return True
 
-    def set_items(self, items):
-        self.items = items
-
     def remove_item(self, item):
-        id = item.get_id()
         for index, it in enumerate(self.items):
-            if it.get_id() == id:
+            if it.id == item.id:
                 return self.items.pop(index)
 
     def remove_key(self):
@@ -159,9 +134,6 @@ class Movable(Destroyable):
 
     def use_item(self, item):
         return item.use(self)
-
-    def get_nb_items_max(self):
-        return self.nb_items_max
 
     def move(self):
         self.timer -= Movable.move_speed
@@ -197,9 +169,6 @@ class Movable(Destroyable):
             if alteration.increment():
                 self.alterations.remove(alteration)
 
-    def get_state(self):
-        return self.state
-
     def save(self):
         tree = Destroyable.save(self)
 
@@ -221,7 +190,7 @@ class Movable(Destroyable):
         res = etree.SubElement(tree, 'res')
         res.text = str(self.res)
         move = etree.SubElement(tree, 'move')
-        move.text = str(self.max_move)
+        move.text = str(self._max_moves)
 
         return tree
 

@@ -10,12 +10,6 @@ class Weapon(Equipment):
         self.reach = reach
         self.attack_kind = DamageKind[attack_kind]
 
-    def get_attack_kind(self):
-        return self.attack_kind
-
-    def get_range(self):
-        return self.reach
-
     def used(self):
         self.durability -= 1
         return self.durability

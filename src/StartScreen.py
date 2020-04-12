@@ -1,3 +1,5 @@
+import os
+
 from lxml import etree
 from src.constants import *
 import pygame as pg
@@ -11,6 +13,7 @@ from src.Menus import StartMenu, OptionsMenu, GenericActions
 START_MENU_WIDTH = 600
 
 ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
+
 
 class StartScreen:
     def __init__(self, screen):
@@ -28,9 +31,8 @@ class StartScreen:
         # Memorize if a game is currently being performed
         self.level = None
 
-        # Memorize if a game is currently being performed
         self.levels = [0, 1, 2]
-        self.current_level = 0
+        self.level_id = None
 
         # Load current saved parameters
         self.load_options()
@@ -66,9 +68,9 @@ class StartScreen:
     @staticmethod
     def create_options_menu():
         entries = [[StartScreen.load_parameter_entry("move_speed", "Move speed : ",
-                                                        [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
-                                                         {'label': 'Normal', 'value': ANIMATION_SPEED},
-                                                         {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
+                                                     [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
+                                                      {'label': 'Normal', 'value': ANIMATION_SPEED},
+                                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
                                                      OptionsMenu.CHANGE_MOVE_SPEED)]]
         for row in entries:
             for entry in row:
@@ -112,10 +114,10 @@ class StartScreen:
         if self.level:
             exit = self.level.update_state()
             if exit is Status.ENDED_VICTORY:
-                self.current_level = self.current_level + 1
-                if self.current_level in self.levels:
+                self.level_id += 1
+                if self.level_id in self.levels:
                     team = [self.init_player("john"), self.init_player("archer")]
-                    self.play(StartScreen.load_level(self.current_level, team))
+                    self.play(StartScreen.load_level(self.level_id, team))
                 else:
                     # TODO: Game win dialog?
                     self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
@@ -178,8 +180,8 @@ class StartScreen:
         team = [self.init_player("john"), self.init_player("archer")]
 
         # Init the first level
-        self.current_level = 0
-        self.play(StartScreen.load_level(self.current_level, team))
+        self.level_id = 0
+        self.play(StartScreen.load_level(self.level_id, team))
 
     def load_game(self):
         try:
@@ -235,17 +237,17 @@ class StartScreen:
                     p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, race, gold, level,
                                compl_sprite=compl_sprite)
                     p.earn_xp(exp)
-                    p.set_items(inv)
+                    p.items = inv
                     p.set_current_hp(current_hp)
-                    p.set_pos(pos)
+                    p.pos = pos
                     if state == "True":
                         p.turn_finished()
 
                     team.append(p)
 
                 # Load level with current game status, foes states, and team
-                self.current_level = int(index)
-                level = Level(level_name, team, self.current_level, game_status, turn_nb, tree_root.find("level/entities"))
+                self.level_id = int(index)
+                level = Level(level_name, team, self.level_id, game_status, turn_nb, tree_root.find("level/entities"))
                 self.play(level)
                 save.close()
                 return
@@ -283,7 +285,8 @@ class StartScreen:
         else:
             print("Unknown action... : ", str(method_id))
 
-    def options_menu_action(self, method_id, args):
+    @staticmethod
+    def options_menu_action(method_id, args):
         # Execute action
         if method_id is OptionsMenu.CHANGE_MOVE_SPEED:
             Movable.move_speed = args[2][0]
@@ -321,7 +324,7 @@ class StartScreen:
     def click(self, button, pos):
         if self.level is None:
             if button == 1:
-                self.execute_action(self.active_menu.get_type(), self.active_menu.click(pos))
+                self.execute_action(self.active_menu.type, self.active_menu.click(pos))
         else:
             self.level.click(button, pos)
 

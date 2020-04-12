@@ -1,9 +1,6 @@
 
 from src.Building import Building
-
-SHOP_MENU_ID = 0
-BUY_ACTION_ID = 0
-SELL_ACTION_ID = 1
+from src.Menus import ShopMenu
 
 
 class Shop(Building):
@@ -12,10 +9,7 @@ class Shop(Building):
         self.items = items
 
     def interact(self, actor):
-        entries = [[{'name': 'Buy', 'id': BUY_ACTION_ID, 'type': 'button', 'args': [self]}],
-                   [{'name': 'Sell', 'id': SELL_ACTION_ID, 'type': 'button'}]]
+        entries = [[{'name': 'Buy', 'id': ShopMenu.BUY, 'type': 'button', 'args': [self]}],
+                   [{'name': 'Sell', 'id': ShopMenu.SELL, 'type': 'button'}]]
 
         return entries
-
-    def get_items(self):
-        return self.items

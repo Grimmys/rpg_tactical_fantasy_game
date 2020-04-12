@@ -25,6 +25,7 @@ CRACKED = pg.transform.scale(pg.image.load(CRACKED_SPRITE).convert_alpha(), (TIL
 FRAME_SPRITE = 'imgs/interface/frame.png'
 FRAME = pg.transform.scale(pg.image.load(FRAME_SPRITE).convert_alpha(), (TILE_SIZE + 10, TILE_SIZE + 10))
 
+
 class Sidebar:
     def __init__(self, size, pos, sprite, missions):
         self.size = size
@@ -32,7 +33,7 @@ class Sidebar:
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), size)
         self.missions = missions
         for mission in self.missions:
-            if mission.is_main():
+            if mission.main:
                 self.main_mission = mission
                 self.missions.remove(mission)
                 break
@@ -67,8 +68,8 @@ class Sidebar:
         win.blit(main_mission_text, (self.pos[0] + self.size[0] - 250,
                                      self.pos[1] + 10))
 
-        mission_color = GREEN if self.main_mission.is_ended else BROWN_RED
-        main_mission_desc = MISSION_FONT.render("> " + self.main_mission.get_description(), 1, BROWN_RED)
+        mission_color = GREEN if self.main_mission.ended else BROWN_RED
+        main_mission_desc = MISSION_FONT.render("> " + self.main_mission.desc, 1, BROWN_RED)
         win.blit(main_mission_desc, (self.pos[0] + self.size[0] - 230,
                                      self.pos[1] + 10 + main_mission_text.get_height()))
 
@@ -78,11 +79,11 @@ class Sidebar:
             frame_pos = (self.pos[0] + self.size[0] / 3, self.pos[1] + self.size[1] / 2 - FRAME.get_height() / 2)
             win.blit(FRAME, frame_pos)
             ent_pos = (frame_pos[0] + 5, frame_pos[1] + 5)
-            win.blit(ent.get_sprite(), ent_pos)
+            win.blit(ent.sprite, ent_pos)
             # If it is a character
             if isinstance(ent, Character):
-                for equip in ent.get_equipments():
-                    win.blit(equip.get_equipped_sprite(), ent_pos)
+                for equip in ent.equipments:
+                    win.blit(equip.equipped_sprite, ent_pos)
             # If it is a breakable
             elif isinstance(ent, Breakable):
                 win.blit(CRACKED, ent_pos)
@@ -97,8 +98,8 @@ class Sidebar:
 
             # HP if it's a destroyable entity
             if isinstance(ent, Destroyable):
-                hp = ent.get_hp()
-                hp_max = ent.get_hp_max()
+                hp = ent.hp
+                hp_max = ent.hp_max
                 hp_pre_text = ITEM_FONT.render("HP : ", 1, MIDNIGHT_BLUE)
                 hp_text_pos = (text_pos_x, frame_pos[1] + FRAME.get_height() - hp_pre_text.get_height())
                 win.blit(hp_pre_text, hp_text_pos)
@@ -110,7 +111,7 @@ class Sidebar:
                 # Display more information if it is a movable entity
                 if isinstance(ent, Movable):
                     # Level
-                    level_text = ITEM_FONT.render("LVL : " + str(ent.get_lvl()), 1, BLACK)
+                    level_text = ITEM_FONT.render("LVL : " + str(ent.lvl), 1, BLACK)
                     lvl_text_pos_x = frame_pos[0] + FRAME.get_width() / 2 - level_text.get_width() / 2
                     win.blit(level_text, (lvl_text_pos_x, frame_pos[1] + FRAME.get_height()))
 

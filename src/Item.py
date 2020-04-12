@@ -13,20 +13,5 @@ class Item:
         self.id = Item.internal_id
         Item.internal_id += 1
 
-    def get_name(self):
-        return self.name
-
     def get_formatted_name(self):
         return self.name.replace('_', ' ').title()
-
-    def get_description(self):
-        return self.desc
-
-    def get_sprite(self):
-        return self.sprite
-
-    def get_id(self):
-        return self.id
-
-    def get_price(self):
-        return self.price

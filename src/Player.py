@@ -26,7 +26,7 @@ class Player(Character):
                            classes, equipments, 'MANUAL', lvl, race, gold, compl_sprite)
         self.state = PlayerState.WAITING_SELECTION
         self.old_pos = ()
-        self.selected = False
+        self._selected = False
 
         # Sprite displayed when player cannot be selected
         self.sprite_unavaible = self.sprite.copy()
@@ -46,8 +46,13 @@ class Player(Character):
         if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET):
             screen.blit(SELECTED_DISPLAY, self.pos)
 
-    def set_selected(self, is_selected):
-        self.selected = is_selected
+    @property
+    def selected(self):
+        return self._selected
+
+    @selected.setter
+    def selected(self, is_selected):
+        self._selected = is_selected
         self.state = PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
 
     def set_move(self, pos):
@@ -74,7 +79,7 @@ class Player(Character):
 
     def turn_finished(self):
         self.state = PlayerState.FINISHED
-        self.selected = False
+        self._selected = False
         self.sprite = self.sprite_unavaible
         for eq in self.equipments:
             eq.set_grey()
@@ -126,7 +131,7 @@ class Player(Character):
         res = etree.SubElement(tree, 'res')
         res.text = str(self.res)
         move = etree.SubElement(tree, 'move')
-        move.text = str(self.max_move)
+        move.text = str(self.max_moves)
 
         # Save current hp
         hp = etree.SubElement(tree, 'currentHp')
@@ -152,13 +157,13 @@ class Player(Character):
         for it in self.items:
             it_el = etree.SubElement(inv, 'item')
             it_name = etree.SubElement(it_el, 'name')
-            it_name.text = it.get_name()
+            it_name.text = it.name
 
         # Save equipment
         equip = etree.SubElement(tree, 'equipments')
         for eq in self.equipments:
             eq_el = etree.SubElement(equip, 'equipment')
             eq_name = etree.SubElement(eq_el, 'name')
-            eq_name.text = eq.get_name()
+            eq_name.text = eq.name
 
         return tree

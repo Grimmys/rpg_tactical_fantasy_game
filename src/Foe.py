@@ -8,9 +8,6 @@ class Foe(Movable):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl)
         self.xp_gain = int(xp_gain * (1.1 ** (lvl - 1)))
 
-    def get_xp_obtained(self):
-        return self.xp_gain
-
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):
             self.hp_max += rd.randrange(1, 5)  # Gain between 0 and 4

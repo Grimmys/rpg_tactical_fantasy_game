@@ -26,9 +26,6 @@ class Chest(Entity):
 
         return random.choice(bag)
 
-    def is_open(self):
-        return self.opened
-
     def open(self):
         self.sprite = self.sprite_open
         self.opened = True

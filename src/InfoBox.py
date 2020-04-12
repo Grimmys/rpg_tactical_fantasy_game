@@ -100,7 +100,7 @@ class InfoBox:
                             button_size = EQUIP_BUTTON_SIZE
                     if 'price' not in entry:
                         entry['price'] = 0
-                    element.append(ItemButton(button_size, (0, 0), entry['item'], entry['margin'], entry['index'],
+                    element.append(ItemButton(entry['id'], button_size, (0, 0), entry['item'], entry['margin'], entry['index'],
                                               entry['price'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
@@ -165,9 +165,6 @@ class InfoBox:
                     buttons.append(el)
         return buttons
 
-    def get_entries(self):
-        return self.entries
-
     def determine_elements_pos(self):
         y = self.pos[1] + MARGINBOX
         for row in self.elements:
@@ -177,7 +174,7 @@ class InfoBox:
             for el in row[1:]:
                 base_x += (self.size[0] // (2 * nb_elements)) * i
                 x = base_x - el.get_width() // 2
-                el.set_pos((x, y + el.get_margin_top()))
+                el.pos = (x, y + el.get_margin_top())
                 i += 1
             y += row[0]
 

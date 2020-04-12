@@ -28,27 +28,12 @@ class Equipment(Item):
 
         self.normal_sprite = self.equipped_sprite
 
-    def get_def(self):
-        return self.defense
-
-    def get_res(self):
-        return self.res
-
-    def get_power(self):
-        return self.atk
-
     def display(self, screen, pos, equipped=False):
         sprite_to_blit = self.sprite
         if equipped:
             sprite_to_blit = self.equipped_sprite
 
         screen.blit(sprite_to_blit, pos)
-
-    def get_equipped_sprite(self):
-        return self.equipped_sprite
-
-    def get_body_part(self):
-        return self.body_part
 
     def set_grey(self):
         self.equipped_sprite = self.sprite_unavailable

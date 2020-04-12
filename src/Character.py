@@ -38,16 +38,16 @@ class Character(Movable):
     def attacked(self, ent, damages, kind):
         for eq in self.equipments:
             if kind is DamageKind.PHYSICAL:
-                damages -= eq.get_def()
+                damages -= eq.defense
             elif kind == DamageKind.SPIRITUAL:
-                damages -= eq.get_res()
+                damages -= eq.res
         return Movable.attacked(self, ent, damages, kind)
 
     def attack(self, ent):
         damages = self.strength
         weapon = self.get_weapon()
         if weapon:
-            damages += weapon.get_power()
+            damages += weapon.atk
             if weapon.used() == 0:
                 self.remove_equipment(weapon)
         return damages
@@ -73,26 +73,13 @@ class Character(Movable):
                 return eq
         return None
 
-    def get_equipments(self):
-        # Return a new list based on equipments to avoid content alteration
-        return list(self.equipments)
-
     def get_equipment(self, index):
         if index not in range(len(self.equipments)):
             return False
         return self.equipments[index]
 
-    def get_gold(self):
-        return self.gold
-
-    def set_gold(self, new_gold):
-        self.gold = new_gold
-
     def has_equipment(self, eq):
         return eq in self.equipments
-
-    def get_classes(self):
-        return self.classes
 
     def get_formatted_classes(self):
         formatted_string = ""
@@ -121,9 +108,8 @@ class Character(Movable):
         return False
 
     def remove_equipment(self, eq):
-        id = eq.get_id()
         for index, equip in enumerate(self.equipments):
-            if equip.get_id() == id:
+            if equip.id == eq.id:
                 return self.equipments.pop(index)
 
     def save(self):

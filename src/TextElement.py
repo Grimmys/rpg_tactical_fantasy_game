@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.locals import *
 
 from src.BoxElement import BoxElement
-from src.constants import WHITE, BLACK
+from src.constants import WHITE
 
 ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
 
@@ -21,10 +21,13 @@ class TextElement(BoxElement):
         if final_render.get_width() * 1.15 > container_width:
             first_part, second_part = TextElement.divide_text(txt)
             first_part_render = font.render(first_part, 1, color)
-            first_part_render = TextElement.verify_rendered_text_size(first_part_render, first_part, container_width, font, color)
+            first_part_render = TextElement.verify_rendered_text_size(first_part_render, first_part,
+                                                                      container_width, font, color)
             second_part_render = font.render(second_part, 1, color)
-            second_part_render = TextElement.verify_rendered_text_size(second_part_render, second_part, container_width, font, color)
-            final_render = pg.Surface((first_part_render.get_width(), first_part_render.get_height() + second_part_render.get_height()), SRCALPHA)
+            second_part_render = TextElement.verify_rendered_text_size(second_part_render, second_part,
+                                                                       container_width, font, color)
+            final_render = pg.Surface((first_part_render.get_width(), first_part_render.get_height() +
+                                       second_part_render.get_height()), SRCALPHA)
             final_render.blit(first_part_render, (0, 0))
             final_render.blit(second_part_render, (0, first_part_render.get_height()))
         return final_render

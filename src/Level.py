@@ -1,5 +1,4 @@
 import pygame as pg
-from lxml import etree
 from enum import IntEnum, auto
 import random
 
@@ -25,6 +24,7 @@ from src.Sidebar import Sidebar
 from src.Animation import Animation
 from src.Mission import Mission
 from src.Menus import *
+from src.SaveStateManager import SaveStateManager
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
@@ -191,7 +191,8 @@ class Level:
         self.load_portals(tree)
 
         # Store all entities
-        self.entities += self.allies + self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
+        self.entities += self.allies + self.foes + self.chests + \
+            self.portals + self.fountains + self.breakables + self.buildings
 
         # Load obstacles
         self.load_obstacles(tree)
@@ -284,7 +285,7 @@ class Level:
             sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
             xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
             strategy = foes_infos[name].find('strategy').text.strip()
-            
+
             attack_kind = foes_infos[name].find('attack_kind').text.strip()
 
             stats_tree = foes_infos[name]
@@ -503,61 +504,16 @@ class Level:
             pos = (x, y)
             self.possible_placements.append(pos)
 
+    def save_game(self):
+        save_state_manager = SaveStateManager(self)
+        save_state_manager.save_game()
+
     def exit_game(self):
         # At next update, level will be destroyed
         self.quit_request = True
 
-    def save_game(self):
-        save_file = open("saves/main_save.xml", "w+")
-
-        # Build XML tree
-        tree = etree.Element('save')
-
-        level = etree.Element('level')
-        # Save level identity
-        index = etree.SubElement(level, 'index')
-        index.text = str(self.nb_level)
-
-        # Save game phase
-        phase = etree.SubElement(level, 'phase')
-        phase.text = self.game_phase.name
-
-        # Save turn if game has started
-        if self.game_phase is not Status.INITIALIZATION:
-            turn = etree.SubElement(level, 'turn')
-            turn.text = str(self.turn)
-
-        entities = etree.SubElement(level, 'entities')
-        allies = etree.SubElement(entities, 'allies')
-        for ent in self.allies:
-            allies.append(ent.save())
-        foes = etree.SubElement(entities, 'foes')
-        for ent in self.foes:
-            foes.append(ent.save())
-        breakables = etree.SubElement(entities, 'breakables')
-        for ent in self.breakables:
-            breakables.append(ent.save())
-        chests = etree.SubElement(entities, 'chests')
-        for ent in self.chests:
-            chests.append(ent.save())
-        fountains = etree.SubElement(entities, 'fountains')
-        for ent in self.fountains:
-            fountains.append(ent.save())
-        buildings = etree.SubElement(entities, 'buildings')
-        for ent in self.buildings:
-            buildings.append(ent.save())
-
-        team = etree.Element('team')
-        for player in self.players:
-            team.append(player.save())
-
-        tree.append(level)
-        tree.append(team)
-
-        # Store XML tree in file
-        save_file.write(etree.tostring(tree, pretty_print=True, encoding="unicode"))
-
-        save_file.close()
+    def game_started(self):
+        return self.game_phase is not Status.INITIALIZATION
 
     @staticmethod
     def parse_item_file(name):
@@ -622,7 +578,7 @@ class Level:
         if self.animation:
             return None
         if not self.players and self.game_phase is Status.IN_PROGRESS:
-            if not self.main_mission.get_chars():
+            if not self.main_mission.succeeded_chars:
                 self.defeat = True
             else:
                 self.victory = True
@@ -640,7 +596,7 @@ class Level:
         if self.selected_player:
             if self.selected_player.get_move():
                 self.selected_player.move()
-            if self.selected_player.get_state() is PlayerState.WAITING_POST_ACTION and not self.active_menu:
+            if self.selected_player.state is PlayerState.WAITING_POST_ACTION and not self.active_menu:
                 self.create_player_menu()
             return None
 
@@ -687,10 +643,9 @@ class Level:
         else:
             if self.selected_player:
                 # If player is waiting to move
-                state = self.selected_player.get_state()
-                if state == PlayerState.WAITING_MOVE:
+                if self.selected_player.state == PlayerState.WAITING_MOVE:
                     self.show_possible_actions(self.selected_player, win)
-                elif state == PlayerState.WAITING_TARGET:
+                elif self.selected_player.state == PlayerState.WAITING_TARGET:
                     if self.possible_attacks:
                         self.show_possible_attacks(self.selected_player, win)
                     elif self.possible_interactions:
@@ -721,12 +676,12 @@ class Level:
 
     def show_possible_attacks(self, movable, win):
         for tile in self.possible_attacks:
-            if movable.get_pos() != tile:
+            if movable.pos != tile:
                 blit_alpha(win, ATTACKABLE, tile, ATTACKABLE_OPACITY)
 
     def show_possible_moves(self, movable, win):
         for tile in self.possible_moves.keys():
-            if movable.get_pos() != tile:
+            if movable.pos != tile:
                 blit_alpha(win, LANDING, tile, LANDING_OPACITY)
 
     def show_possible_interactions(self, win):
@@ -777,7 +732,7 @@ class Level:
             ents += self.allies + self.players
 
         for ent in ents:
-            pos = ent.get_pos()
+            pos = ent.pos
             for i in reach:
                 for x in range(-i, i + 1):
                     for y in {i - abs(x), -i + abs(x)}:
@@ -785,7 +740,7 @@ class Level:
                         case_y = pos[1] + (y * TILE_SIZE)
                         case_pos = (case_x, case_y)
                         if case_pos in possible_moves:
-                            tiles.append(ent.get_pos())
+                            tiles.append(ent.pos)
 
         return set(tiles)
 
@@ -793,15 +748,13 @@ class Level:
         # Check all entities
         ent_cases = []
         for ent in self.entities:
-            pos = ent.get_pos()
-            ent_cases.append(pos)
+            ent_cases.append(ent.pos)
         return (0, 0) < case < (MAP_WIDTH, MAP_HEIGHT) and case not in ent_cases and case not in self.obstacles
 
     def get_entity_on_case(self, case):
         # Check all entities
         for ent in self.entities:
-            pos = ent.get_pos()
-            if pos == case:
+            if ent.pos == case:
                 return ent
         return None
 
@@ -841,7 +794,8 @@ class Level:
 
     def create_player_menu(self):
         player_rect = self.selected_player.get_rect()
-        entries = [[{'name': 'Inventory', 'id': CharacterMenu.INV}], [{'name': 'Equipment', 'id': CharacterMenu.EQUIPMENT}],
+        entries = [[{'name': 'Inventory', 'id': CharacterMenu.INV}],
+                   [{'name': 'Equipment', 'id': CharacterMenu.EQUIPMENT}],
                    [{'name': 'Status', 'id': CharacterMenu.STATUS}], [{'name': 'Wait', 'id': CharacterMenu.WAIT}]]
 
         # Options flags
@@ -859,7 +813,7 @@ class Level:
                 entries.insert(0, [{'name': 'Visit', 'id': CharacterMenu.VISIT}])
 
         for case_content in self.get_next_cases((player_rect.x, player_rect.y)):
-            if isinstance(case_content, Chest) and not case_content.is_open() and not chest_option:
+            if isinstance(case_content, Chest) and not case_content.opened and not chest_option:
                 entries.insert(0, [{'name': 'Open', 'id': CharacterMenu.OPEN_CHEST}])
                 chest_option = True
             if isinstance(case_content, Portal) and not portal_option:
@@ -873,17 +827,15 @@ class Level:
                 talk_option = True
 
         # Check if player is on mission position
-        player_pos = self.selected_player.get_pos()
+        player_pos = self.selected_player.pos
         for mission in self.missions:
-            if mission.get_type() == 'position':
+            if mission.type == 'position':
                 if mission.pos_is_valid(player_pos):
                     entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
 
         # Check if player could attack something, according to weapon range
-        weapon = self.selected_player.get_weapon()
-        w_range = [1]
-        if weapon:
-            w_range = weapon.get_range()
+        w = self.selected_player.get_weapon()
+        w_range = [1] if w is None else w.reach
         if self.get_possible_attacks({(player_rect.x, player_rect.y): 0}, w_range, True):
             entries.insert(0, [{'name': 'Attack', 'id': CharacterMenu.ATTACK}])
 
@@ -900,7 +852,7 @@ class Level:
             if not target:
                 if self.wait_for_dest_tp:
                     self.wait_for_dest_tp = False
-                    actor.set_pos(target_pos)
+                    actor.pos = target_pos
 
                     # Turn is finished
                     self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
@@ -916,7 +868,8 @@ class Level:
 
                     # Get item infos
                     name = item.get_formatted_name()
-                    entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True}
+                    entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
+                                  'id': InventoryMenu.INTERAC_ITEM}
 
                     entries = [[entry_item],
                                [{'type': 'text', 'text': "Item has been added to your inventory",
@@ -931,7 +884,7 @@ class Level:
                                                close_button=UNFINAL_ACTION)
             # Check if player tries to use a portal
             elif isinstance(target, Portal):
-                new_based_pos = target.get_linked_portal().get_pos()
+                new_based_pos = target.linked_to.pos
                 possible_pos = self.get_possible_moves(new_based_pos, 1)
                 # Remove portal pos since player cannot be on the portal
                 del possible_pos[new_based_pos]
@@ -980,8 +933,7 @@ class Level:
         if not target.attacked(attacker, damages, kind):
             # XP up
             if isinstance(target, Movable) and isinstance(attacker, Player):
-                xp_gain = target.get_xp_obtained()
-                attacker.earn_xp(xp_gain)
+                attacker.earn_xp(target.xp_gain)
 
             self.entities.remove(target)
             collec = None
@@ -996,23 +948,22 @@ class Level:
             collec.remove(target)
 
     def entity_action(self, ent, side):
-        if ent.get_state() == EntityState.HAVE_TO_ACT:
-            pos = ent.get_pos()
-            possible_moves = self.get_possible_moves(pos, ent.get_max_moves())
+        if ent.state is EntityState.HAVE_TO_ACT:
+            possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
             # TEMPO : entity's range can't be different from one actually
             reach = [1]
             possible_attacks = self.get_possible_attacks(possible_moves, reach, side)
             move = ent.determine_move(self.players, possible_moves, possible_attacks)
             path = self.determine_path_to(move, possible_moves)
             ent.set_move(path)
-        elif ent.get_state() == EntityState.ON_MOVE:
+        elif ent.state is EntityState.ON_MOVE:
             ent.move()
-        elif ent.get_state() == EntityState.HAVE_TO_ATTACK:
+        elif ent.state is EntityState.HAVE_TO_ATTACK:
             # Entity try to attack someone
-            possible_attacks = self.get_possible_attacks([ent.get_pos()], [1], side)
+            possible_attacks = self.get_possible_attacks([ent.pos], [1], side)
             if possible_attacks:
                 ent_attacked = self.get_entity_on_case(random.choice(list(possible_attacks)))
-                self.duel(ent, ent_attacked, ent.get_attack_kind())
+                self.duel(ent, ent_attacked, ent.attack_kind)
             ent.end_turn()
 
     @staticmethod
@@ -1020,7 +971,7 @@ class Level:
         entries = []
         row = []
         for i, it in enumerate(items):
-            entry = {'type': 'item_button', 'item': it, 'price': it.get_price(), 'index': i}
+            entry = {'type': 'item_button', 'item': it, 'price': it.price, 'index': i, 'id': BuyMenu.INTERAC_BUY}
             row.append(entry)
             if len(row) == 2:
                 entries.append(row)
@@ -1039,11 +990,12 @@ class Level:
     def create_inventory_entries(items, gold, price=False):
         entries = []
         row = []
+        method_id = SellMenu.INTERAC_SELL if price else InventoryMenu.INTERAC_ITEM
         for i, it in enumerate(items):
-            entry = {'type': 'item_button', 'item': it, 'index': i}
+            entry = {'type': 'item_button', 'item': it, 'index': i, 'id': method_id}
             # Test if price should appeared
             if price and it:
-                entry['price'] = it.get_price() // 2 if it.get_price() != 0 else 0
+                entry['price'] = it.price // 2 if it.price != 0 else 0
             row.append(entry)
             if len(row) == 2:
                 entries.append(row)
@@ -1064,24 +1016,18 @@ class Level:
         for part in body_parts:
             row = []
             for member in part:
-                entry = {'type': 'item_button', 'item': None, 'index': -1, 'subtype': 'equip'}
+                entry = {'type': 'item_button', 'item': None, 'index': -1, 'subtype': 'equip',
+                         'id': InventoryMenu.INTERAC_ITEM}
                 for i, eq in enumerate(equipments):
-                    if member == eq.get_body_part():
-                        entry = {'type': 'item_button', 'item': eq, 'index': i, 'subtype': 'equip'}
+                    if member == eq.body_part:
+                        entry = {'type': 'item_button', 'item': eq, 'index': i, 'subtype': 'equip',
+                                 'id': InventoryMenu.INTERAC_ITEM}
                 row.append(entry)
             entries.append(row)
         return entries
 
     @staticmethod
     def create_status_entries(player):
-        # Health
-        hp = player.get_hp()
-        hp_max = player.get_hp_max()
-
-        # XP
-        xp = player.get_xp()
-        xp_next_level = player.get_next_lvl_xp()
-
         entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': player.get_formatted_name()}],
                    [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': ITALIC_ITEM_FONT},
@@ -1089,26 +1035,26 @@ class Level:
                    [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': ITALIC_ITEM_FONT},
                     {'type': 'text', 'text': player.get_formatted_race()}],
                    [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': ITALIC_ITEM_FONT},
-                    {'type': 'text', 'text': str(player.get_lvl())}],
+                    {'type': 'text', 'text': str(player.lvl)}],
                    [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': ITALIC_ITEM_FONT},
-                    {'type': 'text', 'text': str(xp) + ' / ' + str(xp_next_level)}],
+                    {'type': 'text', 'text': str(player.xp) + ' / ' + str(player.xp_next_lvl)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT,
                      'margin': (10, 0, 10, 0)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
-                    {'type': 'text', 'text': str(hp) + ' / ' + str(hp_max),
-                     'color': Level.determine_hp_color(hp, hp_max)}],
+                    {'type': 'text', 'text': str(player.hp) + ' / ' + str(player.hp_max),
+                     'color': Level.determine_hp_color(player.hp, player.hp_max)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
-                    {'type': 'text', 'text': str(player.get_max_moves())}],
+                    {'type': 'text', 'text': str(player.max_moves)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
-                    {'type': 'text', 'text': str(player.get_strength())}],
+                    {'type': 'text', 'text': str(player.strength)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},
-                    {'type': 'text', 'text': str(player.get_defense())}],
+                    {'type': 'text', 'text': str(player.defense)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
-                    {'type': 'text', 'text': str(player.get_resistance())}],
+                    {'type': 'text', 'text': str(player.res)}],
                    [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': MENU_SUB_TITLE_FONT,
                      'margin': (10, 0, 10, 0)}]]
 
-        alts = player.get_alterations()
+        alts = player.alterations
 
         if not alts:
             entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
@@ -1169,26 +1115,22 @@ class Level:
             print("Unknown action in sell menu... : " + str(method_id))
 
     def execute_shop_action(self, method_id, args):
-        if method_id is ShopMenu.BUY_ACTION:
+        if method_id is ShopMenu.BUY:
             shop = args[2][0]
-            items = shop.get_items()
-            gold = self.selected_player.get_gold()
 
             self.background_menus.append((self.active_menu, False))
-            entries = Level.create_shop_entries(items, gold)
+            entries = Level.create_shop_entries(shop.items, self.selected_player.gold)
             self.active_menu = InfoBox("Shop - Buying", BuyMenu, "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
-        elif method_id is ShopMenu.SELL_ACTION:
-            items_max = self.selected_player.get_nb_items_max()
+        elif method_id is ShopMenu.SELL:
+            items_max = self.selected_player.nb_items_max
 
-            items = list(self.selected_player.get_items())
+            items = list(self.selected_player.items)
             free_spaces = items_max - len(items)
             items += [None] * free_spaces
 
-            gold = self.selected_player.get_gold()
-
             self.background_menus.append((self.active_menu, False))
-            entries = Level.create_inventory_entries(items, gold, price=True)
+            entries = Level.create_inventory_entries(items, self.selected_player.gold, price=True)
             self.active_menu = InfoBox("Shop - Selling", SellMenu, "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
         else:
@@ -1220,11 +1162,8 @@ class Level:
         # Attack action : Character has to choose a target
         if method_id is CharacterMenu.ATTACK:
             self.selected_player.choose_target()
-            w = self.selected_player.get_weapon()
-            w_range = [1]
-            if w:
-                w_range = self.selected_player.get_weapon().get_range()
-            self.possible_attacks = self.get_possible_attacks([self.selected_player.get_pos()], w_range, True)
+            w_range = self.selected_player.get_weapon().reach if self.selected_player.get_weapon() is not None else [1]
+            self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], w_range, True)
             self.possible_interactions = []
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
@@ -1232,15 +1171,13 @@ class Level:
         elif method_id is CharacterMenu.INV:
             self.background_menus.append((self.active_menu, True))
 
-            items_max = self.selected_player.get_nb_items_max()
+            items_max = self.selected_player.nb_items_max
 
-            items = list(self.selected_player.get_items())
+            items = list(self.selected_player.items)
             free_spaces = items_max - len(items)
             items += [None] * free_spaces
 
-            gold = self.selected_player.get_gold()
-
-            entries = Level.create_inventory_entries(items, gold)
+            entries = Level.create_inventory_entries(items, self.selected_player.gold)
 
             self.active_menu = InfoBox("Inventory", InventoryMenu, "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
@@ -1248,7 +1185,7 @@ class Level:
         elif method_id is CharacterMenu.EQUIPMENT:
             self.background_menus.append((self.active_menu, True))
 
-            equipments = self.selected_player.get_equipments()
+            equipments = list(self.selected_player.equipments)
             entries = Level.create_equipment_entries(equipments)
 
             self.active_menu = InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
@@ -1275,7 +1212,7 @@ class Level:
         elif method_id is CharacterMenu.OPEN_CHEST:
             # Check if player has a key
             has_key = False
-            for it in self.selected_player.get_items():
+            for it in self.selected_player.items:
                 if isinstance(it, Key):
                     has_key = True
                     break
@@ -1289,55 +1226,54 @@ class Level:
                 self.active_menu = None
                 self.selected_player.choose_target()
                 self.possible_interactions = []
-                for ent in self.get_next_cases(self.selected_player.get_pos()):
-                    if isinstance(ent, Chest) and not ent.is_open():
-                        self.possible_interactions.append(ent.get_pos())
+                for ent in self.get_next_cases(self.selected_player.pos):
+                    if isinstance(ent, Chest) and not ent.opened:
+                        self.possible_interactions.append(ent.pos)
         # Use a portal
         elif method_id is CharacterMenu.USE_PORTAL:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.get_pos()):
+            for ent in self.get_next_cases(self.selected_player.pos):
                 if isinstance(ent, Portal):
-                    self.possible_interactions.append(ent.get_pos())
+                    self.possible_interactions.append(ent.pos)
         # Drink into a fountain
         elif method_id is CharacterMenu.DRINK:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.get_pos()):
+            for ent in self.get_next_cases(self.selected_player.pos):
                 if isinstance(ent, Fountain):
-                    self.possible_interactions.append(ent.get_pos())
+                    self.possible_interactions.append(ent.pos)
         elif method_id is CharacterMenu.TALK:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.get_pos()):
+            for ent in self.get_next_cases(self.selected_player.pos):
                 if isinstance(ent, Character):
-                    self.possible_interactions.append(ent.get_pos())
+                    self.possible_interactions.append(ent.pos)
         # Visit a house
         elif method_id is CharacterMenu.VISIT:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
-            pos = self.selected_player.get_pos()
-            self.possible_interactions = [(pos[0], pos[1] - TILE_SIZE)]
+            self.possible_interactions = [(self.selected_player.pos[0], self.selected_player.pos[1] - TILE_SIZE)]
             self.possible_attacks = []
         # Valid a mission position
         elif method_id is CharacterMenu.TAKE:
             for mission in self.missions:
-                if mission.get_type() == 'position':
+                if mission.type == 'position':
                     # Verify that character is not the last if the mission is not the main one
-                    if mission.is_main() or len(self.players) > 1:
-                        if mission.pos_is_valid(self.selected_player.get_pos()):
+                    if mission.main or len(self.players) > 1:
+                        if mission.pos_is_valid(self.selected_player.pos):
                             # Check if player is able to complete this objective
                             if mission.update_state(self.selected_player):
                                 self.players.remove(self.selected_player)
                                 self.entities.remove(self.selected_player)
-                                if mission.is_main() and mission.is_ended():
+                                if mission.main and mission.ended:
                                     self.victory = True
                                 # Turn is finished
                                 self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
@@ -1418,7 +1354,7 @@ class Level:
             self.background_menus.append([self.active_menu, False])
 
             formatted_item_name = self.selected_item.get_formatted_name()
-            description = self.selected_item.get_description()
+            description = self.selected_item.desc
 
             entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
@@ -1432,18 +1368,16 @@ class Level:
             # Remove item from inventory/equipment according to the index
             if self.selected_player.has_equipment(self.selected_item):
                 self.selected_player.remove_equipment(self.selected_item)
-                equipments = self.selected_player.get_equipments()
+                equipments = list(self.selected_player.equipments)
                 entries = Level.create_equipment_entries(equipments)
             else:
                 self.selected_player.remove_item(self.selected_item)
-                items_max = self.selected_player.get_nb_items_max()
-                items = self.selected_player.get_items()
+                items_max = self.selected_player.nb_items_max
+                items = list(self.selected_player.items)
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                gold = self.selected_player.get_gold()
-
-                entries = Level.create_inventory_entries(items, gold)
+                entries = Level.create_inventory_entries(items, self.selected_player.gold)
 
             # Cancel item menu
             self.background_menus.pop()
@@ -1465,15 +1399,13 @@ class Level:
 
             # Inventory display is update if object has been used
             if used:
-                items_max = self.selected_player.get_nb_items_max()
+                items_max = self.selected_player.nb_items_max
 
-                items = list(self.selected_player.get_items())
+                items = list(self.selected_player.items)
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                gold = self.selected_player.get_gold()
-
-                entries = Level.create_inventory_entries(items, gold)
+                entries = Level.create_inventory_entries(items, self.selected_player.gold)
 
                 # Cancel item menu
                 self.background_menus.pop()
@@ -1492,20 +1424,18 @@ class Level:
             # Try to equip the item
             equipped = self.selected_player.equip(self.selected_item)
 
-            result_msg = "Item can't be equipped : You already wear an equipment of the same type."
+            result_msg = "Item can't be equipped : you are already wearing an equipment of the same type."
             if equipped:
                 result_msg = "The item has been equipped"
 
                 # Item has been removed from inventory
-                items_max = self.selected_player.get_nb_items_max()
+                items_max = self.selected_player.nb_items_max
 
-                items = self.selected_player.get_items()
+                items = list(self.selected_player.items)
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                gold = self.selected_player.get_gold()
-
-                entries = Level.create_inventory_entries(items, gold)
+                entries = Level.create_inventory_entries(items, self.selected_player.gold)
 
                 # Cancel item menu
                 self.background_menus.pop()
@@ -1528,8 +1458,7 @@ class Level:
                 result_msg = "The item has been unequipped"
 
                 # Update equipment screen content
-                equipments = self.selected_player.get_equipments()
-                entries = Level.create_equipment_entries(equipments)
+                entries = Level.create_equipment_entries(self.selected_player.equipments)
 
                 # Cancel item menu
                 self.background_menus.pop()
@@ -1545,25 +1474,22 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
 
             # Try to buy the item
-            actual_gold = self.selected_player.get_gold()
-            if actual_gold >= price:
-                if len(self.selected_player.get_items()) < self.selected_player.get_nb_items_max():
+            if self.selected_player.gold >= price:
+                if len(self.selected_player.items) < self.selected_player.nb_items_max:
                     # Item can be bought
                     self.selected_player.set_item(self.selected_item)
-                    actual_gold -= price
-                    self.selected_player.set_gold(actual_gold)
+                    self.selected_player.gold -= price
                     result_msg = "The item has been bought."
 
                     # Update shop screen content (gold total amount has been reduced)
                     shop_menu = self.background_menus[len(self.background_menus) - 1][0]
-                    entries = shop_menu.get_entries()
 
-                    for row in entries:
+                    for row in shop_menu.entries:
                         for entry in row:
                             if entry['type'] == 'text':
-                                entry['text'] = 'Your gold : ' + str(actual_gold)
+                                entry['text'] = 'Your gold : ' + str(self.selected_player.gold)
 
-                    shop_menu.update_content(entries)
+                    shop_menu.update_content(shop_menu.entries)
                 else:
                     # Not enough space in inventory
                     result_msg = "Not enough space in inventory to buy this item."
@@ -1580,22 +1506,20 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
 
             # Sell the item
-            new_gold = self.selected_player.get_gold()
             if price > 0:
                 self.selected_player.remove_item(self.selected_item)
                 self.selected_item = None
-                new_gold += price
-                self.selected_player.set_gold(new_gold)
+                self.selected_player.gold += price
                 result_msg = "The item has been selled."
 
                 # Update shop screen content (item has been removed from inventory)
-                items_max = self.selected_player.get_nb_items_max()
+                items_max = self.selected_player.nb_items_max
 
-                items = self.selected_player.get_items()
+                items = list(self.selected_player.items)
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                entries = Level.create_inventory_entries(items, new_gold, price=True)
+                entries = Level.create_inventory_entries(items, self.selected_player.gold, price=True)
 
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1][0].update_content(entries)
@@ -1617,10 +1541,9 @@ class Level:
             alteration = args[1]
 
             formatted_name = alteration.get_formatted_name()
-            description = alteration.get_description()
             turns_left = alteration.get_turns_left()
 
-            entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
+            entries = [[{'type': 'text', 'text': alteration.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
                        [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT,
                          'margin': (0, 0, 10, 0), 'color': ORANGE}]]
             self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
@@ -1639,7 +1562,7 @@ class Level:
             if self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
                 # Test if active menu is main character's menu, in this case, it should be reloaded
-                if self.active_menu.get_type() is CharacterMenu:
+                if self.active_menu.type is CharacterMenu:
                     self.create_player_menu()
             else:
                 if len(args) >= 3 and args[2][0] == FINAL_ACTION:
@@ -1693,12 +1616,12 @@ class Level:
             # 1 is equals to left button
             if button == 1:
                 if self.active_menu:
-                    self.execute_action(self.active_menu.get_type(), self.active_menu.click(pos))
+                    self.execute_action(self.active_menu.type, self.active_menu.click(pos))
                 else:
-                    if self.selected_player:
+                    if self.selected_player is not None:
                         if self.game_phase is not Status.INITIALIZATION:
-                            state = self.selected_player.get_state()
-                            if state == 1:
+                            if self.possible_moves:
+                                # Player is waiting to move
                                 for move in self.possible_moves:
                                     if pg.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
                                         path = self.determine_path_to(move, self.possible_moves)
@@ -1707,20 +1630,21 @@ class Level:
                                         self.possible_attacks = []
                                         return
                                 # Player click somewhere that is not a valid pos
-                                self.selected_player.set_selected(False)
+                                self.selected_player.selected = False
                                 self.selected_player = None
-                            if state == 4:
+                            elif self.possible_attacks:
+                                # Player is waiting to attack
                                 for attack in self.possible_attacks:
                                     if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
                                         ent = self.get_entity_on_case(attack)
-                                        attack_kind = DamageKind.PHYSICAL
-                                        w = self.selected_player.get_weapon()
-                                        if w is not None:
-                                            attack_kind = self.selected_player.get_weapon().get_attack_kind()
+                                        attack_kind = self.selected_player.get_weapon().attack_kind if \
+                                            self.selected_player.get_weapon() is not None else DamageKind.PHYSICAL
                                         self.duel(self.selected_player, ent, attack_kind)
                                         # Turn is finished
                                         self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
                                         return
+                            elif self.possible_interactions:
+                                # Player is waiting to interact
                                 for interact in self.possible_interactions:
                                     if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
                                         ent = self.get_entity_on_case(interact)
@@ -1733,7 +1657,7 @@ class Level:
                                     # Test if a character is on the tile, in this case, characters are swapped
                                     ent = self.get_entity_on_case(tile)
                                     if ent:
-                                        ent.set_initial_pos(self.selected_player.get_pos())
+                                        ent.set_initial_pos(self.selected_player.pos)
 
                                     self.selected_player.set_initial_pos(tile)
                                     return
@@ -1741,14 +1665,12 @@ class Level:
                         for player in self.players:
                             if player.is_on_pos(pos) and not player.turn_is_finished():
                                 if self.selected_player:
-                                    self.selected_player.set_selected(False)
-                                player.set_selected(True)
+                                    self.selected_player.selected = False
+                                player.selected = True
                                 self.selected_player = player
-                                self.possible_moves = self.get_possible_moves(player.get_pos(), player.get_max_moves())
+                                self.possible_moves = self.get_possible_moves(player.pos, player.max_moves)
                                 w = self.selected_player.get_weapon()
-                                w_range = [1]
-                                if w:
-                                    w_range = w.get_range()
+                                w_range = [1] if w is None else w.reach
                                 self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
                                 return
                         self.create_main_menu(pos)
@@ -1756,21 +1678,21 @@ class Level:
             # 3 is equals to right button
             if button == 3:
                 if self.selected_player:
-                    state = self.selected_player.get_state()
-                    if state == 1:
-                        self.selected_player.set_selected(False)
+                    if self.possible_moves:
+                        # Player was waiting to move
+                        self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = []
-                    elif state == 3:
-                        self.execute_action(self.active_menu.get_type, (GenericActions.CLOSE, ""))
+                    elif self.active_menu is not None:
+                        self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
                         # Test if player was on character's main menu, in this case, current move should be cancelled
-                        if not self.active_menu:
+                        if self.active_menu is None:
                             self.selected_player.cancel_move()
-                            self.selected_player.set_selected(False)
+                            self.selected_player.selected = False
                             self.selected_player = None
                             self.possible_moves = []
                     # Want to cancel an interaction (not already performed)
-                    elif state == 4 and (self.possible_interactions or self.possible_attacks):
+                    elif self.possible_interactions or self.possible_attacks:
                         self.selected_player.cancel_interaction()
                         self.active_menu = self.background_menus.pop()[0]
                 if self.watched_ent:
@@ -1778,25 +1700,25 @@ class Level:
                     self.possible_moves = []
                     self.possible_attacks = []
                 # Test if player is on main menu
-                if self.active_menu:
-                    self.execute_action(self.active_menu.get_type, (GenericActions.CLOSE, ""))
+                if self.active_menu is not None:
+                    self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
 
     def button_down(self, button, pos):
         # 3 is equals to right button
         if button == 3:
-            if not self.selected_player and self.side_turn is EntityTurn.PLAYER:
+            if not self.active_menu and not self.selected_player and self.side_turn is EntityTurn.PLAYER:
                 for ent in self.entities:
                     if ent.get_rect().collidepoint(pos):
-                        pos = ent.get_pos()
+                        pos = ent.pos
                         self.watched_ent = ent
-                        self.possible_moves = self.get_possible_moves(pos, ent.get_max_moves())
+                        self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
 
                         w_range = [1]
                         # TEMPO : Foes don't currently have weapon so it's impossible to test their range
                         if isinstance(self.watched_ent, Character):
                             w = self.watched_ent.get_weapon()
-                            if w:
-                                w_range = w.get_range()
+                            if w is not None:
+                                w_range = w.reach
 
                         self.possible_attacks = self.get_possible_attacks(self.possible_moves,
                                                                           w_range, isinstance(ent, Character))

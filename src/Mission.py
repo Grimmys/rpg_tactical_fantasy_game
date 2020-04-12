@@ -11,21 +11,6 @@ class Mission:
             self.min_chars = nb_players
         self.succeeded_chars = []
 
-    def is_main(self):
-        return self.main
-
-    def is_ended(self):
-        return self.ended
-
-    def get_chars(self):
-        return self.succeeded_chars
-
-    def get_description(self):
-        return self.desc
-
-    def get_type(self):
-        return self.type
-
     def pos_is_valid(self, pos):
         return pos in self.positions
 

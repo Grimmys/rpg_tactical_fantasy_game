@@ -11,15 +11,6 @@ class BoxElement:
             self.size = (0, 0)
         self.margin = {'TOP': margin[0], 'BOTTOM': margin[2], 'LEFT': margin[3], 'RIGHT': margin[1]}
 
-    def set_pos(self, pos):
-        self.pos = pos
-
-    def get_pos(self):
-        return self.pos
-
-    def get_size(self):
-        return self.size
-
     def get_width(self):
         return self.margin['LEFT'] + self.size[0] + self.margin['RIGHT']
 

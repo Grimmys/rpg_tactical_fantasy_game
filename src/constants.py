@@ -11,6 +11,9 @@ MENU_HEIGHT = 100
 WIN_WIDTH = TILE_SIZE * 20
 WIN_HEIGHT = TILE_SIZE * 10 + MENU_HEIGHT
 
+MAIN_WIN_WIDTH = 800
+MAIN_WIN_HEIGHT = 800
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 LIGHT_GREY = (150, 150, 150)
@@ -29,17 +32,8 @@ BROWN_RED = (165, 42, 42)
 MAROON = (128, 0, 0)
 TURQUOISE = (64, 224, 208)
 
-# Fonts
-TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 46)
-MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
-MENU_SUB_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
-ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
-ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
-ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
-
 # Standard menu size
 ITEM_MENU_WIDTH = 550
-
 
 ANIMATION_SPEED = 4
 

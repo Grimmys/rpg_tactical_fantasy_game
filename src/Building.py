@@ -2,6 +2,7 @@ from lxml import etree
 
 from src.Entity import Entity
 from src.constants import *
+from src.fonts import *
 
 
 class Building(Entity):
@@ -18,7 +19,7 @@ class Building(Entity):
             for talk in self.interaction['talks']:
                 entries.append([{'type': 'text', 'text': talk, 'font': ITEM_DESC_FONT}])
             if self.interaction['gold'] > 0:
-                actor.set_gold(actor.get_gold() + self.interaction['gold'])
+                actor.gold += self.interaction['gold']
                 earn_text = '[You received ' + str(self.interaction['gold']) + ' gold]'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': ITEM_DESC_FONT, 'color': GREEN}])
             if self.interaction['item'] is not None:

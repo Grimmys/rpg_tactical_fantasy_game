@@ -14,8 +14,9 @@ FRAME_SPRITE = 'imgs/interface/grey_frame.png'
 FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.png'
 ITEM_SPRITE = 'imgs/interface/item_frame.png'
 
+
 class ItemButton(Button):
-    def __init__(self, size, pos, item, margin, index, price, disabled=False):
+    def __init__(self, method_id, size, pos, item, margin, index, price, disabled=False):
         name = ""
         if item:
             name = item.get_formatted_name()
@@ -34,7 +35,7 @@ class ItemButton(Button):
         item_frame = pg.transform.scale(pg.image.load(ITEM_SPRITE).convert_alpha(), size)
         item_frame.blit(frame, frame_pos)
         if item:
-            item_frame.blit(pg.transform.scale(item.get_sprite(), (frame_size[0] - padding * 2, frame_size[1] - padding * 2)),
+            item_frame.blit(pg.transform.scale(item.sprite, (frame_size[0] - padding * 2, frame_size[1] - padding * 2)),
                             (frame_pos[0] + padding, frame_pos[1] + padding))
 
         name_rendering = ITALIC_ITEM_FONT.render(name, 1, BLACK)
@@ -52,8 +53,8 @@ class ItemButton(Button):
         if item and not disabled:
             item_frame_hover = pg.transform.scale(pg.image.load(ITEM_SPRITE).convert_alpha(), size)
             item_frame_hover.blit(frame_hover, frame_pos)
-            item_frame_hover.blit(pg.transform.scale(item.get_sprite(), (frame_size[0] - padding * 2,
-                                                                         frame_size[1] - padding * 2)),
+            item_frame_hover.blit(pg.transform.scale(item.sprite, (frame_size[0] - padding * 2,
+                                                                   frame_size[1] - padding * 2)),
                                   (frame_pos[0] + padding, frame_pos[1] + padding))
             name_rendering_hover = ITALIC_ITEM_FONT_HOVER.render(name, 1, MIDNIGHT_BLUE)
             if price_text:
@@ -69,7 +70,7 @@ class ItemButton(Button):
                                                              item_frame.get_height() / 2
                                                              - ITALIC_ITEM_FONT_HOVER.get_height() / 2))
 
-        Button.__init__(self, InventoryMenu.INTERAC_ITEM, [], size, pos, item_frame, item_frame_hover, margin)
+        Button.__init__(self, method_id, [], size, pos, item_frame, item_frame_hover, margin)
         self.item = item
         self.price = price
         self.index = index
@@ -78,4 +79,5 @@ class ItemButton(Button):
     def action_triggered(self):
         if not self.item or self.disabled:
             return False
+        print(self.method_id)
         return self.method_id, (self.pos, self.item, self.price)
