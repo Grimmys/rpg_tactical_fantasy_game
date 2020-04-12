@@ -11,7 +11,7 @@ You can submit any request you want, or notify me about any bug you encountered,
 
 Please, don't hesitate about suggesting ideas : it's my first " serious " game project. ;)
 
-<b>Version</b> : 0.0.5
+<b>Version</b> : 1.0.0
 
 ![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
 ![Inventory menu](/screenshots/inventory_screen.png?raw=True)
