@@ -2,7 +2,7 @@ import pygame as pg
 from lxml import etree
 import random as rd
 
-from src.Movable import Movable
+from src.Movable import Movable, EntityState
 from src.Destroyable import DamageKind
 from src.constants import *
 
@@ -112,8 +112,8 @@ class Character(Movable):
             if equip.id == eq.id:
                 return self.equipments.pop(index)
 
-    def save(self):
-        tree = Movable.save(self)
+    def save(self, tree_name):
+        tree = Movable.save(self, tree_name)
 
         # Save gold
         gold = etree.SubElement(tree, 'gold')

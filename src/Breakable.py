@@ -9,8 +9,8 @@ CRACKED = pg.transform.scale(pg.image.load(CRACKED_SPRITE).convert_alpha(), (TIL
 
 
 class Breakable(Destroyable):
-    def __init__(self, name, pos, sprite, hp, defense, res):
-        Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
+    def __init__(self, pos, sprite, hp, defense, res):
+        Destroyable.__init__(self, "Breakable", pos, sprite, hp, defense, res)
         # Useful in case of saving
         self.sprite_link = sprite
 
@@ -18,8 +18,8 @@ class Breakable(Destroyable):
         Destroyable.display(self, screen)
         screen.blit(CRACKED, self.pos)
 
-    def save(self):
-        tree = Destroyable.save(self)
+    def save(self, tree_name):
+        tree = Destroyable.save(self, tree_name)
 
         # Save sprite
         sprite = etree.SubElement(tree, 'sprite')

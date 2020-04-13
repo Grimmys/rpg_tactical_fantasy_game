@@ -69,8 +69,8 @@ class Destroyable(Entity):
         self.hp += hp_recovered
         return hp_recovered
 
-    def save(self):
-        tree = Entity.save(self)
+    def save(self, tree_name):
+        tree = Entity.save(self, tree_name)
 
         # Save current hp
         hp = etree.SubElement(tree, 'currentHp')

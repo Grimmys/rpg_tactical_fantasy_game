@@ -20,15 +20,14 @@
     </placementArea>
     <chests>
         <chest>
-            <id> 1 </id>
             <closed>
                 <sprite>
-                    dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.png
                 </sprite>
             </opened>
             <contains>
@@ -188,12 +187,11 @@
             <name>
                 house
             </name>
-            <id> 1 </id>
             <position>
                 <x>6</x>
                 <y>6</y>
             </position>
-            <sprite>blue_house.png</sprite>
+            <sprite>imgs/houses/blue_house.png</sprite>
             <interaction>
                 <talks>
                     <talk>
@@ -212,24 +210,22 @@
             <name>
                 house
             </name>
-            <id> 2 </id>
             <position>
                 <x>7</x>
                 <y>1</y>
             </position>
-            <sprite>blue_house_side.png</sprite>
+            <sprite>imgs/houses/blue_house_side.png</sprite>
             <uninteractable />
         </building>
         <building>
             <name>
                 house
             </name>
-            <id> 3 </id>
             <position>
                 <x>9</x>
                 <y>2</y>
             </position>
-            <sprite>yellow_house.png</sprite>
+            <sprite>imgs/houses/yellow_house.png</sprite>
             <interaction>
                 <talks>
                     <talk>
@@ -251,12 +247,11 @@
             <name>
                 house
             </name>
-            <id> 4 </id>
             <position>
                 <x>11</x>
                 <y>4</y>
             </position>
-            <sprite>red_house.png</sprite>
+            <sprite>imgs/houses/red_house.png</sprite>
             <interaction>
                 <talks>
                     <talk>
@@ -272,12 +267,11 @@
             <name>
                 tavern
             </name>
-            <id> 1 </id>
             <position>
                 <x>15</x>
                 <y>5</y>
             </position>
-            <sprite>tavern.png</sprite>
+            <sprite>imgs/houses/tavern.png</sprite>
             <uninteractable />
         </building>
         <building>
@@ -287,12 +281,11 @@
             <name>
                 shop
             </name>
-            <id> 1 </id>
             <position>
                 <x>13</x>
                 <y>0</y>
             </position>
-            <sprite>shop.png</sprite>
+            <sprite>imgs/houses/shop.png</sprite>
             <items>
                 <item>
                     <name>
@@ -426,7 +419,7 @@
     </obstacles>
     <missions>
         <main>
-            <type>position</type>
+            <type>POSITION</type>
             <description>
                 Leave the village
             </description>

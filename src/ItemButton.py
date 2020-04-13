@@ -79,5 +79,4 @@ class ItemButton(Button):
     def action_triggered(self):
         if not self.item or self.disabled:
             return False
-        print(self.method_id)
         return self.method_id, (self.pos, self.item, self.price)

@@ -18,6 +18,10 @@ class Entity:
     def get_rect(self):
         return self.sprite.get_rect(topleft=self.pos)
 
+    def __str__(self):
+        s = self.name.replace('_', ' ').title()
+        return re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
+
     def get_formatted_name(self):
         s = self.name.replace('_', ' ').title()
         return re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
@@ -25,9 +29,9 @@ class Entity:
     def is_on_pos(self, pos):
         return self.get_rect().collidepoint(pos)
 
-    def save(self):
+    def save(self, tree_name):
         # Build XML tree
-        tree = etree.Element('entity')
+        tree = etree.Element(tree_name)
 
         # Save name
         name = etree.SubElement(tree, 'name')

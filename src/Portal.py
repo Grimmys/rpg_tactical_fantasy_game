@@ -2,8 +2,8 @@ from src.Entity import Entity
 
 
 class Portal(Entity):
-    def __init__(self, name, pos_first, sprite):
-        Entity.__init__(self, name, pos_first, sprite)
+    def __init__(self, pos_first, sprite):
+        Entity.__init__(self, "Portal", pos_first, sprite)
         self.linked_to = None
 
     @staticmethod

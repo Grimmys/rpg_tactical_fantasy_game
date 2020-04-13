@@ -1,7 +1,14 @@
+from enum import Enum, auto
+
+
+class MissionType(Enum):
+    POSITION = auto()
+
+
 class Mission:
     def __init__(self, is_main, nature, positions, description, nb_players=1):
         self.main = is_main
-        self.type = nature
+        self.type = MissionType[nature]
         self.positions = positions
         self.desc = description
         self.ended = False
@@ -15,7 +22,7 @@ class Mission:
         return pos in self.positions
 
     def update_state(self, player=None):
-        if self.type == 'position':
+        if self.type is MissionType.POSITION:
             self.succeeded_chars.append(player)
             if len(self.succeeded_chars) == self.min_chars:
                 self.ended = True

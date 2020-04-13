@@ -128,7 +128,6 @@
             <type>
                 healer
             </type>
-            <id> 1 </id>
             <position>
                 <x>6</x>
                 <y>7</y>
@@ -140,12 +139,12 @@
             <id> 1 </id>
             <closed>
                 <sprite>
-                    dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.png
                 </sprite>
             </opened>
             <contains>
@@ -531,8 +530,7 @@
     </obstacles>
     <breakables>
         <breakable>
-            <id> 1 </id>
-            <resistance> 5 </resistance>
+            <currentHp> 5 </currentHp>
             <position>
                <x>8</x>
                <y>8</y>

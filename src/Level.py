@@ -1,18 +1,11 @@
-import pygame as pg
-from enum import IntEnum, auto
-import random
-
+from src.fonts import *
+from src import LoadFromXMLManager as Loader
 from src.Building import Building
 from src.Shop import Shop
-from src.constants import *
 from src.Equipment import Equipment
-from src.Weapon import Weapon
-from src.Effect import Effect
-from src.Potion import Potion
 from src.Consumable import Consumable
-from src.Spellbook import Spellbook
 from src.Character import Character
-from src.Player import Player, PlayerState
+from src.Player import Player
 from src.Foe import Foe
 from src.Movable import *
 from src.Chest import Chest
@@ -22,20 +15,12 @@ from src.Breakable import Breakable
 from src.InfoBox import InfoBox
 from src.Sidebar import Sidebar
 from src.Animation import Animation
-from src.Mission import Mission
+from src.Mission import MissionType
 from src.Menus import *
 from src.SaveStateManager import SaveStateManager
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
-
-TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 46)
-
-MENU_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 26)
-MENU_SUB_TITLE_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
-ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
-ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
-ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 14)
 
 LANDING_SPRITE = 'imgs/dungeon_crawl/misc/move.png'
 LANDING = pg.transform.scale(pg.image.load(LANDING_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
@@ -137,11 +122,12 @@ class Level:
 
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
+        data_tree = tree
+        from_save = False
 
         if status != Status.IN_PROGRESS.name:
             # Load available tiles for characters' placement
-            self.possible_placements = []
-            self.load_placements(tree)
+            self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'))
 
             # Game is new, players' positions should be initialized
             if data is None:
@@ -151,56 +137,41 @@ class Level:
                         if self.case_is_empty(tile):
                             player.set_initial_pos(tile)
                             break
-            # Load allies
-            self.load_allies(tree.findall('allies/ally'))
-
-            # Load foes
-            self.load_foes(tree.findall('foes/foe'))
-
-            # Load breakables
-            self.load_breakables(tree)
-
-            # Load chests
-            self.load_chests(tree)
-
-            # Load buildings
-            self.load_buildings(tree)
-
-            # Load fountains
-            self.load_fountains(tree)
         else:
-            # Load allies
-            self.load_allies(data.findall('allies/entity'), from_save=True)
+            # Data is extracted from saved game
+            data_tree = data
+            from_save = True
 
-            # Load saved foes
-            self.load_foes(data.findall('foes/entity'), from_save=True)
+        # Load allies
+        self.allies.extend(Loader.load_entities(Character, data_tree.findall('allies/ally'), from_save))
 
-            # Load breakables
-            self.load_breakables(tree, data.find('breakables'))
+        # Load foes
+        self.foes.extend(Loader.load_entities(Foe, data_tree.findall('foes/foe'), from_save))
 
-            # Load chests
-            self.load_chests(tree, data.find('chests'))
+        # Load breakables
+        self.breakables.extend(Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'), from_save))
 
-            # Load buildings
-            self.load_buildings(tree, data.find('buildings'))
+        # Load chests
+        self.chests.extend(Loader.load_entities(Chest, data_tree.findall('chests/chest'), from_save))
 
-            # Load fountains
-            self.load_fountains(tree, data.find('fountains'))
+        # Load buildings
+        self.buildings.extend(Loader.load_entities(Building, data_tree.findall('buildings/building'), from_save))
+
+        # Load fountains
+        self.fountains.extend(Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'), from_save))
 
         # Load portals
-        self.load_portals(tree)
+        self.portals.extend(Loader.load_entities(Portal, data_tree.findall('portals/couple'), from_save))
 
         # Store all entities
-        self.entities += self.allies + self.foes + self.chests + \
-            self.portals + self.fountains + self.breakables + self.buildings
+        self.entities += \
+            self.allies + self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
 
         # Load obstacles
-        self.load_obstacles(tree)
+        self.obstacles.extend(Loader.load_obstacles(tree.find('obstacles')))
 
         # Load missions
-        self.missions = []
-        self.main_mission = None
-        self.load_missions(tree)
+        self.missions, self.main_mission = Loader.load_missions(tree, self.players)
 
         # Booleans for end game
         self.victory = False
@@ -224,286 +195,6 @@ class Level:
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), SIDEBAR_SPRITE, self.missions.copy())
         self.wait_for_dest_tp = False
 
-    def load_allies(self, allies, from_save=False):
-        for ally in allies:
-            name = ally.find('name').text.strip()
-            x = int(ally.find('position/x').text) * TILE_SIZE
-            y = int(ally.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            lvl = int(ally.find('level').text.strip())
-
-            infos = etree.parse('data/characters.xml').find(name)
-
-            # Static data
-            sprite = 'imgs/characs/' + infos.find('sprite').text.strip()
-            race = infos.find('race').text.strip()
-            formatted_name = infos.find('name').text.strip()
-
-            talks = infos.find('talks')
-            dialog = []
-            for talk in talks.findall('talk'):
-                dialog.append(talk.text.strip())
-
-            strategy = infos.find('strategy').text.strip()
-            attack_kind = infos.find('attack_kind').text.strip()
-
-            stats_tree = infos
-            if from_save:
-                stats_tree = ally
-            hp = int(stats_tree.find('hp').text.strip())
-            move = int(stats_tree.find('move').text.strip())
-            strength = int(stats_tree.find('strength').text.strip())
-            defense = int(stats_tree.find('def').text.strip())
-            res = int(stats_tree.find('res').text.strip())
-            gold = int(stats_tree.find('gold').text.strip())
-
-            loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
-                                    [], [], strategy, lvl, race, gold, dialog)
-
-            if from_save:
-                current_hp = int(ally.find('currentHp').text.strip())
-                loaded_ally.set_current_hp(current_hp)
-
-                xp = int(ally.find('exp').text.strip())
-                loaded_ally.earn_xp(xp)
-
-            self.allies.append(loaded_ally)
-
-    def load_foes(self, foes, from_save=False):
-        foes_infos = {}
-        for foe in foes:
-            name = foe.find('name').text.strip()
-            x = int(foe.find('position/x').text) * TILE_SIZE
-            y = int(foe.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            lvl = int(foe.find('level').text.strip())
-
-            if name not in foes_infos:
-                foes_infos[name] = etree.parse('data/foes/' + name + '.xml').getroot()
-
-            # Static data
-            sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
-            xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
-            strategy = foes_infos[name].find('strategy').text.strip()
-
-            attack_kind = foes_infos[name].find('attack_kind').text.strip()
-
-            stats_tree = foes_infos[name]
-            if from_save:
-                stats_tree = foe
-
-            hp = int(stats_tree.find('hp').text.strip())
-            move = int(stats_tree.find('move').text.strip())
-            strength = int(stats_tree.find('strength').text.strip())
-            defense = int(stats_tree.find('def').text.strip())
-            res = int(stats_tree.find('res').text.strip())
-
-            loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, xp_gain, strategy, lvl)
-
-            if from_save:
-                current_hp = int(foe.find('currentHp').text.strip())
-                loaded_foe.set_current_hp(current_hp)
-
-                xp = int(foe.find('exp').text.strip())
-                loaded_foe.earn_xp(xp)
-            else:
-                # Up stats according to current lvl
-                loaded_foe.stats_up(lvl - 1)
-                # Restore hp due to lvl up
-                loaded_foe.healed()
-
-            self.foes.append(loaded_foe)
-
-    def load_chests(self, tree, data=None):
-        for chest in tree.xpath("chests/chest"):
-            name = chest.find('id').text.strip()
-            x = int(chest.find('position/x').text) * TILE_SIZE
-            y = int(chest.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            sprite_closed = 'imgs/dungeon_crawl/' + chest.find('closed/sprite').text.strip()
-            sprite_opened = 'imgs/dungeon_crawl/' + chest.find('opened/sprite').text.strip()
-            potential_items = []
-            for item in chest.xpath("contains/item"):
-                it_name = item.find('name').text.strip()
-                it = Level.parse_item_file(it_name)
-                proba = float(item.find('probability').text)
-
-                potential_items.append((proba, it))
-
-            loaded_chest = Chest(name, pos, sprite_closed, sprite_opened, potential_items)
-
-            # Dynamic data
-            if data is not None:
-                el = data.xpath("entity[name/text() ='Chest" + name + "']")[0]
-                opened = el.find('state').text.strip()
-                if opened == "True":
-                    loaded_chest.open()
-
-            self.chests.append(loaded_chest)
-
-    def load_portals(self, tree):
-        i = 0
-        for portal_couple in tree.xpath("portals/couple"):
-            name = "Portal " + str(i)
-            first_x = int(portal_couple.find('first/position/x').text) * TILE_SIZE
-            first_y = int(portal_couple.find('first/position/y').text) * TILE_SIZE
-            first_pos = (first_x, first_y)
-            second_x = int(portal_couple.find('second/position/x').text) * TILE_SIZE
-            second_y = int(portal_couple.find('second/position/y').text) * TILE_SIZE
-            second_pos = (second_x, second_y)
-            sprite = 'imgs/dungeon_crawl/' + portal_couple.find('sprite').text.strip()
-            first_portal = Portal(name, first_pos, sprite)
-            second_portal = Portal(name, second_pos, sprite)
-            Portal.link_portals(first_portal, second_portal)
-            self.portals.append(first_portal)
-            self.portals.append(second_portal)
-            i += 1
-
-    def load_fountains(self, tree, data=None):
-        fountains_infos = {}
-        for fountain in tree.xpath("fountains/fountain"):
-            name = fountain.find('type').text.strip()
-            id = fountain.find('id').text.strip()
-            x = int(fountain.find('position/x').text) * TILE_SIZE
-            y = int(fountain.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            if name not in fountains_infos:
-                fountains_infos[name] = etree.parse('data/fountains/' + name + '.xml').getroot()
-            sprite = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite').text.strip()
-            sprite_empty = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite_empty').text.strip()
-            effect_name = fountains_infos[name].find('effect').text.strip()
-            power = int(fountains_infos[name].find('power').text.strip())
-            duration = int(fountains_infos[name].find('duration').text.strip())
-            effect = Effect(effect_name, power, duration)
-            times = int(fountains_infos[name].find('times').text.strip())
-
-            loaded_fountain = Fountain(name + '_' + id, pos, sprite, sprite_empty, effect, times)
-            if data is not None:
-                el = data.xpath("entity[name/text() ='" + name + '_' + id + "']")[0]
-                # Load remaining uses from saved data
-                times = int(el.find('times').text.strip())
-                loaded_fountain.set_times(times)
-
-            self.fountains.append(loaded_fountain)
-
-    def load_breakables(self, tree, data=None):
-        for breakable in tree.xpath('breakables/breakable'):
-            # Static data
-            name = breakable.find('id').text.strip()
-            x = int(breakable.find('position/x').text) * TILE_SIZE
-            y = int(breakable.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
-            hp = int(breakable.find('resistance').text.strip())
-            loaded_breakable = Breakable(name, pos, sprite, hp, 0, 0)
-
-            # Dynamic data
-            if data is not None:
-                el = data.xpath("entity[name/text() ='" + name + "']")
-                # If the entity is not saved, it's because it has been destroyed
-                if not el:
-                    continue
-                # Retrieve unique entity found
-                el = el[0]
-                current_hp = int(el.find('currentHp').text.strip())
-                loaded_breakable.set_current_hp(current_hp)
-            self.breakables.append(loaded_breakable)
-
-    def load_buildings(self, tree, data=None):
-        for building in tree.xpath('buildings/building'):
-            # Static data
-            name = building.find('name').text.strip() + building.find('id').text.strip()
-            x = int(building.find('position/x').text) * TILE_SIZE
-            y = int(building.find('position/y').text) * TILE_SIZE
-            pos = (x, y)
-            sprite = 'imgs/houses/' + building.find('sprite').text.strip()
-            interaction = building.find('interaction')
-            interaction_el = {}
-            if interaction is not None:
-                talks = interaction.find('talks')
-                if talks is not None:
-                    interaction_el['talks'] = []
-                    for talk in talks.findall('talk'):
-                        interaction_el['talks'].append(talk.text.strip())
-                else:
-                    interaction_el['talks'] = []
-                interaction_el['gold'] = \
-                    int(interaction.find('gold').text.strip()) if interaction.find('gold') is not None else 0
-                interaction_el['item'] = Level.parse_item_file(interaction.find('item').text.strip()) \
-                    if interaction.find('item') is not None else None
-
-            type = building.find('type')
-            if type is not None:
-                type = type.text.strip()
-                if type == "shop":
-                    items = []
-                    for it in building.findall('items/item/name'):
-                        items.append(Level.parse_item_file(it.text.strip()))
-                    build = Shop(name, pos, sprite, None, items)
-                else:
-                    print("Error : building type isn't recognized : ", type)
-            else:
-                build = Building(name, pos, sprite, interaction_el)
-
-            # Dynamic data
-            if data is not None:
-                el = data.xpath("entity[name/text() ='" + name + "']")[0]
-                locked = el.find('state').text.strip()
-                if locked == "True":
-                    build.remove_interaction()
-
-            self.buildings.append(build)
-
-    def load_obstacles(self, tree):
-        for positions in tree.xpath('/level/obstacles/positions'):
-            fixed_y = positions.find('y')
-            if fixed_y is not None:
-                fixed_y = int(fixed_y.text) * TILE_SIZE
-                from_x = int(positions.find('from_x').text) * TILE_SIZE
-                to_x = int(positions.find('to_x').text) * TILE_SIZE
-                for i in range(from_x, to_x + TILE_SIZE, TILE_SIZE):
-                    pos = (i, fixed_y)
-                    self.obstacles.append(pos)
-            else:
-                fixed_x = int(positions.find('x').text) * TILE_SIZE
-                from_y = int(positions.find('from_y').text) * TILE_SIZE
-                to_y = int(positions.find('to_y').text) * TILE_SIZE
-                for i in range(from_y, to_y + TILE_SIZE, TILE_SIZE):
-                    pos = (fixed_x, i)
-                    self.obstacles.append(pos)
-
-        for obstacle in tree.xpath('/level/obstacles/position'):
-            x = int(obstacle.find('x').text) * TILE_SIZE
-            y = int(obstacle.find('y').text) * TILE_SIZE
-            pos = (x, y)
-            self.obstacles.append(pos)
-
-    def load_missions(self, tree):
-        #  > Load main mission
-        main_mission = tree.find('missions/main')
-        nature = main_mission.find('type').text
-        main = True
-        positions = []
-        desc = main_mission.find('description').text.strip()
-        nb_players = len(self.players)
-        if nature == 'position':
-            for coords in main_mission.xpath('position'):
-                x = int(coords.find('x').text) * TILE_SIZE
-                y = int(coords.find('y').text) * TILE_SIZE
-                pos = (x, y)
-                positions.append(pos)
-            mission = Mission(main, nature, positions, desc, nb_players)
-        self.missions.append(mission)
-        self.main_mission = mission
-
-    def load_placements(self, tree):
-        positions = tree.findall('placementArea/position')
-        for coords in positions:
-            x = int(coords.find('x').text) * TILE_SIZE
-            y = int(coords.find('y').text) * TILE_SIZE
-            pos = (x, y)
-            self.possible_placements.append(pos)
-
     def save_game(self):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game()
@@ -515,58 +206,6 @@ class Level:
     def game_started(self):
         return self.game_phase is not Status.INITIALIZATION
 
-    @staticmethod
-    def parse_item_file(name):
-        # Retrieve data root for item
-        it_tree_root = etree.parse('data/items.xml').getroot().find('.//' + name)
-
-        sprite = 'imgs/dungeon_crawl/item/' + it_tree_root.find('sprite').text.strip()
-        info = it_tree_root.find('info').text.strip()
-        price = it_tree_root.find('price')
-        if price is not None:
-            price = int(price.text.strip())
-        else:
-            price = 0
-        category = it_tree_root.find('category').text.strip()
-
-        item = None
-        if category == 'potion':
-            effect_name = it_tree_root.find('effect').text.strip()
-            power = int(it_tree_root.find('power').text.strip())
-            duration = int(it_tree_root.find('duration').text.strip())
-            effect = Effect(effect_name, power, duration)
-            item = Potion(name, sprite, info, price, effect)
-        elif category == 'armor':
-            body_part = it_tree_root.find('bodypart').text.strip()
-            defense = it_tree_root.find('def')
-            defense = int(defense.text.strip()) if defense is not None else 0
-            weight = int(it_tree_root.find('weight').text.strip())
-            eq_sprites = it_tree_root.find('equipped_sprites')
-            if eq_sprites is not None:
-                equipped_sprites = []
-                for eq_sprite in eq_sprites.findall('sprite'):
-                    equipped_sprites.append('imgs/dungeon_crawl/player/' + eq_sprite.text.strip())
-            else:
-                equipped_sprites = ['imgs/dungeon_crawl/player/' + it_tree_root.find(
-                    'equipped_sprite').text.strip()]
-            item = Equipment(name, sprite, info, price, equipped_sprites, body_part, defense, 0, 0, weight)
-        elif category == 'weapon':
-            power = int(it_tree_root.find('power').text.strip())
-            attack_kind = it_tree_root.find('kind').text.strip()
-            weight = int(it_tree_root.find('weight').text.strip())
-            fragility = int(it_tree_root.find('fragility').text.strip())
-            w_range = [int(it_tree_root.find('range').text.strip())]
-            equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
-                'equipped_sprite').text.strip()]
-            item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility, w_range)
-        elif category == 'key':
-            item = Key(name, sprite, info, price)
-        elif category == 'spellbook':
-            spell = it_tree_root.find('effect').text.strip()
-            item = Spellbook(name, sprite, info, price, spell)
-
-        return item
-
     def end_level(self, anim_surf, pos):
         self.active_menu = None
         self.background_menus = []
@@ -575,8 +214,15 @@ class Level:
     def update_state(self):
         if self.quit_request:
             return self.game_phase
+
         if self.animation:
+            if self.animation.anim():
+                self.animation = None
+                if self.game_phase > Status.IN_PROGRESS:
+                    # End game animation is finished, level can be quit
+                    self.exit_game()
             return None
+
         if not self.players and self.game_phase is Status.IN_PROGRESS:
             if not self.main_mission.succeeded_chars:
                 self.defeat = True
@@ -594,9 +240,8 @@ class Level:
             self.defeat = False
             return None
         if self.selected_player:
-            if self.selected_player.get_move():
-                self.selected_player.move()
-            if self.selected_player.state is PlayerState.WAITING_POST_ACTION and not self.active_menu:
+            if self.selected_player.move():
+                # If movement is finished
                 self.create_player_menu()
             return None
 
@@ -631,11 +276,7 @@ class Level:
             self.show_possible_actions(self.watched_ent, win)
 
         if self.animation:
-            if self.animation.anim(win):
-                self.animation = None
-                if self.game_phase > Status.IN_PROGRESS:
-                    # End game animation is finished, level can be quit
-                    self.exit_game()
+            self.animation.display(win)
 
         # If the game hasn't yet started
         if self.game_phase is Status.INITIALIZATION:
@@ -643,13 +284,12 @@ class Level:
         else:
             if self.selected_player:
                 # If player is waiting to move
-                if self.selected_player.state == PlayerState.WAITING_MOVE:
+                if self.possible_moves:
                     self.show_possible_actions(self.selected_player, win)
-                elif self.selected_player.state == PlayerState.WAITING_TARGET:
-                    if self.possible_attacks:
-                        self.show_possible_attacks(self.selected_player, win)
-                    elif self.possible_interactions:
-                        self.show_possible_interactions(win)
+                elif self.possible_attacks:
+                    self.show_possible_attacks(self.selected_player, win)
+                elif self.possible_interactions:
+                    self.show_possible_interactions(win)
 
         for menu in self.background_menus:
             if menu[1]:
@@ -829,7 +469,7 @@ class Level:
         # Check if player is on mission position
         player_pos = self.selected_player.pos
         for mission in self.missions:
-            if mission.type == 'position':
+            if mission.type is MissionType.POSITION:
                 if mission.pos_is_valid(player_pos):
                     entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
 
@@ -947,24 +587,22 @@ class Level:
                 collec = self.allies
             collec.remove(target)
 
-    def entity_action(self, ent, side):
-        if ent.state is EntityState.HAVE_TO_ACT:
-            possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
-            # TEMPO : entity's range can't be different from one actually
-            reach = [1]
-            possible_attacks = self.get_possible_attacks(possible_moves, reach, side)
-            move = ent.determine_move(self.players, possible_moves, possible_attacks)
-            path = self.determine_path_to(move, possible_moves)
-            ent.set_move(path)
-        elif ent.state is EntityState.ON_MOVE:
-            ent.move()
-        elif ent.state is EntityState.HAVE_TO_ATTACK:
-            # Entity try to attack someone
-            possible_attacks = self.get_possible_attacks([ent.pos], [1], side)
-            if possible_attacks:
-                ent_attacked = self.get_entity_on_case(random.choice(list(possible_attacks)))
+    def entity_action(self, ent, is_ally):
+        possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
+        targets = self.foes if is_ally else self.players + self.allies
+        case = ent.act(possible_moves, targets)
+
+        if case:
+            if case in possible_moves:
+                # Entity choose to move to case
+                self.hovered_ent = ent
+                path = self.determine_path_to(case, possible_moves)
+                ent.set_move(path)
+            else:
+                # Entity choose to attack the entity on the case
+                ent_attacked = self.get_entity_on_case(case)
                 self.duel(ent, ent_attacked, ent.attack_kind)
-            ent.end_turn()
+                ent.end_turn()
 
     @staticmethod
     def create_shop_entries(items, gold):
@@ -1265,7 +903,7 @@ class Level:
         # Valid a mission position
         elif method_id is CharacterMenu.TAKE:
             for mission in self.missions:
-                if mission.type == 'position':
+                if mission.type is MissionType.POSITION:
                     # Verify that character is not the last if the mission is not the main one
                     if mission.main or len(self.players) > 1:
                         if mission.pos_is_valid(self.selected_player.pos):
@@ -1694,14 +1332,17 @@ class Level:
                     # Want to cancel an interaction (not already performed)
                     elif self.possible_interactions or self.possible_attacks:
                         self.selected_player.cancel_interaction()
+                        self.possible_interactions = []
+                        self.possible_attacks = []
                         self.active_menu = self.background_menus.pop()[0]
+                    return
+                # Test if player is on main menu
+                if self.active_menu is not None:
+                    self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
                 if self.watched_ent:
                     self.watched_ent = None
                     self.possible_moves = []
                     self.possible_attacks = []
-                # Test if player is on main menu
-                if self.active_menu is not None:
-                    self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
 
     def button_down(self, button, pos):
         # 3 is equals to right button

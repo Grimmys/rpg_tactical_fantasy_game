@@ -33,11 +33,15 @@ class Fountain(Entity):
         if self.times == 0:
             self.sprite = self.sprite_empty
 
-    def save(self):
-        tree = Entity.save(self)
+    def save(self, tree_name):
+        tree = Entity.save(self, tree_name)
 
         # Save remaining uses
         times = etree.SubElement(tree, 'times')
         times.text = str(self.times)
+
+        # Save type
+        nature = etree.SubElement(tree, 'type')
+        nature.text = self.name
 
         return tree

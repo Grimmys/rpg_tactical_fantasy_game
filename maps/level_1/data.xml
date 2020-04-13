@@ -23,12 +23,12 @@
             <id> 1 </id>
             <closed>
                 <sprite>
-                    dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.png
                 </sprite>
             </opened>
             <contains>
@@ -426,7 +426,7 @@
     </obstacles>
     <missions>
         <main>
-            <type>position</type>
+            <type>POSITION</type>
             <description>
                 Leave the village
             </description>

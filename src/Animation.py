@@ -7,7 +7,7 @@ class Animation:
         self.timer = timer
         self.current_frame = self.sprites_pos.pop(0)
 
-    def anim(self, win):
+    def anim(self):
         self.timer -= 1
         if self.timer == 0:
             if self.sprites_pos:
@@ -15,7 +15,6 @@ class Animation:
                 self.current_frame = self.sprites_pos.pop(0)
             else:
                 return True
-        self.display(win)
         return False
 
     def display(self, win):

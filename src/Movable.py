@@ -15,6 +15,9 @@ PASSIVE = 1
 SEMI_ACTIVE = 2
 ACTIVE = 3
 
+SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
+SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+
 
 class EntityState(IntEnum):
     HAVE_TO_ACT = 0,
@@ -53,12 +56,18 @@ class Movable(Destroyable):
         self.items = []
         self.nb_items_max = NB_ITEMS_MAX
         self.state = EntityState.HAVE_TO_ACT
+        self.target = None
         if compl_sprite:
             compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
             self.sprite.blit(compl, (0, 0))
 
         self.attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
         self.strategy = EntityStrategy[strategy]
+
+    def display(self, screen):
+        Destroyable.display(self, screen)
+        if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
+            screen.blit(SELECTED_DISPLAY, self.pos)
 
     def end_turn(self):
         self.state = EntityState.FINISHED
@@ -77,9 +86,6 @@ class Movable(Destroyable):
     def set_move(self, path):
         self.on_move = path
         self.state = EntityState.ON_MOVE
-
-    def get_move(self):
-        return self.on_move
 
     def get_formatted_alterations(self):
         formatted_string = ""
@@ -143,12 +149,26 @@ class Movable(Destroyable):
         if not self.on_move:
             self.state = EntityState.HAVE_TO_ATTACK
 
-    def determine_move(self, targets, possible_moves, possible_attacks):
+    def act(self, possible_moves, targets):
+        if self.state is EntityState.HAVE_TO_ACT:
+            return self.determine_move(possible_moves, targets)
+        elif self.state is EntityState.ON_MOVE:
+            self.move()
+        elif self.state is EntityState.HAVE_TO_ATTACK:
+            if self.target:
+                return self.target.pos
+            else:
+                self.end_turn()
+        return None
+
+    def determine_move(self, possible_moves, targets):
+        self.target = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
-            for attack in possible_attacks:
+            for target in targets:
                 for move in possible_moves:
-                    # Try to find move next to possible attack
-                    if abs(move[0] - attack[0]) + abs(move[1] - attack[1]) == TILE_SIZE:
+                    # Try to find move next to one target
+                    if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE:
+                        self.target = target
                         return move
         if self.strategy is EntityStrategy.ACTIVE:
             # TODO
@@ -169,8 +189,8 @@ class Movable(Destroyable):
             if alteration.increment():
                 self.alterations.remove(alteration)
 
-    def save(self):
-        tree = Destroyable.save(self)
+    def save(self, tree_name):
+        tree = Destroyable.save(self, tree_name)
 
         # Save level
         level = etree.SubElement(tree, 'level')

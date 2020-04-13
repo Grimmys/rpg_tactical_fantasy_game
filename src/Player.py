@@ -43,7 +43,7 @@ class Player(Character):
 
     def display(self, screen):
         Character.display(self, screen)
-        if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET):
+        if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
             screen.blit(SELECTED_DISPLAY, self.pos)
 
     @property
@@ -61,9 +61,12 @@ class Player(Character):
         self.old_pos = self.pos
 
     def move(self):
-        Character.move(self)
-        if not self.on_move:
-            self.state = PlayerState.WAITING_POST_ACTION
+        if self.state is PlayerState.ON_MOVE:
+            Character.move(self)
+            if not self.on_move:
+                self.state = PlayerState.WAITING_POST_ACTION
+                return True
+        return False
 
     def cancel_move(self):
         self.state = PlayerState.WAITING_SELECTION

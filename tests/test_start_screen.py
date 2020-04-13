@@ -42,10 +42,6 @@ class TestStartScreen(unittest.TestCase):
         self.start_screen = StartScreen(screen)
         self.start_screen.display()
 
-    @classmethod
-    def tearDownClass(cls):
-        pg.quit()
-
     def test_new_game(self):
         # Memorize old screen
         screen = self.start_screen.screen.copy()
@@ -80,11 +76,7 @@ class TestStartScreen(unittest.TestCase):
         pos = (randrange(EXIT_GAME_BUTTON_POS[0], EXIT_GAME_BUTTON_POS[0] + BUTTON_SIZE[0] + 1),
                randrange(EXIT_GAME_BUTTON_POS[1], EXIT_GAME_BUTTON_POS[1] + BUTTON_SIZE[1] + 1))
 
-        with self.assertRaises(SystemExit):
-            self.start_screen.click(LEFT_BUTTON, pos)
-
-        # Only if sucess, pygame should be reset
-        pg.init()
+        self.assertEqual(self.start_screen.click(LEFT_BUTTON, pos), True)
 
     def test_click_on_nothing(self):
         # Make a copy of the current window
@@ -112,6 +104,7 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
     def test_right_click(self):
+        # TODO
         pass
 
 

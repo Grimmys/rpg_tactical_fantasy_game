@@ -1,6 +1,8 @@
 import os
 
 from lxml import etree
+
+from src import LoadFromXMLManager
 from src.constants import *
 import pygame as pg
 
@@ -36,6 +38,8 @@ class StartScreen:
 
         # Load current saved parameters
         self.load_options()
+
+        self.exit = False
 
     def load_options(self):
         # Load current move speed
@@ -152,7 +156,7 @@ class StartScreen:
         equipment = player_t.find('equipment')
         equipments = []
         for eq in equipment.findall('*'):
-            equipments.append(Level.parse_item_file(eq.text.strip()))
+            equipments.append(LoadFromXMLManager.parse_item_file(eq.text.strip()))
         gold = int(player_t.find('gold').text.strip())
 
         # Creating player instance
@@ -166,7 +170,7 @@ class StartScreen:
 
         inventory = player_t.find('inventory')
         for it in inventory.findall('item'):
-            item = Level.parse_item_file(it.text.strip())
+            item = LoadFromXMLManager.parse_item_file(it.text.strip())
             player.set_item(item)
 
         return player
@@ -216,13 +220,13 @@ class StartScreen:
                     inv = []
                     for it in player.findall("inventory/item"):
                         it_name = it.find("name").text.strip()
-                        item = Level.parse_item_file(it_name)
+                        item = LoadFromXMLManager.parse_item_file(it_name)
                         inv.append(item)
 
                     equipments = []
                     for eq in player.findall("equipments/equipment"):
                         eq_name = eq.find("name").text.strip()
-                        eq = Level.parse_item_file(eq_name)
+                        eq = LoadFromXMLManager.parse_item_file(eq_name)
                         equipments.append(eq)
 
                     # -- Reading of the XML file for default character's values (i.e. sprites)
@@ -267,10 +271,8 @@ class StartScreen:
         self.background_menus.append([self.active_menu, False])
         self.active_menu = StartScreen.create_options_menu()
 
-    @staticmethod
-    def exit_game():
-        pg.quit()
-        raise SystemExit
+    def exit_game(self):
+        self.exit = True
 
     def main_menu_action(self, method_id, args):
         # Execute action
@@ -327,6 +329,7 @@ class StartScreen:
                 self.execute_action(self.active_menu.type, self.active_menu.click(pos))
         else:
             self.level.click(button, pos)
+        return self.exit
 
     def button_down(self, button, pos):
         if self.level is not None:

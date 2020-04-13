@@ -46,19 +46,19 @@ class SaveStateManager:
     def save_entities(self):
         entities = etree.Element('entities')
 
-        entities.append(self.save_collection('allies', self.level.allies))
-        entities.append(self.save_collection('foes', self.level.foes))
-        entities.append(self.save_collection('breakables', self.level.breakables))
-        entities.append(self.save_collection('chests', self.level.chests))
-        entities.append(self.save_collection('fountains', self.level.fountains))
-        entities.append(self.save_collection('buildings', self.level.buildings))
+        entities.append(self.save_collection('allies', 'ally', self.level.allies))
+        entities.append(self.save_collection('foes', 'foe', self.level.foes))
+        entities.append(self.save_collection('breakables', 'breakable', self.level.breakables))
+        entities.append(self.save_collection('chests', 'chest', self.level.chests))
+        entities.append(self.save_collection('fountains', 'fountain', self.level.fountains))
+        entities.append(self.save_collection('buildings', 'building', self.level.buildings))
 
         return entities
 
     @staticmethod
-    def save_collection(element_name, collection):
-        element = etree.Element(element_name)
-        element.extend([ent.save() for ent in collection])
+    def save_collection(collection_name, element_name, collection):
+        element = etree.Element(collection_name)
+        element.extend([ent.save(element_name) for ent in collection])
         return element
 
     def save_team(self):

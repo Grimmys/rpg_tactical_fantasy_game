@@ -8,6 +8,7 @@ from src.fonts import *
 class Building(Entity):
     def __init__(self, name, pos, sprite, interaction={}):
         Entity.__init__(self, name, pos, sprite)
+        self.sprite_name = sprite
         self.interaction = interaction
 
     def interact(self, actor):
@@ -35,11 +36,31 @@ class Building(Entity):
     def remove_interaction(self):
         self.interaction = {}
 
-    def save(self):
-        tree = Entity.save(self)
+    def save(self, tree_name):
+        tree = Entity.save(self, tree_name)
 
         # Save state
         state = etree.SubElement(tree, 'state')
         state.text = str(self.interaction == {})
+
+        # Save sprite
+        sprite = etree.SubElement(tree, 'sprite')
+        sprite.text = self.sprite_name
+
+        # Save interaction
+        if not self.interaction:
+            etree.SubElement(tree, 'uninteractable')
+        else:
+            interaction = etree.SubElement(tree, 'interaction')
+            talks = etree.SubElement(interaction, 'talks')
+            for t in self.interaction['talks']:
+                talk = etree.SubElement(talks, 'talk')
+                talk.text = t
+            if self.interaction['gold'] > 0:
+                gold = etree.SubElement(interaction, 'gold')
+                gold.text = str(self.interaction['gold'])
+            if self.interaction['item'] is not None:
+                item = etree.SubElement(interaction, 'item')
+                item.text = self.interaction['item'].name
 
         return tree

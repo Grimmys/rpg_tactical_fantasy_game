@@ -34,7 +34,7 @@ if __name__ == "__main__":
                 start_screen.motion(e.pos)
             elif e.type == pg.MOUSEBUTTONUP:
                 if e.button == 1 or e.button == 3:
-                    start_screen.click(e.button, e.pos)
+                    quit_game = start_screen.click(e.button, e.pos)
             elif e.type == pg.MOUSEBUTTONDOWN:
                 if e.button == 1 or e.button == 3:
                     start_screen.button_down(e.button, e.pos)
@@ -43,5 +43,4 @@ if __name__ == "__main__":
         show_fps(screen, clock, FPS_FONT)
         pg.display.update()
         clock.tick(60)
-    pg.quit()
     raise SystemExit
