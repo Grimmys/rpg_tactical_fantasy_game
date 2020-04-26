@@ -1,9 +1,6 @@
-import pygame as pg
-
-from src.Button import Button
+from src.fonts import ITEM_FONT
 from src.constants import *
-
-ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
+from src.Button import Button
 
 
 class DynamicButton(Button):

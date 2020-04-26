@@ -209,6 +209,7 @@ def load_building(building, from_save):
             loaded_building = Shop(name, pos, sprite, None, items)
         else:
             print("Error : building type isn't recognized : ", type)
+            raise SystemError
     else:
         loaded_building = Building(name, pos, sprite, interaction_el)
 

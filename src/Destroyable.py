@@ -1,4 +1,3 @@
-import pygame as pg
 from lxml import etree
 from enum import Enum, auto
 
@@ -8,7 +7,8 @@ from src.constants import *
 LIGHTLY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png'
 LIGHTLY_DAMAGED = pg.transform.scale(pg.image.load(LIGHTLY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 MODERATELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png'
-MODERATELY_DAMAGED = pg.transform.scale(pg.image.load(MODERATELY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+MODERATELY_DAMAGED = pg.transform.scale(pg.image.load(MODERATELY_DAMAGED_SPRITE).convert_alpha(),
+                                        (TILE_SIZE, TILE_SIZE))
 HEAVILY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.png'
 HEAVILY_DAMAGED = pg.transform.scale(pg.image.load(HEAVILY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 SEVERELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_severely_damaged.png'
@@ -43,7 +43,8 @@ class Destroyable(Entity):
                 damage_bar = HEAVILY_DAMAGED
             elif self.hp < self.hp_max * 0.75:
                 damage_bar = MODERATELY_DAMAGED
-            damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * self.hp / self.hp_max), damage_bar.get_height()))
+            damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * self.hp / self.hp_max),
+                                                         damage_bar.get_height()))
             screen.blit(HP_BAR, self.pos)
             screen.blit(damage_bar, self.pos)
 
@@ -55,6 +56,9 @@ class Destroyable(Entity):
             real_damages = damages - self.res
         elif kind is DamageKind.PHYSICAL:
             real_damages = damages - self.defense
+        else:
+            print('Error : Invalid kind of attack : ' + str(kind))
+            raise SystemError
         if real_damages < 0:
             real_damages = 0
         self.hp -= real_damages
@@ -77,5 +81,3 @@ class Destroyable(Entity):
         hp.text = str(self.hp)
 
         return tree
-
-

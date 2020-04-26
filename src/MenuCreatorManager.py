@@ -1,5 +1,7 @@
 from src.Chest import Chest
 from src.Character import Character
+from src.Consumable import Consumable
+from src.Equipment import Equipment
 from src.Fountain import Fountain
 from src.InfoBox import InfoBox
 from src.Menus import *
@@ -11,14 +13,6 @@ from src.constants import *
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
-
-ACTION_MENU_WIDTH = 200
-ITEM_MENU_WIDTH = 550
-ITEM_INFO_MENU_WIDTH = 800
-ITEM_DELETE_MENU_WIDTH = 350
-STATUS_MENU_WIDTH = 300
-STATUS_INFO_MENU_WIDTH = 500
-EQUIPMENT_MENU_WIDTH = 500
 
 
 def create_shop_menu(items, gold):
@@ -160,8 +154,6 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
 
     for ent in interact_entities:
         if abs(ent.pos[0] - player.pos[0]) + abs(ent.pos[1] - player.pos[1]) == TILE_SIZE:
-            print("Ent : " + str(ent.pos))
-            print("Player : " + str(player.pos))
             if isinstance(ent, Chest) and not ent.opened and not chest_option:
                 entries.insert(0, [{'name': 'Open', 'id': CharacterMenu.OPEN_CHEST}])
                 chest_option = True
@@ -218,3 +210,75 @@ def create_main_menu(initialization_phase, pos):
 
     return InfoBox("Main Menu", MainMenu, "imgs/interface/PopUpMenu.png", entries,
                    ACTION_MENU_WIDTH, el_rect_linked=tile)
+
+
+def create_item_shop_menu(item_button_pos, item, price):
+    entries = [
+        [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button', 'args': [price]}],
+        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
+    ]
+    formatted_item_name = item.get_formatted_name()
+    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                        ITEM_BUTTON_SIZE[1])
+
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+
+
+def create_item_sell_menu(item_button_pos, item, price):
+    entries = [
+        [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button', 'args': [price]}],
+        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
+    ]
+    formatted_item_name = item.get_formatted_name()
+    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                        ITEM_BUTTON_SIZE[1])
+
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+
+
+def create_item_menu(item_button_pos, item, is_equipped=False):
+    entries = [
+        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
+        [{'name': 'Throw', 'id': ItemMenu.THROW_ITEM}]
+    ]
+    formatted_item_name = item.get_formatted_name()
+
+    if isinstance(item, Consumable):
+        entries.insert(0, [{'name': 'Use', 'id': ItemMenu.USE_ITEM}])
+    elif isinstance(item, Equipment):
+        if is_equipped:
+            entries.insert(0, [{'name': 'Unequip', 'id': ItemMenu.UNEQUIP_ITEM}])
+        else:
+            entries.insert(0, [{'name': 'Equip', 'id': ItemMenu.EQUIP_ITEM}])
+
+    for row in entries:
+        for entry in row:
+            entry['type'] = 'button'
+
+    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                        ITEM_BUTTON_SIZE[1])
+
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+                   entries,
+                   ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+
+
+def create_item_desc_menu(item):
+    entries = [[{'type': 'text', 'text': item.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+    formatted_item_name = item.get_formatted_name()
+
+    return InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+                   ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
+
+def create_alteration_info_menu(alteration):
+    turns_left = alteration.get_turns_left()
+    entries = [[{'type': 'text', 'text': alteration.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
+               [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT,
+                 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
+    formatted_name = alteration.get_formatted_name()
+
+    return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+                   STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)

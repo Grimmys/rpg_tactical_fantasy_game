@@ -1,20 +1,13 @@
-import os
-
 from lxml import etree
 
-from src import LoadFromXMLManager
 from src.constants import *
-import pygame as pg
-
+from src.fonts import MENU_SUB_TITLE_FONT
+from src import LoadFromXMLManager
 from src.Level import Level, Status
 from src.Player import Player
 from src.InfoBox import InfoBox
 from src.Movable import Movable
 from src.Menus import StartMenu, OptionsMenu, GenericActions
-
-START_MENU_WIDTH = 600
-
-ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
 
 
 class StartScreen:
@@ -58,10 +51,10 @@ class StartScreen:
                        "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
 
     @staticmethod
-    def load_parameter_entry(param, formatted_name, values, id):
+    def load_parameter_entry(param, formatted_name, values, identifier):
         val = int(StartScreen.read_options_file(param))
 
-        entry = {'name': formatted_name, 'values': values, 'id': id, 'current_value_ind': 0}
+        entry = {'name': formatted_name, 'values': values, 'id': identifier, 'current_value_ind': 0}
 
         for i in range(len(entry['values'])):
             if entry['values'][i]['value'] == val:
@@ -116,8 +109,8 @@ class StartScreen:
 
     def update_state(self):
         if self.level:
-            exit = self.level.update_state()
-            if exit is Status.ENDED_VICTORY:
+            status = self.level.update_state()
+            if status is Status.ENDED_VICTORY:
                 self.level_id += 1
                 if self.level_id in self.levels:
                     team = [self.init_player("john"), self.init_player("archer")]
@@ -126,7 +119,7 @@ class StartScreen:
                     # TODO: Game win dialog?
                     self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
                     self.level = None
-            elif exit is Status.ENDED_DEFEAT:
+            elif status is Status.ENDED_DEFEAT:
                 self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
                 self.level = None
 
@@ -210,12 +203,12 @@ class StartScreen:
                     exp = int(player.find("exp").text.strip())
                     hp = int(player.find("hp").text.strip())
                     strength = int(player.find("strength").text.strip())
-                    defense = int(player.find("defense").text.strip())
+                    defense = int(player.find("def").text.strip())
                     res = int(player.find("res").text.strip())
                     move = int(player.find("move").text.strip())
                     current_hp = int(player.find("currentHp").text.strip())
-                    pos = (int(player.find("position/x").text.strip()),
-                           int(player.find("position/y").text.strip()))
+                    pos = (int(player.find("position/x").text.strip()) * TILE_SIZE,
+                           int(player.find("position/y").text.strip()) * TILE_SIZE)
                     state = player.find("turnFinished").text.strip()
                     inv = []
                     for it in player.findall("inventory/item"):
@@ -255,14 +248,15 @@ class StartScreen:
                 self.play(level)
                 save.close()
                 return
-        except FileNotFoundError as err:
-            pass
+        except FileNotFoundError:
+            print("Error : Impossible to save game")
+            raise SystemError
 
         # No saved game
         self.background_menus.append([self.active_menu, True])
 
         name = "Load Game"
-        entries = [[{'type': 'text', 'text': "No saved game.", 'font': ITEM_DESC_FONT}]]
+        entries = [[{'type': 'text', 'text': "No saved game.", 'font': MENU_SUB_TITLE_FONT}]]
         width = self.screen.get_width() // 2
         self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                    entries, width, close_button=1)

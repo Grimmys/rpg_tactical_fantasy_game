@@ -1,19 +1,9 @@
-import pygame as pg
-from lxml import etree
-import math
-
-from src.constants import *
 from src.Destroyable import *
 from src.Key import Key
 from enum import IntEnum, Enum, auto
 
 TIMER = 60
 NB_ITEMS_MAX = 8
-
-STATIC = 0
-PASSIVE = 1
-SEMI_ACTIVE = 2
-ACTIVE = 3
 
 SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
 SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
@@ -43,7 +33,8 @@ class Movable(Destroyable):
     XP_NEXT_LVL_BASE = 15
     move_speed = ANIMATION_SPEED
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1, compl_sprite=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1,
+                 compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         self._max_moves = max_moves
         self.on_move = []
@@ -213,4 +204,3 @@ class Movable(Destroyable):
         move.text = str(self._max_moves)
 
         return tree
-

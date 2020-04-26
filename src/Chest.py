@@ -20,8 +20,8 @@ class Chest(Entity):
     @staticmethod
     def determine_item(potential_items):
         bag = []
-        # entry : (proba, item)
-        # proba : between 0.1 and 1
+        # entry : (probability, item)
+        # probability : between 0.1 and 1
         for entry in potential_items:
             times = int(entry[0] * 10)
             bag += [entry[1]] * times

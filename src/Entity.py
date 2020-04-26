@@ -45,4 +45,3 @@ class Entity:
         y.text = str(self.pos[1] // TILE_SIZE)
 
         return tree
-

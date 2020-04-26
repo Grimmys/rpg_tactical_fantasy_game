@@ -1,6 +1,6 @@
 import random as rd
 
-from src.Movable import Movable, EntityState
+from src.Movable import Movable
 
 
 class Foe(Movable):

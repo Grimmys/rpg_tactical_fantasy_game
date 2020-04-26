@@ -24,7 +24,7 @@
         <attack_kind> PHYSICAL </attack_kind>
     </jist>
     <john>
-        <name> John </name>
+        <name> john </name>
         <class> warrior </class>
         <race> human </race>
         <lvl> 1 </lvl>
@@ -38,6 +38,9 @@
             <head>
                 helmet
             </head>
+            <right_hand>
+                club
+            </right_hand>
             <body>
                 chainmail
             </body>
@@ -52,14 +55,11 @@
                 <item>
                     key
                 </item>
-                <item>
-                    club
-                </item>
         </inventory>
         <gold> 250 </gold>
     </john>
     <archer>
-        <name> Archer </name>
+        <name> archer </name>
         <class> ranger </class>
         <race> elf </race>
         <initStrength> 1 </initStrength>
@@ -76,6 +76,9 @@
             <body>
                 leather_armor
             </body>
+            <right_hand>
+                    basic_bow
+            </right_hand>
             <feet>
                 brown_boots
             </feet>
@@ -83,9 +86,6 @@
         <inventory>
                 <item>
                     life_potion
-                </item>
-                <item>
-                    basic_bow
                 </item>
         </inventory>
         <gold> 250 </gold>

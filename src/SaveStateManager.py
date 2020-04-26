@@ -64,6 +64,6 @@ class SaveStateManager:
     def save_team(self):
         team = etree.Element('team')
         for player in self.level.players:
-            team.append(player.save())
+            team.append(player.save('player'))
 
         return team

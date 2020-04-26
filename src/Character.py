@@ -1,8 +1,7 @@
-import pygame as pg
 from lxml import etree
 import random as rd
 
-from src.Movable import Movable, EntityState
+from src.Movable import Movable
 from src.Destroyable import DamageKind
 from src.constants import *
 
@@ -12,7 +11,8 @@ ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.tt
 class Character(Movable):
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments,
                  strategy, lvl, race, gold, talk, compl_sprite=None):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl, compl_sprite)
+        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy,
+                         lvl, compl_sprite)
         self.equipments = equipments
         self.classes = classes
         self.race = race
@@ -114,6 +114,15 @@ class Character(Movable):
 
     def save(self, tree_name):
         tree = Movable.save(self, tree_name)
+
+        # Save class (if possible)
+        if len(self.classes) > 0:
+            class_el = etree.SubElement(tree, 'class')
+            class_el.text = self.classes[0]  # Currently, only first class is saved if any
+
+        # Save race
+        race = etree.SubElement(tree, 'race')
+        race.text = self.race
 
         # Save gold
         gold = etree.SubElement(tree, 'gold')

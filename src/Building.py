@@ -6,7 +6,7 @@ from src.fonts import *
 
 
 class Building(Entity):
-    def __init__(self, name, pos, sprite, interaction={}):
+    def __init__(self, name, pos, sprite, interaction=None):
         Entity.__init__(self, name, pos, sprite)
         self.sprite_name = sprite
         self.interaction = interaction
@@ -14,7 +14,7 @@ class Building(Entity):
     def interact(self, actor):
         entries = []
 
-        if self.interaction == {}:
+        if self.interaction is None:
             entries.append([{'type': 'text', 'text': 'This house seems closed...', 'font': ITEM_DESC_FONT}])
         else:
             for talk in self.interaction['talks']:
@@ -28,20 +28,20 @@ class Building(Entity):
                 earn_text = '[You received ' + self.interaction['item'].get_formatted_name() + ']'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': ITEM_DESC_FONT, 'color': GREEN}])
 
-            # Interaction could not been repeted : should be remove after been used
+            # Interaction could not been repeated : should be remove after been used
             self.remove_interaction()
 
         return entries
 
     def remove_interaction(self):
-        self.interaction = {}
+        self.interaction = None
 
     def save(self, tree_name):
         tree = Entity.save(self, tree_name)
 
         # Save state
         state = etree.SubElement(tree, 'state')
-        state.text = str(self.interaction == {})
+        state.text = str(self.interaction is None)
 
         # Save sprite
         sprite = etree.SubElement(tree, 'sprite')

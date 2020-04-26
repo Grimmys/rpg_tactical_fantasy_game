@@ -1,14 +1,6 @@
-import pygame as pg
-from enum import Enum
-
-from src.Button import Button
-from src.Menus import InventoryMenu
 from src.constants import *
-
-ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 18)
-ITEM_FONT_HOVER = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
-ITALIC_ITEM_FONT = pg.font.Font('fonts/minya_nouvelle_it.ttf', 16)
-ITALIC_ITEM_FONT_HOVER = pg.font.Font('fonts/minya_nouvelle_it.ttf', 16)
+from src.fonts import *
+from src.Button import Button
 
 FRAME_SPRITE = 'imgs/interface/grey_frame.png'
 FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.png'

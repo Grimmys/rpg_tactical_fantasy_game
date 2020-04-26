@@ -1,5 +1,3 @@
-import pygame as pg
-
 from src.Item import Item
 from src.constants import *
 

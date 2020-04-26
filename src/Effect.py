@@ -24,5 +24,6 @@ class Effect:
             desc = alteration_root.find("info").text.strip().replace('{val}', str(self.power))
             alteration = Alteration('speed_up', self.name, self.power, self.duration, desc)
             ent.set_alteration(alteration)
-            msg = "The speed of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + " turns."
+            msg = "The speed of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
+                  " turns."
         return success, msg

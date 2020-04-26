@@ -1,7 +1,5 @@
-import pygame as pg
 from lxml import etree
 from enum import IntEnum
-
 
 from src.Character import Character
 from src.constants import *
@@ -100,56 +98,9 @@ class Player(Character):
     def choose_target(self):
         self.state = PlayerState.WAITING_TARGET
 
-    def save(self):
+    def save(self, tree_name):
         # Build XML tree
-        tree = etree.Element('player')
-
-        # Save name
-        name = etree.SubElement(tree, 'name')
-        name.text = self.name
-
-        # Save level
-        level = etree.SubElement(tree, 'level')
-        level.text = str(self.lvl)
-
-        # Save class
-        class_el = etree.SubElement(tree, 'class')
-        class_el.text = self.classes[0]  # Currently, only first class is saved
-
-        # Save race
-        race = etree.SubElement(tree, 'race')
-        race.text = self.race
-
-        # Save exp
-        exp = etree.SubElement(tree, 'exp')
-        exp.text = str(self.xp)
-
-        # Save stats
-        hp_m = etree.SubElement(tree, 'hp')
-        hp_m.text = str(self.hp_max)
-        atk = etree.SubElement(tree, 'strength')
-        atk.text = str(self.strength)
-        defense = etree.SubElement(tree, 'defense')
-        defense.text = str(self.defense)
-        res = etree.SubElement(tree, 'res')
-        res.text = str(self.res)
-        move = etree.SubElement(tree, 'move')
-        move.text = str(self.max_moves)
-
-        # Save current hp
-        hp = etree.SubElement(tree, 'currentHp')
-        hp.text = str(self.hp)
-
-        # Save position
-        pos = etree.SubElement(tree, 'position')
-        x = etree.SubElement(pos, 'x')
-        x.text = str(self.pos[0])
-        y = etree.SubElement(pos, 'y')
-        y.text = str(self.pos[1])
-
-        # Save gold
-        gold = etree.SubElement(tree, 'gold')
-        gold.text = str(self.gold)
+        tree = Character.save(self, tree_name)
 
         # Save if turn is finished or not
         state = etree.SubElement(tree, 'turnFinished')

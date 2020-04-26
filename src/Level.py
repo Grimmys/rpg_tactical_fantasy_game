@@ -2,8 +2,6 @@ from src.fonts import *
 from src import LoadFromXMLManager as Loader, MenuCreatorManager
 from src.Building import Building
 from src.Shop import Shop
-from src.Equipment import Equipment
-from src.Consumable import Consumable
 from src.Character import Character
 from src.Player import Player
 from src.Foe import Foe
@@ -31,22 +29,6 @@ ATTACKABLE_OPACITY = 80
 INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
 INTERACTION = pg.transform.scale(pg.image.load(INTERACTION_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 INTERACTION_OPACITY = 500
-
-BUTTON_MENU_SIZE = (150, 30)
-CLOSE_BUTTON_SIZE = (150, 50)
-ITEM_BUTTON_MENU_SIZE = (180, TILE_SIZE + 30)
-
-ACTION_MENU_WIDTH = 200
-ITEM_MENU_WIDTH = 550
-ITEM_INFO_MENU_WIDTH = 800
-ITEM_DELETE_MENU_WIDTH = 350
-STATUS_MENU_WIDTH = 300
-STATUS_INFO_MENU_WIDTH = 500
-EQUIPMENT_MENU_WIDTH = 500
-
-MARGINTOP = 10
-
-SIDEBAR_SPRITE = 'imgs/interface/sidebar.png'
 
 NEW_TURN_SPRITE = 'imgs/interface/new_turn.png'
 NEW_TURN = pg.transform.scale(pg.image.load(NEW_TURN_SPRITE).convert_alpha(), (int(392 * 1.5), int(107 * 1.5)))
@@ -98,89 +80,62 @@ class EntityTurn(IntEnum):
 
 
 class Level:
-    def __init__(self, directory, players, nb_level, status='INITIALIZATION', turn=0, data=None):
+    def __init__(self, directory, players, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None):
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.map = pg.image.load(directory + 'map.png')
-
         self.quit_request = False
-
         self.nb_level = nb_level
-
-        self.players = players
-
-        self.entities = [] + self.players
-
-        self.allies = []
-        self.foes = []
-        self.chests = []
-        self.portals = []
-        self.fountains = []
-        self.breakables = []
-        self.buildings = []
-        self.obstacles = []
 
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
-        data_tree = tree
-        from_save = False
+        data_tree = tree if data is None else data
+        from_save = data is not None
 
-        if status != Status.IN_PROGRESS.name:
+        if status is Status.INITIALIZATION.name:
             # Load available tiles for characters' placement
             self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'))
 
-            # Game is new, players' positions should be initialized
-            if data is None:
-                # Set initial pos of players arbitrarily
-                for player in self.players:
-                    for tile in self.possible_placements:
-                        if self.case_is_empty(tile):
-                            player.set_initial_pos(tile)
-                            break
-        else:
-            # Data is extracted from saved game
-            data_tree = data
-            from_save = True
-
+        # Load players
+        self.players = players
         # Load allies
-        self.allies.extend(Loader.load_entities(Character, data_tree.findall('allies/ally'), from_save))
-
+        self.allies = Loader.load_entities(Character, data_tree.findall('allies/ally'), from_save)
         # Load foes
-        self.foes.extend(Loader.load_entities(Foe, data_tree.findall('foes/foe'), from_save))
-
+        self.foes = Loader.load_entities(Foe, data_tree.findall('foes/foe'), from_save)
         # Load breakables
-        self.breakables.extend(Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'), from_save))
-
+        self.breakables = Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'), from_save)
         # Load chests
-        self.chests.extend(Loader.load_entities(Chest, data_tree.findall('chests/chest'), from_save))
-
+        self.chests = Loader.load_entities(Chest, data_tree.findall('chests/chest'), from_save)
         # Load buildings
-        self.buildings.extend(Loader.load_entities(Building, data_tree.findall('buildings/building'), from_save))
-
+        self.buildings = Loader.load_entities(Building, data_tree.findall('buildings/building'), from_save)
         # Load fountains
-        self.fountains.extend(Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'), from_save))
-
+        self.fountains = Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'), from_save)
         # Load portals
-        self.portals.extend(Loader.load_entities(Portal, data_tree.findall('portals/couple'), from_save))
-
+        self.portals = Loader.load_entities(Portal, data_tree.findall('portals/couple'), from_save)
         # Store all entities
-        self.entities += \
-            self.allies + self.foes + self.chests + self.portals + self.fountains + self.breakables + self.buildings
+        self.entities = self.players + self.allies + self.foes + \
+            self.chests + self.portals + self.fountains + self.breakables + self.buildings
 
         # Load obstacles
-        self.obstacles.extend(Loader.load_obstacles(tree.find('obstacles')))
-
+        self.obstacles = Loader.load_obstacles(tree.find('obstacles'))
         # Load missions
         self.missions, self.main_mission = Loader.load_missions(tree, self.players)
+
+        # Game is new, players' positions should be initialized
+        if data is None:
+            # Set initial pos of players arbitrarily
+            for player in self.players:
+                for tile in self.possible_placements:
+                    if self.case_is_empty(tile):
+                        player.set_initial_pos(tile)
+                        break
 
         # Booleans for end game
         self.victory = False
         self.defeat = False
 
         self.game_phase = Status[status]
-
         self.side_turn = EntityTurn.PLAYER
-
         self.turn = turn
         self.selected_item = None
         self.animation = None
@@ -192,7 +147,7 @@ class Level:
         self.active_menu = None
         self.background_menus = []
         self.hovered_ent = None
-        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), SIDEBAR_SPRITE, self.missions.copy())
+        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), self.missions.copy())
         self.wait_for_dest_tp = False
 
     def save_game(self):
@@ -244,7 +199,8 @@ class Level:
                 # If movement is finished
                 interactable_entities = self.chests + self.portals + self.fountains + self.allies
                 self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player, self.buildings,
-                                                                   interactable_entities, self.missions, self.foes)
+                                                                         interactable_entities, self.missions,
+                                                                         self.foes)
             return None
 
         entities = []
@@ -526,20 +482,9 @@ class Level:
             price = args[2]
 
             self.selected_item = item
-            formatted_item_name = self.selected_item.get_formatted_name()
 
             self.background_menus.append((self.active_menu, True))
-
-            entries = [
-                [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button', 'args': [price]}],
-                [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
-            ]
-            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
-                                ITEM_BUTTON_MENU_SIZE[1])
-
-            self.active_menu = InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+            self.active_menu = MenuCreatorManager.create_item_shop_menu(item_button_pos, item, price)
         else:
             print("Unknown action in buy menu... : " + str(method_id))
 
@@ -550,21 +495,9 @@ class Level:
             price = args[2]
 
             self.selected_item = item
-            formatted_item_name = self.selected_item.get_formatted_name()
 
             self.background_menus.append((self.active_menu, True))
-
-            entries = [
-                [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button', 'args': [price]}],
-                [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
-
-            ]
-            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
-                                ITEM_BUTTON_MENU_SIZE[1])
-
-            self.active_menu = InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+            self.active_menu = MenuCreatorManager.create_item_sell_menu(item_button_pos, item, price)
         else:
             print("Unknown action in sell menu... : " + str(method_id))
 
@@ -721,84 +654,30 @@ class Level:
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
         if method_id is InventoryMenu.INTERAC_ITEM:
-            self.background_menus.append((self.active_menu, True))
-
             item_button_pos = args[0]
             item = args[1]
 
             self.selected_item = item
 
-            formatted_item_name = self.selected_item.get_formatted_name()
-
-            entries = [
-                [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
-                [{'name': 'Throw', 'id': ItemMenu.THROW_ITEM}]
-            ]
-
-            if isinstance(self.selected_item, Consumable):
-                entries.insert(0, [{'name': 'Use', 'id': ItemMenu.USE_ITEM}])
-            elif isinstance(self.selected_item, Equipment):
-                if self.selected_player.has_equipment(self.selected_item):
-                    entries.insert(0, [{'name': 'Unequip', 'id': ItemMenu.UNEQUIP_ITEM}])
-                else:
-                    entries.insert(0, [{'name': 'Equip', 'id': ItemMenu.EQUIP_ITEM}])
-
-            for row in entries:
-                for entry in row:
-                    entry['type'] = 'button'
-
-            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
-                                ITEM_BUTTON_MENU_SIZE[1])
-            self.active_menu = InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = MenuCreatorManager.create_item_menu(item_button_pos, item)
 
     def execute_equipment_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
         if method_id is InventoryMenu.INTERAC_ITEM:
-            self.background_menus.append([self.active_menu, True])
-
             item_button_pos = args[0]
             item = args[1]
 
             self.selected_item = item
 
-            formatted_item_name = self.selected_item.get_formatted_name()
-
-            entries = [
-                [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
-                [{'name': 'Throw', 'id': ItemMenu.THROW_ITEM}]
-            ]
-
-            if isinstance(self.selected_item, Consumable):
-                entries.insert(0, [{'name': 'Use', 'id': ItemMenu.USE_ITEM}])
-            elif isinstance(self.selected_item, Equipment):
-                if self.selected_player.has_equipment(self.selected_item):
-                    entries.insert(0, [{'name': 'Unequip', 'id': ItemMenu.UNEQUIP_ITEM}])
-                else:
-                    entries.insert(0, [{'name': 'Equip', 'id': ItemMenu.EQUIP_ITEM}])
-
-            for row in entries:
-                for entry in row:
-                    entry['type'] = 'button'
-
-            item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_MENU_SIZE[0],
-                                ITEM_BUTTON_MENU_SIZE[1])
-            self.active_menu = InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+            self.background_menus.append([self.active_menu, True])
+            self.active_menu = MenuCreatorManager.create_item_menu(item_button_pos, item, True)
 
     def execute_item_action(self, method_id, args):
         # Get info about an item
         if method_id is ItemMenu.INFO_ITEM:
             self.background_menus.append([self.active_menu, False])
-
-            formatted_item_name = self.selected_item.get_formatted_name()
-            description = self.selected_item.desc
-
-            entries = [[{'type': 'text', 'text': description, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = MenuCreatorManager.create_item_desc_menu(self.selected_item)
         # Remove an item
         elif method_id is ItemMenu.THROW_ITEM:
             formatted_item_name = self.selected_item.get_formatted_name()
@@ -972,18 +851,10 @@ class Level:
     def execute_status_action(self, method_id, args):
         # Get infos about an alteration
         if method_id is StatusMenu.INFO_ALTERATION_ACTION:
-            self.background_menus.append([self.active_menu, True])
-
             alteration = args[1]
 
-            formatted_name = alteration.get_formatted_name()
-            turns_left = alteration.get_turns_left()
-
-            entries = [[{'type': 'text', 'text': alteration.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
-                       [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT,
-                         'margin': (0, 0, 10, 0), 'color': ORANGE}]]
-            self.active_menu = InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
-                                       STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.background_menus.append([self.active_menu, True])
+            self.active_menu = MenuCreatorManager.create_alteration_info_menu(alteration)
 
     def execute_action(self, menu_type, action):
         if not action:

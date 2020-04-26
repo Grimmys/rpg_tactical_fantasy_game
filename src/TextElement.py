@@ -1,31 +1,29 @@
 import pygame as pg
 from pygame.locals import *
 
-from src.BoxElement import BoxElement
 from src.constants import WHITE
-
-ITEM_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 16)
+from src.BoxElement import BoxElement
 
 
 class TextElement(BoxElement):
-    def __init__(self, txt, container_width, pos, font, margin, color=WHITE):
-        init_text = font.render(txt, 1, color)
-        final_text = TextElement.verify_rendered_text_size(init_text, txt, container_width, font, color)
+    def __init__(self, text, container_width, pos, font, margin, text_color=WHITE):
+        init_text = font.render(text, 1, text_color)
+        final_text = TextElement.verify_rendered_text_size(init_text, text, container_width, font, text_color)
 
         BoxElement.__init__(self, pos, final_text, margin)
 
     @staticmethod
-    def verify_rendered_text_size(rendered_txt, txt, container_width, font, color):
+    def verify_rendered_text_size(rendered_txt, txt, container_width, font, text_color):
         final_render = rendered_txt
 
         if final_render.get_width() * 1.15 > container_width:
             first_part, second_part = TextElement.divide_text(txt)
-            first_part_render = font.render(first_part, 1, color)
+            first_part_render = font.render(first_part, 1, text_color)
             first_part_render = TextElement.verify_rendered_text_size(first_part_render, first_part,
-                                                                      container_width, font, color)
-            second_part_render = font.render(second_part, 1, color)
+                                                                      container_width, font, text_color)
+            second_part_render = font.render(second_part, 1, text_color)
             second_part_render = TextElement.verify_rendered_text_size(second_part_render, second_part,
-                                                                       container_width, font, color)
+                                                                       container_width, font, text_color)
             final_render = pg.Surface((first_part_render.get_width(), first_part_render.get_height() +
                                        second_part_render.get_height()), SRCALPHA)
             final_render.blit(first_part_render, (0, 0))
