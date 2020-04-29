@@ -1,22 +1,15 @@
 from lxml import etree
-from enum import Enum, auto
+from enum import Enum
 
 from src.Entity import Entity
 from src.constants import *
 
-LIGHTLY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png'
-LIGHTLY_DAMAGED = pg.transform.scale(pg.image.load(LIGHTLY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-MODERATELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png'
-MODERATELY_DAMAGED = pg.transform.scale(pg.image.load(MODERATELY_DAMAGED_SPRITE).convert_alpha(),
-                                        (TILE_SIZE, TILE_SIZE))
-HEAVILY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.png'
-HEAVILY_DAMAGED = pg.transform.scale(pg.image.load(HEAVILY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-SEVERELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_severely_damaged.png'
-SEVERELY_DAMAGED = pg.transform.scale(pg.image.load(SEVERELY_DAMAGED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-ALMOST_DEAD_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_almost_dead.png'
-ALMOST_DEAD = pg.transform.scale(pg.image.load(ALMOST_DEAD_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
-HP_BAR = pg.transform.scale(pg.image.load(HP_BAR_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+LIGHTLY_DAMAGED = None
+MODERATELY_DAMAGED = None
+HEAVILY_DAMAGED = None
+SEVERELY_DAMAGED = None
+ALMOST_DEAD = None
+HP_BAR = None
 
 
 class DamageKind(Enum):
@@ -25,6 +18,28 @@ class DamageKind(Enum):
 
 
 class Destroyable(Entity):
+    @staticmethod
+    def init_constant_sprites():
+        global LIGHTLY_DAMAGED, MODERATELY_DAMAGED, HEAVILY_DAMAGED, SEVERELY_DAMAGED, ALMOST_DEAD, HP_BAR
+
+        lightly_damaged_sprite = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png'
+        LIGHTLY_DAMAGED = pg.transform.scale(pg.image.load(lightly_damaged_sprite).convert_alpha(),
+                                             (TILE_SIZE, TILE_SIZE))
+        moderately_damaged_sprite = 'imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png'
+        MODERATELY_DAMAGED = pg.transform.scale(pg.image.load(moderately_damaged_sprite).convert_alpha(),
+                                                (TILE_SIZE, TILE_SIZE))
+        heavily_damaged_sprite = 'imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.png'
+        HEAVILY_DAMAGED = pg.transform.scale(pg.image.load(heavily_damaged_sprite).convert_alpha(),
+                                             (TILE_SIZE, TILE_SIZE))
+        severely_damaged_sprite = 'imgs/dungeon_crawl/misc/damage_meter_severely_damaged.png'
+        SEVERELY_DAMAGED = pg.transform.scale(pg.image.load(severely_damaged_sprite).convert_alpha(),
+                                              (TILE_SIZE, TILE_SIZE))
+        almost_dead_sprite = 'imgs/dungeon_crawl/misc/damage_meter_almost_dead.png'
+        ALMOST_DEAD = pg.transform.scale(pg.image.load(almost_dead_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+
+        hp_bar_sprite = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
+        HP_BAR = pg.transform.scale(pg.image.load(hp_bar_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+
     def __init__(self, name, pos, sprite, hp, defense, res):
         Entity.__init__(self, name, pos, sprite)
         self.hp_max = hp

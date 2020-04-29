@@ -1,4 +1,4 @@
-from src.fonts import *
+from src.fonts import fonts
 from src import LoadFromXMLManager as Loader, MenuCreatorManager
 from src.Building import Building
 from src.Shop import Shop
@@ -20,36 +20,21 @@ from src.SaveStateManager import SaveStateManager
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
-LANDING_SPRITE = 'imgs/dungeon_crawl/misc/move.png'
-LANDING = pg.transform.scale(pg.image.load(LANDING_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+LANDING = None
 LANDING_OPACITY = 80
-ATTACKABLE_SPRITE = 'imgs/dungeon_crawl/misc/attackable.png'
-ATTACKABLE = pg.transform.scale(pg.image.load(ATTACKABLE_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+ATTACKABLE = None
 ATTACKABLE_OPACITY = 80
-INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
-INTERACTION = pg.transform.scale(pg.image.load(INTERACTION_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+INTERACTION = None
 INTERACTION_OPACITY = 500
 
-NEW_TURN_SPRITE = 'imgs/interface/new_turn.png'
-NEW_TURN = pg.transform.scale(pg.image.load(NEW_TURN_SPRITE).convert_alpha(), (int(392 * 1.5), int(107 * 1.5)))
-NEW_TURN_POS = (MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
-NEW_TURN_TEXT = TITLE_FONT.render("New turn !", 1, WHITE)
-NEW_TURN_TEXT_POS = (NEW_TURN.get_width() / 2 - NEW_TURN_TEXT.get_width() / 2,
-                     NEW_TURN.get_height() / 2 - NEW_TURN_TEXT.get_height() / 2)
+NEW_TURN = None
+NEW_TURN_POS = None
 
-VICTORY = NEW_TURN.copy()
-VICTORY_POS = NEW_TURN_POS
-VICTORY_TEXT = TITLE_FONT.render("VICTORY !", 1, WHITE)
-VICTORY_TEXT_POS = (VICTORY.get_width() / 2 - VICTORY_TEXT.get_width() / 2,
-                    VICTORY.get_height() / 2 - VICTORY_TEXT.get_height() / 2)
-VICTORY.blit(VICTORY_TEXT, VICTORY_TEXT_POS)
+VICTORY = None
+VICTORY_POS = None
 
-DEFEAT = NEW_TURN.copy()
-DEFEAT_POS = NEW_TURN_POS
-DEFEAT_TEXT = TITLE_FONT.render("DEFEAT !", 1, WHITE)
-DEFEAT_TEXT_POS = (DEFEAT.get_width() / 2 - DEFEAT_TEXT.get_width() / 2,
-                   DEFEAT.get_height() / 2 - DEFEAT_TEXT.get_height() / 2)
-DEFEAT.blit(DEFEAT_TEXT, DEFEAT_TEXT_POS)
+DEFEAT = None
+DEFEAT_POS = None
 
 
 def blit_alpha(target, source, location, opacity):
@@ -80,6 +65,40 @@ class EntityTurn(IntEnum):
 
 
 class Level:
+
+    @staticmethod
+    def init_constant_sprites():
+        global LANDING, ATTACKABLE, INTERACTION, NEW_TURN, NEW_TURN_POS, VICTORY, VICTORY_POS, DEFEAT, DEFEAT_POS
+        landing_sprite = 'imgs/dungeon_crawl/misc/move.png'
+        LANDING = pg.transform.scale(pg.image.load(landing_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        attackable_sprite = 'imgs/dungeon_crawl/misc/attackable.png'
+        ATTACKABLE = pg.transform.scale(pg.image.load(attackable_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        interaction_sprite = 'imgs/dungeon_crawl/misc/landing.png'
+        INTERACTION = pg.transform.scale(pg.image.load(interaction_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+
+        new_turn_sprite = 'imgs/interface/new_turn.png'
+        NEW_TURN = pg.transform.scale(pg.image.load(new_turn_sprite).convert_alpha(), (int(392 * 1.5), int(107 * 1.5)))
+        NEW_TURN_POS = (MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
+
+        new_turn_text = fonts['TITLE_FONT'].render("New turn !", 1, WHITE)
+        new_turn_text_pos = (NEW_TURN.get_width() / 2 - new_turn_text.get_width() / 2,
+                             NEW_TURN.get_height() / 2 - new_turn_text.get_height() / 2)
+        NEW_TURN.blit(new_turn_text, new_turn_text_pos)
+
+        VICTORY = NEW_TURN.copy()
+        VICTORY_POS = NEW_TURN_POS
+        victory_text = fonts['TITLE_FONT'].render("VICTORY !", 1, WHITE)
+        victory_text_pos = (VICTORY.get_width() / 2 - victory_text.get_width() / 2,
+                            VICTORY.get_height() / 2 - victory_text.get_height() / 2)
+        VICTORY.blit(victory_text, victory_text_pos)
+
+        DEFEAT = NEW_TURN.copy()
+        DEFEAT_POS = NEW_TURN_POS
+        defeat_text = fonts['TITLE_FONT'].render("DEFEAT !", 1, WHITE)
+        defeat_text_pos = (DEFEAT.get_width() / 2 - defeat_text.get_width() / 2,
+                           DEFEAT.get_height() / 2 - defeat_text.get_height() / 2)
+        DEFEAT.blit(defeat_text, defeat_text_pos)
+
     def __init__(self, directory, players, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None):
         # Store directory path if player wants to save and exit game
         self.directory = directory
@@ -384,7 +403,7 @@ class Level:
 
                     entries = [[entry_item],
                                [{'type': 'text', 'text': "Item has been added to your inventory",
-                                 'font': ITEM_DESC_FONT}]]
+                                 'font': fonts['ITEM_DESC_FONT']}]]
                     self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                                entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                     # No more menu : turn is finished
@@ -529,7 +548,8 @@ class Level:
             self.background_menus.append((self.active_menu, True))
             self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.png",
                                        [[{'type': 'text', 'text': "Game has been saved",
-                                          'font': ITEM_DESC_FONT}]], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                                          'font': fonts['ITEM_DESC_FONT']}]],
+                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         elif method_id is MainMenu.END_TURN:
             self.active_menu = None
             self.side_turn = self.side_turn.get_next()
@@ -697,8 +717,8 @@ class Level:
             # Update the inventory menu (i.e. first menu backward)
             self.background_menus[len(self.background_menus) - 1] = (new_items_menu, True)
 
-            remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.', 'font': ITEM_DESC_FONT,
-                                    'margin': (20, 0, 20, 0)}]]
+            remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.',
+                                    'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Use an item from the inventory
@@ -725,7 +745,8 @@ class Level:
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
 
-            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': result_msg,
+                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equip an item
@@ -735,27 +756,28 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
 
             # Try to equip the item
-            equipped = self.selected_player.equip(self.selected_item)
+            was_equipped = self.selected_player.equip(self.selected_item)
 
-            result_msg = "Item can't be equipped : you are already wearing an equipment of the same type."
-            if equipped:
-                result_msg = "The item has been equipped"
+            result_msg = "The item has been equipped."
+            if was_equipped:
+                result_msg += " Previous equipped item has been added to your inventory."
 
-                # Item has been removed from inventory
-                items_max = self.selected_player.nb_items_max
+            # Inventory has changed
+            items_max = self.selected_player.nb_items_max
 
-                items = list(self.selected_player.items)
-                free_spaces = items_max - len(items)
-                items += [None] * free_spaces
+            items = list(self.selected_player.items)
+            free_spaces = items_max - len(items)
+            items += [None] * free_spaces
 
-                new_inventory_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
+            new_inventory_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
 
-                # Cancel item menu
-                self.background_menus.pop()
-                # Update the inventory menu (i.e. first menu backward)
-                self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
+            # Cancel item menu
+            self.background_menus.pop()
+            # Update the inventory menu (i.e. first menu backward)
+            self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
 
-            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': result_msg,
+                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Unequip an item
@@ -778,7 +800,7 @@ class Level:
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_equipment_menu, True)
 
-            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Buy an item
@@ -810,7 +832,8 @@ class Level:
                 # Not enough gold to purchase item
                 result_msg = "Not enough gold to buy this item."
 
-            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': result_msg,
+                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Sell an item
@@ -840,7 +863,8 @@ class Level:
                 result_msg = "This item can't be selled !"
                 self.background_menus.append([self.active_menu, False])
 
-            entries = [[{'type': 'text', 'text': result_msg, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': result_msg,
+                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
@@ -915,7 +939,6 @@ class Level:
 
     def new_turn(self):
         self.turn += 1
-        NEW_TURN.blit(NEW_TURN_TEXT, NEW_TURN_TEXT_POS)
         self.animation = Animation([{'sprite': NEW_TURN, 'pos': NEW_TURN_POS}], 60)
 
     def click(self, button, pos):

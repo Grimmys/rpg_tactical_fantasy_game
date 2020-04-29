@@ -3,8 +3,7 @@ from lxml import etree
 
 from src.Entity import Entity
 from src.constants import TILE_SIZE
-
-ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 22)
+from src.fonts import fonts
 
 
 class Fountain(Entity):
@@ -22,10 +21,10 @@ class Fountain(Entity):
                 self.times -= 1
                 if self.times == 0:
                     self.sprite = self.sprite_empty
-            entries.append([{'type': 'text', 'text': result[1], 'font': ITEM_DESC_FONT}])
-            entries.append([{'type': 'text', 'text': str(self.times) + " remaining uses.", 'font': ITEM_DESC_FONT}])
+            entries.append([{'type': 'text', 'text': result[1], 'font': fonts['ITEM_DESC_FONT']}])
+            entries.append([{'type': 'text', 'text': str(self.times) + " remaining uses.", 'font': fonts['ITEM_DESC_FONT']}])
         else:
-            entries.append([{'type': 'text', 'text': 'The fountain is empty...', 'font': ITEM_DESC_FONT}])
+            entries.append([{'type': 'text', 'text': 'The fountain is empty...', 'font': fonts['ITEM_DESC_FONT']}])
         return entries
 
     def set_times(self, times):

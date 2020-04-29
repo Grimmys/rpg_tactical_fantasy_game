@@ -4,11 +4,16 @@ from lxml import etree
 from src.Destroyable import Destroyable
 from src.constants import TILE_SIZE
 
-CRACKED_SPRITE = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
-CRACKED = pg.transform.scale(pg.image.load(CRACKED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+CRACKED = None
 
 
 class Breakable(Destroyable):
+    @staticmethod
+    def init_constant_sprites():
+        global CRACKED
+        cracked_sprite = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
+        CRACKED = pg.transform.scale(pg.image.load(cracked_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+
     def __init__(self, pos, sprite, hp, defense, res):
         Destroyable.__init__(self, "Breakable", pos, sprite, hp, defense, res)
         # Useful in case of saving

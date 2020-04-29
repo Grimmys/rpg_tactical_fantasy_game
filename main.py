@@ -9,17 +9,29 @@ def show_fps(win, inner_clock, font):
 if __name__ == "__main__":
     import pygame as pg
     from src.constants import *
+    import src.fonts as fonts
+    from src.Destroyable import Destroyable
+    from src.Breakable import Breakable
+    from src.Movable import Movable
+    from src.Sidebar import Sidebar
+    from src.Level import Level
+    from src.StartScreen import StartScreen
 
     pg.init()
 
     # Load fonts
-    from src.fonts import *
+    fonts.init_fonts()
 
     # Window parameters
     pg.display.set_caption("In the name of the Five Cats")
     screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
-    from src.StartScreen import StartScreen
+    # Load constant sprites
+    Destroyable.init_constant_sprites()
+    Breakable.init_constant_sprites()
+    Movable.init_constant_sprites()
+    Sidebar.init_constant_sprites()
+    Level.init_constant_sprites()
 
     clock = pg.time.Clock()
 
@@ -40,7 +52,7 @@ if __name__ == "__main__":
                     start_screen.button_down(e.button, e.pos)
         start_screen.update_state()
         start_screen.display()
-        show_fps(screen, clock, FPS_FONT)
+        show_fps(screen, clock, fonts.fonts['FPS_FONT'])
         pg.display.update()
         clock.tick(60)
     raise SystemExit

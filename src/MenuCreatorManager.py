@@ -30,7 +30,7 @@ def create_shop_menu(items, gold):
         entries.append(row)
 
     # Gold at end
-    entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': ITEM_DESC_FONT}]
+    entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
     return InfoBox("Shop - Buying", BuyMenu, "imgs/interface/PopUpMenu.png", entries,
@@ -54,7 +54,7 @@ def create_inventory_menu(items, gold, price=False):
         entries.append(row)
 
     # Gold at end
-    entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': ITEM_DESC_FONT}]
+    entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
     title = "Shop - Selling" if price else "Inventory"
@@ -96,17 +96,17 @@ def determine_hp_color(hp, hp_max):
 
 
 def create_status_menu(player):
-    entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': ITALIC_ITEM_FONT},
+    entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_name()}],
-               [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': ITALIC_ITEM_FONT},
+               [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_classes()}],
-               [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': ITALIC_ITEM_FONT},
+               [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_race()}],
-               [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': ITALIC_ITEM_FONT},
+               [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': str(player.lvl)}],
-               [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': ITALIC_ITEM_FONT},
+               [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': str(player.xp) + ' / ' + str(player.xp_next_lvl)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': MENU_SUB_TITLE_FONT,
+               [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
                  'margin': (10, 0, 10, 0)}],
                [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
                 {'type': 'text', 'text': str(player.hp) + ' / ' + str(player.hp_max),
@@ -119,7 +119,7 @@ def create_status_menu(player):
                 {'type': 'text', 'text': str(player.defense)}],
                [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
                 {'type': 'text', 'text': str(player.res)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': MENU_SUB_TITLE_FONT,
+               [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
                  'margin': (10, 0, 10, 0)}]]
 
     alts = player.alterations
@@ -267,14 +267,14 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
 
 
 def create_item_desc_stat(stat_name, stat_value):
-    return [{'type': 'text', 'text': stat_name + ' : ', 'font': ITEM_DESC_FONT, 'margin': (0, 0, 0, 200)},
-            {'type': 'text', 'text': stat_value, 'font': ITEM_DESC_FONT, 'margin': (0, 200, 0, 0)}]
+    return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 0, 200)},
+            {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 200, 0, 0)}]
 
 
 def create_item_desc_menu(item):
     item_title = item.get_formatted_name()
 
-    entries = [[{'type': 'text', 'text': item.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+    entries = [[{'type': 'text', 'text': item.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
     if isinstance(item, Equipment):
         if item.atk > 0:
@@ -300,8 +300,8 @@ def create_item_desc_menu(item):
 
 def create_alteration_info_menu(alteration):
     turns_left = alteration.get_turns_left()
-    entries = [[{'type': 'text', 'text': alteration.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}],
-               [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': ITEM_DESC_FONT,
+    entries = [[{'type': 'text', 'text': alteration.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
+               [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
                  'margin': (0, 0, 10, 0), 'color': ORANGE}]]
     formatted_name = alteration.get_formatted_name()
 

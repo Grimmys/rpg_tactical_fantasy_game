@@ -47,7 +47,7 @@ class InfoBox:
                     entry['margin'] = (0, 0, 0, 0)
 
                 if entry['type'] == 'button':
-                    name = ITEM_FONT.render(entry['name'], 1, WHITE)
+                    name = fonts['ITEM_FONT'].render(entry['name'], 1, WHITE)
                     sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
                     sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
                                        sprite.get_height() // 2 - name.get_height() // 2))
@@ -60,7 +60,7 @@ class InfoBox:
                     element.append(Button(entry['id'], entry['args'], BUTTON_SIZE, (0, 0), sprite, sprite_hover,
                                           entry['margin']))
                 elif entry['type'] == 'parameter_button':
-                    name = ITEM_FONT.render(entry['name'] + ' ' + entry['values'][entry['current_value_ind']]['label'],
+                    name = fonts['ITEM_FONT'].render(entry['name'] + ' ' + entry['values'][entry['current_value_ind']]['label'],
                                             1, WHITE)
                     base_sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
                     sprite = base_sprite.copy()
@@ -74,8 +74,8 @@ class InfoBox:
                                                  entry['margin'], entry['values'], entry['current_value_ind'],
                                                  entry['name'], base_sprite, base_sprite_hover))
                 elif entry['type'] == 'text_button':
-                    name = ITEM_FONT.render(entry['name'], 1, entry['color'])
-                    name_hover = ITEM_FONT.render(entry['name'], 1, entry['color_hover'])
+                    name = fonts['ITEM_FONT'].render(entry['name'], 1, entry['color'])
+                    name_hover = fonts['ITEM_FONT'].render(entry['name'], 1, entry['color_hover'])
                     if 'obj' not in entry:
                         entry['obj'] = None
                     element.append(Button(entry['id'], [], name.get_size(), (0, 0), name, name_hover, entry['margin'],
@@ -93,13 +93,13 @@ class InfoBox:
                                               entry['index'], entry['price'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
-                        entry['font'] = ITEM_FONT
+                        entry['font'] = fonts['ITEM_FONT']
                     if 'color' not in entry:
                         entry['color'] = WHITE
                     element.append(TextElement(entry['text'], width, (0, 0), entry['font'],
                                                entry['margin'], entry['color']))
             elements.append(element)
-        elements.insert(0, [TextElement(self.name, width, (0, 0), MENU_TITLE_FONT, (len(entries) + 5, 0, 0, 0),
+        elements.insert(0, [TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'], (len(entries) + 5, 0, 0, 0),
                                         self.title_color)])
         return elements
 
@@ -119,7 +119,7 @@ class InfoBox:
             height += close_button_height
 
             # Button sprites
-            name = ITEM_FONT.render("Close", 1, WHITE)
+            name = fonts['ITEM_FONT'].render("Close", 1, WHITE)
             sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), CLOSE_BUTTON_SIZE)
             sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
                                sprite.get_height() // 2 - name.get_height() // 2))

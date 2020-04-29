@@ -1,4 +1,4 @@
-from src.fonts import ITEM_FONT
+from src.fonts import fonts
 from src.constants import *
 from src.Button import Button
 
@@ -15,7 +15,7 @@ class DynamicButton(Button):
         self.args.append(ANIMATION_SPEED)
 
     def update_sprite(self):
-        name = ITEM_FONT.render(self.base_title + ' ' + self.values[self.current_value_ind]['label'], 1, WHITE)
+        name = fonts['ITEM_FONT'].render(self.base_title + ' ' + self.values[self.current_value_ind]['label'], 1, WHITE)
 
         tmp_sprite = self.base_sprite.copy()
         tmp_sprite.blit(name, (tmp_sprite.get_width() // 2 - name.get_width() // 2,

@@ -1,7 +1,7 @@
 from lxml import etree
 
 from src.constants import *
-from src.fonts import MENU_SUB_TITLE_FONT
+from src.fonts import fonts
 from src import LoadFromXMLManager
 from src.Level import Level, Status
 from src.Player import Player
@@ -253,7 +253,7 @@ class StartScreen:
             self.background_menus.append([self.active_menu, True])
 
             name = "Load Game"
-            entries = [[{'type': 'text', 'text': "No saved game.", 'font': MENU_SUB_TITLE_FONT}]]
+            entries = [[{'type': 'text', 'text': "No saved game.", 'font': fonts['MENU_SUB_TITLE_FONT']}]]
             width = self.screen.get_width() // 2
             self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                        entries, width, close_button=1)

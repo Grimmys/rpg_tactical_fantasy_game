@@ -4,9 +4,6 @@ from enum import IntEnum
 from src.Character import Character
 from src.constants import *
 
-SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
-SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-
 
 class PlayerState(IntEnum):
     WAITING_SELECTION = 0
@@ -42,7 +39,7 @@ class Player(Character):
     def display(self, screen):
         Character.display(self, screen)
         if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
-            screen.blit(SELECTED_DISPLAY, self.pos)
+            screen.blit(Player.SELECTED_DISPLAY, self.pos)
 
     @property
     def selected(self):

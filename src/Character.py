@@ -3,9 +3,7 @@ import random as rd
 
 from src.Movable import Movable
 from src.Destroyable import DamageKind
-from src.constants import *
-
-ITEM_DESC_FONT = pg.font.Font('fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf', 24)
+from src.fonts import fonts
 
 
 class Character(Movable):
@@ -22,7 +20,7 @@ class Character(Movable):
     def talk(self, actor):
         entries = []
         for s in self.dialog:
-            entry = [{'type': 'text', 'text': s, 'font': ITEM_DESC_FONT}]
+            entry = [{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
             entries.append(entry)
         return entries
 
@@ -93,12 +91,16 @@ class Character(Movable):
         return self.race.capitalize()
 
     def equip(self, eq):
+        self.remove_item(eq)
+        # Boolean to know if there was an equipped item at the slot taken by eq
+        was_filled = False
         for equip in self.equipments:
             if eq.body_part == equip.body_part:
-                return False
+                self.remove_equipment(equip)
+                self.set_item(equip)
+                was_filled = True
         self.equipments.append(eq)
-        self.remove_item(eq)
-        return True
+        return was_filled
 
     def unequip(self, eq):
         # If the item has been appended to the inventory

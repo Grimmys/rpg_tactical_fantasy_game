@@ -5,9 +5,6 @@ from enum import IntEnum, Enum, auto
 TIMER = 60
 NB_ITEMS_MAX = 8
 
-SELECTED_SPRITE = 'imgs/dungeon_crawl/misc/cursor.png'
-SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-
 
 class EntityState(IntEnum):
     HAVE_TO_ACT = 0
@@ -30,8 +27,15 @@ class EntityStrategy(Enum):
 
 
 class Movable(Destroyable):
+    SELECTED_DISPLAY = None
     XP_NEXT_LVL_BASE = 15
     move_speed = ANIMATION_SPEED
+
+    @staticmethod
+    def init_constant_sprites():
+        selected_sprite = 'imgs/dungeon_crawl/misc/cursor.png'
+        Movable.SELECTED_DISPLAY = pg.transform.scale(pg.image.load(selected_sprite).convert_alpha(),
+                                                      (TILE_SIZE, TILE_SIZE))
 
     def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1,
                  compl_sprite=None):
@@ -58,7 +62,7 @@ class Movable(Destroyable):
     def display(self, screen):
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
-            screen.blit(SELECTED_DISPLAY, self.pos)
+            screen.blit(Movable.SELECTED_DISPLAY, self.pos)
 
     def end_turn(self):
         self.state = EntityState.FINISHED
