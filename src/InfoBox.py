@@ -28,7 +28,7 @@ class InfoBox:
         self.entries = entries
 
         self.elements = self.init_elements(self.entries, width)
-        height = self.determine_sizepos(close_button)
+        height = self.determine_height(close_button)
         self.size = (width, height)
         self.pos = self.determine_pos()
 
@@ -103,7 +103,7 @@ class InfoBox:
                                         self.title_color)])
         return elements
 
-    def determine_sizepos(self, close_button):
+    def determine_height(self, close_button):
         # Margin to be add at begin and at end
         height = MARGIN_BOX * 2
         for row in self.elements:
@@ -158,6 +158,8 @@ class InfoBox:
 
     def determine_elements_pos(self):
         y = self.pos[1] + MARGIN_BOX
+        # Memorize mouse position in case it is over a button
+        mouse_pos = pg.mouse.get_pos()
         for row in self.elements:
             base_x = self.pos[0]
             nb_elements = len(row) - 1
@@ -166,6 +168,8 @@ class InfoBox:
                 base_x += (self.size[0] // (2 * nb_elements)) * i
                 x = base_x - el.get_width() // 2
                 el.pos = (x, y + el.get_margin_top())
+                if isinstance(el, Button):
+                    el.set_hover(el.get_rect().collidepoint(mouse_pos))
                 i += 1
             y += row[0]
 
@@ -177,7 +181,6 @@ class InfoBox:
             self.pos = (win_size[0] // 2 - self.size[0] // 2, win_size[1] // 2 - self.size[1] // 2)
             win.blit(self.sprite, self.pos)
             self.determine_elements_pos()
-            self.pos = []
 
         for row in self.elements:
             for el in row[1:]:

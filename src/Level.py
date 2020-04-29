@@ -658,7 +658,6 @@ class Level:
             item = args[1]
 
             self.selected_item = item
-
             self.background_menus.append((self.active_menu, True))
             self.active_menu = MenuCreatorManager.create_item_menu(item_button_pos, item)
 
@@ -669,7 +668,6 @@ class Level:
             item = args[1]
 
             self.selected_item = item
-
             self.background_menus.append([self.active_menu, True])
             self.active_menu = MenuCreatorManager.create_item_menu(item_button_pos, item, True)
 

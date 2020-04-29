@@ -9,11 +9,11 @@ SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alp
 
 
 class PlayerState(IntEnum):
-    WAITING_SELECTION = 0,
-    WAITING_MOVE = 1,
-    ON_MOVE = 2,
-    WAITING_POST_ACTION = 3,
-    WAITING_TARGET = 4,
+    WAITING_SELECTION = 0
+    WAITING_MOVE = 1
+    ON_MOVE = 2
+    WAITING_POST_ACTION = 3
+    WAITING_TARGET = 4
     FINISHED = 5
 
 

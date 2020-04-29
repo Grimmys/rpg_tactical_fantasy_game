@@ -31,7 +31,7 @@ class TestStartScreen(unittest.TestCase):
 
     @staticmethod
     def generate_position(start_pos, end_pos):
-        # Generate random pos on load game button
+        # Generate random pos in a rect having start_pos as top left corner, and end_pos as bottom right corner
         pos = (randrange(start_pos[0], end_pos[0] + 1),
                randrange(start_pos[1], end_pos[1] + 1))
         # Print pos in case of test failure
@@ -127,7 +127,7 @@ class TestStartScreen(unittest.TestCase):
             for button in self.buttons:
                 if button.collidepoint(pos):
                     valid_pos = False
-        # Print pos in case a test failure
+        # Print pos in case of a test failure
         print(pos)
 
         self.start_screen.click(LEFT_BUTTON, pos)
@@ -139,8 +139,51 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
     def test_right_click(self):
-        # TODO
-        pass
+        # Make a copy of the current window
+        screen = self.start_screen.screen.copy()
+        old_level = self.start_screen.level
+        old_level_id = self.start_screen.level_id
+        old_active_menu = self.start_screen.active_menu
+
+        # Generate random pos on new game button
+        pos = self.generate_position(NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(RIGHT_BUTTON, pos)
+
+        # Verify state is unchanged
+        self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
+        self.assertEqual(self.start_screen.level, old_level)
+        self.assertEqual(self.start_screen.level_id, old_level_id)
+        self.assertEqual(self.start_screen.active_menu, old_active_menu)
+
+        # Generate random pos on load game button
+        pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(RIGHT_BUTTON, pos)
+
+        # Verify state is unchanged
+        self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
+        self.assertEqual(self.start_screen.level, old_level)
+        self.assertEqual(self.start_screen.level_id, old_level_id)
+        self.assertEqual(self.start_screen.active_menu, old_active_menu)
+
+        # Generate random pos on options button
+        pos = self.generate_position(OPTIONS_BUTTON_POS, OPTIONS_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(RIGHT_BUTTON, pos)
+
+        # Verify state is unchanged
+        self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
+        self.assertEqual(self.start_screen.level, old_level)
+        self.assertEqual(self.start_screen.level_id, old_level_id)
+        self.assertEqual(self.start_screen.active_menu, old_active_menu)
+
+        # Generate random pos on exit game button
+        pos = self.generate_position(EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(RIGHT_BUTTON, pos)
+
+        # Verify state is unchanged
+        self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
+        self.assertEqual(self.start_screen.level, old_level)
+        self.assertEqual(self.start_screen.level_id, old_level_id)
+        self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
 
 if __name__ == '__main__':

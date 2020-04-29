@@ -249,17 +249,14 @@ class StartScreen:
                 save.close()
                 return
         except FileNotFoundError:
-            print("Error : Impossible to save game")
-            raise SystemError
+            # No saved game
+            self.background_menus.append([self.active_menu, True])
 
-        # No saved game
-        self.background_menus.append([self.active_menu, True])
-
-        name = "Load Game"
-        entries = [[{'type': 'text', 'text': "No saved game.", 'font': MENU_SUB_TITLE_FONT}]]
-        width = self.screen.get_width() // 2
-        self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
-                                   entries, width, close_button=1)
+            name = "Load Game"
+            entries = [[{'type': 'text', 'text': "No saved game.", 'font': MENU_SUB_TITLE_FONT}]]
+            width = self.screen.get_width() // 2
+            self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
+                                       entries, width, close_button=1)
 
     def options_menu(self):
         self.background_menus.append([self.active_menu, False])

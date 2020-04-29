@@ -33,4 +33,4 @@ class BoxElement:
         return pg.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
 
     def display(self, win):
-        win.blit(self.content, self.pos)
+        win.blit(self.content, (self.pos[0] + self.margin['LEFT'], self.pos[1]))

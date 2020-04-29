@@ -10,21 +10,21 @@ SELECTED_DISPLAY = pg.transform.scale(pg.image.load(SELECTED_SPRITE).convert_alp
 
 
 class EntityState(IntEnum):
-    HAVE_TO_ACT = 0,
-    ON_MOVE = 1,
-    HAVE_TO_ATTACK = 2,
+    HAVE_TO_ACT = 0
+    ON_MOVE = 1
+    HAVE_TO_ATTACK = 2
     FINISHED = 3
 
 
 class EntityStrategy(Enum):
     # Entity will never move, just attack if possible
-    STATIC = auto(),
+    STATIC = auto()
     # Entity will react to attacks, and pursue opponent if it's trying to flee
-    PASSIVE = auto(),
+    PASSIVE = auto()
     # Entity will only move if an opponent is at reach
-    SEMI_ACTIVE = auto(),
+    SEMI_ACTIVE = auto()
     # Entity always move to get closer from opponents
-    ACTIVE = auto(),
+    ACTIVE = auto()
     # Entity is controlled by an human player
     MANUAL = auto()
 

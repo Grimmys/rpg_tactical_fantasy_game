@@ -8,6 +8,7 @@ from src.Menus import *
 from src.Mission import MissionType
 from src.Player import Player
 from src.Portal import Portal
+from src.Weapon import Weapon
 from src.fonts import *
 from src.constants import *
 
@@ -65,7 +66,7 @@ def create_inventory_menu(items, gold, price=False):
 
 def create_equipment_menu(equipments):
     entries = []
-    body_parts = [['head'], ['body'], ['left_hand', 'right_hand'], ['feet']]
+    body_parts = [['head'], ['body'], ['right_hand', 'left_hand'], ['feet']]
     for part in body_parts:
         row = []
         for member in part:
@@ -265,11 +266,35 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
                    ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
-def create_item_desc_menu(item):
-    entries = [[{'type': 'text', 'text': item.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
-    formatted_item_name = item.get_formatted_name()
+def create_item_desc_stat(stat_name, stat_value):
+    return [{'type': 'text', 'text': stat_name + ' : ', 'font': ITEM_DESC_FONT, 'margin': (0, 0, 0, 200)},
+            {'type': 'text', 'text': stat_value, 'font': ITEM_DESC_FONT, 'margin': (0, 200, 0, 0)}]
 
-    return InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+
+def create_item_desc_menu(item):
+    item_title = item.get_formatted_name()
+
+    entries = [[{'type': 'text', 'text': item.desc, 'font': ITEM_DESC_FONT, 'margin': (20, 0, 20, 0)}]]
+
+    if isinstance(item, Equipment):
+        if item.atk > 0:
+            entries.append(create_item_desc_stat('POWER', str(item.atk)))
+        if item.defense > 0:
+            entries.append(create_item_desc_stat('DEFENSE', str(item.defense)))
+        if item.res > 0:
+            entries.append(create_item_desc_stat('MAGICAL RES', str(item.res)))
+        if isinstance(item, Weapon):
+            # Compute reach
+            reach_txt = ""
+            for nb in item.reach:
+                reach_txt += str(nb) + ', '
+            reach_txt = reach_txt[:len(reach_txt) - 2]
+            entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
+            entries.append(create_item_desc_stat('REACH', reach_txt))
+            entries.append(create_item_desc_stat('DURABILITY', str(item.durability) + ' / ' + str(item.durability_max)))
+        entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
+
+    return InfoBox(item_title, "", "imgs/interface/PopUpMenu.png", entries,
                    ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 

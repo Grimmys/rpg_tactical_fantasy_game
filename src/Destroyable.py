@@ -20,8 +20,8 @@ HP_BAR = pg.transform.scale(pg.image.load(HP_BAR_SPRITE).convert_alpha(), (TILE_
 
 
 class DamageKind(Enum):
-    PHYSICAL = auto(),
-    SPIRITUAL = auto()
+    PHYSICAL = 'Physical'
+    SPIRITUAL = 'Spiritual'
 
 
 class Destroyable(Entity):
