@@ -299,11 +299,47 @@ def create_item_desc_menu(item):
 
 
 def create_alteration_info_menu(alteration):
+    formatted_name = alteration.get_formatted_name()
+
     turns_left = alteration.get_turns_left()
     entries = [[{'type': 'text', 'text': alteration.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
                  'margin': (0, 0, 10, 0), 'color': ORANGE}]]
-    formatted_name = alteration.get_formatted_name()
 
     return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
+
+def create_foe_menu(foe):
+    formatted_name = foe.get_formatted_name()
+
+    entries = [[],
+               [{'type': 'text', 'color': WHITE, 'text': 'Level :', 'margin': (10, 0, 0, 0)},
+                {'type': 'text', 'text': str(foe.lvl), 'margin': (10, 0, 0, 0)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
+                 'margin': (10, 0, 10, 0)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
+                {'type': 'text', 'text': str(foe.hp) + ' / ' + str(foe.hp_max),
+                 'color': determine_hp_color(foe.hp, foe.hp_max)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
+                {'type': 'text', 'text': str(foe.max_moves)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
+                {'type': 'text', 'text': str(foe.strength)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},
+                {'type': 'text', 'text': str(foe.defense)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
+                {'type': 'text', 'text': str(foe.res)}],
+               [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
+                 'margin': (10, 0, 10, 0)}]]
+
+    alts = foe.alterations
+
+    if not alts:
+        entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
+
+    for alt in alts:
+        entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
+                         'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
+
+    return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+                   STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)

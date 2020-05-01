@@ -941,102 +941,113 @@ class Level:
         self.turn += 1
         self.animation = Animation([{'sprite': NEW_TURN, 'pos': NEW_TURN_POS}], 60)
 
+    def left_click(self, pos):
+        if self.active_menu:
+            self.execute_action(self.active_menu.type, self.active_menu.click(pos))
+            return
+
+        if self.selected_player is not None:
+            if self.game_phase is not Status.INITIALIZATION:
+                if self.possible_moves:
+                    # Player is waiting to move
+                    for move in self.possible_moves:
+                        if pg.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                            path = self.determine_path_to(move, self.possible_moves)
+                            self.selected_player.set_move(path)
+                            self.possible_moves = {}
+                            self.possible_attacks = []
+                            return
+                    # Player click somewhere that is not a valid pos
+                    self.selected_player.selected = False
+                    self.selected_player = None
+                elif self.possible_attacks:
+                    # Player is waiting to attack
+                    for attack in self.possible_attacks:
+                        if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                            ent = self.get_entity_on_case(attack)
+                            attack_kind = self.selected_player.get_weapon().attack_kind if \
+                                self.selected_player.get_weapon() is not None else DamageKind.PHYSICAL
+                            self.duel(self.selected_player, ent, attack_kind)
+                            # Turn is finished
+                            self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
+                            return
+                elif self.possible_interactions:
+                    # Player is waiting to interact
+                    for interact in self.possible_interactions:
+                        if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                            ent = self.get_entity_on_case(interact)
+                            self.interact(self.selected_player, ent, interact)
+                            return
+            else:
+                # Initialization phase : player try to change the place of the selected character
+                for tile in self.possible_placements:
+                    if pg.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                        # Test if a character is on the tile, in this case, characters are swapped
+                        ent = self.get_entity_on_case(tile)
+                        if ent:
+                            ent.set_initial_pos(self.selected_player.pos)
+
+                        self.selected_player.set_initial_pos(tile)
+                        return
+        else:
+            for player in self.players:
+                if player.is_on_pos(pos) and not player.turn_is_finished():
+                    player.selected = True
+                    self.selected_player = player
+                    self.possible_moves = self.get_possible_moves(player.pos, player.max_moves)
+                    w = self.selected_player.get_weapon()
+                    w_range = [1] if w is None else w.reach
+                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
+                    return
+            for foe in self.foes:
+                if foe.is_on_pos(pos):
+                    self.active_menu = MenuCreatorManager.create_foe_menu(foe)
+                    return
+
+            is_initialization = self.game_phase is Status.INITIALIZATION
+            self.active_menu = MenuCreatorManager.create_main_menu(is_initialization, pos)
+
+    def right_click(self):
+        if self.selected_player:
+            if self.possible_moves:
+                # Player was waiting to move
+                self.selected_player.selected = False
+                self.selected_player = None
+                self.possible_moves = {}
+            elif self.active_menu is not None:
+                self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
+                # Test if player was on character's main menu, in this case, current move should be cancelled
+                if self.active_menu is None:
+                    self.selected_player.cancel_move()
+                    self.selected_player.selected = False
+                    self.selected_player = None
+                    self.possible_moves = {}
+            # Want to cancel an interaction (not already performed)
+            elif self.possible_interactions or self.possible_attacks:
+                self.selected_player.cancel_interaction()
+                self.possible_interactions = []
+                self.possible_attacks = []
+                self.active_menu = self.background_menus.pop()[0]
+            return
+        # Test if player is on main menu
+        if self.active_menu is not None:
+            self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
+        if self.watched_ent:
+            self.watched_ent = None
+            self.possible_moves = {}
+            self.possible_attacks = []
+
     def click(self, button, pos):
         # No event if there is an animation or it is not player turn
-        if not self.animation and self.side_turn is EntityTurn.PLAYER:
-            # 1 is equals to left button
-            if button == 1:
-                if self.active_menu:
-                    self.execute_action(self.active_menu.type, self.active_menu.click(pos))
-                else:
-                    if self.selected_player is not None:
-                        if self.game_phase is not Status.INITIALIZATION:
-                            if self.possible_moves:
-                                # Player is waiting to move
-                                for move in self.possible_moves:
-                                    if pg.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                        path = self.determine_path_to(move, self.possible_moves)
-                                        self.selected_player.set_move(path)
-                                        self.possible_moves = {}
-                                        self.possible_attacks = []
-                                        return
-                                # Player click somewhere that is not a valid pos
-                                self.selected_player.selected = False
-                                self.selected_player = None
-                            elif self.possible_attacks:
-                                # Player is waiting to attack
-                                for attack in self.possible_attacks:
-                                    if pg.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                        ent = self.get_entity_on_case(attack)
-                                        attack_kind = self.selected_player.get_weapon().attack_kind if \
-                                            self.selected_player.get_weapon() is not None else DamageKind.PHYSICAL
-                                        self.duel(self.selected_player, ent, attack_kind)
-                                        # Turn is finished
-                                        self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
-                                        return
-                            elif self.possible_interactions:
-                                # Player is waiting to interact
-                                for interact in self.possible_interactions:
-                                    if pg.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                        ent = self.get_entity_on_case(interact)
-                                        self.interact(self.selected_player, ent, interact)
-                                        return
-                        else:
-                            # Initialization phase : player try to change the place of the selected character
-                            for tile in self.possible_placements:
-                                if pg.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
-                                    # Test if a character is on the tile, in this case, characters are swapped
-                                    ent = self.get_entity_on_case(tile)
-                                    if ent:
-                                        ent.set_initial_pos(self.selected_player.pos)
+        if self.animation or self.side_turn is not EntityTurn.PLAYER:
+            return
 
-                                    self.selected_player.set_initial_pos(tile)
-                                    return
-                    else:
-                        for player in self.players:
-                            if player.is_on_pos(pos) and not player.turn_is_finished():
-                                if self.selected_player:
-                                    self.selected_player.selected = False
-                                player.selected = True
-                                self.selected_player = player
-                                self.possible_moves = self.get_possible_moves(player.pos, player.max_moves)
-                                w = self.selected_player.get_weapon()
-                                w_range = [1] if w is None else w.reach
-                                self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
-                                return
-                        is_initialization = self.game_phase is Status.INITIALIZATION
-                        self.active_menu = MenuCreatorManager.create_main_menu(is_initialization, pos)
-                    return
-            # 3 is equals to right button
-            if button == 3:
-                if self.selected_player:
-                    if self.possible_moves:
-                        # Player was waiting to move
-                        self.selected_player.selected = False
-                        self.selected_player = None
-                        self.possible_moves = {}
-                    elif self.active_menu is not None:
-                        self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
-                        # Test if player was on character's main menu, in this case, current move should be cancelled
-                        if self.active_menu is None:
-                            self.selected_player.cancel_move()
-                            self.selected_player.selected = False
-                            self.selected_player = None
-                            self.possible_moves = {}
-                    # Want to cancel an interaction (not already performed)
-                    elif self.possible_interactions or self.possible_attacks:
-                        self.selected_player.cancel_interaction()
-                        self.possible_interactions = []
-                        self.possible_attacks = []
-                        self.active_menu = self.background_menus.pop()[0]
-                    return
-                # Test if player is on main menu
-                if self.active_menu is not None:
-                    self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
-                if self.watched_ent:
-                    self.watched_ent = None
-                    self.possible_moves = {}
-                    self.possible_attacks = []
+        # 1 is equals to left button
+        if button == 1:
+            self.left_click(pos)
+        # 3 is equals to right button
+        elif button == 3:
+            self.right_click()
 
     def button_down(self, button, pos):
         # 3 is equals to right button
