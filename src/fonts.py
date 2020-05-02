@@ -1,10 +1,12 @@
 import pygame as pg
 
 fonts = {
+    'BUTTON_FONT': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',
+                    'size': 16},
     'ITEM_FONT': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',
-                  'size': 16},
+                  'size': 18},
     'ITEM_FONT_HOVER': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',
-                        'size': 17},
+                        'size': 19},
     'ITEM_FONT_STRONG': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',
                          'size': 18},
     'MISSION_FONT': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',

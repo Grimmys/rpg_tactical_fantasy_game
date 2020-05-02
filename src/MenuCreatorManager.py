@@ -70,16 +70,54 @@ def create_equipment_menu(equipments):
     for part in body_parts:
         row = []
         for member in part:
-            entry = {'type': 'item_button', 'item': None, 'index': -1, 'subtype': 'equip',
-                     'id': InventoryMenu.INTERAC_ITEM}
+            entry = {'type': 'item_button', 'item': None, 'index': -1,
+                     'id': EquipmentMenu.INTERAC_EQUIPMENT}
             for i, eq in enumerate(equipments):
                 if member == eq.body_part:
-                    entry = {'type': 'item_button', 'item': eq, 'index': i, 'subtype': 'equip',
-                             'id': InventoryMenu.INTERAC_ITEM}
+                    entry = {'type': 'item_button', 'item': eq, 'index': i,
+                             'id': EquipmentMenu.INTERAC_EQUIPMENT}
             row.append(entry)
         entries.append(row)
     return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
-                   EQUIPMENT_MENU_WIDTH, close_button=True)
+                   EQUIPMENT_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
+
+def create_trade_menu(first_player, second_player):
+    # Extract data from players
+    items_max = first_player.nb_items_max
+    items_first = list(first_player.items)
+    free_spaces = items_max - len(items_first)
+    items_first += [None] * free_spaces
+
+    items_max = first_player.nb_items_max
+    items_second = list(second_player.items)
+    free_spaces = items_max - len(items_second)
+    items_second += [None] * free_spaces
+
+    entries = []
+    method_id = TradeMenu.INTERAC_ITEM
+    # We assume that first player and second player items lists have the same size and are even
+    for i in range(len(items_first) // 2):
+        row = []
+        for owner_i, items in enumerate([items_first, items_second]):
+            for j in range(2):
+                entry = {'type': 'item_button', 'item': items[i * 2 + j], 'index': i, 'subtype': 'trade',
+                         'id': method_id, 'args': [first_player, second_player, owner_i]}
+                row.append(entry)
+        entries.append(row)
+
+    # Gold at end
+    entry = [{'type': 'text', 'text': first_player.get_formatted_name() + '\'s gold : ' + str(first_player.gold),
+              'font': fonts['ITEM_DESC_FONT']},
+             {'type': 'text', 'text': second_player.get_formatted_name() + '\'s gold : ' + str(second_player.gold),
+             'font': fonts['ITEM_DESC_FONT']}]
+    entries.append(entry)
+
+    title = "Trade"
+    menu_id = TradeMenu
+    title_color = WHITE
+    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.png", entries,
+                   TRADE_MENU_WIDTH, close_button=UNFINAL_ACTION, sep=True, title_color=title_color)
 
 
 def determine_hp_color(hp, hp_max):
@@ -123,10 +161,8 @@ def create_status_menu(player):
                  'margin': (10, 0, 10, 0)}]]
 
     alts = player.alterations
-
     if not alts:
         entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
-
     for alt in alts:
         entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
                          'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
@@ -145,6 +181,7 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
     portal_option = False
     fountain_option = False
     talk_option = False
+    trade_option = False
 
     case_pos = (player.pos[0], player.pos[1] - TILE_SIZE)
     if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
@@ -155,18 +192,26 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
 
     for ent in interact_entities:
         if abs(ent.pos[0] - player.pos[0]) + abs(ent.pos[1] - player.pos[1]) == TILE_SIZE:
-            if isinstance(ent, Chest) and not ent.opened and not chest_option:
-                entries.insert(0, [{'name': 'Open', 'id': CharacterMenu.OPEN_CHEST}])
-                chest_option = True
-            if isinstance(ent, Portal) and not portal_option:
-                entries.insert(0, [{'name': 'Use Portal', 'id': CharacterMenu.USE_PORTAL}])
-                portal_option = True
-            if isinstance(ent, Fountain) and not fountain_option:
-                entries.insert(0, [{'name': 'Drink', 'id': CharacterMenu.DRINK}])
-                fountain_option = True
-            if isinstance(ent, Character) and not isinstance(ent, Player) and not talk_option:
-                entries.insert(0, [{'name': 'Talk', 'id': CharacterMenu.TALK}])
-                talk_option = True
+            if isinstance(ent, Player):
+                if not trade_option:
+                    entries.insert(0, [{'name': 'Trade', 'id': CharacterMenu.TRADE}])
+                    trade_option = True
+            elif isinstance(ent, Chest):
+                if not ent.opened and not chest_option:
+                    entries.insert(0, [{'name': 'Open', 'id': CharacterMenu.OPEN_CHEST}])
+                    chest_option = True
+            elif isinstance(ent, Portal):
+                if not portal_option:
+                    entries.insert(0, [{'name': 'Use Portal', 'id': CharacterMenu.USE_PORTAL}])
+                    portal_option = True
+            elif isinstance(ent, Fountain):
+                if not fountain_option:
+                    entries.insert(0, [{'name': 'Drink', 'id': CharacterMenu.DRINK}])
+                    fountain_option = True
+            elif isinstance(ent, Character):
+                if not talk_option:
+                    entries.insert(0, [{'name': 'Talk', 'id': CharacterMenu.TALK}])
+                    talk_option = True
 
     # Check if player is on mission position
     for mission in missions:
@@ -237,6 +282,25 @@ def create_item_sell_menu(item_button_pos, item, price):
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+
+
+def create_trade_item_menu(item_button_pos, item, players):
+    entries = [
+        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
+        [{'name': 'Trade', 'id': ItemMenu.TRADE_ITEM, 'args': players}]
+    ]
+    formatted_item_name = item.get_formatted_name()
+
+    for row in entries:
+        for entry in row:
+            entry['type'] = 'button'
+
+    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                        ITEM_BUTTON_SIZE[1])
+
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+                   entries,
+                   ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
 def create_item_menu(item_button_pos, item, is_equipped=False):

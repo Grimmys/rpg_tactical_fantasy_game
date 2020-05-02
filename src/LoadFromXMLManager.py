@@ -21,35 +21,35 @@ foes_infos = {}
 fountains_infos = {}
 
 
-def load_placements(positions):
+def load_placements(positions, gap_x, gap_y):
     placements = []
     for coords in positions:
-        x = int(coords.find('x').text) * TILE_SIZE
-        y = int(coords.find('y').text) * TILE_SIZE
+        x = int(coords.find('x').text) * TILE_SIZE + gap_x
+        y = int(coords.find('y').text) * TILE_SIZE + gap_y
         pos = (x, y)
         placements.append(pos)
     return placements
 
 
-def load_entities(ent_nature, data, from_save):
+def load_entities(ent_nature, data, from_save, gap_x, gap_y):
     collection = []
 
     for el in data:
         if ent_nature is Character:
-            ent = load_ally(el, from_save)
+            ent = load_ally(el, from_save, gap_x, gap_y)
         elif ent_nature is Foe:
-            ent = load_foe(el, from_save)
+            ent = load_foe(el, from_save, gap_x, gap_y)
         elif ent_nature is Chest:
-            ent = load_chest(el, from_save)
+            ent = load_chest(el, from_save, gap_x, gap_y)
         elif ent_nature is Building:
-            ent = load_building(el, from_save)
+            ent = load_building(el, from_save, gap_x, gap_y)
         elif ent_nature is Portal:
-            ent, ent2 = load_portal(el)
+            ent, ent2 = load_portal(el, gap_x, gap_y)
             collection.append(ent2)
         elif ent_nature is Fountain:
-            ent = load_fountain(el, from_save)
+            ent = load_fountain(el, from_save, gap_x, gap_y)
         elif ent_nature is Breakable:
-            ent = load_breakable(el)
+            ent = load_breakable(el, gap_x, gap_y)
         else:
             print("Unrecognized nature : " + str(ent_nature))
             ent = None
@@ -57,10 +57,10 @@ def load_entities(ent_nature, data, from_save):
     return collection
 
 
-def load_ally(ally, from_save):
+def load_ally(ally, from_save, gap_x, gap_y):
     name = ally.find('name').text.strip()
-    x = int(ally.find('position/x').text) * TILE_SIZE
-    y = int(ally.find('position/y').text) * TILE_SIZE
+    x = int(ally.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(ally.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     lvl = int(ally.find('level').text.strip())
 
@@ -101,10 +101,10 @@ def load_ally(ally, from_save):
     return loaded_ally
 
 
-def load_foe(foe, from_save):
+def load_foe(foe, from_save, gap_x, gap_y):
     name = foe.find('name').text.strip()
-    x = int(foe.find('position/x').text) * TILE_SIZE
-    y = int(foe.find('position/y').text) * TILE_SIZE
+    x = int(foe.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(foe.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     lvl = int(foe.find('level').text.strip())
 
@@ -144,10 +144,10 @@ def load_foe(foe, from_save):
     return loaded_foe
 
 
-def load_chest(chest, from_save):
+def load_chest(chest, from_save, gap_x, gap_y):
     # Static data
-    x = int(chest.find('position/x').text) * TILE_SIZE
-    y = int(chest.find('position/y').text) * TILE_SIZE
+    x = int(chest.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(chest.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     sprite_closed = chest.find('closed/sprite').text.strip()
     sprite_opened = chest.find('opened/sprite').text.strip()
@@ -177,11 +177,11 @@ def load_chest(chest, from_save):
     return loaded_chest
 
 
-def load_building(building, from_save):
+def load_building(building, from_save, gap_x, gap_y):
     # Static data
     name = building.find('name').text.strip()
-    x = int(building.find('position/x').text) * TILE_SIZE
-    y = int(building.find('position/y').text) * TILE_SIZE
+    x = int(building.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(building.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     sprite = building.find('sprite').text.strip()
     interaction = building.find('interaction')
@@ -222,34 +222,34 @@ def load_building(building, from_save):
     return loaded_building
 
 
-def load_obstacles(tree):
+def load_obstacles(tree, gap_x, gap_y):
     loaded_obstacles = []
     for positions in tree.findall('positions'):
         fixed_y = positions.find('y')
         if fixed_y is not None:
-            fixed_y = int(fixed_y.text) * TILE_SIZE
-            from_x = int(positions.find('from_x').text) * TILE_SIZE
-            to_x = int(positions.find('to_x').text) * TILE_SIZE
+            fixed_y = int(fixed_y.text) * TILE_SIZE + gap_y
+            from_x = int(positions.find('from_x').text) * TILE_SIZE + gap_x
+            to_x = int(positions.find('to_x').text) * TILE_SIZE + gap_x
             for i in range(from_x, to_x + TILE_SIZE, TILE_SIZE):
                 pos = (i, fixed_y)
                 loaded_obstacles.append(pos)
         else:
-            fixed_x = int(positions.find('x').text) * TILE_SIZE
-            from_y = int(positions.find('from_y').text) * TILE_SIZE
-            to_y = int(positions.find('to_y').text) * TILE_SIZE
+            fixed_x = int(positions.find('x').text) * TILE_SIZE + gap_x
+            from_y = int(positions.find('from_y').text) * TILE_SIZE + gap_y
+            to_y = int(positions.find('to_y').text) * TILE_SIZE + gap_y
             for i in range(from_y, to_y + TILE_SIZE, TILE_SIZE):
                 pos = (fixed_x, i)
                 loaded_obstacles.append(pos)
 
     for obstacle in tree.findall('position'):
-        x = int(obstacle.find('x').text) * TILE_SIZE
-        y = int(obstacle.find('y').text) * TILE_SIZE
+        x = int(obstacle.find('x').text) * TILE_SIZE + gap_x
+        y = int(obstacle.find('y').text) * TILE_SIZE + gap_y
         pos = (x, y)
         loaded_obstacles.append(pos)
     return loaded_obstacles
 
 
-def load_missions(tree, players):
+def load_missions(tree, players, gap_x, gap_y):
     loaded_missions = []
     #  > Load main mission
     main_mission = tree.find('missions/main')
@@ -260,8 +260,8 @@ def load_missions(tree, players):
     nb_players = len(players)
     if nature == 'POSITION':
         for coords in main_mission.xpath('position'):
-            x = int(coords.find('x').text) * TILE_SIZE
-            y = int(coords.find('y').text) * TILE_SIZE
+            x = int(coords.find('x').text) * TILE_SIZE + gap_x
+            y = int(coords.find('y').text) * TILE_SIZE + gap_y
             pos = (x, y)
             positions.append(pos)
     mission = Mission(main, nature, positions, desc, nb_players)
@@ -270,12 +270,12 @@ def load_missions(tree, players):
     return loaded_missions, main_mission
 
 
-def load_portal(portal_couple):
-    first_x = int(portal_couple.find('first/position/x').text) * TILE_SIZE
-    first_y = int(portal_couple.find('first/position/y').text) * TILE_SIZE
+def load_portal(portal_couple, gap_x, gap_y):
+    first_x = int(portal_couple.find('first/position/x').text) * TILE_SIZE + gap_x
+    first_y = int(portal_couple.find('first/position/y').text) * TILE_SIZE + gap_y
     first_pos = (first_x, first_y)
-    second_x = int(portal_couple.find('second/position/x').text) * TILE_SIZE
-    second_y = int(portal_couple.find('second/position/y').text) * TILE_SIZE
+    second_x = int(portal_couple.find('second/position/x').text) * TILE_SIZE + gap_x
+    second_y = int(portal_couple.find('second/position/y').text) * TILE_SIZE + gap_y
     second_pos = (second_x, second_y)
     sprite = 'imgs/dungeon_crawl/' + portal_couple.find('sprite').text.strip()
     first_portal = Portal(first_pos, sprite)
@@ -284,10 +284,10 @@ def load_portal(portal_couple):
     return first_portal, second_portal
 
 
-def load_fountain(fountain, from_save):
+def load_fountain(fountain, from_save, gap_x, gap_y):
     name = fountain.find('type').text.strip()
-    x = int(fountain.find('position/x').text) * TILE_SIZE
-    y = int(fountain.find('position/y').text) * TILE_SIZE
+    x = int(fountain.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(fountain.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     if name not in fountains_infos:
         fountains_infos[name] = etree.parse('data/fountains/' + name + '.xml').getroot()
@@ -309,10 +309,10 @@ def load_fountain(fountain, from_save):
     return loaded_fountain
 
 
-def load_breakable(breakable):
+def load_breakable(breakable, gap_x, gap_y):
     # Static data
-    x = int(breakable.find('position/x').text) * TILE_SIZE
-    y = int(breakable.find('position/y').text) * TILE_SIZE
+    x = int(breakable.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(breakable.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
     hp = int(breakable.find('currentHp').text.strip())

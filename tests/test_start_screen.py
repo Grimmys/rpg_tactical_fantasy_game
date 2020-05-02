@@ -21,8 +21,10 @@ RIGHT_BUTTON = 3
 class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        import src.fonts as font
         os.chdir(os.getcwd() + '/..')
         pg.init()
+        font.init_fonts()
         cls.buttons = []
         cls.buttons.append(Rect(NEW_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
         cls.buttons.append(Rect(LOAD_GAME_BUTTON_POS[0], LOAD_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))

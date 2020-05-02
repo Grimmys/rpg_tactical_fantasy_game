@@ -17,9 +17,6 @@ from src.Mission import MissionType
 from src.Menus import *
 from src.SaveStateManager import SaveStateManager
 
-MAP_WIDTH = TILE_SIZE * 20
-MAP_HEIGHT = TILE_SIZE * 10
-
 LANDING = None
 LANDING_OPACITY = 80
 ATTACKABLE = None
@@ -78,7 +75,7 @@ class Level:
 
         new_turn_sprite = 'imgs/interface/new_turn.png'
         NEW_TURN = pg.transform.scale(pg.image.load(new_turn_sprite).convert_alpha(), (int(392 * 1.5), int(107 * 1.5)))
-        NEW_TURN_POS = (MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
+        NEW_TURN_POS = (MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
 
         new_turn_text = fonts['TITLE_FONT'].render("New turn !", 1, WHITE)
         new_turn_text_pos = (NEW_TURN.get_width() / 2 - new_turn_text.get_width() / 2,
@@ -102,43 +99,59 @@ class Level:
     def __init__(self, directory, players, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None):
         # Store directory path if player wants to save and exit game
         self.directory = directory
-        self.map = pg.image.load(directory + 'map.png')
         self.quit_request = False
         self.nb_level = nb_level
 
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
+        map_width = int(tree.find('width').text.strip()) * TILE_SIZE
+        map_height = int(tree.find('height').text.strip()) * TILE_SIZE
+        self.map = {
+                    'img': pg.image.load(self.directory + 'map.png'),
+                    'width': map_width,
+                    'height': map_height,
+                    'x': (MAX_MAP_WIDTH - map_width) // 2,
+                    'y': (MAX_MAP_HEIGHT - map_height) // 2,
+                    }
+
         data_tree = tree if data is None else data
         from_save = data is not None
 
         if status is Status.INITIALIZATION.name:
             # Load available tiles for characters' placement
-            self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'))
+            self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'), self.map['x'], self.map['y'])
 
         # Load players
         self.players = players
         # Load allies
-        self.allies = Loader.load_entities(Character, data_tree.findall('allies/ally'), from_save)
+        self.allies = Loader.load_entities(Character, data_tree.findall('allies/ally'),
+                                           from_save, self.map['x'], self.map['y'])
         # Load foes
-        self.foes = Loader.load_entities(Foe, data_tree.findall('foes/foe'), from_save)
+        self.foes = Loader.load_entities(Foe, data_tree.findall('foes/foe'),
+                                         from_save, self.map['x'], self.map['y'])
         # Load breakables
-        self.breakables = Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'), from_save)
+        self.breakables = Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'),
+                                               from_save, self.map['x'], self.map['y'])
         # Load chests
-        self.chests = Loader.load_entities(Chest, data_tree.findall('chests/chest'), from_save)
+        self.chests = Loader.load_entities(Chest, data_tree.findall('chests/chest'),
+                                           from_save, self.map['x'], self.map['y'])
         # Load buildings
-        self.buildings = Loader.load_entities(Building, data_tree.findall('buildings/building'), from_save)
+        self.buildings = Loader.load_entities(Building, data_tree.findall('buildings/building'),
+                                              from_save, self.map['x'], self.map['y'])
         # Load fountains
-        self.fountains = Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'), from_save)
+        self.fountains = Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'),
+                                              from_save, self.map['x'], self.map['y'])
         # Load portals
-        self.portals = Loader.load_entities(Portal, data_tree.findall('portals/couple'), from_save)
+        self.portals = Loader.load_entities(Portal, data_tree.findall('portals/couple'),
+                                            from_save, self.map['x'], self.map['y'])
         # Store all entities
         self.entities = self.players + self.allies + self.foes + \
             self.chests + self.portals + self.fountains + self.breakables + self.buildings
 
         # Load obstacles
-        self.obstacles = Loader.load_obstacles(tree.find('obstacles'))
+        self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
         # Load missions
-        self.missions, self.main_mission = Loader.load_missions(tree, self.players)
+        self.missions, self.main_mission = Loader.load_missions(tree, self.players, self.map['x'], self.map['y'])
 
         # Game is new, players' positions should be initialized
         if data is None:
@@ -148,6 +161,8 @@ class Level:
                     if self.case_is_empty(tile):
                         player.set_initial_pos(tile)
                         break
+                else:
+                    print("Error ! Not enough free tiles to set players...")
 
         # Booleans for end game
         self.victory = False
@@ -166,7 +181,7 @@ class Level:
         self.active_menu = None
         self.background_menus = []
         self.hovered_ent = None
-        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAP_HEIGHT), self.missions.copy())
+        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions.copy())
         self.wait_for_dest_tp = False
 
     def save_game(self):
@@ -216,7 +231,7 @@ class Level:
         if self.selected_player:
             if self.selected_player.move():
                 # If movement is finished
-                interactable_entities = self.chests + self.portals + self.fountains + self.allies
+                interactable_entities = self.chests + self.portals + self.fountains + self.allies + self.players
                 self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player, self.buildings,
                                                                          interactable_entities, self.missions,
                                                                          self.foes)
@@ -242,7 +257,7 @@ class Level:
         return None
 
     def display(self, win):
-        win.blit(self.map, (0, 0))
+        win.blit(self.map['img'], (self.map['x'], self.map['y']))
         self.sidebar.display(win, self.turn, self.hovered_ent, self.nb_level)
         for ent in self.entities:
             ent.display(win)
@@ -303,7 +318,7 @@ class Level:
                 case_x = pos[0] + (x * TILE_SIZE)
                 case_y = pos[1] + (y * TILE_SIZE)
                 case_pos = (case_x, case_y)
-                if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
+                if (0, 0) < case_pos < (self.map['width'], self.map['height']):
                     case = self.get_entity_on_case(case_pos)
                     tiles.append(case)
         return tiles
@@ -349,11 +364,15 @@ class Level:
         return set(tiles)
 
     def case_is_empty(self, case):
+        if case < (0, 0) or case > (self.map['x'] + self.map['width'], self.map['y'] + self.map['height']):
+            return False
+
         # Check all entities
         ent_cases = []
         for ent in self.entities:
             ent_cases.append(ent.pos)
-        return (0, 0) < case < (MAP_WIDTH, MAP_HEIGHT) and case not in ent_cases and case not in self.obstacles
+
+        return case not in ent_cases and case not in self.obstacles
 
     def get_entity_on_case(self, case):
         # Check all entities
@@ -434,6 +453,29 @@ class Level:
                 # No more menu : turn is finished
                 self.background_menus = []
                 self.possible_interactions = []
+            # Check if player tries to trade with another player
+            elif isinstance(target, Player):
+                items_max = self.selected_player.nb_items_max
+                items_first = list(self.selected_player.items)
+                free_spaces = items_max - len(items_first)
+                items_first += [None] * free_spaces
+
+                first_player_data = {'name': self.selected_player.get_formatted_name(),
+                                     'items': items_first,
+                                     'gold': self.selected_player.gold
+                                    }
+
+                items_max = target.nb_items_max
+                items_second = list(target.items)
+                free_spaces = items_max - len(items_second)
+                items_second += [None] * free_spaces
+
+                second_player_data = {'name': target.get_formatted_name(),
+                                      'items': items_second,
+                                      'gold': target.gold}
+
+                self.active_menu = MenuCreatorManager.create_trade_menu(self.selected_player, target)
+                self.possible_interactions = []
             # Check if player tries to talk to a character
             elif isinstance(target, Character):
                 entries = target.talk(actor)
@@ -498,7 +540,7 @@ class Level:
         if method_id is BuyMenu.INTERAC_BUY:
             item_button_pos = args[0]
             item = args[1]
-            price = args[2]
+            price = args[2][0]
 
             self.selected_item = item
 
@@ -640,13 +682,22 @@ class Level:
             for ent in self.get_next_cases(self.selected_player.pos):
                 if isinstance(ent, Fountain):
                     self.possible_interactions.append(ent.pos)
+        # Talk with an ally
         elif method_id is CharacterMenu.TALK:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
             for ent in self.get_next_cases(self.selected_player.pos):
-                if isinstance(ent, Character):
+                if isinstance(ent, Character) and not isinstance(ent, Player):
+                    self.possible_interactions.append(ent.pos)
+        elif method_id is CharacterMenu.TRADE:
+            self.background_menus.append((self.active_menu, False))
+            self.active_menu = None
+            self.selected_player.choose_target()
+            self.possible_interactions = []
+            for ent in self.get_next_cases(self.selected_player.pos):
+                if isinstance(ent, Player):
                     self.possible_interactions.append(ent.pos)
         # Visit a house
         elif method_id is CharacterMenu.VISIT:
@@ -683,7 +734,7 @@ class Level:
 
     def execute_equipment_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
-        if method_id is InventoryMenu.INTERAC_ITEM:
+        if method_id is EquipmentMenu.INTERAC_EQUIPMENT:
             item_button_pos = args[0]
             item = args[1]
 
@@ -764,7 +815,6 @@ class Level:
 
             # Inventory has changed
             items_max = self.selected_player.nb_items_max
-
             items = list(self.selected_player.items)
             free_spaces = items_max - len(items)
             items += [None] * free_spaces
@@ -838,7 +888,7 @@ class Level:
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Sell an item
         elif method_id is ItemMenu.SELL_ITEM:
-            price = args[2][0]
+            price = args[2][0][0]
             formatted_item_name = self.selected_item.get_formatted_name()
 
             # Sell the item
@@ -867,6 +917,36 @@ class Level:
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        elif method_id is ItemMenu.TRADE_ITEM:
+            first_player = args[2][0]
+            second_player = args[2][1]
+            owner = first_player if args[2][2] == 0 else second_player
+            receiver = second_player if args[2][2] == 0 else first_player
+
+            formatted_item_name = self.selected_item.get_formatted_name()
+            msg_entries = []
+
+            # Add item if possible
+            added = receiver.set_item(self.selected_item)
+            if not added:
+                msg_entries = [[{'type': 'text', 'text': 'Item can\'t be traded : not enough place in'
+                                                                    + receiver.get_formatted_name() + '\'s inventory .',
+                                            'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+
+                self.background_menus.append((self.active_menu, False))
+            else:
+                # Remove item from owner inventory according to index
+                owner.remove_item(self.selected_item)
+
+                new_trade_menu = MenuCreatorManager.create_trade_menu(first_player, second_player)
+                # Update the inventory menu (i.e. first menu backward)
+                self.background_menus[len(self.background_menus) - 1] = (new_trade_menu, True)
+
+                msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
+                                    'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+
+            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", msg_entries,
+                                       ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
             print("Unknown action in item menu... : " + str(method_id))
 
@@ -877,6 +957,17 @@ class Level:
 
             self.background_menus.append([self.active_menu, True])
             self.active_menu = MenuCreatorManager.create_alteration_info_menu(alteration)
+
+    def execute_trade_action(self, method_id, args):
+        # Watch item action : Open a menu to act with a given item
+        if method_id is TradeMenu.INTERAC_ITEM:
+            item_button_pos = args[0]
+            item = args[1]
+            players = args[2]
+
+            self.selected_item = item
+            self.background_menus.append([self.active_menu, True])
+            self.active_menu = MenuCreatorManager.create_trade_item_menu(item_button_pos, item, players)
 
     def execute_action(self, menu_type, action):
         if not action:
@@ -892,7 +983,7 @@ class Level:
                 self.active_menu = self.background_menus.pop()[0]
                 # Test if active menu is main character's menu, in this case, it should be reloaded
                 if self.active_menu.type is CharacterMenu:
-                    interactable_entities = self.chests + self.portals + self.fountains + self.allies
+                    interactable_entities = self.chests + self.portals + self.fountains + self.allies + self.players
                     self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player, self.buildings,
                                                                              interactable_entities, self.missions,
                                                                              self.foes)
@@ -921,6 +1012,8 @@ class Level:
             self.execute_buy_action(method_id, args)
         elif menu_type is SellMenu:
             self.execute_sell_action(method_id, args)
+        elif menu_type is TradeMenu:
+            self.execute_trade_action(method_id, args)
         else:
             print("Unknown menu... : " + str(menu_type))
 

@@ -6,9 +6,6 @@ from src.DynamicButton import DynamicButton
 from src.ItemButton import ItemButton
 from src.Menus import GenericActions
 
-MAP_WIDTH = TILE_SIZE * 20
-MAP_HEIGHT = TILE_SIZE * 10
-
 BUTTON_INACTIVE = "imgs/interface/MenuButtonInactiv.png"
 BUTTON_ACTIVE = "imgs/interface/MenuButtonPreLight.png"
 
@@ -18,19 +15,24 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
-    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0,
+    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0, sep=False,
                  title_color=WHITE):
         self.name = name
         self.type = type_id
         self.element_linked = el_rect_linked
         self.close_button = close_button
         self.title_color = title_color
+        self.sep = {'display': sep,
+                    'posY': 0,
+                    'height': 0}
         self.entries = entries
 
         self.elements = self.init_elements(self.entries, width)
         height = self.determine_height(close_button)
         self.size = (width, height)
         self.pos = self.determine_pos()
+
+        self.sep['height'] += self.size[1]
 
         if self.pos:
             self.determine_elements_pos()
@@ -47,7 +49,7 @@ class InfoBox:
                     entry['margin'] = (0, 0, 0, 0)
 
                 if entry['type'] == 'button':
-                    name = fonts['ITEM_FONT'].render(entry['name'], 1, WHITE)
+                    name = fonts['BUTTON_FONT'].render(entry['name'], 1, WHITE)
                     sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
                     sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
                                        sprite.get_height() // 2 - name.get_height() // 2))
@@ -85,11 +87,13 @@ class InfoBox:
                     button_size = ITEM_BUTTON_SIZE
                     disabled = 'disabled' in entry
                     if 'subtype' in entry:
-                        if entry['subtype'] == 'equip':
-                            button_size = EQUIP_BUTTON_SIZE
+                        if entry['subtype'] == 'trade':
+                            button_size = TRADE_ITEM_BUTTON_SIZE
                     if 'price' not in entry:
                         entry['price'] = 0
-                    element.append(ItemButton(entry['id'], button_size, (0, 0), entry['item'], entry['margin'],
+                    if 'args' not in entry:
+                        entry['args'] = []
+                    element.append(ItemButton(entry['id'], entry['args'], button_size, (0, 0), entry['item'], entry['margin'],
                                               entry['index'], entry['price'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
@@ -99,13 +103,17 @@ class InfoBox:
                     element.append(TextElement(entry['text'], width, (0, 0), entry['font'],
                                                entry['margin'], entry['color']))
             elements.append(element)
-        elements.insert(0, [TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'], (len(entries) + 5, 0, 0, 0),
-                                        self.title_color)])
+        title = TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'], (len(entries) + 5, 0, 0, 0),
+                                        self.title_color)
+        self.sep['posY'] += title.get_height()
+        elements.insert(0, [title])
         return elements
 
     def determine_height(self, close_button):
         # Margin to be add at begin and at end
         height = MARGIN_BOX * 2
+        self.sep['height'] -= height
+        self.sep['posY'] += height
         for row in self.elements:
             max_height = 0
             for el in row:
@@ -117,6 +125,7 @@ class InfoBox:
         if close_button > 0:
             close_button_height = CLOSE_BUTTON_SIZE[1] + MARGIN_TOP + CLOSE_BUTTON_MARGINTOP
             height += close_button_height
+            self.sep['height'] -= close_button_height
 
             # Button sprites
             name = fonts['ITEM_FONT'].render("Close", 1, WHITE)
@@ -138,9 +147,9 @@ class InfoBox:
                    self.element_linked.y + self.element_linked.height - self.size[1] // 2]
             if pos[1] < 0:
                 pos[1] = 0
-            elif pos[1] + self.size[1] > MAP_HEIGHT:
-                pos[1] = MAP_HEIGHT - self.size[1]
-            if pos[0] + self.size[0] > MAP_WIDTH:
+            elif pos[1] + self.size[1] > MAX_MAP_HEIGHT:
+                pos[1] = MAX_MAP_HEIGHT - self.size[1]
+            if pos[0] + self.size[0] > MAX_MAP_WIDTH:
                 pos[0] = self.element_linked.x - self.size[0]
             return pos
         return []
@@ -160,18 +169,25 @@ class InfoBox:
         y = self.pos[1] + MARGIN_BOX
         # Memorize mouse position in case it is over a button
         mouse_pos = pg.mouse.get_pos()
+        # A row begins by a value identifying its height, followed by its elements
         for row in self.elements:
-            base_x = self.pos[0]
             nb_elements = len(row) - 1
             i = 1
             for el in row[1:]:
-                base_x += (self.size[0] // (2 * nb_elements)) * i
+                base_x = self.pos[0] + (self.size[0] // (2 * nb_elements)) * i
                 x = base_x - el.get_width() // 2
                 el.pos = (x, y + el.get_margin_top())
                 if isinstance(el, Button):
                     el.set_hover(el.get_rect().collidepoint(mouse_pos))
-                i += 1
+                i += 2
             y += row[0]
+
+    def update_content(self, entries):
+        self.elements = self.init_elements(entries, self.size[0])
+        self.determine_height(self.close_button)
+        if self.pos:
+            self.determine_elements_pos()
+        self.buttons = self.find_buttons()
 
     def display(self, win):
         if self.pos:
@@ -185,6 +201,10 @@ class InfoBox:
         for row in self.elements:
             for el in row[1:]:
                 el.display(win)
+
+        if self.sep['display']:
+            pg.draw.line(win, WHITE, (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['posY']),
+                                     (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['height']), 2)
 
     def motion(self, pos):
         for button in self.buttons:

@@ -13,7 +13,6 @@ FRAME = None
 
 
 class Sidebar:
-
     @staticmethod
     def init_constant_sprites():
         global CRACKED, FRAME

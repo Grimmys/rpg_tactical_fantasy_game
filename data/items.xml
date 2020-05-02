@@ -116,7 +116,7 @@
                     1
                 </range>
                 <fragility>
-                    20
+                    30
                 </fragility>
                 <weight>
                     1
@@ -151,7 +151,7 @@
                     1
                 </range>
                 <fragility>
-                    10
+                    20
                 </fragility>
                 <weight>
                     2
@@ -186,7 +186,7 @@
                     1
                 </range>
                 <fragility>
-                    30
+                    40
                 </fragility>
                 <weight>
                     2
@@ -221,7 +221,7 @@
                     2
                 </range>
                 <fragility>
-                    10
+                    35
                 </fragility>
                 <weight>
                     2

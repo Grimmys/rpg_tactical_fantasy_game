@@ -61,6 +61,8 @@ class CharacterMenu(Enum):
     TALK = auto()
     #   - Valid mission position
     TAKE = auto()
+    #   - Trade with other playable character
+    TRADE = auto()
 
 
 # > Inventory menu
@@ -85,6 +87,8 @@ class ItemMenu(Enum):
     BUY_ITEM = auto()
     #   - Sell item
     SELL_ITEM = auto()
+    #   - Trade item
+    TRADE_ITEM = auto()
 
 
 # > Status menu
@@ -97,6 +101,12 @@ class StatusMenu(Enum):
 class EquipmentMenu(Enum):
     #   - Interact with equipment
     INTERAC_EQUIPMENT = auto()
+
+
+# > Trade menu
+class TradeMenu(Enum):
+    #   - Interact with item
+    INTERAC_ITEM = auto()
 
 
 # > Shop menu

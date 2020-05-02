@@ -4,12 +4,14 @@ from src.constants import *
 
 class Equipment(Item):
 
-    def __init__(self, name, sprite, description, price, equipped_sprites, body_part, defense, res, atk, weight):
+    def __init__(self, name, sprite, description, price, equipped_sprites, body_part, defense, res, atk, weight,
+                 restrictions=[]):
         Item.__init__(self, name, sprite, description, price)
         self.defense = defense
         self.res = res
         self.atk = atk
         self.weight = weight
+        self.restrictions = restrictions
         self.body_part = body_part
         self.equipped_sprite = pg.transform.scale(pg.image.load(equipped_sprites[0]).convert_alpha(),
                                                   (TILE_SIZE, TILE_SIZE))
@@ -23,7 +25,6 @@ class Equipment(Item):
         color_image = pg.Surface(self.sprite.get_size()).convert_alpha()
         color_image.fill(LIGHT_GREY)
         self.sprite_unavailable.blit(color_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-
         self.normal_sprite = self.equipped_sprite
 
     def display(self, screen, pos, equipped=False):
