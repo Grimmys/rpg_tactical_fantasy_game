@@ -121,29 +121,31 @@ class Level:
             # Load available tiles for characters' placement
             self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'), self.map['x'], self.map['y'])
 
+        gap_x = self.map['x'] if data is None else 0
+        gap_y = self.map['y'] if data is None else 0
         # Load players
         self.players = players
         # Load allies
         self.allies = Loader.load_entities(Character, data_tree.findall('allies/ally'),
-                                           from_save, self.map['x'], self.map['y'])
+                                           from_save, gap_x, gap_y)
         # Load foes
         self.foes = Loader.load_entities(Foe, data_tree.findall('foes/foe'),
-                                         from_save, self.map['x'], self.map['y'])
+                                         from_save, gap_x, gap_y)
         # Load breakables
         self.breakables = Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'),
-                                               from_save, self.map['x'], self.map['y'])
+                                               from_save, gap_x, gap_y)
         # Load chests
         self.chests = Loader.load_entities(Chest, data_tree.findall('chests/chest'),
-                                           from_save, self.map['x'], self.map['y'])
+                                           from_save, gap_x, gap_y)
         # Load buildings
         self.buildings = Loader.load_entities(Building, data_tree.findall('buildings/building'),
-                                              from_save, self.map['x'], self.map['y'])
+                                              from_save, gap_x, gap_y)
         # Load fountains
         self.fountains = Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'),
-                                              from_save, self.map['x'], self.map['y'])
+                                              from_save, gap_x, gap_y)
         # Load portals
         self.portals = Loader.load_entities(Portal, data_tree.findall('portals/couple'),
-                                            from_save, self.map['x'], self.map['y'])
+                                            from_save, gap_x, gap_y)
         # Store all entities
         self.entities = self.players + self.allies + self.foes + \
             self.chests + self.portals + self.fountains + self.breakables + self.buildings
