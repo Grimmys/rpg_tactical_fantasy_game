@@ -807,24 +807,29 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
 
             # Try to equip the item
-            was_equipped = self.selected_player.equip(self.selected_item)
+            return_equipped = self.selected_player.equip(self.selected_item)
+            if return_equipped == -1:
+                # Item can't be equipped by this player
+                result_msg = "This item can't be equipped : " \
+                             + self.selected_player.get_formatted_name() + " doesn't satisfy the requirements."
+            else:
+                # In this case returned value is > 0, item has been equipped
+                result_msg = "The item has been equipped."
+                if return_equipped == 1:
+                    result_msg += " Previous equipped item has been added to your inventory."
 
-            result_msg = "The item has been equipped."
-            if was_equipped:
-                result_msg += " Previous equipped item has been added to your inventory."
+                # Inventory has changed
+                items_max = self.selected_player.nb_items_max
+                items = list(self.selected_player.items)
+                free_spaces = items_max - len(items)
+                items += [None] * free_spaces
 
-            # Inventory has changed
-            items_max = self.selected_player.nb_items_max
-            items = list(self.selected_player.items)
-            free_spaces = items_max - len(items)
-            items += [None] * free_spaces
+                new_inventory_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
 
-            new_inventory_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
-
-            # Cancel item menu
-            self.background_menus.pop()
-            # Update the inventory menu (i.e. first menu backward)
-            self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
+                # Cancel item menu
+                self.background_menus.pop()
+                # Update the inventory menu (i.e. first menu backward)
+                self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]

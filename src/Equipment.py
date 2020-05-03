@@ -5,7 +5,7 @@ from src.constants import *
 class Equipment(Item):
 
     def __init__(self, name, sprite, description, price, equipped_sprites, body_part, defense, res, atk, weight,
-                 restrictions=[]):
+                 restrictions={}):
         Item.__init__(self, name, sprite, description, price)
         self.defense = defense
         self.res = res
@@ -26,6 +26,14 @@ class Equipment(Item):
         color_image.fill(LIGHT_GREY)
         self.sprite_unavailable.blit(color_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
         self.normal_sprite = self.equipped_sprite
+
+    def get_formatted_restrictions(self):
+        formatted_string = ''
+        for key in self.restrictions:
+            if key == 'classes':
+                formatted_string += ', '.join([s.capitalize() for s in self.restrictions[key]])
+
+        return formatted_string
 
     def display(self, screen, pos, equipped=False):
         sprite_to_blit = self.sprite

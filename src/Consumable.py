@@ -7,7 +7,7 @@ class Consumable(Item):
         self.effect = effect
 
     def use(self, player):
-        result = self.effect.apply_on_ent(player)
-        if result[0]:
+        success, msg = self.effect.apply_on_ent(player)
+        if success:
             player.remove_item(self)
-        return result[0], result[1]
+        return success, msg

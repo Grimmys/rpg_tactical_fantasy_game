@@ -91,16 +91,27 @@ class Character(Movable):
         return self.race.capitalize()
 
     def equip(self, eq):
-        self.remove_item(eq)
-        # Boolean to know if there was an equipped item at the slot taken by eq
-        was_filled = False
-        for equip in self.equipments:
-            if eq.body_part == equip.body_part:
-                self.remove_equipment(equip)
-                self.set_item(equip)
-                was_filled = True
-        self.equipments.append(eq)
-        return was_filled
+        #Verify if player could wear this equipment
+        allowed = True
+        if eq.restrictions != {}:
+            allowed = False
+            if 'classes' in eq.restrictions:
+                for cl in eq.restrictions['classes']:
+                    if cl in self.classes:
+                        allowed = True
+
+        if allowed:
+            self.remove_item(eq)
+            # Value to know if there was an equipped item at the slot taken by eq
+            replacement = 0
+            for equip in self.equipments:
+                if eq.body_part == equip.body_part:
+                    self.remove_equipment(equip)
+                    self.set_item(equip)
+                    replacement = 1
+            self.equipments.append(eq)
+            return replacement
+        return -1
 
     def unequip(self, eq):
         # If the item has been appended to the inventory

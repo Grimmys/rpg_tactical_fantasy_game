@@ -27,3 +27,9 @@ class Effect:
             msg = "The speed of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
                   " turns."
         return success, msg
+
+    def get_formatted_desc(self):
+        string = ''
+        if self.name == 'heal':
+            string += 'Recover ' + str(self.power) + ' HP'
+        return string

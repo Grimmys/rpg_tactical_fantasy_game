@@ -320,6 +320,18 @@ def load_breakable(breakable, gap_x, gap_y):
     return Breakable(pos, sprite, hp, 0, 0)
 
 
+def load_restrictions(restrictions_el):
+    restrictions = {}
+    if restrictions_el is None:
+        return restrictions
+
+    classes = restrictions_el.find('classes')
+    if classes is not None:
+        restrictions['classes'] = classes.text.strip().split(',')
+
+    return restrictions
+
+
 def parse_item_file(name):
     # Retrieve data root for item
     it_tree_root = etree.parse('data/items.xml').getroot().find('.//' + name)
@@ -353,7 +365,9 @@ def parse_item_file(name):
         else:
             equipped_sprites = ['imgs/dungeon_crawl/player/' + it_tree_root.find(
                 'equipped_sprite').text.strip()]
-        item = Equipment(name, sprite, info, price, equipped_sprites, body_part, defense, 0, 0, weight)
+        restrictions = load_restrictions(it_tree_root.find('restrictions'))
+        item = Equipment(name, sprite, info, price, equipped_sprites, body_part, defense, 0, 0,
+                         weight, restrictions=restrictions)
     elif category == 'weapon':
         power = int(it_tree_root.find('power').text.strip())
         attack_kind = it_tree_root.find('kind').text.strip()
@@ -362,7 +376,9 @@ def parse_item_file(name):
         w_range = [int(it_tree_root.find('range').text.strip())]
         equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
             'equipped_sprite').text.strip()]
-        item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility, w_range)
+        restrictions = load_restrictions(it_tree_root.find('restrictions'))
+        item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
+                      w_range, restrictions=restrictions)
     elif category == 'key':
         item = Key(name, sprite, info, price)
     elif category == 'spellbook':

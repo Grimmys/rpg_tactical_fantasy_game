@@ -162,6 +162,11 @@
                 <price>
                     300
                 </price>
+                <restrictions>
+                    <classes>
+                        warrior
+                    </classes>
+                </restrictions>
             </club>
             <short_sword>
                 <name>
@@ -197,6 +202,11 @@
                 <price>
                     500
                 </price>
+                <restrictions>
+                    <classes>
+                        warrior
+                    </classes>
+                </restrictions>
             </short_sword>
             <basic_bow>
                 <name>
@@ -232,6 +242,11 @@
                 <price>
                     350
                 </price>
+                <restrictions>
+                    <classes>
+                        ranger
+                    </classes>
+                </restrictions>
             </basic_bow>
         </weapons>
         <plumed_helmet>

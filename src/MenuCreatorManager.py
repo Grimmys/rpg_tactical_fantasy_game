@@ -341,6 +341,8 @@ def create_item_desc_menu(item):
     entries = [[{'type': 'text', 'text': item.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
     if isinstance(item, Equipment):
+        if item.restrictions != {}:
+            entries.append(create_item_desc_stat('RESERVED TO', item.get_formatted_restrictions()))
         if item.atk > 0:
             entries.append(create_item_desc_stat('POWER', str(item.atk)))
         if item.defense > 0:
@@ -357,6 +359,8 @@ def create_item_desc_menu(item):
             entries.append(create_item_desc_stat('REACH', reach_txt))
             entries.append(create_item_desc_stat('DURABILITY', str(item.durability) + ' / ' + str(item.durability_max)))
         entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
+    elif isinstance(item, Consumable):
+        entries.append(create_item_desc_stat('EFFECT', item.effect.get_formatted_desc()))
 
     return InfoBox(item_title, "", "imgs/interface/PopUpMenu.png", entries,
                    ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
