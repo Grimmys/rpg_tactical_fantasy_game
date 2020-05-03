@@ -11,6 +11,13 @@ You can submit any request you want, or notify me about any bug you encountered,
 
 Please, don't hesitate about suggesting ideas : it's my first " serious " game project. ;)
 
+<ul>
+  <li> Help with balancing would be greatly appreciated... I'm not really good in this kind of games even if I love them !
+  All values could be found in the XML files wrapped in the data folder. </li>
+  <li> Since I'm not a designer, some elements may be oddly placed in the UI. You can try to correct the ones you see or simply notify me. </li>
+  <li> Ideas about future levels could be submitted, however, I'm currently working on a scenario.
+ </ul>
+
 <b>Version</b> : 1.0.0
 
 ![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
