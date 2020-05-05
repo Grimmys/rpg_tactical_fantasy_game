@@ -46,12 +46,12 @@ class SaveStateManager:
     def save_entities(self):
         entities = etree.Element('entities')
 
-        entities.append(self.save_collection('allies', 'ally', self.level.allies))
-        entities.append(self.save_collection('foes', 'foe', self.level.foes))
-        entities.append(self.save_collection('breakables', 'breakable', self.level.breakables))
-        entities.append(self.save_collection('chests', 'chest', self.level.chests))
-        entities.append(self.save_collection('fountains', 'fountain', self.level.fountains))
-        entities.append(self.save_collection('buildings', 'building', self.level.buildings))
+        entities.append(self.save_collection('allies', 'ally', self.level.entities['allies']))
+        entities.append(self.save_collection('foes', 'foe', self.level.entities['foes']))
+        entities.append(self.save_collection('breakables', 'breakable', self.level.entities['breakables']))
+        entities.append(self.save_collection('chests', 'chest', self.level.entities['chests']))
+        entities.append(self.save_collection('fountains', 'fountain', self.level.entities['fountains']))
+        entities.append(self.save_collection('buildings', 'building', self.level.entities['buildings']))
 
         return entities
 

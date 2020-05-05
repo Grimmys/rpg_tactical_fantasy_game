@@ -102,6 +102,7 @@ class Level:
         self.quit_request = False
         self.nb_level = nb_level
 
+
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
         map_width = int(tree.find('width').text.strip()) * TILE_SIZE
@@ -114,46 +115,37 @@ class Level:
                     'y': (MAX_MAP_HEIGHT - map_height) // 2,
                     }
 
-        data_tree = tree if data is None else data
-        from_save = data is not None
+        # Load events
+        self.events = Loader.load_events(tree.find('events'))
 
         if status is Status.INITIALIZATION.name:
             # Load available tiles for characters' placement
-            self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'), self.map['x'], self.map['y'])
+            self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'),
+                                                              self.map['x'], self.map['y'])
 
-        gap_x = self.map['x'] if data is None else 0
-        gap_y = self.map['y'] if data is None else 0
-        # Load players
-        self.players = players
-        # Load allies
-        self.allies = Loader.load_entities(Character, data_tree.findall('allies/ally'),
-                                           from_save, gap_x, gap_y)
-        # Load foes
-        self.foes = Loader.load_entities(Foe, data_tree.findall('foes/foe'),
-                                         from_save, gap_x, gap_y)
-        # Load breakables
-        self.breakables = Loader.load_entities(Breakable, data_tree.findall('breakables/breakable'),
-                                               from_save, gap_x, gap_y)
-        # Load chests
-        self.chests = Loader.load_entities(Chest, data_tree.findall('chests/chest'),
-                                           from_save, gap_x, gap_y)
-        # Load buildings
-        self.buildings = Loader.load_entities(Building, data_tree.findall('buildings/building'),
-                                              from_save, gap_x, gap_y)
-        # Load fountains
-        self.fountains = Loader.load_entities(Fountain, data_tree.findall('fountains/fountain'),
-                                              from_save, gap_x, gap_y)
-        # Load portals
-        self.portals = Loader.load_entities(Portal, data_tree.findall('portals/couple'),
-                                            from_save, gap_x, gap_y)
-        # Store all entities
-        self.entities = self.players + self.allies + self.foes + \
-            self.chests + self.portals + self.fountains + self.breakables + self.buildings
+        if data is None:
+            # Game is new
+            data_tree = tree
+            from_save = False
+            if 'before_init' in self.events:
+                entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+                           for s in self.events['before_init']['dialog']['talks']]
+                self.active_menu = InfoBox(self.events['before_init']['dialog']['title'], "", "imgs/interface/PopUpMenu.png",
+                                           entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+        else:
+            data_tree = data
+            from_save = True
+            self.active_menu = None
 
         # Load obstacles
         self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
-        # Load missions
-        self.missions, self.main_mission = Loader.load_missions(tree, self.players, self.map['x'], self.map['y'])
+        # Load players
+        self.players = players
+
+        # Load and store all entities
+        gap_x, gap_y = (self.map['x'], self.map['y']) if data is None else (0, 0)
+        self.entities = Loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
+        self.entities['players'] = self.players
 
         # Game is new, players' positions should be initialized
         if data is None:
@@ -165,6 +157,9 @@ class Level:
                         break
                 else:
                     print("Error ! Not enough free tiles to set players...")
+
+        # Load missions
+        self.missions, self.main_mission = Loader.load_missions(tree, self.players, self.map['x'], self.map['y'])
 
         # Booleans for end game
         self.victory = False
@@ -180,7 +175,7 @@ class Level:
         self.possible_moves = {}
         self.possible_attacks = []
         self.possible_interactions = []
-        self.active_menu = None
+
         self.background_menus = []
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions.copy())
@@ -233,19 +228,21 @@ class Level:
         if self.selected_player:
             if self.selected_player.move():
                 # If movement is finished
-                interactable_entities = self.chests + self.portals + self.fountains + self.allies + self.players
-                self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player, self.buildings,
+                interactable_entities = self.entities['chests'] + self.entities['portals'] + \
+                                        self.entities['fountains'] + self.entities['allies'] + self.players
+                self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player,
+                                                                         self.entities['buildings'],
                                                                          interactable_entities, self.missions,
-                                                                         self.foes)
+                                                                         self.entities['foes'])
             return None
 
         entities = []
         if self.side_turn is EntityTurn.PLAYER:
             entities = self.players
         elif self.side_turn is EntityTurn.ALLIES:
-            entities = self.allies
+            entities = self.entities['allies']
         elif self.side_turn is EntityTurn.FOES:
-            entities = self.foes
+            entities = self.entities['foes']
 
         for ent in entities:
             if not ent.turn_is_finished():
@@ -261,10 +258,12 @@ class Level:
     def display(self, win):
         win.blit(self.map['img'], (self.map['x'], self.map['y']))
         self.sidebar.display(win, self.turn, self.hovered_ent, self.nb_level)
-        for ent in self.entities:
-            ent.display(win)
-            if isinstance(ent, Destroyable):
-                ent.display_hp(win)
+
+        for collection in self.entities.values():
+            for ent in collection:
+                ent.display(win)
+                if isinstance(ent, Destroyable):
+                    ent.display_hp(win)
 
         if self.watched_ent:
             self.show_possible_actions(self.watched_ent, win)
@@ -346,11 +345,11 @@ class Level:
     def get_possible_attacks(self, possible_moves, reach, from_ally_side):
         tiles = []
 
-        entities = list(self.breakables)
+        entities = list(self.entities['breakables'])
         if from_ally_side:
-            entities += self.foes
+            entities += self.entities['foes']
         else:
-            entities += self.allies + self.players
+            entities += self.entities['allies'] + self.players
 
         for ent in entities:
             pos = ent.pos
@@ -371,16 +370,18 @@ class Level:
 
         # Check all entities
         ent_cases = []
-        for ent in self.entities:
-            ent_cases.append(ent.pos)
+        for collection in self.entities.values():
+            for ent in collection:
+                ent_cases.append(ent.pos)
 
         return case not in ent_cases and case not in self.obstacles
 
     def get_entity_on_case(self, case):
         # Check all entities
-        for ent in self.entities:
-            if ent.pos == case:
-                return ent
+        for collection in self.entities.values():
+            for ent in collection:
+                if ent.pos == case:
+                    return ent
         return None
 
     def determine_path_to(self, case_to, distance):
@@ -457,25 +458,6 @@ class Level:
                 self.possible_interactions = []
             # Check if player tries to trade with another player
             elif isinstance(target, Player):
-                items_max = self.selected_player.nb_items_max
-                items_first = list(self.selected_player.items)
-                free_spaces = items_max - len(items_first)
-                items_first += [None] * free_spaces
-
-                first_player_data = {'name': self.selected_player.get_formatted_name(),
-                                     'items': items_first,
-                                     'gold': self.selected_player.gold
-                                    }
-
-                items_max = target.nb_items_max
-                items_second = list(target.items)
-                free_spaces = items_max - len(items_second)
-                items_second += [None] * free_spaces
-
-                second_player_data = {'name': target.get_formatted_name(),
-                                      'items': items_second,
-                                      'gold': target.gold}
-
                 self.active_menu = MenuCreatorManager.create_trade_menu(self.selected_player, target)
                 self.possible_interactions = []
             # Check if player tries to talk to a character
@@ -509,21 +491,20 @@ class Level:
             if isinstance(target, Foe) and isinstance(attacker, Player):
                 attacker.earn_xp(target.xp_gain)
 
-            self.entities.remove(target)
             collection = None
             if isinstance(target, Foe):
-                collection = self.foes
+                collection = self.entities['foes']
             elif isinstance(target, Player):
-                collection = self.players
+                collection = self.entities['players']
             elif isinstance(target, Breakable):
-                collection = self.breakables
+                collection = self.entities['breakables']
             elif isinstance(target, Character):
-                collection = self.allies
+                collection = self.entities['allies']
             collection.remove(target)
 
     def entity_action(self, ent, is_ally):
         possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
-        targets = self.foes if is_ally else self.players + self.allies
+        targets = self.entities['foes'] if is_ally else self.players + self.entities['allies']
         case = ent.act(possible_moves, targets)
 
         if case:
@@ -857,7 +838,8 @@ class Level:
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_equipment_menu, True)
 
-            entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'],
+                         'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Buy an item
@@ -931,13 +913,12 @@ class Level:
             receiver = second_player if args[2][2] == 0 else first_player
 
             formatted_item_name = self.selected_item.get_formatted_name()
-            msg_entries = []
 
             # Add item if possible
             added = receiver.set_item(self.selected_item)
             if not added:
                 msg_entries = [[{'type': 'text', 'text': 'Item can\'t be traded : not enough place in'
-                                                                    + receiver.get_formatted_name() + '\'s inventory .',
+                                                         + receiver.get_formatted_name() + '\'s inventory .',
                                             'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
                 self.background_menus.append((self.active_menu, False))
@@ -950,7 +931,7 @@ class Level:
                 self.background_menus[len(self.background_menus) - 1] = (new_trade_menu, True)
 
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
-                                    'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+                                 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
@@ -990,10 +971,12 @@ class Level:
                 self.active_menu = self.background_menus.pop()[0]
                 # Test if active menu is main character's menu, in this case, it should be reloaded
                 if self.active_menu.type is CharacterMenu:
-                    interactable_entities = self.chests + self.portals + self.fountains + self.allies + self.players
-                    self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player, self.buildings,
+                    interactable_entities = self.entities['chests'] + self.entities['portals'] + \
+                                            self.entities['fountains'] + self.entities['allies'] + self.players
+                    self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player,
+                                                                             self.entities['buildings'],
                                                                              interactable_entities, self.missions,
-                                                                             self.foes)
+                                                                             self.entities['foes'])
             else:
                 if len(args) >= 3 and args[2][0] == FINAL_ACTION:
                     # Turn is finished
@@ -1030,9 +1013,9 @@ class Level:
             self.new_turn()
             entities = self.players
         elif self.side_turn is EntityTurn.ALLIES:
-            entities = self.allies
+            entities = self.entities['allies']
         elif self.side_turn is EntityTurn.FOES:
-            entities = self.foes
+            entities = self.entities['foes']
 
         for ent in entities:
             ent.new_turn()
@@ -1099,7 +1082,7 @@ class Level:
                     w_range = [1] if w is None else w.reach
                     self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
                     return
-            for foe in self.foes:
+            for foe in self.entities['foes']:
                 if foe.is_on_pos(pos):
                     self.active_menu = MenuCreatorManager.create_foe_menu(foe)
                     return
@@ -1175,7 +1158,8 @@ class Level:
             self.active_menu.motion(pos)
         else:
             self.hovered_ent = None
-            for ent in self.entities:
-                if ent.get_rect().collidepoint(pos):
-                    self.hovered_ent = ent
-                    return
+            for collection in self.entities.values():
+                for ent in collection:
+                    if ent.get_rect().collidepoint(pos):
+                        self.hovered_ent = ent
+                        return

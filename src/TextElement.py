@@ -16,7 +16,7 @@ class TextElement(BoxElement):
     def verify_rendered_text_size(rendered_txt, txt, container_width, font, text_color):
         final_render = rendered_txt
 
-        if final_render.get_width() * 1.15 > container_width:
+        if final_render.get_width() > container_width:
             first_part, second_part = TextElement.divide_text(txt)
             first_part_render = font.render(first_part, 1, text_color)
             first_part_render = TextElement.verify_rendered_text_size(first_part_render, first_part,
@@ -27,7 +27,8 @@ class TextElement(BoxElement):
             final_render = pg.Surface((first_part_render.get_width(), first_part_render.get_height() +
                                        second_part_render.get_height()), SRCALPHA)
             final_render.blit(first_part_render, (0, 0))
-            final_render.blit(second_part_render, (0, first_part_render.get_height()))
+            second_part_x = final_render.get_width() // 2 - second_part_render.get_width() // 2
+            final_render.blit(second_part_render, (second_part_x, first_part_render.get_height()))
         return final_render
 
     @staticmethod

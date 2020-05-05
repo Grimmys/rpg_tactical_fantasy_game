@@ -31,6 +31,17 @@ def load_placements(positions, gap_x, gap_y):
     return placements
 
 
+def load_all_entities(data, from_save, gap_x, gap_y):
+    return {'allies': load_entities(Character, data.findall('allies/ally'), from_save, gap_x, gap_y),
+            'foes': load_entities(Foe, data.findall('foes/foe'), from_save, gap_x, gap_y),
+            'breakables': load_entities(Breakable, data.findall('breakables/breakable'), from_save, gap_x, gap_y),
+            'chests': load_entities(Chest, data.findall('chests/chest'), from_save, gap_x, gap_y),
+            'buildings': load_entities(Building, data.findall('buildings/building'), from_save, gap_x, gap_y),
+            'fountains': load_entities(Fountain, data.findall('fountains/fountain'), from_save, gap_x, gap_y),
+            'portals': load_entities(Portal, data.findall('portals/couple'), from_save, gap_x, gap_y)
+            }
+
+
 def load_entities(ent_nature, data, from_save, gap_x, gap_y):
     collection = []
 
@@ -330,6 +341,21 @@ def load_restrictions(restrictions_el):
         restrictions['classes'] = classes.text.strip().split(',')
 
     return restrictions
+
+
+def load_events(events_el):
+    events = {}
+
+    before_init = events_el.find('beforeInit')
+    if before_init is not None:
+        events['before_init'] = {
+            'dialog': {
+                'title': before_init.find('dialog/title').text.strip(),
+                'talks': [talk.text.strip() for talk in before_init.find('dialog/talks').findall('talk')]
+            }
+        }
+
+    return events
 
 
 def parse_item_file(name):
