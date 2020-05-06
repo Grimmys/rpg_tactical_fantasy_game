@@ -1,6 +1,7 @@
 from lxml import etree
 import random as rd
 
+from src.Shield import Shield
 from src.Movable import Movable
 from src.Destroyable import DamageKind
 from src.fonts import fonts
@@ -32,6 +33,16 @@ class Character(Movable):
     def lvl_up(self):
         Movable.lvl_up(self)
         self.stats_up()
+
+    def parried(self):
+        for eq in self.equipments:
+            if isinstance(eq, Shield):
+                parried = rd.randint(0, 100) < eq.parry
+                if parried:
+                    if eq.used() <= 0:
+                        self.remove_equipment(eq)
+                return parried
+        return False
 
     def attacked(self, ent, damages, kind):
         for eq in self.equipments:

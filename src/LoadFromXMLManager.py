@@ -12,6 +12,7 @@ from src.Key import Key
 from src.Mission import Mission
 from src.Portal import Portal
 from src.Potion import Potion
+from src.Shield import Shield
 from src.Shop import Shop
 from src.Spellbook import Spellbook
 from src.Weapon import Weapon
@@ -380,8 +381,8 @@ def parse_item_file(name):
         item = Potion(name, sprite, info, price, effect)
     elif category == 'armor':
         body_part = it_tree_root.find('bodypart').text.strip()
-        defense = it_tree_root.find('def')
-        defense = int(defense.text.strip()) if defense is not None else 0
+        defense_el = it_tree_root.find('def')
+        defense = int(defense_el.text.strip()) if defense_el is not None else 0
         weight = int(it_tree_root.find('weight').text.strip())
         eq_sprites = it_tree_root.find('equipped_sprites')
         if eq_sprites is not None:
@@ -393,7 +394,17 @@ def parse_item_file(name):
                 'equipped_sprite').text.strip()]
         restrictions = load_restrictions(it_tree_root.find('restrictions'))
         item = Equipment(name, sprite, info, price, equipped_sprites, body_part, defense, 0, 0,
-                         weight, restrictions=restrictions)
+                         weight, restrictions)
+    elif category == 'shield':
+        parry = int(float(it_tree_root.find('parry_rate').text.strip()) * 100)
+        defense_el = it_tree_root.find('def')
+        defense = int(defense_el.text.strip()) if defense_el is not None else 0
+        fragility = int(it_tree_root.find('fragility').text.strip())
+        weight = int(it_tree_root.find('weight').text.strip())
+        equipped_sprite = ['imgs/dungeon_crawl/player/hand_left/' + it_tree_root.find(
+            'equipped_sprite').text.strip()]
+        restrictions = load_restrictions(it_tree_root.find('restrictions'))
+        item = Shield(name, sprite, info, price, equipped_sprite, defense, weight, parry, fragility, restrictions)
     elif category == 'weapon':
         power = int(it_tree_root.find('power').text.strip())
         attack_kind = it_tree_root.find('kind').text.strip()
@@ -404,7 +415,7 @@ def parse_item_file(name):
             'equipped_sprite').text.strip()]
         restrictions = load_restrictions(it_tree_root.find('restrictions'))
         item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
-                      w_range, restrictions=restrictions)
+                      w_range, restrictions)
     elif category == 'key':
         item = Key(name, sprite, info, price)
     elif category == 'spellbook':

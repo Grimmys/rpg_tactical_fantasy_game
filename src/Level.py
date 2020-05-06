@@ -102,18 +102,17 @@ class Level:
         self.quit_request = False
         self.nb_level = nb_level
 
-
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
         map_width = int(tree.find('width').text.strip()) * TILE_SIZE
         map_height = int(tree.find('height').text.strip()) * TILE_SIZE
         self.map = {
-                    'img': pg.image.load(self.directory + 'map.png'),
-                    'width': map_width,
-                    'height': map_height,
-                    'x': (MAX_MAP_WIDTH - map_width) // 2,
-                    'y': (MAX_MAP_HEIGHT - map_height) // 2,
-                    }
+            'img': pg.image.load(self.directory + 'map.png'),
+            'width': map_width,
+            'height': map_height,
+            'x': (MAX_MAP_WIDTH - map_width) // 2,
+            'y': (MAX_MAP_HEIGHT - map_height) // 2,
+        }
 
         # Load events
         self.events = Loader.load_events(tree.find('events'))
@@ -130,7 +129,8 @@ class Level:
             if 'before_init' in self.events:
                 entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
                            for s in self.events['before_init']['dialog']['talks']]
-                self.active_menu = InfoBox(self.events['before_init']['dialog']['title'], "", "imgs/interface/PopUpMenu.png",
+                self.active_menu = InfoBox(self.events['before_init']['dialog']['title'], "",
+                                           "imgs/interface/PopUpMenu.png",
                                            entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
         else:
             data_tree = data
@@ -198,6 +198,10 @@ class Level:
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
 
     def update_state(self):
+        # Game can't evolve if there is an active menu
+        if self.active_menu is not None:
+            return None
+
         if self.quit_request:
             return self.game_phase
 
@@ -399,108 +403,130 @@ class Level:
         return path
 
     def interact(self, actor, target, target_pos):
-        if isinstance(actor, Player):
-            # Check if target is an empty pos
-            if not target:
-                if self.wait_for_dest_tp:
-                    self.wait_for_dest_tp = False
-                    actor.pos = target_pos
+        # Since player chose his interaction, possible interactions should be reseted
+        self.possible_interactions = []
 
-                    # Turn is finished
-                    self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
-            # Check if player tries to open a chest
-            elif isinstance(target, Chest):
-                if actor.has_free_space():
-                    # Key is used to open the chest
-                    actor.remove_key()
+        # Check if target is an empty pos
+        if not target:
+            if self.wait_for_dest_tp:
+                self.wait_for_dest_tp = False
+                actor.pos = target_pos
 
-                    # Get object inside the chest
-                    item = target.open()
-                    actor.set_item(item)
+                # Turn is finished
+                self.background_menus = []
+                self.selected_player.turn_finished()
+                self.selected_player = None
+        # Check if player tries to open a chest
+        elif isinstance(target, Chest):
+            if actor.has_free_space():
+                # Key is used to open the chest
+                actor.remove_key()
 
-                    # Get item data
-                    name = item.get_formatted_name()
-                    entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
-                                  'id': InventoryMenu.INTERAC_ITEM}
+                # Get object inside the chest
+                item = target.open()
+                actor.set_item(item)
 
-                    entries = [[entry_item],
-                               [{'type': 'text', 'text': "Item has been added to your inventory",
-                                 'font': fonts['ITEM_DESC_FONT']}]]
-                    self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
-                                               entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
-                    # No more menu : turn is finished
-                    self.background_menus = []
-                else:
-                    self.active_menu = InfoBox("You have no free space in your inventory.", "",
-                                               "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
-                                               close_button=UNFINAL_ACTION)
-            # Check if player tries to use a portal
-            elif isinstance(target, Portal):
-                new_based_pos = target.linked_to.pos
-                possible_pos = self.get_possible_moves(new_based_pos, 1)
-                # Remove portal pos since player cannot be on the portal
-                del possible_pos[new_based_pos]
-                if possible_pos:
-                    self.possible_interactions = possible_pos.keys()
-                    self.wait_for_dest_tp = True
-                else:
-                    self.active_menu = InfoBox("There is no free square around the other portal", "",
-                                               "imgs/interface/PopUpMenu.png",
-                                               [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
-            # Check if player tries to drink in a fountain
-            elif isinstance(target, Fountain):
-                entries = target.drink(actor)
-                self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                # Get item data
+                name = item.get_formatted_name()
+                entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
+                              'id': InventoryMenu.INTERAC_ITEM}
+
+                entries = [[entry_item],
+                           [{'type': 'text', 'text': "Item has been added to your inventory",
+                             'font': fonts['ITEM_DESC_FONT']}]]
+                self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                            entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
-
                 # No more menu : turn is finished
                 self.background_menus = []
-                self.possible_interactions = []
-            # Check if player tries to trade with another player
-            elif isinstance(target, Player):
-                self.active_menu = MenuCreatorManager.create_trade_menu(self.selected_player, target)
-                self.possible_interactions = []
-            # Check if player tries to talk to a character
-            elif isinstance(target, Character):
-                entries = target.talk(actor)
-                self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
-                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
-                # No more menu : turn is finished
-                self.background_menus = []
-                self.possible_interactions = []
-            # Check if player tries to visit a building
-            elif isinstance(target, Building):
-                kind = ""
-                # Check if player tries to visit a shop
-                if isinstance(target, Shop):
-                    kind = ShopMenu
+            else:
+                self.active_menu = InfoBox("You have no free space in your inventory.", "",
+                                           "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
+                                           close_button=UNFINAL_ACTION)
+        # Check if player tries to use a portal
+        elif isinstance(target, Portal):
+            new_based_pos = target.linked_to.pos
+            possible_pos = self.get_possible_moves(new_based_pos, 1)
+            # Remove portal pos since player cannot be on the portal
+            del possible_pos[new_based_pos]
+            if possible_pos:
+                self.possible_interactions = possible_pos.keys()
+                self.wait_for_dest_tp = True
+            else:
+                self.active_menu = InfoBox("There is no free square around the other portal", "",
+                                           "imgs/interface/PopUpMenu.png",
+                                           [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        # Check if player tries to drink in a fountain
+        elif isinstance(target, Fountain):
+            entries = target.drink(actor)
+            self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                                       entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
-                entries = target.interact(actor)
-                self.active_menu = InfoBox(target.get_formatted_name(), kind, "imgs/interface/PopUpMenu.png",
-                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
+            # No more menu : turn is finished
+            self.background_menus = []
+        # Check if player tries to trade with another player
+        elif isinstance(target, Player):
+            self.active_menu = MenuCreatorManager.create_trade_menu(self.selected_player, target)
+        # Check if player tries to talk to a character
+        elif isinstance(target, Character):
+            entries = target.talk(actor)
+            self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                                       entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
+            # No more menu : turn is finished
+            self.background_menus = []
+        # Check if player tries to visit a building
+        elif isinstance(target, Building):
+            kind = ""
+            # Check if player tries to visit a shop
+            if isinstance(target, Shop):
+                kind = ShopMenu
 
-                # No more menu : turn is finished
-                self.background_menus = []
-                self.possible_interactions = []
+            entries = target.interact(actor)
+            self.active_menu = InfoBox(target.get_formatted_name(), kind, "imgs/interface/PopUpMenu.png",
+                                       entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
+
+            # No more menu : turn is finished
+            self.background_menus = []
 
     def duel(self, attacker, target, kind):
-        damages = attacker.attack(target)
-        # If target has less than 0 HP at the end of the duel
-        if not target.attacked(attacker, damages, kind):
-            # XP up
-            if isinstance(target, Foe) and isinstance(attacker, Player):
-                attacker.earn_xp(target.xp_gain)
+        if isinstance(target, Character) and target.parried():
+            # Target parried attack
+            msg = attacker.get_formatted_name() + " attacked " + target.get_formatted_name() + \
+                  "... But " + target.get_formatted_name() + " parried !"
+            entries = [[{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}]]
+        else:
+            old_hp = target.hp
+            damages = attacker.attack(target)
+            remaining_hp = target.attacked(attacker, damages, kind)
+            entries = [[{'type': 'text',
+                         'text': attacker.get_formatted_name() + " dealed " + str(old_hp - remaining_hp) +
+                                 " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}]]
+            # If target has less than 0 HP at the end of the duel
+            if remaining_hp <= 0:
+                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
+                                 'font': fonts['ITEM_DESC_FONT']}])
+                # XP up
+                if isinstance(target, Foe) and isinstance(attacker, Player):
+                    attacker.earn_xp(target.xp_gain)
+                    entries.append([{'type': 'text',
+                                     'text': attacker.get_formatted_name() + " earned " + str(target.xp_gain) + " XP",
+                                     'font': fonts['ITEM_DESC_FONT']}])
+                collection = None
+                if isinstance(target, Foe):
+                    collection = self.entities['foes']
+                elif isinstance(target, Player):
+                    collection = self.entities['players']
+                elif isinstance(target, Breakable):
+                    collection = self.entities['breakables']
+                elif isinstance(target, Character):
+                    collection = self.entities['allies']
+                collection.remove(target)
+            else:
+                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
+                                                         str(remaining_hp) + " HP",
+                                 'font': fonts['ITEM_DESC_FONT']}])
 
-            collection = None
-            if isinstance(target, Foe):
-                collection = self.entities['foes']
-            elif isinstance(target, Player):
-                collection = self.entities['players']
-            elif isinstance(target, Breakable):
-                collection = self.entities['breakables']
-            elif isinstance(target, Character):
-                collection = self.entities['allies']
-            collection.remove(target)
+        self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDHT,
+                                   close_button=UNFINAL_ACTION)
 
     def entity_action(self, ent, is_ally):
         possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
@@ -618,6 +644,7 @@ class Level:
             self.active_menu = MenuCreatorManager.create_status_menu(self.selected_player)
         # Wait action : Given Character's turn is finished
         elif method_id is CharacterMenu.WAIT:
+            self.active_menu = None
             self.selected_item = None
             self.selected_player.turn_finished()
             self.selected_player = None
@@ -625,7 +652,6 @@ class Level:
             self.possible_attacks = []
             self.possible_interactions = []
             self.background_menus = []
-            self.active_menu = None
         # Open a chest
         elif method_id is CharacterMenu.OPEN_CHEST:
             # Check if player has a key
@@ -703,7 +729,9 @@ class Level:
                                 if mission.main and mission.ended:
                                     self.victory = True
                                 # Turn is finished
-                                self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
+                                self.background_menus = []
+                                self.selected_player.turn_finished()
+                                self.selected_player = None
 
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -919,7 +947,7 @@ class Level:
             if not added:
                 msg_entries = [[{'type': 'text', 'text': 'Item can\'t be traded : not enough place in'
                                                          + receiver.get_formatted_name() + '\'s inventory .',
-                                            'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+                                 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
                 self.background_menus.append((self.active_menu, False))
             else:
@@ -980,7 +1008,9 @@ class Level:
             else:
                 if len(args) >= 3 and args[2][0] == FINAL_ACTION:
                     # Turn is finished
-                    self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
+                    self.background_menus = []
+                    self.selected_player.turn_finished()
+                    self.selected_player = None
             return
 
         # Search from which menu came the action
@@ -1029,6 +1059,10 @@ class Level:
             self.execute_action(self.active_menu.type, self.active_menu.click(pos))
             return
 
+        # Player can only react to active menu if it is not his turn
+        if self.side_turn is not EntityTurn.PLAYER:
+            return
+
         if self.selected_player is not None:
             if self.game_phase is not Status.INITIALIZATION:
                 if self.possible_moves:
@@ -1052,7 +1086,9 @@ class Level:
                                 self.selected_player.get_weapon() is not None else DamageKind.PHYSICAL
                             self.duel(self.selected_player, ent, attack_kind)
                             # Turn is finished
-                            self.execute_action(CharacterMenu, (CharacterMenu.WAIT, None))
+                            self.background_menus = []
+                            self.selected_player.turn_finished()
+                            self.selected_player = None
                             return
                 elif self.possible_interactions:
                     # Player is waiting to interact
@@ -1122,7 +1158,7 @@ class Level:
 
     def click(self, button, pos):
         # No event if there is an animation or it is not player turn
-        if self.animation or self.side_turn is not EntityTurn.PLAYER:
+        if self.animation:
             return
 
         # 1 is equals to left button
@@ -1136,22 +1172,23 @@ class Level:
         # 3 is equals to right button
         if button == 3:
             if not self.active_menu and not self.selected_player and self.side_turn is EntityTurn.PLAYER:
-                for ent in self.entities:
-                    if ent.get_rect().collidepoint(pos):
-                        pos = ent.pos
-                        self.watched_ent = ent
-                        self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
+                for collection in self.entities.values():
+                    for ent in collection:
+                        if ent.get_rect().collidepoint(pos):
+                            pos = ent.pos
+                            self.watched_ent = ent
+                            self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
 
-                        w_range = [1]
-                        # TEMPO : Foes don't currently have weapon so it's impossible to test their range
-                        if isinstance(self.watched_ent, Character):
-                            w = self.watched_ent.get_weapon()
-                            if w is not None:
-                                w_range = w.reach
+                            w_range = [1]
+                            # TEMPO : Foes don't currently have weapon so it's impossible to test their range
+                            if isinstance(self.watched_ent, Character):
+                                w = self.watched_ent.get_weapon()
+                                if w is not None:
+                                    w_range = w.reach
 
-                        self.possible_attacks = self.get_possible_attacks(self.possible_moves,
-                                                                          w_range, isinstance(ent, Character))
-                        return
+                            self.possible_attacks = self.get_possible_attacks(self.possible_moves,
+                                                                              w_range, isinstance(ent, Character))
+                            return
 
     def motion(self, pos):
         if self.active_menu:

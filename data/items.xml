@@ -478,14 +478,11 @@
                     A small light shield that could help dodging attacks.
                 </info>
                 <category>
-                    armor
+                    shield
                 </category>
-                <bodypart>
-                    left_hand
-                </bodypart>
-                <dodge_rate>
+                <parry_rate>
                     0.15
-                </dodge_rate>
+                </parry_rate>
                 <fragility>
                     15
                 </fragility>
@@ -493,7 +490,7 @@
                     2
                 </weight>
                 <equipped_sprite>
-                    hand_left/buckler_round_3.png
+                    buckler_round_3.png
                 </equipped_sprite>
                 <price>
                     400

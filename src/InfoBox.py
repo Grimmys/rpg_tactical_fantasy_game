@@ -15,8 +15,8 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
-    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0, sep=False,
-                 title_color=WHITE):
+    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0,
+                 sep=False, title_color=WHITE):
         self.name = name
         self.type = type_id
         self.element_linked = el_rect_linked
@@ -103,8 +103,8 @@ class InfoBox:
                     element.append(TextElement(entry['text'], width, (0, 0), entry['font'],
                                                entry['margin'], entry['color']))
             elements.append(element)
-        title = TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'], (len(entries) + 5, 0, 0, 0),
-                                        self.title_color)
+        title = TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'], (len(entries), 0, 20, 0),
+                            self.title_color)
         self.sep['posY'] += title.get_height()
         elements.insert(0, [title])
         return elements

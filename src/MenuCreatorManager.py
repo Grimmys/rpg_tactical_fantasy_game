@@ -8,6 +8,7 @@ from src.Menus import *
 from src.Mission import MissionType
 from src.Player import Player
 from src.Portal import Portal
+from src.Shield import Shield
 from src.Weapon import Weapon
 from src.fonts import *
 from src.constants import *
@@ -357,6 +358,9 @@ def create_item_desc_menu(item):
             reach_txt = reach_txt[:len(reach_txt) - 2]
             entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
             entries.append(create_item_desc_stat('REACH', reach_txt))
+        if isinstance(item, Shield):
+            entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
+        if isinstance(item, Weapon) or isinstance(item, Shield):
             entries.append(create_item_desc_stat('DURABILITY', str(item.durability) + ' / ' + str(item.durability_max)))
         entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
     elif isinstance(item, Consumable):

@@ -77,7 +77,7 @@ class Destroyable(Entity):
         if real_damages < 0:
             real_damages = 0
         self.hp -= real_damages
-        return self.hp > 0
+        return self.hp
 
     def healed(self, value=None):
         if not value:

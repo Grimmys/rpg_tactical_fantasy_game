@@ -55,6 +55,9 @@
                 <item>
                     key
                 </item>
+                <item>
+                    wooden_shield
+                </item>
         </inventory>
         <gold> 250 </gold>
     </john>
