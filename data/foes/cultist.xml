@@ -1,29 +1,32 @@
-<necrophage>
+<cultist>
     <sprite>
-        undead/necrophage_new.png
+        thugs/cultist.png
     </sprite>
     <move>
-        1
+        3
     </move>
     <hp>
-        10
+        8
     </hp>
     <strength>
-        7
+        5
     </strength>
     <def>
         0
     </def>
     <res>
-        0
+        2
     </res>
     <xp_gain>
-        13
+        15
     </xp_gain>
     <strategy>
         SEMI_ACTIVE
     </strategy>
+    <reach>
+        2
+    </reach>
     <attack_kind>
-        PHYSICAL
+        SPIRITUAL
     </attack_kind>
-</necrophage>
+</cultist>

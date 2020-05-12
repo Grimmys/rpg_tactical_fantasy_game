@@ -70,6 +70,12 @@ class Movable(Destroyable):
     def turn_is_finished(self):
         return self.state == EntityState.FINISHED
 
+    def get_reach(self):
+        return [1]
+
+    def get_formatted_reach(self):
+        return ', '.join([str(reach) for reach in self.get_reach()])
+
     @property
     def max_moves(self):
         alterations = self.get_alterations_effect('speed')
@@ -160,11 +166,12 @@ class Movable(Destroyable):
         self.target = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target in targets:
-                for move in possible_moves:
-                    # Try to find move next to one target
-                    if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE:
-                        self.target = target
-                        return move
+                for d in self.get_reach():
+                    for move in possible_moves:
+                        # Try to find move next to one target
+                        if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * d:
+                            self.target = target
+                            return move
         if self.strategy is EntityStrategy.ACTIVE:
             # TODO
             pass

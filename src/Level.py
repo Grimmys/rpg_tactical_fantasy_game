@@ -75,21 +75,21 @@ class Level:
 
         new_turn_sprite = 'imgs/interface/new_turn.png'
         NEW_TURN = pg.transform.scale(pg.image.load(new_turn_sprite).convert_alpha(), (int(392 * 1.5), int(107 * 1.5)))
-        NEW_TURN_POS = (MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
+        VICTORY = NEW_TURN.copy()
+        DEFEAT = NEW_TURN.copy()
 
+        NEW_TURN_POS = (MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
         new_turn_text = fonts['TITLE_FONT'].render("New turn !", 1, WHITE)
         new_turn_text_pos = (NEW_TURN.get_width() / 2 - new_turn_text.get_width() / 2,
                              NEW_TURN.get_height() / 2 - new_turn_text.get_height() / 2)
         NEW_TURN.blit(new_turn_text, new_turn_text_pos)
 
-        VICTORY = NEW_TURN.copy()
         VICTORY_POS = NEW_TURN_POS
         victory_text = fonts['TITLE_FONT'].render("VICTORY !", 1, WHITE)
         victory_text_pos = (VICTORY.get_width() / 2 - victory_text.get_width() / 2,
                             VICTORY.get_height() / 2 - victory_text.get_height() / 2)
         VICTORY.blit(victory_text, victory_text_pos)
 
-        DEFEAT = NEW_TURN.copy()
         DEFEAT_POS = NEW_TURN_POS
         defeat_text = fonts['TITLE_FONT'].render("DEFEAT !", 1, WHITE)
         defeat_text_pos = (DEFEAT.get_width() / 2 - defeat_text.get_width() / 2,
@@ -115,32 +115,35 @@ class Level:
         }
 
         # Load events
-        self.events = Loader.load_events(tree.find('events'))
+        self.events = Loader.load_events(tree.find('events'), self.map['x'], self.map['y'])
 
         if status is Status.INITIALIZATION.name:
             # Load available tiles for characters' placement
             self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'),
                                                               self.map['x'], self.map['y'])
 
+        self.active_menu = None
         if data is None:
             # Game is new
             data_tree = tree
             from_save = False
             if 'before_init' in self.events:
-                entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                           for s in self.events['before_init']['dialog']['talks']]
-                self.active_menu = InfoBox(self.events['before_init']['dialog']['title'], "",
-                                           "imgs/interface/PopUpMenu.png",
-                                           entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+                if 'dialog' in self.events['before_init']:
+                    entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+                               for s in self.events['before_init']['dialog']['talks']]
+                    self.active_menu = InfoBox(self.events['before_init']['dialog']['title'], "",
+                                               "imgs/interface/PopUpMenu.png",
+                                               entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
         else:
             data_tree = data
             from_save = True
-            self.active_menu = None
 
         # Load obstacles
         self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
         # Load players
         self.players = players
+        # List for players who are now longer in the level
+        self.passed_players = []
 
         # Load and store all entities
         gap_x, gap_y = (self.map['x'], self.map['y']) if data is None else (0, 0)
@@ -175,10 +178,9 @@ class Level:
         self.possible_moves = {}
         self.possible_attacks = []
         self.possible_interactions = []
-
         self.background_menus = []
         self.hovered_ent = None
-        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions.copy())
+        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions)
         self.wait_for_dest_tp = False
 
     def save_game(self):
@@ -198,10 +200,6 @@ class Level:
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
 
     def update_state(self):
-        # Game can't evolve if there is an active menu
-        if self.active_menu is not None:
-            return None
-
         if self.quit_request:
             return self.game_phase
 
@@ -213,11 +211,20 @@ class Level:
                     self.exit_game()
             return None
 
+        # Game can't evolve if there is an active menu
+        if self.active_menu is not None:
+            return None
+
+        self.main_mission.update_state(entities=self.entities)
+        if self.main_mission.ended:
+            self.victory = True
+
         if not self.players and self.game_phase is Status.IN_PROGRESS:
             if not self.main_mission.succeeded_chars:
                 self.defeat = True
             else:
                 self.victory = True
+
         if self.victory or self.defeat:
             if self.victory:
                 self.end_level(VICTORY, VICTORY_POS)
@@ -229,6 +236,7 @@ class Level:
             self.victory = False
             self.defeat = False
             return None
+
         if self.selected_player:
             if self.selected_player.move():
                 # If movement is finished
@@ -272,9 +280,6 @@ class Level:
         if self.watched_ent:
             self.show_possible_actions(self.watched_ent, win)
 
-        if self.animation:
-            self.animation.display(win)
-
         # If the game hasn't yet started
         if self.game_phase is Status.INITIALIZATION:
             self.show_possible_placements(win)
@@ -288,11 +293,14 @@ class Level:
                 elif self.possible_interactions:
                     self.show_possible_interactions(win)
 
-        for menu in self.background_menus:
-            if menu[1]:
-                menu[0].display(win)
-        if self.active_menu:
-            self.active_menu.display(win)
+        if self.animation:
+            self.animation.display(win)
+        else:
+            for menu in self.background_menus:
+                if menu[1]:
+                    menu[0].display(win)
+            if self.active_menu:
+                self.active_menu.display(win)
 
     def show_possible_actions(self, movable, win):
         self.show_possible_moves(movable, win)
@@ -316,6 +324,22 @@ class Level:
         for tile in self.possible_placements:
             blit_alpha(win, LANDING, tile, LANDING_OPACITY)
 
+    def start_game(self):
+        self.active_menu = None
+        self.game_phase = Status.IN_PROGRESS
+        self.new_turn()
+        if 'after_init' in self.events:
+            if 'dialog' in self.events['after_init']:
+                entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+                           for s in self.events['after_init']['dialog']['talks']]
+                self.active_menu = InfoBox(self.events['after_init']['dialog']['title'], "",
+                                           "imgs/interface/PopUpMenu.png",
+                                           entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+            if 'new_player' in self.events['after_init']:
+                player = Loader.load_player(self.events['after_init']['new_player']['name'])
+                player.pos = self.events['after_init']['new_player']['position']
+                self.players.append(player)
+
     def get_next_cases(self, pos):
         tiles = []
         for x in range(-1, 2):
@@ -323,7 +347,7 @@ class Level:
                 case_x = pos[0] + (x * TILE_SIZE)
                 case_y = pos[1] + (y * TILE_SIZE)
                 case_pos = (case_x, case_y)
-                if (0, 0) < case_pos < (self.map['width'], self.map['height']):
+                if (self.map['x'], self.map['y']) < case_pos < (self.map['x'] + self.map['width'], self.map['y'] + self.map['height']):
                     case = self.get_entity_on_case(case_pos)
                     tiles.append(case)
         return tiles
@@ -369,7 +393,9 @@ class Level:
         return set(tiles)
 
     def case_is_empty(self, case):
-        if case < (0, 0) or case > (self.map['x'] + self.map['width'], self.map['y'] + self.map['height']):
+        min_case = (self.map['x'], self.map['y'])
+        max_case = (self.map['x'] + self.map['width'], self.map['y'] + self.map['height'])
+        if not(all([(minimum <= case < maximum) for minimum, case, maximum in zip(min_case, case, max_case)])):
             return False
 
         # Check all entities
@@ -525,7 +551,7 @@ class Level:
                                                          str(remaining_hp) + " HP",
                                  'font': fonts['ITEM_DESC_FONT']}])
 
-        self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDHT,
+        self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
                                    close_button=UNFINAL_ACTION)
 
     def entity_action(self, ent, is_ally):
@@ -591,9 +617,7 @@ class Level:
 
     def execute_main_menu_action(self, method_id, args):
         if method_id is MainMenu.START:
-            self.game_phase = Status.IN_PROGRESS
-            self.active_menu = None
-            self.new_turn()
+            self.start_game()
         elif method_id is MainMenu.SAVE:
             self.save_game()
             self.background_menus.append((self.active_menu, True))
@@ -616,8 +640,8 @@ class Level:
         # Attack action : Character has to choose a target
         if method_id is CharacterMenu.ATTACK:
             self.selected_player.choose_target()
-            w_range = self.selected_player.get_weapon().reach if self.selected_player.get_weapon() is not None else [1]
-            self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], w_range, True)
+            reach = self.selected_player.get_reach()
+            self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], reach, True)
             self.possible_interactions = []
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
@@ -725,10 +749,11 @@ class Level:
                             # Check if player is able to complete this objective
                             if mission.update_state(self.selected_player):
                                 self.players.remove(self.selected_player)
-                                self.entities.remove(self.selected_player)
+                                self.passed_players.append(self.selected_player)
                                 if mission.main and mission.ended:
                                     self.victory = True
                                 # Turn is finished
+                                self.active_menu = None
                                 self.background_menus = []
                                 self.selected_player.turn_finished()
                                 self.selected_player = None
@@ -1114,9 +1139,8 @@ class Level:
                     player.selected = True
                     self.selected_player = player
                     self.possible_moves = self.get_possible_moves(player.pos, player.max_moves)
-                    w = self.selected_player.get_weapon()
-                    w_range = [1] if w is None else w.reach
-                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, w_range, True)
+                    reach = self.selected_player.get_reach()
+                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, reach, True)
                     return
             for foe in self.entities['foes']:
                 if foe.is_on_pos(pos):
@@ -1174,20 +1198,13 @@ class Level:
             if not self.active_menu and not self.selected_player and self.side_turn is EntityTurn.PLAYER:
                 for collection in self.entities.values():
                     for ent in collection:
-                        if ent.get_rect().collidepoint(pos):
+                        if isinstance(ent, Movable) and ent.get_rect().collidepoint(pos):
                             pos = ent.pos
                             self.watched_ent = ent
                             self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
-
-                            w_range = [1]
-                            # TEMPO : Foes don't currently have weapon so it's impossible to test their range
-                            if isinstance(self.watched_ent, Character):
-                                w = self.watched_ent.get_weapon()
-                                if w is not None:
-                                    w_range = w.reach
-
+                            reach = self.watched_ent.get_reach()
                             self.possible_attacks = self.get_possible_attacks(self.possible_moves,
-                                                                              w_range, isinstance(ent, Character))
+                                                                              reach, isinstance(ent, Character))
                             return
 
     def motion(self, pos):

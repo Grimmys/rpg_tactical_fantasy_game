@@ -9,7 +9,8 @@ from src.Equipment import Equipment
 from src.Foe import Foe
 from src.Fountain import Fountain
 from src.Key import Key
-from src.Mission import Mission
+from src.Mission import Mission, MissionType
+from src.Player import Player
 from src.Portal import Portal
 from src.Potion import Potion
 from src.Shield import Shield
@@ -127,6 +128,8 @@ def load_foe(foe, from_save, gap_x, gap_y):
     sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
     xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
     strategy = foes_infos[name].find('strategy').text.strip()
+    foe_range = foes_infos[name].find('reach')
+    reach = [int(reach) for reach in foe_range.text.strip().split(',')] if foe_range is not None else [1]
 
     attack_kind = foes_infos[name].find('attack_kind').text.strip()
 
@@ -140,7 +143,7 @@ def load_foe(foe, from_save, gap_x, gap_y):
     defense = int(stats_tree.find('def').text.strip())
     res = int(stats_tree.find('res').text.strip())
 
-    loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, xp_gain, strategy, lvl)
+    loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, strategy, reach, xp_gain, lvl)
 
     if from_save:
         current_hp = int(foe.find('currentHp').text.strip())
@@ -265,13 +268,13 @@ def load_missions(tree, players, gap_x, gap_y):
     loaded_missions = []
     #  > Load main mission
     main_mission = tree.find('missions/main')
-    nature = main_mission.find('type').text
+    nature = MissionType[main_mission.find('type').text]
     main = True
     positions = []
     desc = main_mission.find('description').text.strip()
     nb_players = len(players)
-    if nature == 'POSITION':
-        for coords in main_mission.xpath('position'):
+    if nature is MissionType.POSITION:
+        for coords in main_mission.findall('position'):
             x = int(coords.find('x').text) * TILE_SIZE + gap_x
             y = int(coords.find('y').text) * TILE_SIZE + gap_y
             pos = (x, y)
@@ -340,23 +343,78 @@ def load_restrictions(restrictions_el):
     classes = restrictions_el.find('classes')
     if classes is not None:
         restrictions['classes'] = classes.text.strip().split(',')
+    races = restrictions_el.find('races')
+    if races is not None:
+        restrictions['races'] = races.text.strip().split(',')
 
     return restrictions
 
 
-def load_events(events_el):
+def load_events(events_el, gap_x, gap_y):
     events = {}
 
-    before_init = events_el.find('beforeInit')
-    if before_init is not None:
-        events['before_init'] = {
-            'dialog': {
-                'title': before_init.find('dialog/title').text.strip(),
-                'talks': [talk.text.strip() for talk in before_init.find('dialog/talks').findall('talk')]
+    for event in events_el:
+        events[event.tag] = {}
+        dialog_el = event.find('dialog')
+        if dialog_el is not None:
+            events[event.tag]['dialog'] = {
+                'title': dialog_el.find('title').text.strip(),
+                'talks': [talk.text.strip() for talk in dialog_el.find('talks').findall('talk')]
             }
-        }
+        new_player_el = event.find('new_player')
+        if new_player_el is not None:
+            events[event.tag]['new_player'] = {
+                'name': new_player_el.find('name').text.strip(),
+                'position': (int(new_player_el.find('position/x').text.strip()) * TILE_SIZE + gap_x,
+                             int(new_player_el.find('position/y').text.strip()) * TILE_SIZE + gap_y)
+            }
 
     return events
+
+
+def load_player(name):
+    # -- Reading of the XML file
+    tree = etree.parse("data/characters.xml").getroot()
+    player_t = tree.xpath(name)[0]
+    player_class = player_t.find('class').text.strip()
+    race = player_t.find('race').text.strip()
+    lvl = player_t.find('level')
+    if lvl is None:
+        # If lvl is not informed, default value is assumes to be 1
+        lvl = 1
+    else:
+        lvl = int(lvl.text.strip())
+    defense = int(player_t.find('initDef').text.strip())
+    res = int(player_t.find('initRes').text.strip())
+    hp = int(player_t.find('initHP').text.strip())
+    strength = int(player_t.find('initStrength').text.strip())
+    move = int(player_t.find('move').text.strip())
+    sprite = 'imgs/dungeon_crawl/player/' + player_t.find('sprite').text.strip()
+    compl_sprite = player_t.find('complementSprite')
+    if compl_sprite is not None:
+        compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
+
+    equipment = player_t.find('equipment')
+    equipments = []
+    for eq in equipment.findall('*'):
+        equipments.append(parse_item_file(eq.text.strip()))
+    gold = int(player_t.find('gold').text.strip())
+
+    # Creating player instance
+    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, race, gold, lvl,
+                    compl_sprite=compl_sprite)
+
+    # Up stats according to current lvl
+    player.stats_up(lvl - 1)
+    # Restore hp due to lvl up
+    player.healed()
+
+    inventory = player_t.find('inventory')
+    for it in inventory.findall('item'):
+        item = parse_item_file(it.text.strip())
+        player.set_item(item)
+
+    return player
 
 
 def parse_item_file(name):
@@ -410,7 +468,7 @@ def parse_item_file(name):
         attack_kind = it_tree_root.find('kind').text.strip()
         weight = int(it_tree_root.find('weight').text.strip())
         fragility = int(it_tree_root.find('fragility').text.strip())
-        w_range = [int(it_tree_root.find('range').text.strip())]
+        w_range = [int(reach) for reach in it_tree_root.find('range').text.strip().split(',')]
         equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
             'equipped_sprite').text.strip()]
         restrictions = load_restrictions(it_tree_root.find('restrictions'))

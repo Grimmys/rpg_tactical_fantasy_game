@@ -1,24 +1,24 @@
-<necrophage>
+<assassin>
     <sprite>
-        undead/necrophage_new.png
+        thugs/basic_assassin.png
     </sprite>
     <move>
-        1
+        4
     </move>
     <hp>
-        10
+        8
     </hp>
     <strength>
-        7
+        5
     </strength>
     <def>
-        0
+        1
     </def>
     <res>
         0
     </res>
     <xp_gain>
-        13
+        15
     </xp_gain>
     <strategy>
         SEMI_ACTIVE
@@ -26,4 +26,4 @@
     <attack_kind>
         PHYSICAL
     </attack_kind>
-</necrophage>
+</assassin>

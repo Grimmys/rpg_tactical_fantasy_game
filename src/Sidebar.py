@@ -26,11 +26,6 @@ class Sidebar:
         self.pos = pos
         self.sprite = pg.transform.scale(pg.image.load(SIDEBAR_SPRITE).convert_alpha(), size)
         self.missions = missions
-        for mission in self.missions:
-            if mission.main:
-                self.main_mission = mission
-                self.missions.remove(mission)
-                break
 
     @staticmethod
     def determine_hp_color(hp, hp_max):
@@ -58,14 +53,18 @@ class Sidebar:
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 50))
 
         # Missions
-        main_mission_text = fonts['MENU_TITLE_FONT'].render("MAIN MISSION", 1, BLACK)
-        win.blit(main_mission_text, (self.pos[0] + self.size[0] - 250,
-                                     self.pos[1] + 10))
+        for mission in self.missions:
+            if mission.main:
+                main_mission_text = fonts['MENU_TITLE_FONT'].render("MAIN MISSION", 1, BLACK)
+                win.blit(main_mission_text, (self.pos[0] + self.size[0] - 250,
+                                             self.pos[1] + 10))
 
-        mission_color = DARK_GREEN if self.main_mission.ended else BROWN_RED
-        main_mission_desc = fonts['MISSION_FONT'].render("> " + self.main_mission.desc, 1, mission_color)
-        win.blit(main_mission_desc, (self.pos[0] + self.size[0] - 230,
-                                     self.pos[1] + 10 + main_mission_text.get_height()))
+                mission_color = DARK_GREEN if mission.ended else BROWN_RED
+                main_mission_desc = fonts['MISSION_FONT'].render("> " + mission.desc, 1, mission_color)
+                win.blit(main_mission_desc, (self.pos[0] + self.size[0] - 230,
+                                             self.pos[1] + 10 + main_mission_text.get_height()))
+            else:
+                print("SECONDARY MISSION DISPLAY : TODO")
 
         # Display the current information about the entity hovered
         if ent:

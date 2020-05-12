@@ -355,6 +355,9 @@
             <equipped_sprite>
                 body/chainmail_3.png
             </equipped_sprite>
+            <price>
+                500
+            </price>
         </chainmail>
         <leather_armor>
             <name>
@@ -386,6 +389,35 @@
                 350
             </price>
         </leather_armor>
+        <scale_mail>
+            <name>
+                Scale mail
+            </name>
+            <sprite>
+                armor/torso/scale_mail_1_new.png
+            </sprite>
+            <info>
+                A veritable scale mail. Particularly useful for avoiding arrows.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                body
+            </bodypart>
+            <def>
+                3
+            </def>
+            <weight>
+                4
+            </weight>
+            <equipped_sprite>
+                body/scalemail.png
+            </equipped_sprite>
+            <price>
+                750
+            </price>
+        </scale_mail>
         <gold_armor>
             <name>
                 Gold Armor
@@ -412,6 +444,37 @@
                 body/armor_mummy.png
             </equipped_sprite>
         </gold_armor>
+        <barding_magenta>
+            <name>
+                Barding Magenta
+            </name>
+            <sprite>
+                armor/bardings/centaur_barding_magenta.png
+            </sprite>
+            <info>
+                Armor reserved to centaur. Not really efficient, but very elegant.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                body
+            </bodypart>
+            <def>
+                2
+            </def>
+            <weight>
+                3
+            </weight>
+            <equipped_sprite>
+                barding/centaur_barding_magenta.png
+            </equipped_sprite>
+            <restrictions>
+                <races>
+                    centaur
+                </races>
+            </restrictions>
+        </barding_magenta>
         <brown_boots>
             <name>
                 Brown Boots
@@ -468,33 +531,33 @@
             </equipped_sprite>
         </gold_boots>
         <wooden_shield>
-                <name>
-                    Wooden Shield
-                </name>
-                <sprite>
-                    armor/shields/buckler_1_new.png
-                </sprite>
-                <info>
-                    A small light shield that could help dodging attacks.
-                </info>
-                <category>
-                    shield
-                </category>
-                <parry_rate>
-                    0.15
-                </parry_rate>
-                <fragility>
-                    15
-                </fragility>
-                <weight>
-                    2
-                </weight>
-                <equipped_sprite>
-                    buckler_round_3.png
-                </equipped_sprite>
-                <price>
-                    400
-                </price>
-            </wooden_shield>
+            <name>
+                Wooden Shield
+            </name>
+            <sprite>
+                armor/shields/buckler_1_new.png
+            </sprite>
+            <info>
+                A small light shield that could help dodging attacks.
+            </info>
+            <category>
+                shield
+            </category>
+            <parry_rate>
+                0.15
+            </parry_rate>
+            <fragility>
+                10
+            </fragility>
+            <weight>
+                2
+            </weight>
+            <equipped_sprite>
+                buckler_round_3.png
+            </equipped_sprite>
+            <price>
+                400
+            </price>
+        </wooden_shield>
     </equipments>
 </items>

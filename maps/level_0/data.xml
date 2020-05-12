@@ -21,7 +21,7 @@
         </position>
     </placementArea>
     <events>
-        <beforeInit>
+        <before_init>
             <dialog>
                 <title>Jist</title>
                 <talks>
@@ -38,11 +38,11 @@
                         You must take them back to their place in the necropolis. The necropolis is far to the west of here.
                     </talk>
                     <talk>
-                        Good luck, adventurers.
+                        Good luck, adventurers. All the inhabitants of Nervie are behind you.
                     </talk>
                 </talks>
             </dialog>
-        </beforeInit>
+        </before_init>
     </events>
     <chests>
         <chest>

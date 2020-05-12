@@ -28,7 +28,7 @@
         <class> warrior </class>
         <race> human </race>
         <lvl> 1 </lvl>
-        <initStrength> 1 </initStrength>
+        <initStrength> 3 </initStrength>
         <initDef> 0 </initDef>
         <initRes> 0 </initRes>
         <initHP> 10 </initHP>
@@ -55,9 +55,6 @@
                 <item>
                     key
                 </item>
-                <item>
-                    wooden_shield
-                </item>
         </inventory>
         <gold> 250 </gold>
     </john>
@@ -65,7 +62,7 @@
         <name> archer </name>
         <class> ranger </class>
         <race> elf </race>
-        <initStrength> 1 </initStrength>
+        <initStrength> 2 </initStrength>
         <initDef> 1 </initDef>
         <initRes> 0 </initRes>
         <initHP> 8 </initHP>
@@ -80,7 +77,7 @@
                 leather_armor
             </body>
             <right_hand>
-                    basic_bow
+                basic_bow
             </right_hand>
             <feet>
                 brown_boots
@@ -93,4 +90,30 @@
         </inventory>
         <gold> 250 </gold>
     </archer>
+    <chrisemon>
+        <name> chrisemon </name>
+        <class> warrior </class>
+        <race> centaur </race>
+        <initStrength> 3 </initStrength>
+        <initDef> 2 </initDef>
+        <initRes> 0 </initRes>
+        <initHP> 12 </initHP>
+        <move> 8 </move>
+        <level> 3 </level>
+        <sprite> base/centaur_brown_male.png</sprite>
+        <equipment>
+            <body>
+                barding_magenta
+            </body>
+            <right_hand>
+                short_sword
+            </right_hand>
+        </equipment>
+        <inventory>
+            <item>
+                life_potion
+            </item>
+        </inventory>
+        <gold> 400 </gold>
+    </chrisemon>
 </characters>

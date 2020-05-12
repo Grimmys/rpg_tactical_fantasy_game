@@ -4,9 +4,13 @@ from src.Movable import Movable
 
 
 class Foe(Movable):
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, xp_gain, strategy, lvl=1):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, reach, xp_gain, lvl=1):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl)
+        self.reach = reach
         self.xp_gain = int(xp_gain * (1.1 ** (lvl - 1)))
+
+    def get_reach(self):
+        return self.reach
 
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):

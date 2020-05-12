@@ -1,26 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level>
+    <width>20</width>
+    <height>10</height>
     <placementArea>
         <position>
-            <x>15</x>
-            <y>7</y>
+            <x>9</x>
+            <y>4</y>
         </position>
         <position>
-            <x>15</x>
-            <y>8</y>
+            <x>10</x>
+            <y>4</y>
         </position>
         <position>
-            <x>16</x>
-            <y>7</y>
+            <x>10</x>
+            <y>5</y>
         </position>
         <position>
-            <x>16</x>
-            <y>8</y>
+            <x>9</x>
+            <y>5</y>
         </position>
     </placementArea>
+    <events>
+        <before_init>
+            <dialog>
+                <title>Assassin</title>
+                <talks>
+                    <talk>
+                        You will not deliver the bones to the necropolis ! Never !
+                    </talk>
+                    <talk>
+                        We have been sent to retrieve the remains. In any case, they shouldn't be replace in the necropolis.
+                    </talk>
+                    <talk>
+                        Prepare to die !
+                    </talk>
+                </talks>
+            </dialog>
+        </before_init>
+        <after_init>
+            <dialog>
+                <title>Chrisemon</title>
+                <talks>
+                    <talk>
+                        Hello dear adventurers !
+                    </talk>
+                    <talk>
+                        I'm Chrisemon, a courageous centaur who travels around the world.
+                    </talk>
+                    <talk>
+                        Not long ago, I got to Nervie... I heard about the so bad tale. And I heard about a team of heroes trying to save the vilage.
+                    </talk>
+                    <talk>
+                        Chrisemon is not a craven. Please, let me help you in your quest.
+                    </talk>
+                </talks>
+            </dialog>
+            <new_player>
+                <name>chrisemon</name>
+                <position>
+                    <x>19</x>
+                    <y>4</y>
+                </position>
+            </new_player>
+        </after_init>
+    </events>
     <chests>
         <chest>
-            <id> 1 </id>
             <closed>
                 <sprite>
                     imgs/dungeon_crawl/dungeon/chest_2_closed.png
@@ -34,77 +79,107 @@
             <contains>
                 <item>
                     <probability>
-                        1.0
+                        0.6
                     </probability>
                     <name>
-                        life_potion
+                        short_sword
+                    </name>
+                </item>
+                <item>
+                    <probability>
+                        0.6
+                    </probability>
+                    <name>
+                        wooden_shield
                     </name>
                 </item>
             </contains>
             <position>
-                <x>10</x>
+                <x>2</x>
                 <y>1</y>
             </position>
         </chest>
     </chests>
-    <allies>
-        <ally>
+    <foes>
+        <foe>
             <name>
-                jist
+                assassin
             </name>
             <position>
-                <x>15</x>
-                <y>6</y>
+                <x>0</x>
+                <y>2</y>
             </position>
             <level>
                 1
             </level>
-        </ally>
-    </allies>
-    <foes>
+        </foe>
         <foe>
             <name>
-                skeleton
+                assassin
+            </name>
+            <position>
+                <x>3</x>
+                <y>0</y>
+            </position>
+            <level>
+                1
+            </level>
+        </foe>
+        <foe>
+            <name>
+                assassin
+            </name>
+            <position>
+                <x>4</x>
+                <y>5</y>
+            </position>
+            <level>
+                3
+            </level>
+        </foe>
+        <foe>
+            <name>
+                assassin
+            </name>
+            <position>
+                <x>5</x>
+                <y>4</y>
+            </position>
+            <level>
+                1
+            </level>
+        </foe>
+        <foe>
+            <name>
+                assassin
             </name>
             <position>
                 <x>14</x>
                 <y>5</y>
             </position>
             <level>
-                1
+                2
             </level>
         </foe>
         <foe>
             <name>
-                skeleton
+                assassin
             </name>
             <position>
-                <x>13</x>
-                <y>6</y>
-            </position>
-            <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                skeleton
-            </name>
-            <position>
-                <x>13</x>
+                <x>17</x>
                 <y>1</y>
             </position>
             <level>
-                1
+                3
             </level>
         </foe>
         <foe>
             <name>
-                skeleton
+                assassin
             </name>
             <position>
-                <x>8</x>
-                <y>3</y>
+                <x>18</x>
+                <y>8</y>
             </position>
             <level>
                 1
@@ -112,35 +187,11 @@
         </foe>
         <foe>
             <name>
-                skeleton
-            </name>
-            <position>
-                <x>7</x>
-                <y>5</y>
-            </position>
-            <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                skeleton
-            </name>
-            <position>
-                <x>2</x>
-                <y>1</y>
-            </position>
-            <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                necrophage
+                cultist
             </name>
             <position>
                 <x>15</x>
-                <y>1</y>
+                <y>8</y>
             </position>
             <level>
                 1
@@ -148,264 +199,49 @@
         </foe>
         <foe>
             <name>
-                necrophage
+                cultist
             </name>
             <position>
-                <x>12</x>
-                <y>3</y>
+                <x>1</x>
+                <y>6</y>
             </position>
             <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                necrophage
-            </name>
-            <position>
-                <x>6</x>
-                <y>2</y>
-            </position>
-            <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                necrophage
-            </name>
-            <position>
-                <x>3</x>
-                <y>4</y>
-            </position>
-            <level>
-                1
+                2
             </level>
         </foe>
     </foes>
-    <buildings>
-        <building>
-            <name>
-                house
-            </name>
-            <id> 1 </id>
-            <position>
-                <x>6</x>
-                <y>6</y>
-            </position>
-            <sprite>blue_house.png</sprite>
-            <interaction>
-                <talks>
-                    <talk>
-                        Are you the group of adventurers in charge of saving us from this hordes of undeads ?
-                    </talk>
-                    <talk>
-                        Please, take this gold... I'm sure you will use it well.
-                    </talk>
-                </talks>
-                <gold>
-                    500
-                </gold>
-            </interaction>
-        </building>
-        <building>
-            <name>
-                house
-            </name>
-            <id> 2 </id>
-            <position>
-                <x>7</x>
-                <y>1</y>
-            </position>
-            <sprite>blue_house_side.png</sprite>
-            <uninteractable />
-        </building>
-        <building>
-            <name>
-                house
-            </name>
-            <id> 3 </id>
-            <position>
-                <x>9</x>
-                <y>2</y>
-            </position>
-            <sprite>yellow_house.png</sprite>
-            <interaction>
-                <talks>
-                    <talk>
-                        No ! I won't let undeads like you kill me !
-                    </talk>
-                    <talk>
-                        GO AWAY !!!
-                    </talk>
-                    <talk>
-                        [A knife is thrown at you]
-                    </talk>
-                </talks>
-                <item>
-                    pocket_knife
-                </item>
-            </interaction>
-        </building>
-        <building>
-            <name>
-                house
-            </name>
-            <id> 4 </id>
-            <position>
-                <x>11</x>
-                <y>4</y>
-            </position>
-            <sprite>red_house.png</sprite>
-            <interaction>
-                <talks>
-                    <talk>
-                        I'm sorry, but I can't let you enter in my house...
-                    </talk>
-                    <talk>
-                        It's not safe here anymore ! I have to stay locked up for a while.
-                    </talk>
-                </talks>
-            </interaction>
-        </building>
-        <building>
-            <name>
-                tavern
-            </name>
-            <id> 1 </id>
-            <position>
-                <x>15</x>
-                <y>5</y>
-            </position>
-            <sprite>tavern.png</sprite>
-            <uninteractable />
-        </building>
-        <building>
-            <type>
-                shop
-            </type>
-            <name>
-                shop
-            </name>
-            <id> 1 </id>
-            <position>
-                <x>13</x>
-                <y>0</y>
-            </position>
-            <sprite>shop.png</sprite>
-            <items>
-                <item>
-                    <name>
-                        life_potion
-                    </name>
-                </item>
-                <item>
-                    <name>
-                        short_sword
-                    </name>
-                </item>
-                <item>
-                    <name>
-                        wooden_shield
-                    </name>
-                </item>
-            </items>
-        </building>
-    </buildings>
     <obstacles>
-        <positions>
-            <x>0</x>
-            <from_y>2</from_y>
-            <to_y>3</to_y>
-        </positions>
-        <positions>
-            <x>18</x>
-            <from_y>0</from_y>
-            <to_y>9</to_y>
-        </positions>
-        <positions>
+        <position>
             <x>1</x>
-            <from_y>4</from_y>
-            <to_y>9</to_y>
-        </positions>
-        <positions>
-            <from_x>1</from_x>
-            <to_x>19</to_x>
-            <y>0</y>
-        </positions>
-        <positions>
-            <from_x>1</from_x>
-            <to_x>19</to_x>
-            <y>9</y>
-        </positions>
-        <positions>
-            <x>1</x>
-            <from_y>0</from_y>
-            <to_y>1</to_y>
-        </positions>
+            <y>2</y>
+        </position>
+        <position>
+            <x>2</x>
+            <y>2</y>
+        </position>
         <position>
             <x>3</x>
             <y>1</y>
-        </position>
-        <position>
-            <x>4</x>
-            <y>2</y>
-        </position>
-        <position>
-            <x>5</x>
-            <y>1</y>
-        </position>
-        <position>
-            <x>6</x>
-            <y>1</y>
-        </position>
-        <position>
-            <x>8</x>
-            <y>2</y>
-        </position>
-        <position>
-            <x>9</x>
-            <y>1</y>
-        </position>
-        <position>
-            <x>10</x>
-            <y>2</y>
-        </position>
-        <position>
-            <x>12</x>
-            <y>1</y>
-        </position>
-        <position>
-            <x>13</x>
-            <y>2</y>
-        </position>
-        <position>
-            <x>16</x>
-            <y>3</y>
-        </position>
-        <position>
-            <x>17</x>
-            <y>2</y>
         </position>
         <position>
             <x>2</x>
             <y>7</y>
         </position>
         <position>
-            <x>3</x>
-            <y>8</y>
+            <x>6</x>
+            <y>1</y>
         </position>
         <position>
             <x>5</x>
             <y>8</y>
         </position>
         <position>
-            <x>7</x>
+            <x>6</x>
             <y>8</y>
         </position>
         <position>
             <x>8</x>
-            <y>7</y>
+            <y>2</y>
         </position>
         <position>
             <x>9</x>
@@ -413,31 +249,54 @@
         </position>
         <position>
             <x>10</x>
-            <y>7</y>
+            <y>1</y>
+        </position>
+        <position>
+            <x>11</x>
+            <y>2</y>
         </position>
         <position>
             <x>11</x>
             <y>8</y>
         </position>
         <position>
+            <x>12</x>
+            <y>7</y>
+        </position>
+        <position>
             <x>13</x>
-            <y>8</y>
+            <y>0</y>
+        </position>
+        <position>
+            <x>14</x>
+            <y>1</y>
+        </position>
+        <position>
+            <x>17</x>
+            <y>2</y>
+        </position>
+        <position>
+            <x>18</x>
+            <y>3</y>
+        </position>
+        <position>
+            <x>16</x>
+            <y>7</y>
         </position>
     </obstacles>
     <missions>
         <main>
-            <type>POSITION</type>
+            <type>KILL_EVERYBODY</type>
             <description>
-                Leave the village
+                Defeat the thugs
             </description>
-            <position>
-                <x>1</x>
-                <y>2</y>
-            </position>
-            <position>
-                <x>1</x>
-                <y>3</y>
-            </position>
         </main>
+        <mission>
+            <type>MAIN_TURN_LIMIT</type>
+            <description>
+                Win before 8 turns
+            </description>
+            <turns>8</turns>
+        </mission>
     </missions>
 </level>

@@ -26,7 +26,7 @@ class StartScreen:
         # Memorize if a game is currently being performed
         self.level = None
 
-        self.levels = [0, 1, 2]
+        self.levels = [0, 1]
         self.level_id = None
 
         # Load current saved parameters
@@ -113,7 +113,12 @@ class StartScreen:
             if status is Status.ENDED_VICTORY:
                 self.level_id += 1
                 if self.level_id in self.levels:
-                    team = [self.init_player("john"), self.init_player("archer")]
+                    team = self.level.passed_players
+                    for player in team:
+                        # Players are fully restored between level
+                        player.healed(player.hp_max)
+                        # Reset player's state
+                        player.new_turn()
                     self.play(StartScreen.load_level(self.level_id, team))
                 else:
                     # TODO: Game win dialog?
@@ -124,57 +129,12 @@ class StartScreen:
                 self.level = None
 
     @staticmethod
-    def init_player(name):
-        # -- Reading of the XML file
-        tree = etree.parse("data/characters.xml").getroot()
-        player_t = tree.xpath(name)[0]
-        player_class = player_t.find('class').text.strip()
-        race = player_t.find('race').text.strip()
-        lvl = player_t.find('lvl')
-        if lvl is None:
-            # If lvl is not informed, default value is assumes to be 1
-            lvl = 1
-        else:
-            lvl = int(lvl.text.strip())
-        defense = int(player_t.find('initDef').text.strip())
-        res = int(player_t.find('initRes').text.strip())
-        hp = int(player_t.find('initHP').text.strip())
-        strength = int(player_t.find('initStrength').text.strip())
-        move = int(player_t.find('move').text.strip())
-        sprite = 'imgs/dungeon_crawl/player/' + player_t.find('sprite').text.strip()
-        compl_sprite = player_t.find('complementSprite')
-        if compl_sprite is not None:
-            compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
-
-        equipment = player_t.find('equipment')
-        equipments = []
-        for eq in equipment.findall('*'):
-            equipments.append(LoadFromXMLManager.parse_item_file(eq.text.strip()))
-        gold = int(player_t.find('gold').text.strip())
-
-        # Creating player instance
-        player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, race, gold, lvl,
-                        compl_sprite=compl_sprite)
-
-        # Up stats according to current lvl
-        player.stats_up(lvl - 1)
-        # Restore hp due to lvl up
-        player.healed()
-
-        inventory = player_t.find('inventory')
-        for it in inventory.findall('item'):
-            item = LoadFromXMLManager.parse_item_file(it.text.strip())
-            player.set_item(item)
-
-        return player
-
-    @staticmethod
     def load_level(level, team):
         return Level('maps/level_' + str(level) + '/', team, level)
 
     def new_game(self):
         # Init player's team (one character at beginning)
-        team = [self.init_player("john"), self.init_player("archer")]
+        team = [LoadFromXMLManager.load_player("john"), LoadFromXMLManager.load_player("archer")]
 
         # Init the first level
         self.level_id = 0

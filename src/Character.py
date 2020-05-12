@@ -4,6 +4,7 @@ import random as rd
 from src.Shield import Shield
 from src.Movable import Movable
 from src.Destroyable import DamageKind
+from src.Weapon import Weapon
 from src.fonts import fonts
 
 
@@ -64,15 +65,15 @@ class Character(Movable):
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):
             if self.classes[0] == 'warrior':
-                self.hp_max += rd.randrange(1, 5)  # Gain between 0 and 4
-                self.defense += rd.randrange(0, 3)  # Gain between 0 and 2
-                self.res += rd.randrange(0, 2)  # Gain between 0 and 1
-                self.strength += rd.randrange(0, 3)  # Gain between 0 and 2
+                self.hp_max += rd.randint(1, 4)  # Gain between 1 and 4
+                self.defense += rd.randint(0, 2)  # Gain between 0 and 2
+                self.res += rd.randint(0, 1)  # Gain between 0 and 1
+                self.strength += rd.randint(0, 2)  # Gain between 0 and 2
             elif self.classes[0] == 'ranger':
-                self.hp_max += rd.randrange(1, 5)  # Gain between 0 and 4
-                self.defense += rd.randrange(0, 4)  # Gain between 0 and 3
-                self.res += rd.randrange(0, 2)  # Gain between 0 and 1
-                self.strength += rd.randrange(0, 2)  # Gain between 0 and 1
+                self.hp_max += rd.randint(1, 4)  # Gain between 1 and 4
+                self.defense += rd.randint(0, 3)  # Gain between 0 and 3
+                self.res += rd.randint(0, 1)  # Gain between 0 and 1
+                self.strength += rd.randint(0, 1)  # Gain between 0 and 1
             else:
                 print("Error : Invalid class")
 
@@ -81,6 +82,13 @@ class Character(Movable):
             if eq.body_part == 'right_hand':
                 return eq
         return None
+
+    def get_reach(self):
+        reach = Movable.get_reach(self)
+        w = self.get_weapon()
+        if w is not None:
+            reach = w.reach
+        return reach
 
     def get_equipment(self, index):
         if index not in range(len(self.equipments)):
@@ -102,14 +110,22 @@ class Character(Movable):
         return self.race.capitalize()
 
     def equip(self, eq):
-        #Verify if player could wear this equipment
+        # Verify if player could wear this equipment
         allowed = True
+        if self.race == 'centaur' and not(isinstance(eq, Weapon) or isinstance(eq, Shield)):
+            allowed = False
         if eq.restrictions != {}:
             allowed = False
-            if 'classes' in eq.restrictions:
+            if 'classes' in eq.restrictions and self.race != 'centaur':
                 for cl in eq.restrictions['classes']:
                     if cl in self.classes:
                         allowed = True
+                        break
+            if 'races' in eq.restrictions:
+                for race in eq.restrictions['races']:
+                    if race == self.race:
+                        allowed = True
+                        break
 
         if allowed:
             self.remove_item(eq)
