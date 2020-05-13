@@ -14,7 +14,7 @@ class Building(Entity):
     def interact(self, actor):
         entries = []
 
-        if self.interaction is None:
+        if not self.interaction:
             entries.append([{'type': 'text', 'text': 'This house seems closed...', 'font': fonts['ITEM_DESC_FONT']}])
         else:
             for talk in self.interaction['talks']:

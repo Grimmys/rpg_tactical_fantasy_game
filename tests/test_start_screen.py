@@ -6,11 +6,12 @@ from pygame.rect import Rect
 from random import randrange
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.StartScreen import StartScreen
 
-NEW_GAME_BUTTON_POS = (325, 341)
-LOAD_GAME_BUTTON_POS = (325, 381)
-OPTIONS_BUTTON_POS = (325, 421)
-EXIT_GAME_BUTTON_POS = (325, 461)
+NEW_GAME_BUTTON_POS = (325, 349)
+LOAD_GAME_BUTTON_POS = (325, 389)
+OPTIONS_BUTTON_POS = (325, 429)
+EXIT_GAME_BUTTON_POS = (325, 469)
 BUTTON_SIZE = (150, 30)
 
 LEFT_BUTTON = 1
@@ -21,10 +22,12 @@ RIGHT_BUTTON = 3
 class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from src.Level import Level
         import src.fonts as font
         os.chdir(os.getcwd() + '/..')
         pg.init()
         font.init_fonts()
+        cls.level_class = Level
         cls.buttons = []
         cls.buttons.append(Rect(NEW_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
         cls.buttons.append(Rect(LOAD_GAME_BUTTON_POS[0], LOAD_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
@@ -43,12 +46,6 @@ class TestStartScreen(unittest.TestCase):
     def setUp(self):
         # Window parameters
         screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-
-        from src.Level import Level
-        self.level_class = Level
-
-        from src.StartScreen import StartScreen
-
         self.start_screen = StartScreen(screen)
         self.start_screen.display()
 
