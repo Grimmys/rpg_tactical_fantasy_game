@@ -1,0 +1,15 @@
+<classes>
+    <innkeeper>
+
+    </innkeeper>
+    <warrior>
+        <constitution>
+            5
+        </constitution>
+    </warrior>
+    <ranger>
+        <constitution>
+            2
+        </constitution>
+    </ranger>
+</classes>

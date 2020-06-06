@@ -135,6 +135,11 @@ def determine_hp_color(hp, hp_max):
 
 
 def create_status_menu(player):
+    move_malus = player.get_move_malus()
+    max_moves = str(player.max_moves)
+    if move_malus > 0:
+        max_moves += ' (- ' + str(move_malus) + ')'
+
     entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_name()}],
                [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
@@ -151,7 +156,9 @@ def create_status_menu(player):
                 {'type': 'text', 'text': str(player.hp) + ' / ' + str(player.hp_max),
                  'color': determine_hp_color(player.hp, player.hp_max)}],
                [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
-                {'type': 'text', 'text': str(player.max_moves)}],
+                {'type': 'text', 'text': max_moves}],
+               [{'type': 'text', 'color': WHITE, 'text': 'CONSTITUTION :'},
+                {'type': 'text', 'text': str(player.constitution)}],
                [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
                 {'type': 'text', 'text': str(player.strength)}],
                [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},

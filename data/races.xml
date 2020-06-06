@@ -1,0 +1,17 @@
+<races>
+    <human>
+        <constitution>
+            10
+        </constitution>
+    </human>
+    <elf>
+        <constitution>
+            8
+        </constitution>
+    </elf>
+    <centaur>
+        <constitution>
+            12
+        </constitution>
+    </centaur>
+</races>

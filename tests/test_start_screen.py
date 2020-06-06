@@ -23,6 +23,8 @@ class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from src.Level import Level
+        from src.Character import Character
+        from src import LoadFromXMLManager as Loader
         import src.fonts as font
         os.chdir(os.getcwd() + '/..')
         pg.init()
@@ -33,6 +35,9 @@ class TestStartScreen(unittest.TestCase):
         cls.buttons.append(Rect(LOAD_GAME_BUTTON_POS[0], LOAD_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
         cls.buttons.append(Rect(OPTIONS_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
         cls.buttons.append(Rect(EXIT_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
+        races = Loader.load_races()
+        classes = Loader.load_classes()
+        Character.init_data(races, classes)
 
     @staticmethod
     def generate_position(start_pos, end_pos):

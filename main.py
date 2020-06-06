@@ -1,6 +1,3 @@
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
-
-
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
@@ -13,9 +10,11 @@ if __name__ == "__main__":
     from src.Destroyable import Destroyable
     from src.Breakable import Breakable
     from src.Movable import Movable
+    from src.Character import Character
     from src.Sidebar import Sidebar
     from src.Level import Level
     from src.StartScreen import StartScreen
+    from src import LoadFromXMLManager as Loader
 
     pg.init()
 
@@ -32,6 +31,11 @@ if __name__ == "__main__":
     Movable.init_constant_sprites()
     Sidebar.init_constant_sprites()
     Level.init_constant_sprites()
+
+    # Load some data
+    races = Loader.load_races()
+    classes = Loader.load_classes()
+    Character.init_data(races, classes)
 
     clock = pg.time.Clock()
 

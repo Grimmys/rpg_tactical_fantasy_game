@@ -1,8 +1,9 @@
 from lxml import etree
 
 from src.Breakable import Breakable
-from src.Building import Building
 from src.Character import Character
+from src.Player import Player
+from src.Building import Building
 from src.Chest import Chest
 from src.Effect import Effect
 from src.Equipment import Equipment
@@ -10,7 +11,6 @@ from src.Foe import Foe
 from src.Fountain import Fountain
 from src.Key import Key
 from src.Mission import Mission, MissionType
-from src.Player import Player
 from src.Portal import Portal
 from src.Potion import Potion
 from src.Shield import Shield
@@ -21,6 +21,31 @@ from src.constants import TILE_SIZE
 
 foes_infos = {}
 fountains_infos = {}
+
+RACES_PATH = 'data/races.xml'
+CLASSES_PATH = 'data/classes.xml'
+
+
+def load_races():
+    races = {}
+    races_file = etree.parse(RACES_PATH).getroot()
+    for race_el in races_file.findall('*'):
+        race = {}
+        cons = race_el.find('constitution')
+        race['constitution'] = int(cons.text.strip()) if cons != None else 0
+        races[race_el.tag] = race
+    return races
+
+
+def load_classes():
+    classes = {}
+    classes_file = etree.parse(CLASSES_PATH).getroot()
+    for cl_el in classes_file.findall('*'):
+        cl = {}
+        cons = cl_el.find('constitution')
+        cl['constitution'] = int(cons.text.strip()) if cons != None else 0
+        classes[cl_el.tag] = cl
+    return classes
 
 
 def load_placements(positions, gap_x, gap_y):
@@ -34,13 +59,13 @@ def load_placements(positions, gap_x, gap_y):
 
 
 def load_all_entities(data, from_save, gap_x, gap_y):
-    return {'allies': load_entities(Character, data.findall('allies/ally'), from_save, gap_x, gap_y),
-            'foes': load_entities(Foe, data.findall('foes/foe'), from_save, gap_x, gap_y),
-            'breakables': load_entities(Breakable, data.findall('breakables/breakable'), from_save, gap_x, gap_y),
-            'chests': load_entities(Chest, data.findall('chests/chest'), from_save, gap_x, gap_y),
-            'buildings': load_entities(Building, data.findall('buildings/building'), from_save, gap_x, gap_y),
-            'fountains': load_entities(Fountain, data.findall('fountains/fountain'), from_save, gap_x, gap_y),
-            'portals': load_entities(Portal, data.findall('portals/couple'), from_save, gap_x, gap_y)
+    return {'allies': load_entities('character', data.findall('allies/ally'), from_save, gap_x, gap_y),
+            'foes': load_entities('foe', data.findall('foes/foe'), from_save, gap_x, gap_y),
+            'breakables': load_entities('breakable', data.findall('breakables/breakable'), from_save, gap_x, gap_y),
+            'chests': load_entities('chest', data.findall('chests/chest'), from_save, gap_x, gap_y),
+            'buildings': load_entities('building', data.findall('buildings/building'), from_save, gap_x, gap_y),
+            'fountains': load_entities('fountain', data.findall('fountains/fountain'), from_save, gap_x, gap_y),
+            'portals': load_entities('portal', data.findall('portals/couple'), from_save, gap_x, gap_y)
             }
 
 
@@ -48,20 +73,20 @@ def load_entities(ent_nature, data, from_save, gap_x, gap_y):
     collection = []
 
     for el in data:
-        if ent_nature is Character:
+        if ent_nature == 'character':
             ent = load_ally(el, from_save, gap_x, gap_y)
-        elif ent_nature is Foe:
+        elif ent_nature == 'foe':
             ent = load_foe(el, from_save, gap_x, gap_y)
-        elif ent_nature is Chest:
+        elif ent_nature == 'chest':
             ent = load_chest(el, from_save, gap_x, gap_y)
-        elif ent_nature is Building:
+        elif ent_nature == 'building':
             ent = load_building(el, from_save, gap_x, gap_y)
-        elif ent_nature is Portal:
+        elif ent_nature == 'portal':
             ent, ent2 = load_portal(el, gap_x, gap_y)
             collection.append(ent2)
-        elif ent_nature is Fountain:
+        elif ent_nature == 'fountain':
             ent = load_fountain(el, from_save, gap_x, gap_y)
-        elif ent_nature is Breakable:
+        elif ent_nature == 'breakable':
             ent = load_breakable(el, gap_x, gap_y)
         else:
             print("Unrecognized nature : " + str(ent_nature))
@@ -82,6 +107,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
     # Static data
     sprite = 'imgs/characs/' + infos.find('sprite').text.strip()
     race = infos.find('race').text.strip()
+    classes = [infos.find('class').text.strip()]
     formatted_name = infos.find('name').text.strip()
 
     talks = infos.find('talks')
@@ -103,7 +129,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
     gold = int(stats_tree.find('gold').text.strip())
 
     loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
-                            [], [], strategy, lvl, race, gold, dialog)
+                            classes, [], strategy, lvl, race, gold, dialog)
 
     if from_save:
         current_hp = int(ally.find('currentHp').text.strip())

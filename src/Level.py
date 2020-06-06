@@ -1138,7 +1138,7 @@ class Level:
                 if player.is_on_pos(pos) and not player.turn_is_finished():
                     player.selected = True
                     self.selected_player = player
-                    self.possible_moves = self.get_possible_moves(player.pos, player.max_moves)
+                    self.possible_moves = self.get_possible_moves(player.pos, player.max_moves - player.get_move_malus())
                     reach = self.selected_player.get_reach()
                     self.possible_attacks = self.get_possible_attacks(self.possible_moves, reach, True)
                     return

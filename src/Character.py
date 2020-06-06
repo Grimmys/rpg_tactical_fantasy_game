@@ -1,3 +1,5 @@
+import math
+
 from lxml import etree
 import random as rd
 
@@ -9,6 +11,11 @@ from src.fonts import fonts
 
 
 class Character(Movable):
+    @staticmethod
+    def init_data(races, classes):
+        Character.races_data = races
+        Character.classes_data = classes
+
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments,
                  strategy, lvl, race, gold, talk, compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy,
@@ -18,6 +25,8 @@ class Character(Movable):
         self.race = race
         self.gold = gold
         self.dialog = talk
+        self.constitution = Character.races_data[race]['constitution'] + \
+                            Character.classes_data[classes[0]]['constitution']
 
     def talk(self, actor):
         entries = []
@@ -112,7 +121,7 @@ class Character(Movable):
     def equip(self, eq):
         # Verify if player could wear this equipment
         allowed = True
-        if self.race == 'centaur' and not(isinstance(eq, Weapon) or isinstance(eq, Shield)):
+        if self.race == 'centaur' and not (isinstance(eq, Weapon) or isinstance(eq, Shield)):
             allowed = False
         if eq.restrictions != {}:
             allowed = False
@@ -151,6 +160,12 @@ class Character(Movable):
         for index, equip in enumerate(self.equipments):
             if equip.id == eq.id:
                 return self.equipments.pop(index)
+
+    def get_move_malus(self):
+        # Check if character as a malus to his movement due to equipment total weight exceeding constitution
+        total_weight = sum([eq.weight for eq in self.equipments])
+        diff = total_weight - self.constitution
+        return 0 if diff < 0 else math.ceil(diff / 2)
 
     def save(self, tree_name):
         tree = Movable.save(self, tree_name)
