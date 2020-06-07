@@ -107,6 +107,16 @@ def create_trade_menu(first_player, second_player):
                 row.append(entry)
         entries.append(row)
 
+    # Buttons to trade gold
+    method_id = TradeMenu.SEND_GOLD
+    entry = [{'type': 'button', 'name': '50G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, 50]},
+             {'type': 'button', 'name': '200G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, 200]},
+             {'type': 'button', 'name': 'All ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, first_player.gold]},
+             {'type': 'button', 'name': '<- 50G', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, 50]},
+             {'type': 'button', 'name': '<- 200G', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, 200]},
+             {'type': 'button', 'name': '<- All', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, second_player.gold]}]
+    entries.append(entry)
+
     # Gold at end
     entry = [{'type': 'text', 'text': first_player.get_formatted_name() + '\'s gold : ' + str(first_player.gold),
               'font': fonts['ITEM_DESC_FONT']},

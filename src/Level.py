@@ -959,6 +959,7 @@ class Level:
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
             first_player = args[2][0]
             second_player = args[2][1]
@@ -1009,6 +1010,16 @@ class Level:
             self.selected_item = item
             self.background_menus.append([self.active_menu, True])
             self.active_menu = MenuCreatorManager.create_trade_item_menu(item_button_pos, item, players)
+        elif method_id is TradeMenu.SEND_GOLD:
+            players = args[2][:2]
+            sender_id = args[2][2]
+            sender = players[sender_id]
+            gold_traded = args[2][3]
+            if gold_traded > sender.gold:
+                gold_traded = sender.gold
+            sender.gold -= gold_traded
+            players[(sender_id + 1) % 2].gold += gold_traded
+            self.active_menu = MenuCreatorManager.create_trade_menu(players[0], players[1])
 
     def execute_action(self, menu_type, action):
         if not action:

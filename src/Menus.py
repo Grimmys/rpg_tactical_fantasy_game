@@ -107,6 +107,8 @@ class EquipmentMenu(Enum):
 class TradeMenu(Enum):
     #   - Interact with item
     INTERAC_ITEM = auto()
+    #   - Send some gold to other character
+    SEND_GOLD = auto()
 
 
 # > Shop menu
