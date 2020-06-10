@@ -15,10 +15,11 @@ Please, don't hesitate about suggesting ideas : it's my first " serious " game p
   <li> Help with balancing would be greatly appreciated... I'm not really good in this kind of games even if I love them !
   All values could be found in the XML files wrapped in the data folder. </li>
   <li> Since I'm not a designer, some elements may be oddly placed in the UI. You can try to correct the ones you see or simply notify me. </li>
-  <li> Ideas about future levels could be submitted, however, I'm currently working on a scenario.
+  <li> Contributions for sound effects / soundtracks would be really appreciated ! </li>
+  <li> Ideas about future levels could be submitted, however, I'm currently working on a scenario. </li>
  </ul>
 
-<b>Version</b> : 1.0.0
+<b>Version</b> : 1.0.2
 
 ![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
 ![Inventory menu](/screenshots/inventory_screen.png?raw=True)
