@@ -2,6 +2,7 @@ from lxml import etree
 
 from src.Breakable import Breakable
 from src.Character import Character
+from src.Item import Item
 from src.Player import Player
 from src.Building import Building
 from src.Chest import Chest
@@ -12,6 +13,7 @@ from src.Fountain import Fountain
 from src.Key import Key
 from src.Mission import Mission, MissionType
 from src.Portal import Portal
+from src.Consumable import Consumable
 from src.Potion import Potion
 from src.Shield import Shield
 from src.Shop import Shop
@@ -148,7 +150,7 @@ def load_foe(foe, from_save, gap_x, gap_y):
     lvl = int(foe.find('level').text.strip())
 
     if name not in foes_infos:
-        foes_infos[name] = etree.parse('data/foes/' + name + '.xml').getroot()
+        foes_infos[name] = etree.parse('data/foes.xml').find(name)
 
     # Static data
     sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
@@ -156,8 +158,8 @@ def load_foe(foe, from_save, gap_x, gap_y):
     strategy = foes_infos[name].find('strategy').text.strip()
     foe_range = foes_infos[name].find('reach')
     reach = [int(reach) for reach in foe_range.text.strip().split(',')] if foe_range is not None else [1]
-
     attack_kind = foes_infos[name].find('attack_kind').text.strip()
+    loot = [(parse_item_file(it.find('name').text.strip()), float(it.find('probability').text)) for it in foes_infos[name].findall('loot/item')]
 
     stats_tree = foes_infos[name]
     if from_save:
@@ -169,7 +171,7 @@ def load_foe(foe, from_save, gap_x, gap_y):
     defense = int(stats_tree.find('def').text.strip())
     res = int(stats_tree.find('res').text.strip())
 
-    loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, strategy, reach, xp_gain, lvl)
+    loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, strategy, reach, xp_gain, loot, lvl)
 
     if from_save:
         current_hp = int(foe.find('currentHp').text.strip())
@@ -200,14 +202,14 @@ def load_chest(chest, from_save, gap_x, gap_y):
         it_name = chest.find('contains/item').text.strip()
         it = parse_item_file(it_name)
 
-        potential_items.append((1.0, it))
+        potential_items.append((it, 1.0))
     else:
         for item in chest.xpath("contains/item"):
             it_name = item.find('name').text.strip()
             it = parse_item_file(it_name)
-            proba = float(item.find('probability').text)
+            probability = float(item.find('probability').text)
 
-            potential_items.append((proba, it))
+            potential_items.append((it, probability))
         opened = False
 
     loaded_chest = Chest(pos, sprite_closed, sprite_opened, potential_items)
@@ -456,13 +458,18 @@ def parse_item_file(name):
         price = 0
     category = it_tree_root.find('category').text.strip()
 
-    item = None
     if category == 'potion':
         effect_name = it_tree_root.find('effect').text.strip()
         power = int(it_tree_root.find('power').text.strip())
         duration = int(it_tree_root.find('duration').text.strip())
         effect = Effect(effect_name, power, duration)
         item = Potion(name, sprite, info, price, effect)
+    elif category == 'consumable':
+        effect_name = it_tree_root.find('effect').text.strip()
+        power = int(it_tree_root.find('power').text.strip())
+        duration = int(it_tree_root.find('duration').text.strip())
+        effect = Effect(effect_name, power, duration)
+        item = Consumable(name, sprite, info, price, effect)
     elif category == 'armor':
         body_part = it_tree_root.find('bodypart').text.strip()
         defense_el = it_tree_root.find('def')
@@ -505,5 +512,8 @@ def parse_item_file(name):
     elif category == 'spellbook':
         spell = it_tree_root.find('effect').text.strip()
         item = Spellbook(name, sprite, info, price, spell)
+    else:
+        # No special category
+        item = Item(name, sprite, info, price)
 
     return item

@@ -20,7 +20,7 @@ class Effect:
                 msg = ent.get_formatted_name() + " is at full health and can't be healed !"
                 success = False
         elif self.name == 'speed':
-            alteration_root = etree.parse("data/alterations/speed_up.xml").getroot()
+            alteration_root = etree.parse("data/alterations.xml").find('speed_up')
             desc = alteration_root.find("info").text.strip().replace('{val}', str(self.power))
             alteration = Alteration('speed_up', self.name, self.power, self.duration, desc)
             ent.set_alteration(alteration)

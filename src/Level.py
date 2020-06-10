@@ -530,12 +530,22 @@ class Level:
             if remaining_hp <= 0:
                 entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
                                  'font': fonts['ITEM_DESC_FONT']}])
-                # XP up
-                if isinstance(target, Foe) and isinstance(attacker, Player):
+                # XP up + loot
+                if isinstance(attacker, Player):
                     attacker.earn_xp(target.xp_gain)
                     entries.append([{'type': 'text',
                                      'text': attacker.get_formatted_name() + " earned " + str(target.xp_gain) + " XP",
                                      'font': fonts['ITEM_DESC_FONT']}])
+                    # Check if foe dropped an item
+                    loot = target.roll_for_loot()
+                    for item in loot:
+                        entries.append([{'type': 'text',
+                                         'text': target.get_formatted_name() + " dropped " + item.get_formatted_name(),
+                                         'font': fonts['ITEM_DESC_FONT']}])
+                        if not attacker.set_item(item):
+                            entries.append([{'type': 'text',
+                                             'text': 'But there is not enough space in inventory to take it !',
+                                             'font': fonts['ITEM_DESC_FONT']}])
                 collection = None
                 if isinstance(target, Foe):
                     collection = self.entities['foes']

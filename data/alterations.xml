@@ -1,0 +1,7 @@
+<alterations>
+    <speed_up>
+        <info>
+            The move cap is increased by {val}
+        </info>
+    </speed_up>
+</alterations>

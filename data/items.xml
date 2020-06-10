@@ -1,5 +1,67 @@
 <items>
+    <bones>
+        <name>
+            Bones
+        </name>
+        <sprite>
+            food/bone.png
+        </sprite>
+        <info>
+            The remains of a skeleton... Maybe there is a way to bring it back to life.
+        </info>
+        <price>
+            200
+        </price>
+        <category>
+            None
+        </category>
+    </bones>
+    <iron_ring>
+        <name>
+            Iron Ring
+        </name>
+        <sprite>
+            ring/iron.png
+        </sprite>
+        <info>
+            A simple ring, made of iron. Can be enchanted or sold.
+        </info>
+        <price>
+            400
+        </price>
+        <category>
+            None
+        </category>
+    </iron_ring>
     <consumables>
+        <food>
+            <monster_meat>
+                <name>
+                    Monster meat
+                </name>
+                <sprite>
+                    food/chunk.png
+                </sprite>
+                <info>
+                    It smells bad... Can be eaten to recover HP.
+                </info>
+                <category>
+                    consumable
+                </category>
+                <effect>
+                    heal
+                </effect>
+                <power>
+                    5
+                </power>
+                <duration>
+                    0
+                </duration>
+                <price>
+                    50
+                </price>
+            </monster_meat>
+        </food>
         <potions>
             <life_potion>
                 <name>
@@ -9,7 +71,7 @@
                     potion/ruby_new.png
                 </sprite>
                 <info>
-                    Use it to regen some HP.
+                    Use it to recover some HP.
                 </info>
                 <category>
                     potion
@@ -18,7 +80,7 @@
                     heal
                 </effect>
                 <power>
-                    5
+                    10
                 </power>
                 <duration>
                     0

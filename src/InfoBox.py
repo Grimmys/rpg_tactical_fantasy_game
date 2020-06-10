@@ -1,3 +1,4 @@
+from src.BoxElement import BoxElement
 from src.fonts import *
 from src.constants import *
 from src.TextElement import TextElement
@@ -48,7 +49,10 @@ class InfoBox:
                 if 'margin' not in entry:
                     entry['margin'] = (0, 0, 0, 0)
 
-                if entry['type'] == 'button':
+                if 'type' not in entry:
+                    # It is an empty element
+                    element.append(BoxElement((0, 0), pg.Surface((0, 0)), entry['margin']))
+                elif entry['type'] == 'button':
                     if 'size' not in entry:
                         size = BUTTON_SIZE
                     else:

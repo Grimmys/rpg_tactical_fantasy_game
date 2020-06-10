@@ -109,19 +109,26 @@ def create_trade_menu(first_player, second_player):
 
     # Buttons to trade gold
     method_id = TradeMenu.SEND_GOLD
-    entry = [{'type': 'button', 'name': '50G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, 50]},
-             {'type': 'button', 'name': '200G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, 200]},
-             {'type': 'button', 'name': 'All ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, first_player.gold]},
-             {'type': 'button', 'name': '<- 50G', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, 50]},
-             {'type': 'button', 'name': '<- 200G', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, 200]},
-             {'type': 'button', 'name': '<- All', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, second_player.gold]}]
+    entry = [
+        {'type': 'button', 'name': '50G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+         'id': method_id, 'args': [first_player, second_player, 0, 50]},
+        {'type': 'button', 'name': '200G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0),
+         'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, 200]},
+        {'type': 'button', 'name': 'All ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+         'id': method_id, 'args': [first_player, second_player, 0, first_player.gold]},
+        {'type': 'button', 'name': '<- 50G', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+         'id': method_id, 'args': [first_player, second_player, 1, 50]},
+        {'type': 'button', 'name': '<- 200G', 'size': (90, 30), 'margin': (30, 0, 0, 0),
+         'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, 200]},
+        {'type': 'button', 'name': '<- All', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+         'id': method_id, 'args': [first_player, second_player, 1, second_player.gold]}]
     entries.append(entry)
 
     # Gold at end
     entry = [{'type': 'text', 'text': first_player.get_formatted_name() + '\'s gold : ' + str(first_player.gold),
               'font': fonts['ITEM_DESC_FONT']},
              {'type': 'text', 'text': second_player.get_formatted_name() + '\'s gold : ' + str(second_player.gold),
-             'font': fonts['ITEM_DESC_FONT']}]
+              'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
     title = "Trade"
@@ -402,38 +409,44 @@ def create_alteration_info_menu(alteration):
 def create_foe_menu(foe):
     formatted_name = foe.get_formatted_name()
 
-    entries = [[{'type': 'text', 'text': 'Level :', 'margin': (10, 0, 0, 0)},
-                {'type': 'text', 'text': str(foe.lvl), 'margin': (10, 0, 0, 0)}],
-               [{'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'],
-                 'margin': (10, 0, 10, 0)}],
+    entries = [[{'type': 'text', 'text': 'LEVEL : ' + str(foe.lvl), 'font': fonts['ITEM_DESC_FONT']}],
+               [{}, {'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'],
+                     'margin': (20, 0, 20, 0)}, {}, {}, {}, {}, {'type': 'text', 'text': 'LOOT',
+                                                                 'font': fonts['MENU_SUB_TITLE_FONT'],
+                                                                 'margin': (20, 0, 20, 0)}, {}],
                [{'type': 'text', 'text': 'TYPE :'},
-                {'type': 'text', 'text': str(foe.attack_kind.value)}],
+                {'type': 'text', 'text': str(foe.attack_kind.value)}, {}, {}, {}],
                [{'type': 'text', 'text': 'REACH :'},
-                {'type': 'text', 'text': foe.get_formatted_reach()}],
-               [{'type': 'text', 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
-                 'margin': (10, 0, 10, 0)}],
+                {'type': 'text', 'text': foe.get_formatted_reach()}, {}, {}, {}],
+               [{}, {'type': 'text', 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
+                     'margin': (10, 0, 10, 0)}, {}, {}, {}, {}, {}, {}],
                [{'type': 'text', 'text': 'HP :'},
                 {'type': 'text', 'text': str(foe.hp) + ' / ' + str(foe.hp_max),
-                 'color': determine_hp_color(foe.hp, foe.hp_max)}],
+                 'color': determine_hp_color(foe.hp, foe.hp_max)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MOVE :'},
-                {'type': 'text', 'text': str(foe.max_moves)}],
+                {'type': 'text', 'text': str(foe.max_moves)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ATTACK :'},
-                {'type': 'text', 'text': str(foe.strength)}],
+                {'type': 'text', 'text': str(foe.strength)}, {}, {}, {}],
                [{'type': 'text', 'text': 'DEFENSE :'},
-                {'type': 'text', 'text': str(foe.defense)}],
+                {'type': 'text', 'text': str(foe.defense)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MAGICAL RES :'},
-                {'type': 'text', 'text': str(foe.res)}],
+                {'type': 'text', 'text': str(foe.res)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
                  'margin': (10, 0, 10, 0)}]]
 
     alts = foe.alterations
-
     if not alts:
         entries.append([{'type': 'text', 'text': 'None'}])
-
     for alt in alts:
         entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
                          'color_hover': TURQUOISE, 'obj': alt}])
 
+    loot = foe.potential_loot
+    i = 2
+    for (item, probability) in loot:
+        entries[i][3] = {'type': 'text', 'text': item.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}
+        entries[i][4] = {'type': 'text', 'text': ' (' + str(probability * 100) + '%)', 'font': fonts['ITEM_DESC_FONT']}
+        i += 1
+
     return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
-                   STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)

@@ -48,7 +48,7 @@
                         I'm Chrisemon, a courageous centaur who travels around the world.
                     </talk>
                     <talk>
-                        Not long ago, I got to Nervie... I heard about the so bad tale. And I heard about a team of heroes trying to save the vilage.
+                        Not long ago, I got to Nervie... I heard about the so bad tale. And I heard about a team of heroes trying to save the village.
                     </talk>
                     <talk>
                         Chrisemon is not a craven. Please, let me help you in your quest.
@@ -78,20 +78,20 @@
             </opened>
             <contains>
                 <item>
-                    <probability>
-                        0.6
-                    </probability>
                     <name>
                         short_sword
                     </name>
-                </item>
-                <item>
                     <probability>
                         0.6
                     </probability>
+                </item>
+                <item>
                     <name>
                         wooden_shield
                     </name>
+                    <probability>
+                        0.4
+                    </probability>
                 </item>
             </contains>
             <position>

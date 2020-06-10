@@ -74,17 +74,20 @@ class Character(Movable):
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):
             if self.classes[0] == 'warrior':
-                self.hp_max += rd.randint(1, 4)  # Gain between 1 and 4
-                self.defense += rd.randint(0, 2)  # Gain between 0 and 2
-                self.res += rd.randint(0, 1)  # Gain between 0 and 1
-                self.strength += rd.randint(0, 2)  # Gain between 0 and 2
+                hp_increased = rd.choice([1, 1, 2, 2, 2, 3, 4])  # Gain between 1 and 4
+                self.defense += rd.choice([0, 1, 1, 2])  # Gain between 0 and 2
+                self.res += rd.choice([0, 1])  # Gain between 0 and 1
+                self.strength += rd.choice([0, 1, 1, 2])  # Gain between 0 and 2
             elif self.classes[0] == 'ranger':
-                self.hp_max += rd.randint(1, 4)  # Gain between 1 and 4
-                self.defense += rd.randint(0, 3)  # Gain between 0 and 3
-                self.res += rd.randint(0, 1)  # Gain between 0 and 1
-                self.strength += rd.randint(0, 1)  # Gain between 0 and 1
+                hp_increased = rd.choice([1, 1, 2, 2, 2, 3, 4])  # Gain between 1 and 4
+                self.defense += rd.choice([0, 1, 1, 2, 2, 3])  # Gain between 0 and 3
+                self.res += rd.choice([0, 1])  # Gain between 0 and 1
+                self.strength += rd.choice([0, 1, 1])  # Gain between 0 and 1
             else:
                 print("Error : Invalid class")
+                return
+            self.hp_max += hp_increased
+            self.hp += hp_increased
 
     def get_weapon(self):
         for eq in self.equipments:
