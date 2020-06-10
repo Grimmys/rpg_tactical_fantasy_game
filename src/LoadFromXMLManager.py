@@ -144,11 +144,6 @@ def load_ally(ally, from_save, gap_x, gap_y):
 
 def load_foe(foe, from_save, gap_x, gap_y):
     name = foe.find('name').text.strip()
-    x = int(foe.find('position/x').text) * TILE_SIZE + gap_x
-    y = int(foe.find('position/y').text) * TILE_SIZE + gap_y
-    pos = (x, y)
-    lvl = int(foe.find('level').text.strip())
-
     if name not in foes_infos:
         foes_infos[name] = etree.parse('data/foes.xml').find(name)
 
@@ -159,7 +154,19 @@ def load_foe(foe, from_save, gap_x, gap_y):
     foe_range = foes_infos[name].find('reach')
     reach = [int(reach) for reach in foe_range.text.strip().split(',')] if foe_range is not None else [1]
     attack_kind = foes_infos[name].find('attack_kind').text.strip()
-    loot = [(parse_item_file(it.find('name').text.strip()), float(it.find('probability').text)) for it in foes_infos[name].findall('loot/item')]
+    loot = [(parse_item_file(it.find('name').text.strip()), float(it.find('probability').text))
+            for it in foes_infos[name].findall('loot/item')]
+    gold_looted = foes_infos[name].find('loot/gold')
+    if gold_looted is not None:
+        loot.append((int(gold_looted.find('amount').text), float(gold_looted.find('probability').text)))
+
+    # Dynamic data
+    x = int(foe.find('position/x').text) * TILE_SIZE + gap_x
+    y = int(foe.find('position/y').text) * TILE_SIZE + gap_y
+    pos = (x, y)
+    lvl = int(foe.find('level').text.strip())
+    dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
+    loot.extend(dynamic_loot)
 
     stats_tree = foes_infos[name]
     if from_save:

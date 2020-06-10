@@ -137,7 +137,7 @@ class StartScreen:
         team = [LoadFromXMLManager.load_player("john"), LoadFromXMLManager.load_player("archer")]
 
         # Init the first level
-        self.level_id = 0
+        self.level_id = 1
         self.play(StartScreen.load_level(self.level_id, team))
 
     def load_game(self):

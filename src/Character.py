@@ -96,7 +96,7 @@ class Character(Movable):
         return None
 
     def get_reach(self):
-        reach = Movable.get_reach(self)
+        reach = self.reach
         w = self.get_weapon()
         if w is not None:
             reach = w.reach

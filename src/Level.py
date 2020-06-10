@@ -1,3 +1,4 @@
+from src.Item import Item
 from src.fonts import fonts
 from src import LoadFromXMLManager as Loader, MenuCreatorManager
 from src.Building import Building
@@ -539,13 +540,21 @@ class Level:
                     # Check if foe dropped an item
                     loot = target.roll_for_loot()
                     for item in loot:
-                        entries.append([{'type': 'text',
-                                         'text': target.get_formatted_name() + " dropped " + item.get_formatted_name(),
-                                         'font': fonts['ITEM_DESC_FONT']}])
-                        if not attacker.set_item(item):
+                        if isinstance(item, Item):
                             entries.append([{'type': 'text',
-                                             'text': 'But there is not enough space in inventory to take it !',
+                                             'text': target.get_formatted_name() + " dropped " +
+                                                     item.get_formatted_name(),
                                              'font': fonts['ITEM_DESC_FONT']}])
+                            if not attacker.set_item(item):
+                                entries.append([{'type': 'text',
+                                                 'text': 'But there is not enough space in inventory to take it !',
+                                                 'font': fonts['ITEM_DESC_FONT']}])
+                        else:
+                            entries.append([{'type': 'text',
+                                             'text': target.get_formatted_name() + " dropped " + str(item) + ' gold',
+                                             'font': fonts['ITEM_DESC_FONT']}])
+                            attacker.gold += item
+
                 collection = None
                 if isinstance(target, Foe):
                     collection = self.entities['foes']

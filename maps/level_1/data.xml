@@ -124,6 +124,13 @@
             <level>
                 1
             </level>
+            <loot>
+                <item>
+                    <name>
+                        key
+                    </name>
+                </item>
+            </loot>
         </foe>
         <foe>
             <name>

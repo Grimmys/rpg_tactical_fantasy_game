@@ -7,13 +7,9 @@ class Foe(Movable):
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, reach, xp_gain,
                  loot, lvl=1):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl)
-        self._reach = reach
+        self.reach = reach
         self.xp_gain = int(xp_gain * (1.1 ** (lvl - 1)))
         self.potential_loot = loot
-
-    @property
-    def reach(self):
-        return self._reach
 
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):

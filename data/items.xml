@@ -190,6 +190,41 @@
                     200
                 </price>
             </pocket_knife>
+            <dagger>
+                <name>
+                    Dagger
+                </name>
+                <sprite>
+                    weapon/dagger_new.png
+                </sprite>
+                <info>
+                    A simple dagger. A small blade, but it's sharp.
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    1
+                </power>
+                <kind>
+                    PHYSICAL
+                </kind>
+                <range>
+                    1
+                </range>
+                <fragility>
+                    40
+                </fragility>
+                <weight>
+                    1
+                </weight>
+                <equipped_sprite>
+                    dagger_slant_2.png
+                </equipped_sprite>
+                <price>
+                    300
+                </price>
+            </dagger>
             <club>
                 <name>
                     Club
@@ -310,6 +345,46 @@
                     </classes>
                 </restrictions>
             </basic_bow>
+            <wooden_staff>
+                <name>
+                    Wooden Staff
+                </name>
+                <sprite>
+                    staff/staff_2.png
+                </sprite>
+                <info>
+                    A frail staff, usable to make a range attack with weak spells.
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    2
+                </power>
+                <kind>
+                    SPIRITUAL
+                </kind>
+                <range>
+                    1,2
+                </range>
+                <fragility>
+                    30
+                </fragility>
+                <weight>
+                    2
+                </weight>
+                <equipped_sprite>
+                    staff_mage_2.png
+                </equipped_sprite>
+                <price>
+                    400
+                </price>
+                <restrictions>
+                    <classes>
+                        mage
+                    </classes>
+                </restrictions>
+            </wooden_staff>
         </weapons>
         <plumed_helmet>
             <name>

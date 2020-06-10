@@ -138,7 +138,7 @@
                     monster_meat
                 </name>
                 <probability>
-                    0.3
+                    0.2
                 </probability>
             </item>
             <item>
@@ -146,7 +146,7 @@
                     iron_ring
                 </name>
                 <probability>
-                    0.2
+                    0.15
                 </probability>
             </item>
         </loot>
@@ -208,6 +208,16 @@
         <attack_kind>
             SPIRITUAL
         </attack_kind>
+        <loot>
+            <item>
+                <name>
+                    wooden_staff
+                </name>
+                <probability>
+                    0.05
+                </probability>
+            </item>
+        </loot>
     </cultist>
     <assassin>
         <sprite>
@@ -237,5 +247,23 @@
         <attack_kind>
             PHYSICAL
         </attack_kind>
+        <loot>
+            <item>
+                <name>
+                    dagger
+                </name>
+                <probability>
+                    0.1
+                </probability>
+            </item>
+            <gold>
+                <amount>
+                    50
+                </amount>
+                <probability>
+                    0.1
+                </probability>
+            </gold>
+        </loot>
     </assassin>
 </foes>

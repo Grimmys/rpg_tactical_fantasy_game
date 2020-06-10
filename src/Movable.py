@@ -52,6 +52,7 @@ class Movable(Destroyable):
         self.nb_items_max = NB_ITEMS_MAX
         self.state = EntityState.HAVE_TO_ACT
         self.target = None
+        self.reach = [1]
         if compl_sprite:
             compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
             self.sprite.blit(compl, (0, 0))
@@ -70,11 +71,8 @@ class Movable(Destroyable):
     def turn_is_finished(self):
         return self.state == EntityState.FINISHED
 
-    def get_reach(self):
-        return [1]
-
     def get_formatted_reach(self):
-        return ', '.join([str(reach) for reach in self.get_reach()])
+        return ', '.join([str(reach) for reach in self.reach])
 
     @property
     def max_moves(self):
@@ -166,7 +164,7 @@ class Movable(Destroyable):
         self.target = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target in targets:
-                for d in self.get_reach():
+                for d in self.reach:
                     for move in possible_moves:
                         # Try to find move next to one target
                         if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * d:

@@ -4,6 +4,7 @@ from src.Consumable import Consumable
 from src.Equipment import Equipment
 from src.Fountain import Fountain
 from src.InfoBox import InfoBox
+from src.Item import Item
 from src.Menus import *
 from src.Mission import MissionType
 from src.Player import Player
@@ -410,16 +411,17 @@ def create_foe_menu(foe):
     formatted_name = foe.get_formatted_name()
 
     entries = [[{'type': 'text', 'text': 'LEVEL : ' + str(foe.lvl), 'font': fonts['ITEM_DESC_FONT']}],
-               [{}, {'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'],
-                     'margin': (20, 0, 20, 0)}, {}, {}, {}, {}, {'type': 'text', 'text': 'LOOT',
-                                                                 'font': fonts['MENU_SUB_TITLE_FONT'],
-                                                                 'margin': (20, 0, 20, 0)}, {}],
+               [{'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
+                 'margin': (20, 0, 20, 0)}, {}, {}, {'type': 'text', 'text': 'LOOT',
+                                                     'font': fonts['MENU_SUB_TITLE_FONT'],
+                                                     'color': DARK_GREEN,
+                                                     'margin': (20, 0, 20, 0)}, {}],
                [{'type': 'text', 'text': 'TYPE :'},
                 {'type': 'text', 'text': str(foe.attack_kind.value)}, {}, {}, {}],
                [{'type': 'text', 'text': 'REACH :'},
                 {'type': 'text', 'text': foe.get_formatted_reach()}, {}, {}, {}],
-               [{}, {'type': 'text', 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
-                     'margin': (10, 0, 10, 0)}, {}, {}, {}, {}, {}, {}],
+               [{'type': 'text', 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
+                 'margin': (10, 0, 10, 0)}, {}, {}, {}, {}],
                [{'type': 'text', 'text': 'HP :'},
                 {'type': 'text', 'text': str(foe.hp) + ' / ' + str(foe.hp_max),
                  'color': determine_hp_color(foe.hp, foe.hp_max)}, {}, {}, {}],
@@ -444,7 +446,11 @@ def create_foe_menu(foe):
     loot = foe.potential_loot
     i = 2
     for (item, probability) in loot:
-        entries[i][3] = {'type': 'text', 'text': item.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}
+        if isinstance(item, Item):
+            name = item.get_formatted_name()
+        else:
+            name = str(item) + ' Gold'
+        entries[i][3] = {'type': 'text', 'text': name, 'font': fonts['ITEM_DESC_FONT']}
         entries[i][4] = {'type': 'text', 'text': ' (' + str(probability * 100) + '%)', 'font': fonts['ITEM_DESC_FONT']}
         i += 1
 
