@@ -37,7 +37,8 @@ If you don't have python, you can just execute ``build/exe.win32-3.6/main.exe``.
 
 ## Keys
 
-* Left click : Select a player, choose a case to move, select an action to do etc. (main button)
-* Left click (on empty tile) : Open main menu.
-* Right click : Deselect a player or cancel last action if possible (secondary button).
-* Right click (on entity) : Show the possible movements of the entity.
+* Left click : Select a player, choose a case to move, select an action to do etc (main button)
+* Left click (on any empty tile) : Open main menu
+* Left click (on any entity that is not a player) : Open a window giving information about the entity
+* Right click : Deselect a player or cancel last action if possible (secondary button)
+* Right click (on any entity) : Show the possible movements of the entity
