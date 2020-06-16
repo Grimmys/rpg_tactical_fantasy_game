@@ -7,10 +7,10 @@ NB_ITEMS_MAX = 8
 
 
 class EntityState(IntEnum):
-    HAVE_TO_ACT = 0
-    ON_MOVE = 1
-    HAVE_TO_ATTACK = 2
-    FINISHED = 3
+    HAVE_TO_ACT = auto()
+    ON_MOVE = auto()
+    HAVE_TO_ATTACK = auto()
+    FINISHED = auto()
 
 
 class EntityStrategy(Enum):

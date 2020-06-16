@@ -27,10 +27,8 @@ INTERACTION_OPACITY = 500
 
 NEW_TURN = None
 NEW_TURN_POS = None
-
 VICTORY = None
 VICTORY_POS = None
-
 DEFEAT = None
 DEFEAT_POS = None
 
@@ -46,15 +44,15 @@ def blit_alpha(target, source, location, opacity):
 
 
 class Status(IntEnum):
-    INITIALIZATION = 0,
-    IN_PROGRESS = 1,
-    ENDED_VICTORY = 2,
-    ENDED_DEFEAT = 3
+    INITIALIZATION = auto()
+    IN_PROGRESS = auto()
+    ENDED_VICTORY = auto()
+    ENDED_DEFEAT = auto()
 
 
 class EntityTurn(IntEnum):
-    PLAYER = 0,
-    ALLIES = 1,
+    PLAYER = 0
+    ALLIES = 1
     FOES = 2
 
     def get_next(self):
@@ -348,7 +346,8 @@ class Level:
                 case_x = pos[0] + (x * TILE_SIZE)
                 case_y = pos[1] + (y * TILE_SIZE)
                 case_pos = (case_x, case_y)
-                if (self.map['x'], self.map['y']) < case_pos < (self.map['x'] + self.map['width'], self.map['y'] + self.map['height']):
+                if (self.map['x'], self.map['y']) < case_pos < (self.map['x'] + self.map['width'], self.map['y'] +
+                                                                                                   self.map['height']):
                     case = self.get_entity_on_case(case_pos)
                     tiles.append(case)
         return tiles
@@ -396,7 +395,7 @@ class Level:
     def case_is_empty(self, case):
         min_case = (self.map['x'], self.map['y'])
         max_case = (self.map['x'] + self.map['width'], self.map['y'] + self.map['height'])
-        if not(all([(minimum <= case < maximum) for minimum, case, maximum in zip(min_case, case, max_case)])):
+        if not (all([(minimum <= case < maximum) for minimum, case, maximum in zip(min_case, case, max_case)])):
             return False
 
         # Check all entities
@@ -1034,10 +1033,8 @@ class Level:
             sender_id = args[2][2]
             sender = players[sender_id]
             gold_traded = args[2][3]
-            if gold_traded > sender.gold:
-                gold_traded = sender.gold
-            sender.gold -= gold_traded
-            players[(sender_id + 1) % 2].gold += gold_traded
+
+            Player.trade_gold(sender, players[(sender_id + 1) % 2], gold_traded)
             self.active_menu = MenuCreatorManager.create_trade_menu(players[0], players[1])
 
     def execute_action(self, menu_type, action):
@@ -1168,7 +1165,8 @@ class Level:
                 if player.is_on_pos(pos) and not player.turn_is_finished():
                     player.selected = True
                     self.selected_player = player
-                    self.possible_moves = self.get_possible_moves(player.pos, player.max_moves - player.get_move_malus())
+                    self.possible_moves = self.get_possible_moves(player.pos,
+                                                                  player.max_moves - player.get_move_malus())
                     reach = self.selected_player.get_reach()
                     self.possible_attacks = self.get_possible_attacks(self.possible_moves, reach, True)
                     return
@@ -1188,13 +1186,15 @@ class Level:
                 self.selected_player = None
                 self.possible_moves = {}
             elif self.active_menu is not None:
+                # Test if player is on character's main menu, in this case, current move should be cancelled if possible
+                if self.active_menu.type is CharacterMenu:
+                    if self.selected_player.cancel_move():
+                        self.selected_player.selected = False
+                        self.selected_player = None
+                        self.possible_moves = {}
+                    else:
+                        return
                 self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
-                # Test if player was on character's main menu, in this case, current move should be cancelled
-                if self.active_menu is None:
-                    self.selected_player.cancel_move()
-                    self.selected_player.selected = False
-                    self.selected_player = None
-                    self.possible_moves = {}
             # Want to cancel an interaction (not already performed)
             elif self.possible_interactions or self.possible_attacks:
                 self.selected_player.cancel_interaction()

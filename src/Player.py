@@ -1,17 +1,18 @@
 from lxml import etree
-from enum import IntEnum
+from enum import IntEnum, auto
 
 from src.Character import Character
 from src.constants import *
 
 
 class PlayerState(IntEnum):
-    WAITING_SELECTION = 0
-    WAITING_MOVE = 1
-    ON_MOVE = 2
-    WAITING_POST_ACTION = 3
-    WAITING_TARGET = 4
-    FINISHED = 5
+    WAITING_SELECTION = auto()
+    WAITING_MOVE = auto()
+    ON_MOVE = auto()
+    WAITING_POST_ACTION = auto()
+    WAITING_POST_ACTION_UNCANCELLABLE = auto()
+    WAITING_TARGET = auto()
+    FINISHED = auto()
 
 
 class Player(Character):
@@ -41,6 +42,13 @@ class Player(Character):
         if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
             screen.blit(Player.SELECTED_DISPLAY, self.pos)
 
+    @staticmethod
+    def trade_gold(sender, receiver, amount):
+        if amount > sender.gold:
+            amount = sender.gold
+        sender.gold -= amount
+        receiver.gold += amount
+
     @property
     def selected(self):
         return self._selected
@@ -64,11 +72,32 @@ class Player(Character):
         return False
 
     def cancel_move(self):
-        self.state = PlayerState.WAITING_SELECTION
-        self.pos = self.old_pos
+        if self.state is not PlayerState.WAITING_POST_ACTION_UNCANCELLABLE:
+            self.state = PlayerState.WAITING_SELECTION
+            self.pos = self.old_pos
+            return True
+        return False
 
     def cancel_interaction(self):
         self.state = PlayerState.WAITING_POST_ACTION
+
+    def use_item(self, item):
+        used, result_msg = Character.use_item(self, item)
+        if used:
+            self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
+        return used, result_msg
+
+    def equip(self, eq):
+        equipped = Character.equip(self, eq)
+        if equipped > -1:
+            self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
+        return equipped
+
+    def unequip(self, eq):
+        unequipped = Character.unequip(self, eq)
+        if unequipped:
+            self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
+        return unequipped
 
     def attack(self, ent):
         damages = Character.attack(self, ent)
