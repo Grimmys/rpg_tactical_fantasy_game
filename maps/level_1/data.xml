@@ -299,9 +299,9 @@
             </description>
         </main>
         <mission>
-            <type>MAIN_TURN_LIMIT</type>
+            <type>TURN_LIMIT</type>
             <description>
-                Win before 8 turns
+                Win in 8 turns
             </description>
             <turns>8</turns>
         </mission>

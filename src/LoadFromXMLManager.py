@@ -299,24 +299,37 @@ def load_obstacles(tree, gap_x, gap_y):
     return loaded_obstacles
 
 
+def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
+    nature = MissionType[mission_xml.find('type').text]
+    desc = mission_xml.find('description').text.strip()
+    positions = []
+    if nature is MissionType.POSITION:
+        for coords in mission_xml.findall('position'):
+            x = int(coords.find('x').text) * TILE_SIZE + gap_x
+            y = int(coords.find('y').text) * TILE_SIZE + gap_y
+            positions.append((x, y))
+    if is_main:
+        min_players = nb_players
+    else:
+        min_players = mission_xml.find('nb_players')
+        if min_players is not None:
+            min_players = int(min_players.text.strip())
+    turn_limit = mission_xml.find('turns')
+    if turn_limit is not None:
+        turn_limit = int(turn_limit.text.strip())
+    return Mission(is_main, nature, positions, desc, min_players, turn_limit)
+
+
 def load_missions(tree, players, gap_x, gap_y):
     loaded_missions = []
     #  > Load main mission
     main_mission = tree.find('missions/main')
-    nature = MissionType[main_mission.find('type').text]
-    main = True
-    positions = []
-    desc = main_mission.find('description').text.strip()
-    nb_players = len(players)
-    if nature is MissionType.POSITION:
-        for coords in main_mission.findall('position'):
-            x = int(coords.find('x').text) * TILE_SIZE + gap_x
-            y = int(coords.find('y').text) * TILE_SIZE + gap_y
-            pos = (x, y)
-            positions.append(pos)
-    mission = Mission(main, nature, positions, desc, nb_players)
+    mission = load_mission(main_mission, True, len(players), gap_x, gap_y)
     loaded_missions.append(mission)
     main_mission = mission
+    #   > Load secondary missions
+    for mission_xml in tree.findall('missions/mission'):
+        loaded_missions.append(load_mission(mission_xml, False, len(players), gap_x, gap_y))
     return loaded_missions, main_mission
 
 

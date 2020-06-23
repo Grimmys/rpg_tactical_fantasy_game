@@ -10,16 +10,20 @@ SHIFT = 2
 SIDEBAR_SPRITE = 'imgs/interface/sidebar.png'
 CRACKED = None
 FRAME = None
+MAIN_MISSION_TEXT = None
+SECONDARIES_MISSION_TEXT = None
 
 
 class Sidebar:
     @staticmethod
     def init_constant_sprites():
-        global CRACKED, FRAME
+        global CRACKED, FRAME, MAIN_MISSION_TEXT, SECONDARIES_MISSION_TEXT
         cracked_sprite = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
         CRACKED = pg.transform.scale(pg.image.load(cracked_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         frame_sprite = 'imgs/interface/frame.png'
         FRAME = pg.transform.scale(pg.image.load(frame_sprite).convert_alpha(), (TILE_SIZE + 10, TILE_SIZE + 10))
+        MAIN_MISSION_TEXT = fonts['MENU_TITLE_FONT'].render("MAIN MISSION", 1, BLACK)
+        SECONDARIES_MISSION_TEXT = fonts['MENU_TITLE_FONT'].render("OPTIONAL OBJECTIVES", 1, BLACK)
 
     def __init__(self, size, pos, missions):
         self.size = size
@@ -52,24 +56,30 @@ class Sidebar:
         turn_text = fonts['MENU_TITLE_FONT'].render("LEVEL " + str(nb_level), 1, BLACK)
         win.blit(turn_text, (self.pos[0] + 50, self.pos[1] + 50))
 
+        # Main mission header
+        win.blit(MAIN_MISSION_TEXT, (self.pos[0] + self.size[0] - 500,
+                                     self.pos[1] + 10))
+        # Secondaries missions header if any
+        if len(self.missions) > 1:
+            win.blit(SECONDARIES_MISSION_TEXT, (self.pos[0] + self.size[0] - 300,
+                                                self.pos[1] + 10))
         # Missions
+        vertical_shift = 0
         for mission in self.missions:
+            mission_color = DARK_GREEN if mission.ended else BROWN_RED
+            mission_desc = fonts['MISSION_FONT'].render("> " + mission.desc, 1, mission_color)
             if mission.main:
-                main_mission_text = fonts['MENU_TITLE_FONT'].render("MAIN MISSION", 1, BLACK)
-                win.blit(main_mission_text, (self.pos[0] + self.size[0] - 250,
-                                             self.pos[1] + 10))
-
-                mission_color = DARK_GREEN if mission.ended else BROWN_RED
-                main_mission_desc = fonts['MISSION_FONT'].render("> " + mission.desc, 1, mission_color)
-                win.blit(main_mission_desc, (self.pos[0] + self.size[0] - 230,
-                                             self.pos[1] + 10 + main_mission_text.get_height()))
+                win.blit(mission_desc, (self.pos[0] + self.size[0] - 480,
+                                             self.pos[1] + 10 + MAIN_MISSION_TEXT.get_height()))
             else:
-                print("SECONDARY MISSION DISPLAY : TODO")
+                win.blit(mission_desc, (self.pos[0] + self.size[0] - 280,
+                                            self.pos[1] + 10 + SECONDARIES_MISSION_TEXT.get_height() + vertical_shift * mission_desc.get_height()))
+                vertical_shift += 1
 
         # Display the current information about the entity hovered
         if ent:
             # Display the ent sprite in a frame
-            frame_pos = (self.pos[0] + self.size[0] / 3, self.pos[1] + self.size[1] / 2 - FRAME.get_height() / 2)
+            frame_pos = (self.pos[0] + self.size[0] / 4, self.pos[1] + self.size[1] / 2 - FRAME.get_height() / 2)
             win.blit(FRAME, frame_pos)
             ent_pos = (frame_pos[0] + 5, frame_pos[1] + 5)
             win.blit(ent.sprite, ent_pos)

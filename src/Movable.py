@@ -52,7 +52,6 @@ class Movable(Destroyable):
         self.nb_items_max = NB_ITEMS_MAX
         self.state = EntityState.HAVE_TO_ACT
         self.target = None
-        self.reach = [1]
         if compl_sprite:
             compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
             self.sprite.blit(compl, (0, 0))

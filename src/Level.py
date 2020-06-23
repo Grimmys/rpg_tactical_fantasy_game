@@ -658,8 +658,8 @@ class Level:
         # Attack action : Character has to choose a target
         if method_id is CharacterMenu.ATTACK:
             self.selected_player.choose_target()
-            reach = self.selected_player.get_reach()
-            self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], reach, True)
+            self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], self.selected_player.reach,
+                                                              True)
             self.possible_interactions = []
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
@@ -1167,8 +1167,8 @@ class Level:
                     self.selected_player = player
                     self.possible_moves = self.get_possible_moves(player.pos,
                                                                   player.max_moves - player.get_move_malus())
-                    reach = self.selected_player.get_reach()
-                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, reach, True)
+                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
+                                                                      True)
                     return
             for foe in self.entities['foes']:
                 if foe.is_on_pos(pos):
@@ -1232,7 +1232,7 @@ class Level:
                             pos = ent.pos
                             self.watched_ent = ent
                             self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
-                            reach = self.watched_ent.get_reach()
+                            reach = self.watched_ent.reach
                             self.possible_attacks = self.get_possible_attacks(self.possible_moves,
                                                                               reach, isinstance(ent, Character))
                             return

@@ -25,6 +25,7 @@ class Character(Movable):
         self.race = race
         self.gold = gold
         self.dialog = talk
+        self.reach_ = [1]
         self.constitution = Character.races_data[race]['constitution'] + \
                             Character.classes_data[classes[0]]['constitution']
 
@@ -95,8 +96,9 @@ class Character(Movable):
                 return eq
         return None
 
-    def get_reach(self):
-        reach = self.reach
+    @property
+    def reach(self):
+        reach = self.reach_
         w = self.get_weapon()
         if w is not None:
             reach = w.reach
