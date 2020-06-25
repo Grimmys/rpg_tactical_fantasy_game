@@ -310,14 +310,23 @@ def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
             positions.append((x, y))
     if is_main:
         min_players = nb_players
+        gold_reward = 0
+        items_reward = []
     else:
         min_players = mission_xml.find('nb_players')
         if min_players is not None:
             min_players = int(min_players.text.strip())
+        # If mission is not main, a reward is associated
+        gold_reward = mission_xml.find('reward/gold')
+        if gold_reward is not None:
+            gold_reward = int(gold_reward.text.strip())
+        items_reward = mission_xml.findall('reward/item')
+        if items_reward is not None:
+            items_reward = [parse_item_file(item) for item in items_reward]
     turn_limit = mission_xml.find('turns')
     if turn_limit is not None:
         turn_limit = int(turn_limit.text.strip())
-    return Mission(is_main, nature, positions, desc, min_players, turn_limit)
+    return Mission(is_main, nature, positions, desc, min_players, turn_limit, gold_reward, items_reward)
 
 
 def load_missions(tree, players, gap_x, gap_y):

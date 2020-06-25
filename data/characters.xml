@@ -27,7 +27,7 @@
         <name> john </name>
         <class> warrior </class>
         <race> human </race>
-        <lvl> 1 </lvl>
+        <level> 1 </level>
         <initStrength> 3 </initStrength>
         <initDef> 0 </initDef>
         <initRes> 0 </initRes>
@@ -67,6 +67,7 @@
         <initRes> 0 </initRes>
         <initHP> 8 </initHP>
         <move> 5 </move>
+        <level> 1 </level>
         <sprite> base/human_female.png </sprite>
         <complementSprite> legs/pants_short_brown.png </complementSprite>
         <equipment>

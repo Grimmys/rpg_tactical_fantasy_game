@@ -456,3 +456,13 @@ def create_foe_menu(foe):
 
     return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
+def create_reward_menu(mission):
+    entries = [[{'type': 'text', 'text': 'Congratulations ! Objective has been completed !', 'font': fonts['ITEM_DESC_FONT']}]]
+    if mission.gold:
+        entries.append([{'type': 'text', 'text': 'Earned gold : ' + str(mission.gold) + ' (all characters)'}])
+    for item in mission.items:
+        entries.append([{'type': 'text', 'text': 'Earned item : ' + item.get_formatted_name()}])
+
+    return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
+                   close_button=UNFINAL_ACTION)

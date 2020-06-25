@@ -194,9 +194,21 @@ class Level:
         return self.game_phase is not Status.INITIALIZATION
 
     def end_level(self, anim_surf, pos):
-        self.active_menu = None
         self.background_menus = []
+        # Check if some optional objectives have been completed
+        for mission in self.missions:
+            if not mission.main and mission.ended:
+                self.background_menus.append(MenuCreatorManager.create_reward_menu(mission))
+                if mission.gold:
+                    for player in self.players:
+                        player.gold += mission.gold
+                if mission.items:
+                    # TODO
+                    pass
+        self.active_menu = self.background_menus.pop() if self.background_menus else None
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
+        # No more mission to check the status
+        self.missions = []
 
     def update_state(self):
         if self.quit_request:
@@ -205,16 +217,17 @@ class Level:
         if self.animation:
             if self.animation.anim():
                 self.animation = None
-                if self.game_phase > Status.IN_PROGRESS:
-                    # End game animation is finished, level can be quit
+                if self.game_phase > Status.IN_PROGRESS and not self.active_menu:
+                    # End game animation is finished, level can be quit if there is no more menu
                     self.exit_game()
             return None
 
         # Game can't evolve if there is an active menu
-        if self.active_menu is not None:
+        if self.active_menu:
             return None
 
-        self.main_mission.update_state(entities=self.entities)
+        for mission in self.missions:
+            mission.update_state(entities=self.entities, turns=self.turn)
         if self.main_mission.ended:
             self.victory = True
 

@@ -8,7 +8,7 @@ class MissionType(Enum):
 
 
 class Mission:
-    def __init__(self, is_main, nature, positions, description, nb_players, turn_limit):
+    def __init__(self, is_main, nature, positions, description, nb_players, turn_limit, gold_reward=0, items_reward=[]):
         self.main = is_main
         self.type = nature
         self.positions = positions
@@ -16,6 +16,8 @@ class Mission:
         self.ended = self.type is MissionType.TURN_LIMIT
         self.turn_limit = turn_limit
         self.restrictions = None
+        self.gold = gold_reward
+        self.items = items_reward
         if self.main:
             self.min_chars = nb_players
         self.succeeded_chars = []

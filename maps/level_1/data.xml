@@ -304,6 +304,9 @@
                 Win in 8 turns
             </description>
             <turns>8</turns>
+            <reward>
+                <gold>200</gold>
+            </reward>
         </mission>
     </missions>
 </level>
