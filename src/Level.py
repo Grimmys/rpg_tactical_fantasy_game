@@ -196,15 +196,16 @@ class Level:
     def end_level(self, anim_surf, pos):
         self.background_menus = []
         # Check if some optional objectives have been completed
-        for mission in self.missions:
-            if not mission.main and mission.ended:
-                self.background_menus.append(MenuCreatorManager.create_reward_menu(mission))
-                if mission.gold:
-                    for player in self.players:
-                        player.gold += mission.gold
-                if mission.items:
-                    # TODO
-                    pass
+        if self.main_mission.succeeded_chars:
+            for mission in self.missions:
+                if not mission.main and mission.ended:
+                    self.background_menus.append(MenuCreatorManager.create_reward_menu(mission))
+                    if mission.gold:
+                        for player in self.players:
+                            player.gold += mission.gold
+                    if mission.items:
+                        # TODO
+                        pass
         self.active_menu = self.background_menus.pop() if self.background_menus else None
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
         # No more mission to check the status
@@ -237,15 +238,14 @@ class Level:
             else:
                 self.victory = True
 
-        if self.victory or self.defeat:
-            if self.victory:
-                self.end_level(VICTORY, VICTORY_POS)
-                self.game_phase = Status.ENDED_VICTORY
-            else:
-                self.end_level(DEFEAT, DEFEAT_POS)
-                self.game_phase = Status.ENDED_DEFEAT
-            # Set values to False to avoid infinite repetitions
+        if self.victory:
+            self.end_level(VICTORY, VICTORY_POS)
+            self.game_phase = Status.ENDED_VICTORY
             self.victory = False
+            return None
+        elif self.defeat:
+            self.end_level(DEFEAT, DEFEAT_POS)
+            self.game_phase = Status.ENDED_DEFEAT
             self.defeat = False
             return None
 

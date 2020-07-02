@@ -199,6 +199,10 @@ class Movable(Destroyable):
         exp = etree.SubElement(tree, 'exp')
         exp.text = str(self.xp)
 
+        # Save strategy
+        strategy = etree.SubElement(tree, 'strategy')
+        strategy.text = self.strategy.name
+
         # Save stats
         hp_m = etree.SubElement(tree, 'hp')
         hp_m.text = str(self.hp_max)

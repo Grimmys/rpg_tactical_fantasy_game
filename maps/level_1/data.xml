@@ -112,6 +112,9 @@
             <level>
                 1
             </level>
+            <strategy>
+                STATIC
+            </strategy>
         </foe>
         <foe>
             <name>
@@ -131,6 +134,9 @@
                     </name>
                 </item>
             </loot>
+            <strategy>
+                STATIC
+            </strategy>
         </foe>
         <foe>
             <name>

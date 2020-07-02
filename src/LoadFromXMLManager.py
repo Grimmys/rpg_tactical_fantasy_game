@@ -167,11 +167,13 @@ def load_foe(foe, from_save, gap_x, gap_y):
     lvl = int(foe.find('level').text.strip())
     dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
     loot.extend(dynamic_loot)
+    specific_strategy = foe.find('strategy')
+    if specific_strategy is not None:
+        strategy = specific_strategy.text.strip()
 
     stats_tree = foes_infos[name]
     if from_save:
         stats_tree = foe
-
     hp = int(stats_tree.find('hp').text.strip())
     move = int(stats_tree.find('move').text.strip())
     strength = int(stats_tree.find('strength').text.strip())
