@@ -1,8 +1,10 @@
 from enum import Enum, auto
+from src.constants import TILE_SIZE
 
 
 class MissionType(Enum):
     POSITION = auto()
+    TOUCH_POSITION = auto()
     KILL_EVERYBODY = auto()
     TURN_LIMIT = auto()
 
@@ -18,15 +20,21 @@ class Mission:
         self.restrictions = None
         self.gold = gold_reward
         self.items = items_reward
-        if self.main:
-            self.min_chars = nb_players
+        self.min_chars = nb_players
         self.succeeded_chars = []
 
     def pos_is_valid(self, pos):
-        return pos in self.positions
+        if self.type is MissionType.POSITION:
+            return pos in self.positions
+        if self.type is MissionType.TOUCH_POSITION:
+            print(pos)
+            print("MISSION POS")
+            for mission_pos in self.positions:
+                print(mission_pos)
+                return abs(pos[0] + pos[1] - (mission_pos[0] + mission_pos[1])) == TILE_SIZE
 
     def update_state(self, player=None, entities=None, turns=0):
-        if self.type is MissionType.POSITION and player is not None:
+        if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) and player is not None:
             self.succeeded_chars.append(player)
             self.ended = len(self.succeeded_chars) == self.min_chars
         elif self.type is MissionType.KILL_EVERYBODY:

@@ -51,6 +51,10 @@ class CharacterMenu(Enum):
     ATTACK = auto()
     #   - Open a chest
     OPEN_CHEST = auto()
+    #   - Open a door
+    OPEN_DOOR = auto()
+    #   - Pick a lock
+    PICK_LOCK = auto()
     #   - Use
     USE_PORTAL = auto()
     #   - Drink in fountain

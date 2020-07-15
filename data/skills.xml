@@ -1,0 +1,14 @@
+<skills>
+    <lock_picking>
+        <name>Lock Picking</name>
+        <info>
+            Ability to open some doors and chests. A door (or a chest) needs two turns of picking to be open.
+        </info>
+    </lock_picking>
+    <double_attack>
+        <name>Double Attack</name>
+        <info>
+            When attacking, character will deal damage twice.
+        </info>
+    </double_attack>
+</skills>

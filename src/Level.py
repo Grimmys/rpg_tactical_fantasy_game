@@ -1,3 +1,4 @@
+from src.Door import Door
 from src.Item import Item
 from src.fonts import fonts
 from src import LoadFromXMLManager as Loader, MenuCreatorManager
@@ -252,7 +253,7 @@ class Level:
         if self.selected_player:
             if self.selected_player.move():
                 # If movement is finished
-                interactable_entities = self.entities['chests'] + self.entities['portals'] + \
+                interactable_entities = self.entities['chests'] + self.entities['portals'] + self.entities['doors'] + \
                                         self.entities['fountains'] + self.entities['allies'] + self.players
                 self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player,
                                                                          self.entities['buildings'],
@@ -441,6 +442,40 @@ class Level:
                         path.insert(0, current_case)
         return path
 
+    def open_chest(self, actor, chest):
+        # Get object inside the chest
+        item = chest.open()
+        actor.set_item(item)
+
+        # Get item data
+        name = item.get_formatted_name()
+        entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
+                      'id': InventoryMenu.INTERAC_ITEM}
+
+        entries = [[entry_item],
+                   [{'type': 'text', 'text': "Item has been added to your inventory",
+                     'font': fonts['ITEM_DESC_FONT']}]]
+        self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
+                                   entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+
+    def open_door(self, door):
+        self.entities['doors'].remove(door)
+
+        entries = [[{'type': 'text', 'text': "Door has been opened.",
+                     'font': fonts['ITEM_DESC_FONT']}]]
+        self.active_menu = InfoBox(door.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                                   entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+
+    def ally_to_player(self, character):
+        self.entities['allies'].remove(character)
+        player = Player(character.name, character.sprite, character.hp, character.defense, character.res,
+                        character.max_moves, character.strength, character.classes, character.equipments, character.race,
+                        character.gold, character.lvl)
+        self.entities['players'].append(player)
+        player.earn_xp(character.xp)
+        player.set_current_hp(character.hp)
+        player.pos = character.pos
+
     def interact(self, actor, target, target_pos):
         # Since player chose his interaction, possible interactions should be reseted
         self.possible_interactions = []
@@ -458,29 +493,50 @@ class Level:
         # Check if player tries to open a chest
         elif isinstance(target, Chest):
             if actor.has_free_space():
-                # Key is used to open the chest
-                actor.remove_key()
+                if self.selected_player.current_action is CharacterMenu.OPEN_CHEST:
+                    # Key is used to open the chest
+                    actor.remove_chest_key()
 
-                # Get object inside the chest
-                item = target.open()
-                actor.set_item(item)
+                    # Get content
+                    self.open_chest(actor, target)
+                elif self.selected_player.current_action is CharacterMenu.PICK_LOCK:
+                    if not target.pick_lock_initiated:
+                        # Lock picking has not been already initiated
+                        target.pick_lock_initiated = True
+                        entries = [[{'type': 'text', 'text': "Started picking, one more turn to go.",
+                                     'font': fonts['ITEM_DESC_FONT']}]]
+                        self.active_menu = InfoBox("Chest", "", "imgs/interface/PopUpMenu.png",
+                                                   entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+                    else:
+                        # Lock picking is finished, get content
+                        self.open_chest(actor, target)
 
-                # Get item data
-                name = item.get_formatted_name()
-                entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
-                              'id': InventoryMenu.INTERAC_ITEM}
-
-                entries = [[entry_item],
-                           [{'type': 'text', 'text': "Item has been added to your inventory",
-                             'font': fonts['ITEM_DESC_FONT']}]]
-                self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
-                                           entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
-                # No more menu : turn is finished
-                self.background_menus = []
             else:
                 self.active_menu = InfoBox("You have no free space in your inventory.", "",
                                            "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
                                            close_button=UNFINAL_ACTION)
+        # Check if player tries to open a door
+        elif isinstance(target, Door):
+            if self.selected_player.current_action is CharacterMenu.OPEN_DOOR:
+                # Key is used to open the door
+                actor.remove_door_key()
+
+                # Remove door
+                self.open_door(target)
+
+                # No more menu : turn is finished
+                self.background_menus = []
+            elif self.selected_player.current_action is CharacterMenu.PICK_LOCK:
+                if not target.pick_lock_initiated:
+                    # Lock picking has not been already initiated
+                    target.pick_lock_initiated = True
+                    entries = [[{'type': 'text', 'text': "Started picking, one more turn to go.",
+                                 'font': fonts['ITEM_DESC_FONT']}]]
+                    self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                                               entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+                else:
+                    # Lock picking is finished, get content
+                    self.open_door(target)
         # Check if player tries to use a portal
         elif isinstance(target, Portal):
             new_based_pos = target.linked_to.pos
@@ -512,6 +568,10 @@ class Level:
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
             # No more menu : turn is finished
             self.background_menus = []
+            # Check if character is now a player
+            if target.join_team:
+                print('yes')
+                self.ally_to_player(target)
         # Check if player tries to visit a building
         elif isinstance(target, Building):
             kind = ""
@@ -527,60 +587,65 @@ class Level:
             self.background_menus = []
 
     def duel(self, attacker, target, kind):
-        if isinstance(target, Character) and target.parried():
-            # Target parried attack
-            msg = attacker.get_formatted_name() + " attacked " + target.get_formatted_name() + \
-                  "... But " + target.get_formatted_name() + " parried !"
-            entries = [[{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}]]
-        else:
-            old_hp = target.hp
-            damages = attacker.attack(target)
-            remaining_hp = target.attacked(attacker, damages, kind)
-            entries = [[{'type': 'text',
-                         'text': attacker.get_formatted_name() + " dealed " + str(old_hp - remaining_hp) +
-                                 " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}]]
-            # If target has less than 0 HP at the end of the duel
-            if remaining_hp <= 0:
-                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
-                                 'font': fonts['ITEM_DESC_FONT']}])
-                # XP up + loot
-                if isinstance(attacker, Player):
-                    attacker.earn_xp(target.xp_gain)
-                    entries.append([{'type': 'text',
-                                     'text': attacker.get_formatted_name() + " earned " + str(target.xp_gain) + " XP",
-                                     'font': fonts['ITEM_DESC_FONT']}])
-                    # Check if foe dropped an item
-                    loot = target.roll_for_loot()
-                    for item in loot:
-                        if isinstance(item, Item):
-                            entries.append([{'type': 'text',
-                                             'text': target.get_formatted_name() + " dropped " +
-                                                     item.get_formatted_name(),
-                                             'font': fonts['ITEM_DESC_FONT']}])
-                            if not attacker.set_item(item):
-                                entries.append([{'type': 'text',
-                                                 'text': 'But there is not enough space in inventory to take it !',
-                                                 'font': fonts['ITEM_DESC_FONT']}])
-                        else:
-                            entries.append([{'type': 'text',
-                                             'text': target.get_formatted_name() + " dropped " + str(item) + ' gold',
-                                             'font': fonts['ITEM_DESC_FONT']}])
-                            attacker.gold += item
-
-                collection = None
-                if isinstance(target, Foe):
-                    collection = self.entities['foes']
-                elif isinstance(target, Player):
-                    collection = self.entities['players']
-                elif isinstance(target, Breakable):
-                    collection = self.entities['breakables']
-                elif isinstance(target, Character):
-                    collection = self.entities['allies']
-                collection.remove(target)
+        entries = []
+        nb_attacks = 2 if 'double_attack' in attacker.skills else 1
+        for i in range(nb_attacks):
+            if isinstance(target, Character) and target.parried():
+                # Target parried attack
+                msg = attacker.get_formatted_name() + " attacked " + target.get_formatted_name() + \
+                      "... But " + target.get_formatted_name() + " parried !"
+                entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
             else:
-                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
-                                                         str(remaining_hp) + " HP",
-                                 'font': fonts['ITEM_DESC_FONT']}])
+                old_hp = target.hp
+                damages = attacker.attack(target)
+                remaining_hp = target.attacked(attacker, damages, kind)
+                entries.append([{'type': 'text',
+                             'text': attacker.get_formatted_name() + " dealed " + str(old_hp - remaining_hp) +
+                                     " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}])
+                # If target has less than 0 HP at the end of the attack
+                if remaining_hp <= 0:
+                    entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
+                                     'font': fonts['ITEM_DESC_FONT']}])
+                    # XP up + loot
+                    if isinstance(attacker, Player):
+                        attacker.earn_xp(target.xp_gain)
+                        entries.append([{'type': 'text',
+                                         'text': attacker.get_formatted_name() + " earned " + str(target.xp_gain) + " XP",
+                                         'font': fonts['ITEM_DESC_FONT']}])
+                        # Check if foe dropped an item
+                        loot = target.roll_for_loot()
+                        for item in loot:
+                            if isinstance(item, Item):
+                                entries.append([{'type': 'text',
+                                                 'text': target.get_formatted_name() + " dropped " +
+                                                         item.get_formatted_name(),
+                                                 'font': fonts['ITEM_DESC_FONT']}])
+                                if not attacker.set_item(item):
+                                    entries.append([{'type': 'text',
+                                                     'text': 'But there is not enough space in inventory to take it !',
+                                                     'font': fonts['ITEM_DESC_FONT']}])
+                            else:
+                                entries.append([{'type': 'text',
+                                                 'text': target.get_formatted_name() + " dropped " + str(item) + ' gold',
+                                                 'font': fonts['ITEM_DESC_FONT']}])
+                                attacker.gold += item
+
+                    collection = None
+                    if isinstance(target, Foe):
+                        collection = self.entities['foes']
+                    elif isinstance(target, Player):
+                        collection = self.entities['players']
+                    elif isinstance(target, Breakable):
+                        collection = self.entities['breakables']
+                    elif isinstance(target, Character):
+                        collection = self.entities['allies']
+                    collection.remove(target)
+                    # Target is dead, no more attack needed.
+                    break
+                else:
+                    entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
+                                                             str(remaining_hp) + " HP",
+                                     'font': fonts['ITEM_DESC_FONT']}])
 
         self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
                                    close_button=UNFINAL_ACTION)
@@ -668,6 +733,9 @@ class Level:
             print("Unknown action in main menu... : " + str(method_id))
 
     def execute_character_menu_action(self, method_id, args):
+        # Memorize current action
+        self.selected_player.current_action = method_id
+
         # Attack action : Character has to choose a target
         if method_id is CharacterMenu.ATTACK:
             self.selected_player.choose_target()
@@ -712,7 +780,7 @@ class Level:
             # Check if player has a key
             has_key = False
             for it in self.selected_player.items:
-                if isinstance(it, Key):
+                if isinstance(it, Key) and it.for_chest:
                     has_key = True
                     break
 
@@ -728,6 +796,34 @@ class Level:
                 for ent in self.get_next_cases(self.selected_player.pos):
                     if isinstance(ent, Chest) and not ent.opened:
                         self.possible_interactions.append(ent.pos)
+        elif method_id is CharacterMenu.OPEN_DOOR:
+            # Check if player has a key
+            has_key = False
+            for it in self.selected_player.items:
+                if isinstance(it, Key) and it.for_door:
+                    has_key = True
+                    break
+
+            if not has_key:
+                self.background_menus.append((self.active_menu, True))
+                self.active_menu = InfoBox("You have no key to open a door", "", "imgs/interface/PopUpMenu.png", [],
+                                           ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            else:
+                self.background_menus.append((self.active_menu, False))
+                self.active_menu = None
+                self.selected_player.choose_target()
+                self.possible_interactions = []
+                for ent in self.get_next_cases(self.selected_player.pos):
+                    if isinstance(ent, Door):
+                        self.possible_interactions.append(ent.pos)
+        elif method_id is CharacterMenu.PICK_LOCK:
+            self.background_menus.append((self.active_menu, False))
+            self.active_menu = None
+            self.selected_player.choose_target()
+            self.possible_interactions = []
+            for ent in self.get_next_cases(self.selected_player.pos):
+                if (isinstance(ent, Chest) and not ent.opened) or isinstance(ent, Door):
+                    self.possible_interactions.append(ent.pos)
         # Use a portal
         elif method_id is CharacterMenu.USE_PORTAL:
             self.background_menus.append((self.active_menu, False))
@@ -773,7 +869,7 @@ class Level:
         # Valid a mission position
         elif method_id is CharacterMenu.TAKE:
             for mission in self.missions:
-                if mission.type is MissionType.POSITION:
+                if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
                     # Verify that character is not the last if the mission is not the main one
                     if mission.main or len(self.players) > 1:
                         if mission.pos_is_valid(self.selected_player.pos):
@@ -1060,22 +1156,22 @@ class Level:
         # Close menu : Active menu is closed
         if method_id is GenericActions.CLOSE:
             self.active_menu = None
-            if self.background_menus:
+            if len(args) >= 3 and args[2][0] == FINAL_ACTION:
+                # Turn is finished
+                self.background_menus = []
+                self.selected_player.turn_finished()
+                self.selected_player = None
+            elif self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
                 # Test if active menu is main character's menu, in this case, it should be reloaded
                 if self.active_menu.type is CharacterMenu:
                     interactable_entities = self.entities['chests'] + self.entities['portals'] + \
-                                            self.entities['fountains'] + self.entities['allies'] + self.players
+                                            self.entities['doors'] + self.entities['fountains'] + \
+                                            self.entities['allies'] + self.players
                     self.active_menu = MenuCreatorManager.create_player_menu(self.selected_player,
                                                                              self.entities['buildings'],
                                                                              interactable_entities, self.missions,
                                                                              self.entities['foes'])
-            else:
-                if len(args) >= 3 and args[2][0] == FINAL_ACTION:
-                    # Turn is finished
-                    self.background_menus = []
-                    self.selected_player.turn_finished()
-                    self.selected_player = None
             return
 
         # Search from which menu came the action
@@ -1173,23 +1269,23 @@ class Level:
 
                         self.selected_player.set_initial_pos(tile)
                         return
-        else:
-            for player in self.players:
-                if player.is_on_pos(pos) and not player.turn_is_finished():
-                    player.selected = True
-                    self.selected_player = player
-                    self.possible_moves = self.get_possible_moves(player.pos,
-                                                                  player.max_moves - player.get_move_malus())
-                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
-                                                                      True)
-                    return
-            for foe in self.entities['foes']:
-                if foe.is_on_pos(pos):
-                    self.active_menu = MenuCreatorManager.create_foe_menu(foe)
-                    return
+            return
+        for player in self.players:
+            if player.is_on_pos(pos) and not player.turn_is_finished():
+                player.selected = True
+                self.selected_player = player
+                self.possible_moves = self.get_possible_moves(player.pos,
+                                                              player.max_moves - player.get_move_malus())
+                self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
+                                                                  True)
+                return
+        for ent in self.entities['foes'] + self.entities['allies']:
+            if ent.is_on_pos(pos):
+                self.active_menu = MenuCreatorManager.create_status_entity_menu(ent)
+                return
 
-            is_initialization = self.game_phase is Status.INITIALIZATION
-            self.active_menu = MenuCreatorManager.create_main_menu(is_initialization, pos)
+        is_initialization = self.game_phase is Status.INITIALIZATION
+        self.active_menu = MenuCreatorManager.create_main_menu(is_initialization, pos)
 
     def right_click(self):
         if self.selected_player:

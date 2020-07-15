@@ -33,6 +33,9 @@ class Player(Character):
         # Memorize normal state sprite
         self.normal_sprite = self.sprite
 
+        # Memorize the current action performed by the player, it must be a value of CharacterMenu
+        self.current_action = None
+
     def set_initial_pos(self, pos):
         self.pos = pos
         self.old_pos = pos

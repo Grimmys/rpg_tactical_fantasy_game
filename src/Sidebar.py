@@ -1,3 +1,4 @@
+from src.Foe import Foe
 from src.fonts import fonts
 from src.Destroyable import Destroyable
 from src.Player import Player
@@ -78,8 +79,27 @@ class Sidebar:
 
         # Display the current information about the entity hovered
         if ent:
-            # Display the ent sprite in a frame
-            frame_pos = (self.pos[0] + self.size[0] / 4, self.pos[1] + self.size[1] / 2 - FRAME.get_height() / 2)
+            # Set up color depending of entity's nature
+            if isinstance(ent, Foe):
+                nature = 'FOE'
+                color = RED
+            elif isinstance(ent, Player):
+                nature = 'PLAYER'
+                color = MIDNIGHT_BLUE
+            elif isinstance(ent, Character):
+                nature = 'ALLY'
+                color = DARK_GREEN
+            else:
+                nature = 'UNLIVING ENTITY'
+                color = BLACK
+
+            # Display the entity nature
+            nature_display = fonts['MISSION_FONT'].render(nature, 1, color)
+            nature_pos = (self.pos[0] + self.size[0] / 4 + FRAME.get_width() / 2 - nature_display.get_width() / 2,
+                          self.pos[1] + 5)
+            win.blit(nature_display, nature_pos)
+            # Display the entity sprite in a frame
+            frame_pos = (self.pos[0] + self.size[0] / 4, self.pos[1] + 5 + nature_display.get_height())
             win.blit(FRAME, frame_pos)
             ent_pos = (frame_pos[0] + 5, frame_pos[1] + 5)
             win.blit(ent.sprite, ent_pos)
@@ -94,7 +114,7 @@ class Sidebar:
             # Display basic information about the ent
             # Name
             text_pos_x = frame_pos[0] + FRAME.get_width() + 15
-            name_pre_text = fonts['ITEM_FONT_STRONG'].render("NAME : ", 1, MIDNIGHT_BLUE)
+            name_pre_text = fonts['ITEM_FONT_STRONG'].render("NAME : ", 1, color)
             win.blit(name_pre_text, (text_pos_x, frame_pos[1]))
             name_text = fonts['ITEM_FONT_STRONG'].render("         " + ent.get_formatted_name(), 1, BLACK)
             win.blit(name_text, (text_pos_x, frame_pos[1]))
@@ -103,12 +123,13 @@ class Sidebar:
             if isinstance(ent, Destroyable):
                 hp = ent.hp
                 hp_max = ent.hp_max
-                hp_pre_text = fonts['ITEM_FONT_STRONG'].render("HP : ", 1, MIDNIGHT_BLUE)
+                hp_pre_text = fonts['ITEM_FONT_STRONG'].render("HP : ", 1, color)
                 hp_text_pos = (text_pos_x, frame_pos[1] + FRAME.get_height() - hp_pre_text.get_height())
                 win.blit(hp_pre_text, hp_text_pos)
                 hp_text = fonts['ITEM_FONT_STRONG'].render("      " + str(hp), 1, Sidebar.determine_hp_color(hp, hp_max))
                 win.blit(hp_text, hp_text_pos)
-                hp_post_text = fonts['ITEM_FONT_STRONG'].render("      " + " " * len(str(hp)) + " / " + str(hp_max), 1, BLACK)
+                hp_post_text = fonts['ITEM_FONT_STRONG'].render("      " + " " * len(str(hp)) + " / " + str(hp_max),
+                                                                1, BLACK)
                 win.blit(hp_post_text, hp_text_pos)
 
                 # Display more information if it is a movable entity
@@ -119,25 +140,26 @@ class Sidebar:
                     win.blit(level_text, (lvl_text_pos_x, frame_pos[1] + FRAME.get_height()))
 
                     # Status
-                    status_pre_text = fonts['ITEM_FONT_STRONG'].render("ALTERATIONS : ", 1, MIDNIGHT_BLUE)
+                    status_pre_text = fonts['ITEM_FONT_STRONG'].render("ALTERATIONS : ", 1, color)
                     win.blit(status_pre_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
-                    status_text = fonts['ITEM_FONT_STRONG'].render("                  " + ent.get_formatted_alterations(),
-                                                          1, BLACK)
+                    status_text = fonts['ITEM_FONT_STRONG'].render(" " * 18 + ent.get_formatted_alterations(),
+                                                                   1, BLACK)
                     win.blit(status_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
 
                     # Display more information if it is a character
                     if isinstance(ent, Character):
                         race = ent.get_formatted_race()
-                        race_pre_text = fonts['ITEM_FONT_STRONG'].render("RACE : ", 1, MIDNIGHT_BLUE)
+                        race_pre_text = fonts['ITEM_FONT_STRONG'].render("RACE : ", 1, color)
                         win.blit(race_pre_text,
                                  (text_pos_x, frame_pos[1] + (fonts['ITEM_FONT_STRONG'].get_height() - SHIFT) * 2))
                         race_text = fonts['ITEM_FONT_STRONG'].render("        " + race, 1, BLACK)
-                        win.blit(race_text, (text_pos_x, frame_pos[1] + (fonts['ITEM_FONT_STRONG'].get_height() - SHIFT) * 2))
+                        win.blit(race_text,
+                                 (text_pos_x, frame_pos[1] + (fonts['ITEM_FONT_STRONG'].get_height() - SHIFT) * 2))
 
                         # Display more information if it is a player
                         if isinstance(ent, Player):
                             classes = ent.get_formatted_classes()
-                            classes_pre_text = fonts['ITEM_FONT_STRONG'].render("CLASS : ", 1, MIDNIGHT_BLUE)
+                            classes_pre_text = fonts['ITEM_FONT_STRONG'].render("CLASS : ", 1, color)
                             win.blit(classes_pre_text,
                                      (text_pos_x, frame_pos[1] + fonts['ITEM_FONT_STRONG'].get_height() - SHIFT))
                             classes_text = fonts['ITEM_FONT_STRONG'].render("         " + classes, 1, BLACK)

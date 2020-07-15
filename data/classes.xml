@@ -1,15 +1,82 @@
 <classes>
     <innkeeper>
-
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3
+            </hp>
+            <defense>
+                0, 1, 1
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+            <strength>
+                0, 0, 1
+            </strength>
+        </stats_up>
     </innkeeper>
     <warrior>
         <constitution>
             5
         </constitution>
+        <stats_up>
+            <hp>
+                1, 1, 2, 2, 2, 3, 4
+            </hp>
+            <defense>
+                0, 1, 1, 2
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+            <strength>
+                0, 1, 1, 2
+            </strength>
+        </stats_up>
     </warrior>
     <ranger>
         <constitution>
             2
         </constitution>
+        <stats_up>
+            <hp>
+                1, 1, 2, 2, 2, 3, 4
+            </hp>
+            <defense>
+                0, 1, 1, 2, 2, 3
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+            <strength>
+                0, 1, 1
+            </strength>
+        </stats_up>
     </ranger>
+    <spy>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3, 4
+            </hp>
+            <defense>
+                0, 1, 1, 2, 2
+            </defense>
+            <resistance>
+                0, 1, 2
+            </resistance>
+            <strength>
+                0, 1
+            </strength>
+        </stats_up>
+        <skills>
+          <skill>
+              <name>
+                  lock_picking
+              </name>
+              <name>
+                  double_attack
+              </name>
+          </skill>
+        </skills>
+    </spy>
 </classes>

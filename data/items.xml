@@ -33,6 +33,23 @@
             None
         </category>
     </iron_ring>
+    <topaz>
+        <name>
+            Topaz
+        </name>
+        <sprite>
+            gem_stone/topaz.png
+        </sprite>
+        <info>
+            A somewhat precious stone, could be sold for a good price.
+        </info>
+        <price>
+            2000
+        </price>
+        <category>
+            None
+        </category>
+    </topaz>
     <consumables>
         <food>
             <monster_meat>
@@ -118,7 +135,7 @@
         </potions>
         <key>
             <name>
-                Key
+                Chest Key
             </name>
             <sprite>
                 misc/key.png
@@ -126,10 +143,32 @@
             <info>
                 Could be used to open some chest.
             </info>
+            <open_chest />
             <category>
                 key
             </category>
+            <price>
+                400
+            </price>
         </key>
+        <door_key>
+            <name>
+                Door Key
+            </name>
+            <sprite>
+                misc/key.png
+            </sprite>
+            <info>
+                Could be used to open some door.
+            </info>
+            <open_door />
+            <category>
+                key
+            </category>
+            <price>
+                600
+            </price>
+        </door_key>
     </consumables>
     <books>
         <green_book>
@@ -385,6 +424,46 @@
                     </classes>
                 </restrictions>
             </wooden_staff>
+            <necromancer_staff>
+                <name>
+                    Necromancer Staff
+                </name>
+                <sprite>
+                    weapon/artefact/spwpn_sceptre_of_torment.png
+                </sprite>
+                <info>
+                    A really dark staff, aimed to the occultists.
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    8
+                </power>
+                <kind>
+                    SPIRITUAL
+                </kind>
+                <range>
+                    1,2
+                </range>
+                <fragility>
+                    30
+                </fragility>
+                <weight>
+                    5
+                </weight>
+                <equipped_sprite>
+                    staff_skull.png
+                </equipped_sprite>
+                <price>
+                    400
+                </price>
+                <restrictions>
+                    <classes>
+                        mage
+                    </classes>
+                </restrictions>
+            </necromancer_staff>
         </weapons>
         <plumed_helmet>
             <name>
@@ -411,7 +490,44 @@
             <equipped_sprite>
                 head/helm_plume.png
             </equipped_sprite>
+            <price>
+                250
+            </price>
         </plumed_helmet>
+        <black_hood>
+            <name>
+                Black hood
+            </name>
+            <sprite>
+                armor/headgear/black_hood.png
+            </sprite>
+            <info>
+                A discret hood, to watch but not to be watched.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                head
+            </bodypart>
+            <def>
+                1
+            </def>
+            <weight>
+                1
+            </weight>
+            <equipped_sprite>
+                head/cap_black_1.png
+            </equipped_sprite>
+            <price>
+                200
+            </price>
+            <restrictions>
+                <classes>
+                    spy
+                </classes>
+            </restrictions>
+        </black_hood>
         <helmet>
             <name>
                 Helmet
@@ -495,6 +611,11 @@
             <price>
                 500
             </price>
+            <restrictions>
+                <classes>
+                    warrior
+                </classes>
+            </restrictions>
         </chainmail>
         <leather_armor>
             <name>
@@ -525,6 +646,11 @@
             <price>
                 350
             </price>
+            <restrictions>
+                <classes>
+                    warrior,ranger
+                </classes>
+            </restrictions>
         </leather_armor>
         <scale_mail>
             <name>
@@ -554,6 +680,11 @@
             <price>
                 750
             </price>
+            <restrictions>
+                <classes>
+                    warrior, ranger
+                </classes>
+            </restrictions>
         </scale_mail>
         <gold_armor>
             <name>
@@ -580,7 +711,49 @@
             <equipped_sprite>
                 body/armor_mummy.png
             </equipped_sprite>
+            <price>
+                3000
+            </price>
+            <restrictions>
+                <classes>
+                    warrior
+                </classes>
+            </restrictions>
         </gold_armor>
+        <spy_outfit>
+            <name>
+                Spy outfit
+            </name>
+            <sprite>
+                armor/artefact/urand_thief.png
+            </sprite>
+            <info>
+                A very black outfit for someone who needs some discretion
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                body
+            </bodypart>
+            <def>
+                2
+            </def>
+            <weight>
+                1
+            </weight>
+            <equipped_sprite>
+                body/outfits/spy_outfit.png
+            </equipped_sprite>
+            <price>
+                800
+            </price>
+            <restrictions>
+                <classes>
+                    spy
+                </classes>
+            </restrictions>
+        </spy_outfit>
         <barding_magenta>
             <name>
                 Barding Magenta
@@ -641,6 +814,35 @@
                 250
             </price>
         </brown_boots>
+        <black_boots>
+            <name>
+                Black Boots
+            </name>
+            <sprite>
+                armor/feet/boots_1_brown_new.png
+            </sprite>
+            <info>
+                Black boots, fashion ones.
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                feet
+            </bodypart>
+            <def>
+                1
+            </def>
+            <weight>
+                1
+            </weight>
+            <equipped_sprite>
+                boots/middle_gray.png
+            </equipped_sprite>
+            <price>
+                250
+            </price>
+        </black_boots>
         <gold_boots>
             <name>
                 Gold Boots

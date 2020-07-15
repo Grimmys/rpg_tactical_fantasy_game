@@ -17,21 +17,24 @@ class Character(Movable):
         Character.classes_data = classes
 
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments,
-                 strategy, lvl, race, gold, talk, compl_sprite=None):
+                 strategy, lvl, race, gold, interaction, compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy,
                          lvl, compl_sprite)
         self.equipments = equipments
         self.classes = classes
         self.race = race
         self.gold = gold
-        self.dialog = talk
+        self.interaction = interaction
+        self.join_team = False
         self.reach_ = [1]
         self.constitution = Character.races_data[race]['constitution'] + \
                             Character.classes_data[classes[0]]['constitution']
+        self.skills.extend(Character.classes_data[classes[0]]['skills'])
 
     def talk(self, actor):
+        self.join_team = self.interaction['join_team']
         entries = []
-        for s in self.dialog:
+        for s in self.interaction['dialog']:
             entry = [{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
             entries.append(entry)
         return entries
@@ -74,19 +77,10 @@ class Character(Movable):
 
     def stats_up(self, nb_lvl=1):
         for i in range(nb_lvl):
-            if self.classes[0] == 'warrior':
-                hp_increased = rd.choice([1, 1, 2, 2, 2, 3, 4])  # Gain between 1 and 4
-                self.defense += rd.choice([0, 1, 1, 2])  # Gain between 0 and 2
-                self.res += rd.choice([0, 1])  # Gain between 0 and 1
-                self.strength += rd.choice([0, 1, 1, 2])  # Gain between 0 and 2
-            elif self.classes[0] == 'ranger':
-                hp_increased = rd.choice([1, 1, 2, 2, 2, 3, 4])  # Gain between 1 and 4
-                self.defense += rd.choice([0, 1, 1, 2, 2, 3])  # Gain between 0 and 3
-                self.res += rd.choice([0, 1])  # Gain between 0 and 1
-                self.strength += rd.choice([0, 1, 1])  # Gain between 0 and 1
-            else:
-                print("Error : Invalid class")
-                return
+            hp_increased = rd.choice(Character.classes_data[self.classes[0]]['stats_up']['hp'])
+            self.defense += rd.choice(Character.classes_data[self.classes[0]]['stats_up']['def'])
+            self.res += rd.choice(Character.classes_data[self.classes[0]]['stats_up']['res'])
+            self.strength += rd.choice(Character.classes_data[self.classes[0]]['stats_up']['str'])
             self.hp_max += hp_increased
             self.hp += hp_increased
 

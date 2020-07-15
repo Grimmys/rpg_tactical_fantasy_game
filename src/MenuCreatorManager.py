@@ -1,7 +1,9 @@
 from src.Chest import Chest
 from src.Character import Character
 from src.Consumable import Consumable
+from src.Door import Door
 from src.Equipment import Equipment
+from src.Foe import Foe
 from src.Fountain import Fountain
 from src.InfoBox import InfoBox
 from src.Item import Item
@@ -158,8 +160,10 @@ def create_status_menu(player):
     if move_malus > 0:
         max_moves += ' (- ' + str(move_malus) + ')'
 
-    entries = [[{'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': player.get_formatted_name()}],
+    entries = [[{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
+                {'type': 'text', 'text': player.get_formatted_name()}, {}],
+               [{}, {}, {'type': 'text', 'color': DARK_GREEN, 'text': 'SKILLS',
+                     'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
                [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_classes()}],
                [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': fonts['ITALIC_ITEM_FONT']},
@@ -168,7 +172,7 @@ def create_status_menu(player):
                 {'type': 'text', 'text': str(player.lvl)}],
                [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': str(player.xp) + ' / ' + str(player.xp_next_lvl)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
+               [{'type': 'text', 'color': DARK_GREEN, 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
                  'margin': (10, 0, 10, 0)}],
                [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
                 {'type': 'text', 'text': str(player.hp) + ' / ' + str(player.hp_max),
@@ -183,7 +187,7 @@ def create_status_menu(player):
                 {'type': 'text', 'text': str(player.defense)}],
                [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
                 {'type': 'text', 'text': str(player.res)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
+               [{'type': 'text', 'color': DARK_GREEN, 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
                  'margin': (10, 0, 10, 0)}]]
 
     alts = player.alterations
@@ -192,6 +196,15 @@ def create_status_menu(player):
     for alt in alts:
         entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
                          'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
+
+    # Display skills
+    i = 2
+    for skill in player.skills:
+        skill_displayed = {'type': 'text', 'color': WHITE, 'text': '> ' + skill.formatted_name}
+        entries[i].append(skill_displayed)
+        i += 1
+    for j in range(i, len(entries)):
+        entries[j].append({})
 
     return InfoBox("Status", StatusMenu, "imgs/interface/PopUpMenu.png", entries,
                    STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
@@ -208,6 +221,8 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
     fountain_option = False
     talk_option = False
     trade_option = False
+    pick_lock_option = False
+    door_option = False
 
     case_pos = (player.pos[0], player.pos[1] - TILE_SIZE)
     if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
@@ -224,8 +239,18 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
                     trade_option = True
             elif isinstance(ent, Chest):
                 if not ent.opened and not chest_option:
-                    entries.insert(0, [{'name': 'Open', 'id': CharacterMenu.OPEN_CHEST}])
+                    entries.insert(0, [{'name': 'Open Chest', 'id': CharacterMenu.OPEN_CHEST}])
                     chest_option = True
+                if 'lock_picking' in player.skills and not pick_lock_option:
+                    entries.insert(0, [{'name': 'Pick Lock', 'id': CharacterMenu.PICK_LOCK}])
+                    pick_lock_option = True
+            elif isinstance(ent, Door):
+                if not door_option:
+                    entries.insert(0, [{'name': 'Open Door', 'id': CharacterMenu.OPEN_DOOR}])
+                    door_option = True
+                if 'lock_picking' in player.skills and not pick_lock_option:
+                    entries.insert(0, [{'name': 'Pick Lock', 'id': CharacterMenu.PICK_LOCK}])
+                    pick_lock_option = True
             elif isinstance(ent, Portal):
                 if not portal_option:
                     entries.insert(0, [{'name': 'Use Portal', 'id': CharacterMenu.USE_PORTAL}])
@@ -241,9 +266,10 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
 
     # Check if player is on mission position
     for mission in missions:
-        if mission.type is MissionType.POSITION:
+        if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
             if mission.pos_is_valid(player.pos):
                 entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
+
 
     # Check if player could attack something, according to weapon range
     w_range = [1] if player.get_weapon() is None else player.get_weapon().reach
@@ -407,55 +433,68 @@ def create_alteration_info_menu(alteration):
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_foe_menu(foe):
-    formatted_name = foe.get_formatted_name()
+def create_status_entity_menu(ent):
+    formatted_name = ent.get_formatted_name()
 
-    entries = [[{'type': 'text', 'text': 'LEVEL : ' + str(foe.lvl), 'font': fonts['ITEM_DESC_FONT']}],
+    entries = [[{'type': 'text', 'text': 'LEVEL : ' + str(ent.lvl), 'font': fonts['ITEM_DESC_FONT']}],
                [{'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (20, 0, 20, 0)}, {}, {}, {'type': 'text', 'text': 'LOOT',
                                                      'font': fonts['MENU_SUB_TITLE_FONT'],
                                                      'color': DARK_GREEN,
-                                                     'margin': (20, 0, 20, 0)}, {}],
+                                                     'margin': (20, 0, 20, 0)} if isinstance(ent, Foe) else {}, {}],
                [{'type': 'text', 'text': 'TYPE :'},
-                {'type': 'text', 'text': str(foe.attack_kind.value)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.attack_kind.value)}, {}, {}, {}],
                [{'type': 'text', 'text': 'REACH :'},
-                {'type': 'text', 'text': foe.get_formatted_reach()}, {}, {}, {}],
+                {'type': 'text', 'text': ent.get_formatted_reach()}, {}, {}, {}],
+               [{}, {}, {}, {}, {}],
+               [{}, {}, {}, {}, {}],
                [{'type': 'text', 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
-                 'margin': (10, 0, 10, 0)}, {}, {}, {}, {}],
+                 'margin': (10, 0, 10, 0)}, {}, {}, {'type': 'text', 'text': 'SKILLS',
+                                                     'font': fonts['MENU_SUB_TITLE_FONT'],
+                                                     'color': DARK_GREEN,
+                                                     'margin': (10, 0, 10, 0)}, {}],
                [{'type': 'text', 'text': 'HP :'},
-                {'type': 'text', 'text': str(foe.hp) + ' / ' + str(foe.hp_max),
-                 'color': determine_hp_color(foe.hp, foe.hp_max)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.hp) + ' / ' + str(ent.hp_max),
+                 'color': determine_hp_color(ent.hp, ent.hp_max)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MOVE :'},
-                {'type': 'text', 'text': str(foe.max_moves)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.max_moves)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ATTACK :'},
-                {'type': 'text', 'text': str(foe.strength)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.strength)}, {}, {}, {}],
                [{'type': 'text', 'text': 'DEFENSE :'},
-                {'type': 'text', 'text': str(foe.defense)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.defense)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MAGICAL RES :'},
-                {'type': 'text', 'text': str(foe.res)}, {}, {}, {}],
-               [{'type': 'text', 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
+                {'type': 'text', 'text': str(ent.res)}, {}, {}, {}],
+               [{'type': 'text', 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (10, 0, 10, 0)}]]
 
-    alts = foe.alterations
+    alts = ent.alterations
     if not alts:
         entries.append([{'type': 'text', 'text': 'None'}])
     for alt in alts:
         entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
                          'color_hover': TURQUOISE, 'obj': alt}])
 
-    loot = foe.potential_loot
-    i = 2
-    for (item, probability) in loot:
-        if isinstance(item, Item):
-            name = item.get_formatted_name()
-        else:
-            name = str(item) + ' Gold'
-        entries[i][3] = {'type': 'text', 'text': name, 'font': fonts['ITEM_DESC_FONT']}
-        entries[i][4] = {'type': 'text', 'text': ' (' + str(probability * 100) + '%)', 'font': fonts['ITEM_DESC_FONT']}
+    if isinstance(ent, Foe):
+        loot = ent.potential_loot
+        i = 2
+        for (item, probability) in loot:
+            if isinstance(item, Item):
+                name = item.get_formatted_name()
+            else:
+                name = str(item) + ' Gold'
+            entries[i][3] = {'type': 'text', 'text': name}
+            entries[i][4] = {'type': 'text', 'text': ' (' + str(probability * 100) + '%)'}
+            i += 1
+
+    # Display skills
+    i = 7
+    for skill in ent.skills:
+        entries[i][3] = {'type': 'text', 'text': '> ' + skill.formatted_name}
         i += 1
 
     return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
 
 def create_reward_menu(mission):
     entries = [[{'type': 'text', 'text': 'Congratulations ! Objective has been completed !', 'font': fonts['ITEM_DESC_FONT']}]]

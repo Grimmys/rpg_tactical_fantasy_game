@@ -58,6 +58,7 @@ class Movable(Destroyable):
 
         self.attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
         self.strategy = EntityStrategy[strategy]
+        self.skills = []
 
     def display(self, screen):
         Destroyable.display(self, screen)
@@ -131,10 +132,27 @@ class Movable(Destroyable):
             if it.id == item.id:
                 return self.items.pop(index)
 
-    def remove_key(self):
-        for index, it in enumerate(self.items):
-            if isinstance(it, Key):
-                return self.items.pop(index)
+    def remove_chest_key(self):
+        best_candidate = None
+        for it in self.items:
+            if isinstance(it, Key) and it.for_chest:
+                if not best_candidate:
+                    best_candidate = it
+                elif not it.for_door:
+                    # If a key could be used to open a chest but not a door, it's better to use it
+                    best_candidate = it
+        self.items.remove(best_candidate)
+
+    def remove_door_key(self):
+        best_candidate = None
+        for it in self.items:
+            if isinstance(it, Key) and it.for_door:
+                if not best_candidate:
+                    best_candidate = it
+                elif not it.for_chest:
+                    # If a key could be used to open a door but not a chest, it's better to use it
+                    best_candidate = it
+        self.items.remove(best_candidate)
 
     def use_item(self, item):
         return item.use(self)

@@ -10,7 +10,7 @@ class Entity:
     def __init__(self, name, pos, sprite):
         self.name = name
         self.pos = pos
-        self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        self.sprite = sprite if isinstance(sprite, pg.Surface) else pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
     def display(self, screen):
         screen.blit(self.sprite, self.pos)

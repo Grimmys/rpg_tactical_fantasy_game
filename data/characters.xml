@@ -4,21 +4,21 @@
         <name> jist </name>
         <class> innkeeper </class>
         <race> human </race>
-        <lvl> 1 </lvl>
-        <strength> 0 </strength>
-        <def> 2 </def>
-        <res> 0 </res>
-        <hp> 10 </hp>
+        <level> 1 </level>
+        <initStrength> 0 </initStrength>
+        <initDef> 2 </initDef>
+        <initRes> 0 </initRes>
+        <initHP> 10 </initHP>
         <move> 0 </move>
-        <sprite> jist.png </sprite>
-        <talks>
+        <sprite> characs/jist.png </sprite>
+        <interaction>
             <talk>
                 Hurry up ! Leave the village from the west, and enter the necropolis.
             </talk>
             <talk>
                 The clock is ticking... The ogre's bones must be returned to their original place.
             </talk>
-        </talks>
+        </interaction>
         <gold> 100 </gold>
         <strategy> STATIC </strategy>
         <attack_kind> PHYSICAL </attack_kind>
@@ -33,7 +33,7 @@
         <initRes> 0 </initRes>
         <initHP> 10 </initHP>
         <move> 5 </move>
-        <sprite> base/human_male.png </sprite>
+        <sprite> dungeon_crawl/player/base/human_male.png </sprite>
         <equipment>
             <head>
                 helmet
@@ -68,7 +68,7 @@
         <initHP> 8 </initHP>
         <move> 5 </move>
         <level> 1 </level>
-        <sprite> base/human_female.png </sprite>
+        <sprite> dungeon_crawl/player/base/human_female.png </sprite>
         <complementSprite> legs/pants_short_brown.png </complementSprite>
         <equipment>
             <head>
@@ -101,7 +101,7 @@
         <initHP> 12 </initHP>
         <move> 8 </move>
         <level> 3 </level>
-        <sprite> base/centaur_brown_male.png</sprite>
+        <sprite> dungeon_crawl/player/base/centaur_brown_male.png </sprite>
         <equipment>
             <body>
                 barding_magenta
@@ -117,4 +117,46 @@
         </inventory>
         <gold> 400 </gold>
     </chrisemon>
+    <doran>
+        <name> doran </name>
+        <class> spy </class>
+        <race> gnome </race>
+        <initStrength> 2 </initStrength>
+        <initDef> 3 </initDef>
+        <initRes> 1 </initRes>
+        <initHP> 10 </initHP>
+        <move> 6 </move>
+        <level> 3 </level>
+        <sprite> dungeon_crawl/player/base/gnome_male.png </sprite>
+        <equipment>
+            <head>
+                black_hood
+            </head>
+            <body>
+                spy_outfit
+            </body>
+            <right_hand>
+                dagger
+            </right_hand>
+            <feet>
+                black_boots
+            </feet>
+        </equipment>
+        <gold> 100 </gold>
+        <interaction>
+            <talk>
+                Thank you for rescuing me !
+            </talk>
+            <talk>
+                I'm all yours now. As a spy, I could open locked doors and chests.
+            </talk>
+            <join_team />
+        </interaction>
+        <strategy>
+            SEMI_ACTIVE
+        </strategy>
+        <attack_kind>
+            PHYSICAL
+        </attack_kind>
+    </doran>
 </characters>

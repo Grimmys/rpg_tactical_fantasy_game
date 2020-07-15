@@ -16,6 +16,7 @@ class Chest(Entity):
         self.sprite_open = pg.transform.scale(pg.image.load(sprite_open).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         self.item = Chest.determine_item(potential_items)
         self.opened = False
+        self.pick_lock_initiated = False
 
     @staticmethod
     def determine_item(potential_items):
