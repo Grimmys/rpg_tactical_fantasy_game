@@ -182,4 +182,17 @@ class Character(Movable):
         gold = etree.SubElement(tree, 'gold')
         gold.text = str(self.gold)
 
+        # Save inventory
+        inv = etree.SubElement(tree, 'inventory')
+        for it in self.items:
+            it_el = etree.SubElement(inv, 'item')
+            it_name = etree.SubElement(it_el, 'name')
+            it_name.text = it.name
+
+        # Save equipment
+        equip = etree.SubElement(tree, 'equipment')
+        for eq in self.equipments:
+            eq_el = etree.SubElement(equip, eq.body_part)
+            eq_el.text = eq.name
+
         return tree

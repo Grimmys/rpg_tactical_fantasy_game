@@ -152,16 +152,15 @@ def load_ally(ally, from_save, gap_x, gap_y):
     dynamic_data = infos
     if from_save:
         dynamic_data = ally
-    hp = int(dynamic_data.find('initHP').text.strip())
+    hp = int(dynamic_data.find('hp').text.strip())
     move = int(dynamic_data.find('move').text.strip())
-    strength = int(dynamic_data.find('initStrength').text.strip())
-    defense = int(dynamic_data.find('initDef').text.strip())
-    res = int(dynamic_data.find('initRes').text.strip())
+    strength = int(dynamic_data.find('strength').text.strip())
+    defense = int(dynamic_data.find('defense').text.strip())
+    res = int(dynamic_data.find('resistance').text.strip())
     gold = int(dynamic_data.find('gold').text.strip())
 
-    equipment = dynamic_data.find('equipment')
     equipments = []
-    for eq in equipment.findall('*'):
+    for eq in dynamic_data.findall('equipment/*'):
         equipments.append(parse_item_file(eq.text.strip()))
 
     loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
@@ -217,8 +216,8 @@ def load_foe(foe, from_save, gap_x, gap_y):
     hp = int(stats_tree.find('hp').text.strip())
     move = int(stats_tree.find('move').text.strip())
     strength = int(stats_tree.find('strength').text.strip())
-    defense = int(stats_tree.find('def').text.strip())
-    res = int(stats_tree.find('res').text.strip())
+    defense = int(stats_tree.find('defense').text.strip())
+    res = int(stats_tree.find('resistance').text.strip())
 
     loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, strategy, reach, xp_gain, loot, lvl)
 
@@ -495,19 +494,18 @@ def load_player(name):
         lvl = 1
     else:
         lvl = int(lvl.text.strip())
-    defense = int(player_t.find('initDef').text.strip())
-    res = int(player_t.find('initRes').text.strip())
-    hp = int(player_t.find('initHP').text.strip())
-    strength = int(player_t.find('initStrength').text.strip())
+    defense = int(player_t.find('defense').text.strip())
+    res = int(player_t.find('resistance').text.strip())
+    hp = int(player_t.find('hp').text.strip())
+    strength = int(player_t.find('strength').text.strip())
     move = int(player_t.find('move').text.strip())
     sprite = 'imgs/' + player_t.find('sprite').text.strip()
     compl_sprite = player_t.find('complementSprite')
     if compl_sprite is not None:
         compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
 
-    equipment = player_t.find('equipment')
     equipments = []
-    for eq in equipment.findall('*'):
+    for eq in player_t.findall('equipment/*'):
         equipments.append(parse_item_file(eq.text.strip()))
     gold = int(player_t.find('gold').text.strip())
 

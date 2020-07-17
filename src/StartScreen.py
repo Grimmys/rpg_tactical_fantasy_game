@@ -137,7 +137,7 @@ class StartScreen:
         team = [LoadFromXMLManager.load_player("john"), LoadFromXMLManager.load_player("archer")]
 
         # Init the first level
-        self.level_id = 2
+        self.level_id = 0
         self.play(StartScreen.load_level(self.level_id, team))
 
     def load_game(self):
@@ -163,8 +163,8 @@ class StartScreen:
                     exp = int(player.find("exp").text.strip())
                     hp = int(player.find("hp").text.strip())
                     strength = int(player.find("strength").text.strip())
-                    defense = int(player.find("def").text.strip())
-                    res = int(player.find("res").text.strip())
+                    defense = int(player.find("defense").text.strip())
+                    res = int(player.find("resistance").text.strip())
                     move = int(player.find("move").text.strip())
                     current_hp = int(player.find("currentHp").text.strip())
                     pos = (int(player.find("position/x").text.strip()) * TILE_SIZE,
@@ -177,8 +177,8 @@ class StartScreen:
                         inv.append(item)
 
                     equipments = []
-                    for eq in player.findall("equipments/equipment"):
-                        eq_name = eq.find("name").text.strip()
+                    for eq in player.findall("equipment/*"):
+                        eq_name = eq.text.strip()
                         eq = LoadFromXMLManager.parse_item_file(eq_name)
                         equipments.append(eq)
 
@@ -186,10 +186,10 @@ class StartScreen:
                     tree = etree.parse("data/characters.xml").getroot()
                     player_t = tree.xpath(name)[0]
 
-                    sprite = 'imgs/dungeon_crawl/player/' + player_t.find('sprite').text.strip()
+                    sprite = 'imgs/' + player_t.find('sprite').text.strip()
                     compl_sprite = player_t.find('complementSprite')
                     if compl_sprite is not None:
-                        compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
+                        compl_sprite = 'imgs/' + compl_sprite.text.strip()
 
                     p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, race, gold, level,
                                compl_sprite=compl_sprite)

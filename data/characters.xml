@@ -5,10 +5,10 @@
         <class> innkeeper </class>
         <race> human </race>
         <level> 1 </level>
-        <initStrength> 0 </initStrength>
-        <initDef> 2 </initDef>
-        <initRes> 0 </initRes>
-        <initHP> 10 </initHP>
+        <strength> 0 </strength>
+        <defense> 2 </defense>
+        <resistance> 0 </resistance>
+        <hp> 10 </hp>
         <move> 0 </move>
         <sprite> characs/jist.png </sprite>
         <interaction>
@@ -28,10 +28,10 @@
         <class> warrior </class>
         <race> human </race>
         <level> 1 </level>
-        <initStrength> 3 </initStrength>
-        <initDef> 0 </initDef>
-        <initRes> 0 </initRes>
-        <initHP> 10 </initHP>
+        <strength> 3 </strength>
+        <defense> 0 </defense>
+        <resistance> 0 </resistance>
+        <hp> 10 </hp>
         <move> 5 </move>
         <sprite> dungeon_crawl/player/base/human_male.png </sprite>
         <equipment>
@@ -62,10 +62,10 @@
         <name> archer </name>
         <class> ranger </class>
         <race> elf </race>
-        <initStrength> 2 </initStrength>
-        <initDef> 1 </initDef>
-        <initRes> 0 </initRes>
-        <initHP> 8 </initHP>
+        <strength> 2 </strength>
+        <defense> 1 </defense>
+        <resistance> 0 </resistance>
+        <hp> 8 </hp>
         <move> 5 </move>
         <level> 1 </level>
         <sprite> dungeon_crawl/player/base/human_female.png </sprite>
@@ -95,10 +95,10 @@
         <name> chrisemon </name>
         <class> warrior </class>
         <race> centaur </race>
-        <initStrength> 3 </initStrength>
-        <initDef> 2 </initDef>
-        <initRes> 0 </initRes>
-        <initHP> 12 </initHP>
+        <strength> 3 </strength>
+        <defense> 2 </defense>
+        <resistance> 0 </resistance>
+        <hp> 12 </hp>
         <move> 8 </move>
         <level> 3 </level>
         <sprite> dungeon_crawl/player/base/centaur_brown_male.png </sprite>
@@ -121,10 +121,10 @@
         <name> doran </name>
         <class> spy </class>
         <race> gnome </race>
-        <initStrength> 2 </initStrength>
-        <initDef> 3 </initDef>
-        <initRes> 1 </initRes>
-        <initHP> 10 </initHP>
+        <strength> 2 </strength>
+        <defense> 3 </defense>
+        <resistance> 1 </resistance>
+        <hp> 10 </hp>
         <move> 6 </move>
         <level> 3 </level>
         <sprite> dungeon_crawl/player/base/gnome_male.png </sprite>

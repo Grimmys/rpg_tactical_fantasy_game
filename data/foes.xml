@@ -12,12 +12,12 @@
         <strength>
             2
         </strength>
-        <def>
+        <defense>
             0
-        </def>
-        <res>
+        </defense>
+        <resistance>
             0
-        </res>
+        </resistance>
         <xp_gain>
             10
         </xp_gain>
@@ -41,12 +41,12 @@
         <strength>
             4
         </strength>
-        <def>
+        <defense>
             0
-        </def>
-        <res>
+        </defense>
+        <resistance>
             0
-        </res>
+        </resistance>
         <xp_gain>
             10
         </xp_gain>
@@ -88,12 +88,12 @@
         <strength>
             1
         </strength>
-        <def>
+        <defense>
             2
-        </def>
-        <res>
+        </defense>
+        <resistance>
             0
-        </res>
+        </resistance>
         <xp_gain>
             8
         </xp_gain>
@@ -117,12 +117,12 @@
         <strength>
             7
         </strength>
-        <def>
+        <defense>
             0
-        </def>
-        <res>
+        </defense>
+        <resistance>
             0
-        </res>
+        </resistance>
         <xp_gain>
             13
         </xp_gain>
@@ -164,12 +164,12 @@
         <strength>
             1
         </strength>
-        <def>
+        <defense>
             0
-        </def>
-        <res>
+        </defense>
+        <resistance>
             0
-        </res>
+        </resistance>
         <xp_gain>
             5
         </xp_gain>
@@ -190,12 +190,12 @@
         <strength>
             5
         </strength>
-        <def>
+        <defense>
             0
-        </def>
-        <res>
+        </defense>
+        <resistance>
             2
-        </res>
+        </resistance>
         <xp_gain>
             15
         </xp_gain>
@@ -232,12 +232,12 @@
         <strength>
             5
         </strength>
-        <def>
+        <defense>
             1
-        </def>
-        <res>
+        </defense>
+        <resistance>
             0
-        </res>
+        </resistance>
         <xp_gain>
             15
         </xp_gain>
@@ -279,12 +279,12 @@
         <strength>
             3
         </strength>
-        <def>
+        <defense>
             0
-        </def>
-        <res>
+        </defense>
+        <resistance>
             1
-        </res>
+        </resistance>
         <xp_gain>
             15
         </xp_gain>
@@ -321,12 +321,12 @@
         <strength>
             6
         </strength>
-        <def>
+        <defense>
             5
-        </def>
-        <res>
+        </defense>
+        <resistance>
             6
-        </res>
+        </resistance>
         <xp_gain>
             60
         </xp_gain>

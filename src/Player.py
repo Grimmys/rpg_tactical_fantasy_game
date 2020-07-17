@@ -135,18 +135,4 @@ class Player(Character):
         state = etree.SubElement(tree, 'turnFinished')
         state.text = str(self.turn_is_finished())
 
-        # Save inventory
-        inv = etree.SubElement(tree, 'inventory')
-        for it in self.items:
-            it_el = etree.SubElement(inv, 'item')
-            it_name = etree.SubElement(it_el, 'name')
-            it_name.text = it.name
-
-        # Save equipment
-        equip = etree.SubElement(tree, 'equipments')
-        for eq in self.equipments:
-            eq_el = etree.SubElement(equip, 'equipment')
-            eq_name = etree.SubElement(eq_el, 'name')
-            eq_name.text = eq.name
-
         return tree
