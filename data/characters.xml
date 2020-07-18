@@ -31,7 +31,7 @@
         <strength> 3 </strength>
         <defense> 0 </defense>
         <resistance> 0 </resistance>
-        <hp> 10 </hp>
+        <hp> 20 </hp>
         <move> 5 </move>
         <sprite> dungeon_crawl/player/base/human_male.png </sprite>
         <equipment>
@@ -65,7 +65,7 @@
         <strength> 2 </strength>
         <defense> 1 </defense>
         <resistance> 0 </resistance>
-        <hp> 8 </hp>
+        <hp> 14 </hp>
         <move> 5 </move>
         <level> 1 </level>
         <sprite> dungeon_crawl/player/base/human_female.png </sprite>

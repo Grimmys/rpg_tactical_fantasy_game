@@ -117,7 +117,7 @@ class Level:
         # Load events
         self.events = Loader.load_events(tree.find('events'), self.map['x'], self.map['y'])
 
-        if status is Status.INITIALIZATION.name:
+        if status == Status.INITIALIZATION.name:
             # Load available tiles for characters' placement
             self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'),
                                                               self.map['x'], self.map['y'])
