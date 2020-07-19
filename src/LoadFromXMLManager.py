@@ -166,6 +166,12 @@ def load_ally(ally, from_save, gap_x, gap_y):
     loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
                             classes, equipments, strategy, lvl, race, gold, interaction)
 
+    inventory = infos.find('inventory')
+    if inventory is not None:
+        for it in inventory.findall('item'):
+            item = parse_item_file(it.text.strip())
+            loaded_ally.set_item(item)
+
     if from_save:
         current_hp = int(ally.find('currentHp').text.strip())
         loaded_ally.set_current_hp(current_hp)
@@ -204,8 +210,13 @@ def load_foe(foe, from_save, gap_x, gap_y):
     y = int(foe.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     lvl = int(foe.find('level').text.strip())
-    dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
-    loot.extend(dynamic_loot)
+    if from_save:
+        # Overwrite static loaded loot
+        loot = [(parse_item_file(it.find('name').text.strip()), float(it.find('probability').text))
+                for it in foe.findall('loot/item')]
+    else:
+        dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
+        loot.extend(dynamic_loot)
     specific_strategy = foe.find('strategy')
     if specific_strategy is not None:
         strategy = specific_strategy.text.strip()

@@ -475,6 +475,7 @@ class Level:
         player.earn_xp(character.xp)
         player.set_current_hp(character.hp)
         player.pos = character.pos
+        player.items = character.items
 
     def interact(self, actor, target, target_pos):
         # Since player chose his interaction, possible interactions should be reseted

@@ -27,8 +27,6 @@ class Mission:
         if self.type is MissionType.POSITION:
             return pos in self.positions
         if self.type is MissionType.TOUCH_POSITION:
-            print(pos)
-            print("MISSION POS")
             for mission_pos in self.positions:
                 print(mission_pos)
                 return abs(pos[0] + pos[1] - (mission_pos[0] + mission_pos[1])) == TILE_SIZE

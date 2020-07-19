@@ -1,5 +1,7 @@
 import random as rd
 
+from lxml import etree
+
 from src.Movable import Movable
 
 
@@ -25,3 +27,17 @@ class Foe(Movable):
             if rd.random() < probability:
                 loot.append(item)
         return loot
+
+    def save(self, tree_name):
+        tree = Movable.save(self, tree_name)
+
+        # Save loot
+        loot = etree.SubElement(tree, "loot")
+        for (item, probability) in self.potential_loot:
+            it_el = etree.SubElement(loot, 'item')
+            it_name = etree.SubElement(it_el, 'name')
+            it_name.text = item.name
+            it_probability = etree.SubElement(it_el, 'probability')
+            it_probability.text = probability
+
+        return tree

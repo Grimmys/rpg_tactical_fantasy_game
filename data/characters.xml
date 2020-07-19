@@ -142,6 +142,14 @@
                 black_boots
             </feet>
         </equipment>
+        <inventory>
+                <item>
+                    life_potion
+                </item>
+                <item>
+                    door_key
+                </item>
+        </inventory>
         <gold> 100 </gold>
         <interaction>
             <talk>

@@ -26,7 +26,7 @@ class StartScreen:
         # Memorize if a game is currently being performed
         self.level = None
 
-        self.levels = [0, 1]
+        self.levels = [0, 1, 2]
         self.level_id = None
 
         # Load current saved parameters
