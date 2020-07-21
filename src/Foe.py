@@ -36,8 +36,8 @@ class Foe(Movable):
         for (item, probability) in self.potential_loot:
             it_el = etree.SubElement(loot, 'item')
             it_name = etree.SubElement(it_el, 'name')
-            it_name.text = item.name
+            it_name.text = str(item)
             it_probability = etree.SubElement(it_el, 'probability')
-            it_probability.text = probability
+            it_probability.text = str(probability)
 
         return tree

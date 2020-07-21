@@ -113,7 +113,7 @@ class StartScreen:
             if status is Status.ENDED_VICTORY:
                 self.level_id += 1
                 if self.level_id in self.levels:
-                    team = self.level.passed_players
+                    team = self.level.passed_players + self.level.players
                     for player in team:
                         # Players are fully restored between level
                         player.healed(player.hp_max)

@@ -197,7 +197,7 @@ class Level:
     def end_level(self, anim_surf, pos):
         self.background_menus = []
         # Check if some optional objectives have been completed
-        if self.main_mission.succeeded_chars:
+        if self.main_mission.ended:
             for mission in self.missions:
                 if not mission.main and mission.ended:
                     self.background_menus.append(MenuCreatorManager.create_reward_menu(mission))
@@ -469,7 +469,8 @@ class Level:
     def ally_to_player(self, character):
         self.entities['allies'].remove(character)
         player = Player(character.name, character.sprite, character.hp, character.defense, character.res,
-                        character.max_moves, character.strength, character.classes, character.equipments, character.race,
+                        character.max_moves, character.strength, character.classes, character.equipments,
+                        character.race,
                         character.gold, character.lvl)
         self.entities['players'].append(player)
         player.earn_xp(character.xp)
@@ -571,7 +572,6 @@ class Level:
             self.background_menus = []
             # Check if character is now a player
             if target.join_team:
-                print('yes')
                 self.ally_to_player(target)
         # Check if player tries to visit a building
         elif isinstance(target, Building):
@@ -587,66 +587,82 @@ class Level:
             # No more menu : turn is finished
             self.background_menus = []
 
+    def remove_entity(self, entity):
+        collection = None
+        if isinstance(entity, Foe):
+            collection = self.entities['foes']
+        elif isinstance(entity, Player):
+            collection = self.entities['players']
+        elif isinstance(entity, Breakable):
+            collection = self.entities['breakables']
+        elif isinstance(entity, Character):
+            collection = self.entities['allies']
+        collection.remove(entity)
+
     def duel(self, attacker, target, kind):
         entries = []
         nb_attacks = 2 if 'double_attack' in attacker.skills else 1
         for i in range(nb_attacks):
+            xp = 0
+
             if isinstance(target, Character) and target.parried():
                 # Target parried attack
                 msg = attacker.get_formatted_name() + " attacked " + target.get_formatted_name() + \
                       "... But " + target.get_formatted_name() + " parried !"
                 entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
-            else:
-                old_hp = target.hp
-                damages = attacker.attack(target)
-                remaining_hp = target.attacked(attacker, damages, kind)
-                entries.append([{'type': 'text',
-                             'text': attacker.get_formatted_name() + " dealed " + str(old_hp - remaining_hp) +
-                                     " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}])
-                # If target has less than 0 HP at the end of the attack
-                if remaining_hp <= 0:
-                    entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
-                                     'font': fonts['ITEM_DESC_FONT']}])
-                    # XP up + loot
-                    if isinstance(attacker, Player):
-                        attacker.earn_xp(target.xp_gain)
-                        entries.append([{'type': 'text',
-                                         'text': attacker.get_formatted_name() + " earned " + str(target.xp_gain) + " XP",
-                                         'font': fonts['ITEM_DESC_FONT']}])
-                        # Check if foe dropped an item
-                        loot = target.roll_for_loot()
-                        for item in loot:
-                            if isinstance(item, Item):
-                                entries.append([{'type': 'text',
-                                                 'text': target.get_formatted_name() + " dropped " +
-                                                         item.get_formatted_name(),
-                                                 'font': fonts['ITEM_DESC_FONT']}])
-                                if not attacker.set_item(item):
-                                    entries.append([{'type': 'text',
-                                                     'text': 'But there is not enough space in inventory to take it !',
-                                                     'font': fonts['ITEM_DESC_FONT']}])
-                            else:
-                                entries.append([{'type': 'text',
-                                                 'text': target.get_formatted_name() + " dropped " + str(item) + ' gold',
-                                                 'font': fonts['ITEM_DESC_FONT']}])
-                                attacker.gold += item
+                # Current attack is ended
+                continue
 
-                    collection = None
-                    if isinstance(target, Foe):
-                        collection = self.entities['foes']
-                    elif isinstance(target, Player):
-                        collection = self.entities['players']
-                    elif isinstance(target, Breakable):
-                        collection = self.entities['breakables']
-                    elif isinstance(target, Character):
-                        collection = self.entities['allies']
-                    collection.remove(target)
-                    # Target is dead, no more attack needed.
-                    break
-                else:
-                    entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
-                                                             str(remaining_hp) + " HP",
-                                     'font': fonts['ITEM_DESC_FONT']}])
+            damages = attacker.attack(target)
+            real_damages = target.hp - target.attacked(attacker, damages, kind)
+            entries.append([{'type': 'text',
+                             'text': attacker.get_formatted_name() + " dealed " + str(real_damages) +
+                                     " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}])
+            # XP gain for dealed damages
+            xp += real_damages // 2
+            # If target has less than 0 HP at the end of the attack
+            if target.hp <= 0:
+                # XP gain increased
+                xp += target.xp_gain
+
+                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
+                                 'font': fonts['ITEM_DESC_FONT']}])
+                # Loot
+                if isinstance(attacker, Player):
+                    # Check if foe dropped an item
+                    loot = target.roll_for_loot()
+                    for item in loot:
+                        if isinstance(item, Item):
+                            entries.append([{'type': 'text',
+                                             'text': target.get_formatted_name() + " dropped " +
+                                                     item.get_formatted_name(),
+                                             'font': fonts['ITEM_DESC_FONT']}])
+                            if not attacker.set_item(item):
+                                entries.append([{'type': 'text',
+                                                 'text': 'But there is not enough space in inventory to take it !',
+                                                 'font': fonts['ITEM_DESC_FONT']}])
+                        else:
+                            entries.append([{'type': 'text',
+                                             'text': target.get_formatted_name() + " dropped " + str(item) + ' gold',
+                                             'font': fonts['ITEM_DESC_FONT']}])
+                            attacker.gold += item
+
+                self.remove_entity(target)
+            else:
+                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
+                                                         str(target.hp) + " HP",
+                                 'font': fonts['ITEM_DESC_FONT']}])
+
+            # XP gain
+            if isinstance(attacker, Player):
+                attacker.earn_xp(xp)
+                entries.append([{'type': 'text',
+                                 'text': attacker.get_formatted_name() + " earned " + str(xp) + " XP",
+                                 'font': fonts['ITEM_DESC_FONT']}])
+
+            if target.hp <= 0:
+                # Target is dead, no more attack needed.
+                break
 
         self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
                                    close_button=UNFINAL_ACTION)

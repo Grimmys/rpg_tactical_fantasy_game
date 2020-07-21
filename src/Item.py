@@ -15,3 +15,6 @@ class Item:
 
     def get_formatted_name(self):
         return self.name.replace('_', ' ').title()
+
+    def __str__(self):
+        return self.name
