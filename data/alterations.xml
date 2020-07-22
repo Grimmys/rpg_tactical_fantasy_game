@@ -4,4 +4,9 @@
             The move cap is increased by {val}
         </info>
     </speed_up>
+    <strength_up>
+        <info>
+            The strength is increased by {val}
+        </info>
+    </strength_up>
 </alterations>

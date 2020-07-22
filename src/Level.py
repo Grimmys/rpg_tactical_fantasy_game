@@ -1138,7 +1138,7 @@ class Level:
 
     def execute_status_action(self, method_id, args):
         # Get infos about an alteration
-        if method_id is StatusMenu.INFO_ALTERATION_ACTION:
+        if method_id is StatusMenu.INFO_ALTERATION:
             alteration = args[1]
 
             self.background_menus.append([self.active_menu, True])
@@ -1292,7 +1292,7 @@ class Level:
                 player.selected = True
                 self.selected_player = player
                 self.possible_moves = self.get_possible_moves(player.pos,
-                                                              player.max_moves - player.get_move_malus())
+                                                              player.max_moves + player.get_stat_change('speed'))
                 self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
                                                                   True)
                 return

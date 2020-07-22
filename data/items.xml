@@ -114,13 +114,13 @@
                     potion/murky.png
                 </sprite>
                 <info>
-                    Use it to boost speed.
+                    Use it to temporarily boost speed.
                 </info>
                 <category>
                     potion
                 </category>
                 <effect>
-                    speed
+                    speed_up
                 </effect>
                 <power>
                     2
@@ -132,6 +132,32 @@
                     250
                 </price>
             </speed_potion>
+            <strength_potion>
+                <name>
+                    Strength Potion
+                </name>
+                <sprite>
+                    potion/yellow_new.png
+                </sprite>
+                <info>
+                    Use it to temporarily boost strength.
+                </info>
+                <category>
+                    potion
+                </category>
+                <effect>
+                    strength_up
+                </effect>
+                <power>
+                    2
+                </power>
+                <duration>
+                    2
+                </duration>
+                <price>
+                    300
+                </price>
+            </strength_potion>
         </potions>
         <key>
             <name>

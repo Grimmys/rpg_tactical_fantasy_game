@@ -76,11 +76,7 @@ class Movable(Destroyable):
 
     @property
     def max_moves(self):
-        alterations = self.get_alterations_effect('speed')
-        maximum = self._max_moves
-        for alt in alterations:
-            maximum += alt.power
-        return maximum
+        return self._max_moves
 
     def set_move(self, path):
         self.on_move = path
@@ -98,7 +94,7 @@ class Movable(Destroyable):
         self.alterations.append(alteration)
 
     def get_alterations_effect(self, eff):
-        return [alteration for alteration in self.alterations if alteration.get_effect() == eff]
+        return [alteration for alteration in self.alterations if alteration.name == eff]
 
     def earn_xp(self, xp):
         self.xp += xp

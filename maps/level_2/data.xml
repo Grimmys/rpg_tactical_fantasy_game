@@ -91,18 +91,10 @@
             <contains>
                 <item>
                     <name>
-                        short_sword
+                        strength_potion
                     </name>
                     <probability>
-                        0.6
-                    </probability>
-                </item>
-                <item>
-                    <name>
-                        wooden_shield
-                    </name>
-                    <probability>
-                        0.4
+                        1.0
                     </probability>
                 </item>
             </contains>

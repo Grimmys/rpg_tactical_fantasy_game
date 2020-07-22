@@ -1,9 +1,8 @@
 
 
 class Alteration:
-    def __init__(self, name, effect, power, duration, desc):
+    def __init__(self, name, power, duration, desc):
         self.name = name
-        self.effect = effect
         self.power = power
         self.duration = duration
         self.time = 0

@@ -67,7 +67,7 @@ class Character(Movable):
         return Movable.attacked(self, ent, damages, kind)
 
     def attack(self, ent):
-        damages = self.strength
+        damages = self.strength + self.get_stat_change('strength')
         weapon = self.get_weapon()
         if weapon:
             damages += weapon.atk
@@ -160,11 +160,24 @@ class Character(Movable):
             if equip.id == eq.id:
                 return self.equipments.pop(index)
 
-    def get_move_malus(self):
-        # Check if character as a malus to his movement due to equipment total weight exceeding constitution
-        total_weight = sum([eq.weight for eq in self.equipments])
-        diff = total_weight - self.constitution
-        return 0 if diff < 0 else math.ceil(diff / 2)
+    def get_stat_change(self, stat):
+        malus = 0
+        if stat == 'speed':
+            # Check if character as a malus to his movement due to equipment total weight exceeding constitution
+            total_weight = sum([eq.weight for eq in self.equipments])
+            diff = total_weight - self.constitution
+            malus = 0 if diff < 0 else - math.ceil(diff / 2)
+        # Check if character as a bonus due to alteration
+        bonus = sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_up')))
+        return malus + bonus
+
+    def get_formatted_stat_change(self, stat):
+        change = self.get_stat_change(stat)
+        if change > 0:
+            return ' (+ ' + str(change) + ')'
+        elif change < 0:
+            return ' (- ' + str(change) + ')'
+        return ''
 
     def save(self, tree_name):
         tree = Movable.save(self, tree_name)

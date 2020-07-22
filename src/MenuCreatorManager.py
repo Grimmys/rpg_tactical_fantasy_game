@@ -155,11 +155,6 @@ def determine_hp_color(hp, hp_max):
 
 
 def create_status_menu(player):
-    move_malus = player.get_move_malus()
-    max_moves = str(player.max_moves)
-    if move_malus > 0:
-        max_moves += ' (- ' + str(move_malus) + ')'
-
     entries = [[{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_name()}, {}],
                [{}, {}, {'type': 'text', 'color': DARK_GREEN, 'text': 'SKILLS',
@@ -178,15 +173,15 @@ def create_status_menu(player):
                 {'type': 'text', 'text': str(player.hp) + ' / ' + str(player.hp_max),
                  'color': determine_hp_color(player.hp, player.hp_max)}],
                [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
-                {'type': 'text', 'text': max_moves}],
+                {'type': 'text', 'text': str(player.max_moves) + player.get_formatted_stat_change('speed')}],
                [{'type': 'text', 'color': WHITE, 'text': 'CONSTITUTION :'},
                 {'type': 'text', 'text': str(player.constitution)}],
                [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
-                {'type': 'text', 'text': str(player.strength)}],
+                {'type': 'text', 'text': str(player.strength) + player.get_formatted_stat_change('strength')}],
                [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},
-                {'type': 'text', 'text': str(player.defense)}],
+                {'type': 'text', 'text': str(player.defense) + player.get_formatted_stat_change('defense')}],
                [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
-                {'type': 'text', 'text': str(player.res)}],
+                {'type': 'text', 'text': str(player.res) + player.get_formatted_stat_change('resistance')}],
                [{'type': 'text', 'color': DARK_GREEN, 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
                  'margin': (10, 0, 10, 0)}]]
 
@@ -383,8 +378,8 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
 
 
 def create_item_desc_stat(stat_name, stat_value):
-    return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 0, 200)},
-            {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 200, 0, 0)}]
+    return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 0, 100)},
+            {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 100, 0, 0)}]
 
 
 def create_item_desc_menu(item):
