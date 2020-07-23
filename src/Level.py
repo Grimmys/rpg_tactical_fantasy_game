@@ -1288,13 +1288,16 @@ class Level:
                         return
             return
         for player in self.players:
-            if player.is_on_pos(pos) and not player.turn_is_finished():
-                player.selected = True
-                self.selected_player = player
-                self.possible_moves = self.get_possible_moves(player.pos,
-                                                              player.max_moves + player.get_stat_change('speed'))
-                self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
-                                                                  True)
+            if player.is_on_pos(pos):
+                if player.turn_is_finished():
+                    self.active_menu = MenuCreatorManager.create_status_menu(player)
+                else:
+                    player.selected = True
+                    self.selected_player = player
+                    self.possible_moves = self.get_possible_moves(player.pos,
+                                                                  player.max_moves + player.get_stat_change('speed'))
+                    self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
+                                                                      True)
                 return
         for ent in self.entities['foes'] + self.entities['allies']:
             if ent.is_on_pos(pos):

@@ -23,8 +23,8 @@
         <strategy> STATIC </strategy>
         <attack_kind> PHYSICAL </attack_kind>
     </jist>
-    <john>
-        <name> john </name>
+    <raimund>
+        <name> raimund </name>
         <class> warrior </class>
         <race> human </race>
         <level> 1 </level>
@@ -57,9 +57,9 @@
                 </item>
         </inventory>
         <gold> 250 </gold>
-    </john>
-    <archer>
-        <name> archer </name>
+    </raimund>
+    <braern>
+        <name> braern </name>
         <class> ranger </class>
         <race> elf </race>
         <strength> 2 </strength>
@@ -90,7 +90,7 @@
                 </item>
         </inventory>
         <gold> 250 </gold>
-    </archer>
+    </braern>
     <chrisemon>
         <name> chrisemon </name>
         <class> warrior </class>

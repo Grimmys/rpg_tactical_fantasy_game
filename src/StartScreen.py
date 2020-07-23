@@ -134,7 +134,7 @@ class StartScreen:
 
     def new_game(self):
         # Init player's team (one character at beginning)
-        team = [LoadFromXMLManager.load_player("john"), LoadFromXMLManager.load_player("archer")]
+        team = [LoadFromXMLManager.load_player("raimund"), LoadFromXMLManager.load_player("braern")]
 
         # Init the first level
         self.level_id = 0
