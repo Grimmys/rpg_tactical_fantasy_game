@@ -52,6 +52,7 @@ class SaveStateManager:
         entities.append(self.save_collection('chests', 'chest', self.level.entities['chests']))
         entities.append(self.save_collection('fountains', 'fountain', self.level.entities['fountains']))
         entities.append(self.save_collection('buildings', 'building', self.level.entities['buildings']))
+        entities.append(self.save_collection('doors', 'door', self.level.entities['doors']))
 
         return entities
 

@@ -471,7 +471,7 @@ class Level:
         player = Player(character.name, character.sprite, character.hp, character.defense, character.res,
                         character.max_moves, character.strength, character.classes, character.equipments,
                         character.race,
-                        character.gold, character.lvl)
+                        character.gold, character.lvl, character.skills)
         self.entities['players'].append(player)
         player.earn_xp(character.xp)
         player.set_current_hp(character.hp)

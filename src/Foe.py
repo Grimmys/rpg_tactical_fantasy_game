@@ -2,6 +2,7 @@ import random as rd
 
 from lxml import etree
 
+from src.Item import Item
 from src.Movable import Movable
 
 
@@ -34,8 +35,13 @@ class Foe(Movable):
         # Save loot
         loot = etree.SubElement(tree, "loot")
         for (item, probability) in self.potential_loot:
-            it_el = etree.SubElement(loot, 'item')
-            it_name = etree.SubElement(it_el, 'name')
+            if isinstance(item, Item):
+                it_el = etree.SubElement(loot, 'item')
+                it_name = etree.SubElement(it_el, 'name')
+            else:
+                # We assume item is gold
+                it_el = etree.SubElement(loot, 'gold')
+                it_name = etree.SubElement(it_el, 'amount')
             it_name.text = str(item)
             it_probability = etree.SubElement(it_el, 'probability')
             it_probability.text = str(probability)

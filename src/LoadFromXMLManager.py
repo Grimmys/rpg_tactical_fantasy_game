@@ -236,6 +236,9 @@ def load_foe(foe, from_save, gap_x, gap_y):
         # Overwrite static loaded loot
         loot = [(parse_item_file(it.find('name').text.strip()), float(it.find('probability').text))
                 for it in foe.findall('loot/item')]
+        gold_looted = foe.find('loot/gold')
+        if gold_looted is not None:
+            loot.append((int(gold_looted.find('amount').text), float(gold_looted.find('probability').text)))
     else:
         dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
         loot.extend(dynamic_loot)
@@ -308,7 +311,12 @@ def load_door(door, from_save, gap_x, gap_y):
     pos = (x, y)
     sprite = door.find('sprite').text.strip()
 
-    loaded_door = Door(pos, sprite)
+    # Dynamic data
+    pick_lock_initiated = False
+    if from_save:
+        pick_lock_initiated = door.find('pick_lock_initiated') is not None
+
+    loaded_door = Door(pos, sprite, pick_lock_initiated)
     return loaded_door
 
 
