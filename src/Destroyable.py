@@ -66,7 +66,7 @@ class Destroyable(Entity):
     def set_current_hp(self, hp):
         self.hp = hp
 
-    def attacked(self, ent, damages, kind):
+    def attacked(self, ent, damages, kind, allies):
         if kind is DamageKind.SPIRITUAL:
             real_damages = damages - self.res
         elif kind is DamageKind.PHYSICAL:

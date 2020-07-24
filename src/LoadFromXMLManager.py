@@ -48,11 +48,25 @@ def load_stat_up(cl_el, stat_name):
 
 def load_skill(name):
     if name not in skills_infos:
+        # Required dat
         skill_el = etree.parse('data/skills.xml').find(name)
         formatted_name = skill_el.find('name').text.strip()
+        nature = skill_el.find('type').text.strip()
         desc = skill_el.find('info').text.strip()
-        skills_infos[name] = Skill(name, formatted_name, desc)
+
+        # Not required elements
+        power = 0
+        power_el = skill_el.find('power')
+        if power_el is not None:
+            power = int(power_el.text.strip())
+        stats = []
+        stats_el = skill_el.find('stats')
+        if stats_el is not None:
+            stats = [stat for stat in stats_el.text.replace(' ', '').split(',')]
+
+        skills_infos[name] = Skill(name, formatted_name, nature, desc, power, stats)
     return skills_infos[name]
+
 
 def load_classes():
     classes = {}

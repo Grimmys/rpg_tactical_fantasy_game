@@ -58,13 +58,13 @@ class Character(Movable):
                 return parried
         return False
 
-    def attacked(self, ent, damages, kind):
+    def attacked(self, ent, damages, kind, allies):
         for eq in self.equipments:
             if kind is DamageKind.PHYSICAL:
                 damages -= eq.defense
             elif kind == DamageKind.SPIRITUAL:
                 damages -= eq.res
-        return Movable.attacked(self, ent, damages, kind)
+        return Movable.attacked(self, ent, damages, kind, allies)
 
     def attack(self, ent):
         damages = self.strength + self.get_stat_change('strength')

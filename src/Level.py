@@ -599,7 +599,7 @@ class Level:
             collection = self.entities['allies']
         collection.remove(entity)
 
-    def duel(self, attacker, target, kind):
+    def duel(self, attacker, target, attacker_allies, target_allies, kind):
         entries = []
         nb_attacks = 2 if 'double_attack' in attacker.skills else 1
         for i in range(nb_attacks):
@@ -614,7 +614,7 @@ class Level:
                 continue
 
             damages = attacker.attack(target)
-            real_damages = target.hp - target.attacked(attacker, damages, kind)
+            real_damages = target.hp - target.attacked(attacker, damages, kind, target_allies)
             entries.append([{'type': 'text',
                              'text': attacker.get_formatted_name() + " dealed " + str(real_damages) +
                                      " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}])
@@ -670,6 +670,7 @@ class Level:
     def entity_action(self, ent, is_ally):
         possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
         targets = self.entities['foes'] if is_ally else self.players + self.entities['allies']
+        allies = self.players + self.entities['allies'] if is_ally else self.entities['foes']
         case = ent.act(possible_moves, targets)
 
         if case:
@@ -681,7 +682,7 @@ class Level:
             else:
                 # Entity choose to attack the entity on the case
                 ent_attacked = self.get_entity_on_case(case)
-                self.duel(ent, ent_attacked, ent.attack_kind)
+                self.duel(ent, ent_attacked, allies, targets, ent.attack_kind)
                 ent.end_turn()
 
     def execute_buy_action(self, method_id, args):
@@ -1262,7 +1263,8 @@ class Level:
                             ent = self.get_entity_on_case(attack)
                             attack_kind = self.selected_player.get_weapon().attack_kind if \
                                 self.selected_player.get_weapon() is not None else DamageKind.PHYSICAL
-                            self.duel(self.selected_player, ent, attack_kind)
+                            self.duel(self.selected_player, ent,
+                                      self.players + self.entities['allies'], self.entities['foes'], attack_kind)
                             # Turn is finished
                             self.background_menus = []
                             self.selected_player.turn_finished()

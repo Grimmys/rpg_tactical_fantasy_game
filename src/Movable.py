@@ -2,6 +2,8 @@ from src.Destroyable import *
 from src.Key import Key
 from enum import IntEnum, Enum, auto
 
+from src.Skill import SkillNature
+
 TIMER = 60
 NB_ITEMS_MAX = 8
 
@@ -64,6 +66,33 @@ class Movable(Destroyable):
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
             screen.blit(Movable.SELECTED_DISPLAY, self.pos)
+
+    def attacked(self, ent, damages, kind, allies):
+        # Compute distance of all allies
+        allies_dist = [(ally, (abs(self.pos[0] - ally.pos[0]) + abs(self.pos[1] - ally.pos[1])) // TILE_SIZE)
+                       for ally in allies]
+
+        # Check if a skill is boosting stats during combat
+        temp_def_boost = 0
+        temp_res_boost = 0
+        for skill in self.skills:
+            if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist if ally[1] == 1]:
+                if 'defense' in skill.stats:
+                    temp_def_boost += skill.power
+                if 'resistance' in skill.stats:
+                    temp_res_boost += skill.power
+        # Apply boosts
+        self.defense += temp_def_boost
+        self.res += temp_res_boost
+
+        # Resolve attack with boosted stats
+        Destroyable.attacked(self, ent, damages, kind, allies)
+
+        # Restore stats to normal
+        self.defense -= temp_def_boost
+        self.res -= temp_res_boost
+
+        return self.hp
 
     def end_turn(self):
         self.state = EntityState.FINISHED
