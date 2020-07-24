@@ -18,3 +18,6 @@ class Skill:
 
     def __eq__(self, o):
         return self.name == o
+
+    def __str__(self):
+        return self.name

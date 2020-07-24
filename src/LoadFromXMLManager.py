@@ -81,7 +81,8 @@ def load_classes():
             'res': load_stat_up(cl_el, 'resistance'),
             'str': load_stat_up(cl_el, 'strength')
         }
-        cl['skills'] = [load_skill(skill.text.strip()) for skill in cl_el.findall('skills/skill/name')]
+        cl['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
+                        for skill in cl_el.findall('skills/skill/name')]
         classes[cl_el.tag] = cl
     return classes
 
@@ -177,8 +178,15 @@ def load_ally(ally, from_save, gap_x, gap_y):
     for eq in dynamic_data.findall('equipment/*'):
         equipments.append(parse_item_file(eq.text.strip()))
 
+    if from_save:
+        skills = [(load_skill(skill.text.strip())
+                   if not skill.text.strip() in skills_infos else skills_infos[skill.text.strip()])
+                  for skill in dynamic_data.findall('skills/skill/name')]
+    else:
+        skills = Character.classes_data[classes[0]]['skills']
+
     loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
-                            classes, equipments, strategy, lvl, race, gold, interaction)
+                            classes, equipments, strategy, lvl, skills, race, gold, interaction)
 
     inventory = infos.find('inventory')
     if inventory is not None:
@@ -534,8 +542,10 @@ def load_player(name):
         equipments.append(parse_item_file(eq.text.strip()))
     gold = int(player_t.find('gold').text.strip())
 
+    skills = Character.classes_data[player_class]['skills']
+
     # Creating player instance
-    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, race, gold, lvl,
+    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, race, gold, lvl, skills,
                     compl_sprite=compl_sprite)
 
     # Up stats according to current lvl

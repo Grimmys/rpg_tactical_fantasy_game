@@ -16,10 +16,10 @@ class PlayerState(IntEnum):
 
 
 class Player(Character):
-    def __init__(self, name, sprite, hp, defense, res, max_move, strength, classes, equipments, race, gold, lvl=1,
-                 compl_sprite=None):
+    def __init__(self, name, sprite, hp, defense, res, max_move, strength, classes, equipments, race, gold, lvl,
+                 skills, compl_sprite=None):
         Character.__init__(self, name, (), sprite, hp, defense, res, max_move, strength, None,
-                           classes, equipments, 'MANUAL', lvl, race, gold, compl_sprite)
+                           classes, equipments, 'MANUAL', lvl, skills, race, gold, compl_sprite)
         self.state = PlayerState.WAITING_SELECTION
         self.old_pos = ()
         self._selected = False

@@ -39,7 +39,7 @@ class Movable(Destroyable):
         Movable.SELECTED_DISPLAY = pg.transform.scale(pg.image.load(selected_sprite).convert_alpha(),
                                                       (TILE_SIZE, TILE_SIZE))
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1,
+    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1, skills=[],
                  compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         self._max_moves = max_moves
@@ -60,7 +60,7 @@ class Movable(Destroyable):
 
         self.attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
         self.strategy = EntityStrategy[strategy]
-        self.skills = []
+        self.skills = skills
 
     def display(self, screen):
         Destroyable.display(self, screen)
@@ -245,6 +245,13 @@ class Movable(Destroyable):
         # Save strategy
         strategy = etree.SubElement(tree, 'strategy')
         strategy.text = self.strategy.name
+
+        # Save skills
+        skills = etree.SubElement(tree, 'skills')
+        for skill in self.skills:
+            skill_el = etree.SubElement(skills, 'skill')
+            skill_name = etree.SubElement(skill_el, 'name')
+            skill_name.text = str(skill)
 
         # Save stats
         hp_m = etree.SubElement(tree, 'hp')

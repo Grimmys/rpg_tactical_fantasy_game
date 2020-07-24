@@ -17,9 +17,9 @@ class Character(Movable):
         Character.classes_data = classes
 
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments,
-                 strategy, lvl, race, gold, interaction, compl_sprite=None):
+                 strategy, lvl, skills, race, gold, interaction, compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy,
-                         lvl, compl_sprite)
+                         lvl, skills, compl_sprite)
         self.equipments = equipments
         self.classes = classes
         self.race = race
@@ -29,7 +29,6 @@ class Character(Movable):
         self.reach_ = [1]
         self.constitution = Character.races_data[race]['constitution'] + \
                             Character.classes_data[classes[0]]['constitution']
-        self.skills.extend(Character.classes_data[classes[0]]['skills'])
 
     def talk(self, actor):
         self.join_team = self.interaction['join_team']

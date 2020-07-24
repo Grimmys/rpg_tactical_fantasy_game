@@ -182,6 +182,11 @@ class StartScreen:
                         eq = LoadFromXMLManager.parse_item_file(eq_name)
                         equipments.append(eq)
 
+                    skills = [(LoadFromXMLManager.load_skill(skill.text.strip())
+                              if skill.text.strip() not in LoadFromXMLManager.skills_infos
+                               else LoadFromXMLManager.skills_infos[skill.text.strip()])
+                              for skill in player.findall('skills/skill/name')]
+
                     # -- Reading of the XML file for default character's values (i.e. sprites)
                     tree = etree.parse("data/characters.xml").getroot()
                     player_t = tree.xpath(name)[0]
@@ -192,7 +197,7 @@ class StartScreen:
                         compl_sprite = 'imgs/' + compl_sprite.text.strip()
 
                     p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, race, gold, level,
-                               compl_sprite=compl_sprite)
+                               skills, compl_sprite=compl_sprite)
                     p.earn_xp(exp)
                     p.items = inv
                     p.set_current_hp(current_hp)

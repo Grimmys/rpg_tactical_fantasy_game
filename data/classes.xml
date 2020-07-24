@@ -80,6 +80,8 @@
               <name>
                   lock_picking
               </name>
+          </skill>
+            <skill>
               <name>
                   double_attack
               </name>
