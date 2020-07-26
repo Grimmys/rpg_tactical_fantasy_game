@@ -27,6 +27,20 @@
         <attack_kind>
             PHYSICAL
         </attack_kind>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3, 4
+            </hp>
+            <strength>
+                0, 1, 1
+            </strength>
+            <defense>
+                0, 1, 1
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
     </snake>
     <skeleton>
         <sprite>
@@ -74,6 +88,20 @@
                 </probability>
             </item>
         </loot>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3, 4
+            </hp>
+            <strength>
+                0, 1, 1, 2
+            </strength>
+            <defense>
+                0, 1, 1
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
     </skeleton>
     <simple_statue>
         <sprite>
@@ -103,6 +131,20 @@
         <attack_kind>
             PHYSICAL
         </attack_kind>
+        <stats_up>
+            <hp>
+                1, 2, 2, 3, 3, 4, 5
+            </hp>
+            <strength>
+                0, 1, 1
+            </strength>
+            <defense>
+                0, 1, 2, 2
+            </defense>
+            <resistance>
+                0, 1, 2
+            </resistance>
+        </stats_up>
     </simple_statue>
     <necrophage>
         <sprite>
@@ -150,6 +192,20 @@
                 </probability>
             </item>
         </loot>
+        <stats_up>
+            <hp>
+                2, 2, 3, 3, 4, 5
+            </hp>
+            <strength>
+                0, 1, 1, 2, 2
+            </strength>
+            <defense>
+                0, 1
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
     </necrophage>
     <fire_eye>
         <sprite>
@@ -218,6 +274,20 @@
                 </probability>
             </item>
         </loot>
+        <stats_up>
+            <hp>
+                2, 2, 2, 3, 3, 4
+            </hp>
+            <strength>
+                0, 1, 1, 2
+            </strength>
+            <defense>
+                0, 1
+            </defense>
+            <resistance>
+                0, 1, 1, 2
+            </resistance>
+        </stats_up>
     </cultist>
     <assassin>
         <sprite>
@@ -265,6 +335,20 @@
                 </probability>
             </gold>
         </loot>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3, 4
+            </hp>
+            <strength>
+                0, 1, 1, 2, 2, 2
+            </strength>
+            <defense>
+                0, 1
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
     </assassin>
     <skeleton_cobra>
         <sprite>
@@ -307,6 +391,20 @@
                 </probability>
             </item>
         </loot>
+        <stats_up>
+            <hp>
+                2, 2, 2, 2, 3, 4, 5
+            </hp>
+            <strength>
+                0, 1, 1, 2
+            </strength>
+            <defense>
+                0, 1, 1, 2, 2
+            </defense>
+            <resistance>
+                0, 1, 2
+            </resistance>
+        </stats_up>
     </skeleton_cobra>
     <lich_boss>
         <sprite>
@@ -355,5 +453,19 @@
                 </probability>
             </gold>
         </loot>
+        <stats_up>
+            <hp>
+                3, 3, 3, 4, 4, 5, 6
+            </hp>
+            <strength>
+                1, 2
+            </strength>
+            <defense>
+                0, 1, 1, 2, 2
+            </defense>
+            <resistance>
+                0, 1, 1, 2, 2
+            </resistance>
+        </stats_up>
     </lich_boss>
 </foes>

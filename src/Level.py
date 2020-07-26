@@ -655,10 +655,16 @@ class Level:
 
             # XP gain
             if isinstance(attacker, Player):
+                old_level = attacker.lvl
                 attacker.earn_xp(xp)
                 entries.append([{'type': 'text',
                                  'text': attacker.get_formatted_name() + " earned " + str(xp) + " XP",
                                  'font': fonts['ITEM_DESC_FONT']}])
+                if attacker.lvl != old_level:
+                    # Attacker gained a level
+                    entries.append([{'type': 'text',
+                                     'text': attacker.get_formatted_name() + " gained a level !",
+                                     'font': fonts['ITEM_DESC_FONT']}])
 
             if target.hp <= 0:
                 # Target is dead, no more attack needed.

@@ -42,8 +42,17 @@ def load_races():
     return races
 
 
-def load_stat_up(cl_el, stat_name):
-    return [int(val) for val in cl_el.find('stats_up/' + stat_name).text.strip().split(',')]
+def load_stat_up(el, stat_name):
+    return [int(val) for val in el.find('stats_up/' + stat_name).text.strip().split(',')]
+
+
+def load_stats_up(el):
+    return {
+            'hp': load_stat_up(el, 'hp'),
+            'def': load_stat_up(el, 'defense'),
+            'res': load_stat_up(el, 'resistance'),
+            'str': load_stat_up(el, 'strength')
+        }
 
 
 def load_skill(name):
@@ -75,12 +84,7 @@ def load_classes():
         cl = {}
         cons = cl_el.find('constitution')
         cl['constitution'] = int(cons.text.strip()) if cons is not None else 0
-        cl['stats_up'] = {
-            'hp': load_stat_up(cl_el, 'hp'),
-            'def': load_stat_up(cl_el, 'defense'),
-            'res': load_stat_up(cl_el, 'resistance'),
-            'str': load_stat_up(cl_el, 'strength')
-        }
+        cl['stats_up'] = load_stats_up(cl_el)
         cl['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
                         for skill in cl_el.findall('skills/skill/name')]
         classes[cl_el.tag] = cl
@@ -98,7 +102,8 @@ def load_placements(positions, gap_x, gap_y):
 
 
 def load_all_entities(data, from_save, gap_x, gap_y):
-    return {'allies': load_entities('character', data.findall('allies/ally'), from_save, gap_x, gap_y),
+    return {
+            'allies': load_entities('character', data.findall('allies/ally'), from_save, gap_x, gap_y),
             'foes': load_entities('foe', data.findall('foes/foe'), from_save, gap_x, gap_y),
             'breakables': load_entities('breakable', data.findall('breakables/breakable'), from_save, gap_x, gap_y),
             'chests': load_entities('chest', data.findall('chests/chest'), from_save, gap_x, gap_y),
@@ -213,6 +218,10 @@ def load_foe(foe, from_save, gap_x, gap_y):
     name = foe.find('name').text.strip()
     if name not in foes_infos:
         foes_infos[name] = etree.parse('data/foes.xml').find(name)
+
+    # Load grow rates of this kind of foe - if not already loaded - in the class
+    if name not in Foe.grow_rates:
+        Foe.grow_rates[name] = load_stats_up(foes_infos[name])
 
     # Static data
     sprite = 'imgs/dungeon_crawl/monster/' + foes_infos[name].find('sprite').text.strip()
