@@ -38,8 +38,24 @@ def load_races():
         race = {}
         cons = race_el.find('constitution')
         race['constitution'] = int(cons.text.strip()) if cons is not None else 0
+        race['move'] = int(race_el.find('move').text.strip())
         races[race_el.tag] = race
     return races
+
+def load_classes():
+    classes = {}
+    classes_file = etree.parse(CLASSES_PATH).getroot()
+    for cl_el in classes_file.findall('*'):
+        cl = {}
+        cons = cl_el.find('constitution')
+        cl['constitution'] = int(cons.text.strip()) if cons is not None else 0
+        move = cl_el.find('move')
+        cl['move'] = int(move.text.strip()) if move is not None else 0
+        cl['stats_up'] = load_stats_up(cl_el)
+        cl['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
+                        for skill in cl_el.findall('skills/skill/name')]
+        classes[cl_el.tag] = cl
+    return classes
 
 
 def load_stat_up(el, stat_name):
@@ -75,20 +91,6 @@ def load_skill(name):
 
         skills_infos[name] = Skill(name, formatted_name, nature, desc, power, stats)
     return skills_infos[name]
-
-
-def load_classes():
-    classes = {}
-    classes_file = etree.parse(CLASSES_PATH).getroot()
-    for cl_el in classes_file.findall('*'):
-        cl = {}
-        cons = cl_el.find('constitution')
-        cl['constitution'] = int(cons.text.strip()) if cons is not None else 0
-        cl['stats_up'] = load_stats_up(cl_el)
-        cl['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
-                        for skill in cl_el.findall('skills/skill/name')]
-        classes[cl_el.tag] = cl
-    return classes
 
 
 def load_placements(positions, gap_x, gap_y):
@@ -173,7 +175,6 @@ def load_ally(ally, from_save, gap_x, gap_y):
     if from_save:
         dynamic_data = ally
     hp = int(dynamic_data.find('hp').text.strip())
-    move = int(dynamic_data.find('move').text.strip())
     strength = int(dynamic_data.find('strength').text.strip())
     defense = int(dynamic_data.find('defense').text.strip())
     res = int(dynamic_data.find('resistance').text.strip())
@@ -190,7 +191,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
     else:
         skills = Character.classes_data[classes[0]]['skills']
 
-    loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, move, strength, attack_kind,
+    loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, strength, attack_kind,
                             classes, equipments, strategy, lvl, skills, race, gold, interaction)
 
     inventory = infos.find('inventory')
@@ -548,7 +549,6 @@ def load_player(name):
     res = int(player_t.find('resistance').text.strip())
     hp = int(player_t.find('hp').text.strip())
     strength = int(player_t.find('strength').text.strip())
-    move = int(player_t.find('move').text.strip())
     sprite = 'imgs/' + player_t.find('sprite').text.strip()
     compl_sprite = player_t.find('complementSprite')
     if compl_sprite is not None:
@@ -562,7 +562,7 @@ def load_player(name):
     skills = Character.classes_data[player_class]['skills']
 
     # Creating player instance
-    player = Player(name, sprite, hp, defense, res, move, strength, [player_class], equipments, race, gold, lvl, skills,
+    player = Player(name, sprite, hp, defense, res, strength, [player_class], equipments, race, gold, lvl, skills,
                     compl_sprite=compl_sprite)
 
     # Up stats according to current lvl

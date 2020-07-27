@@ -9,7 +9,6 @@
         <defense> 2 </defense>
         <resistance> 0 </resistance>
         <hp> 10 </hp>
-        <move> 0 </move>
         <sprite> characs/jist.png </sprite>
         <interaction>
             <talk>
@@ -32,7 +31,6 @@
         <defense> 0 </defense>
         <resistance> 0 </resistance>
         <hp> 20 </hp>
-        <move> 5 </move>
         <sprite> dungeon_crawl/player/base/human_male.png </sprite>
         <equipment>
             <head>
@@ -66,7 +64,6 @@
         <defense> 1 </defense>
         <resistance> 0 </resistance>
         <hp> 14 </hp>
-        <move> 5 </move>
         <level> 1 </level>
         <sprite> dungeon_crawl/player/base/human_female.png </sprite>
         <complementSprite> legs/pants_short_brown.png </complementSprite>
@@ -99,7 +96,6 @@
         <defense> 2 </defense>
         <resistance> 0 </resistance>
         <hp> 12 </hp>
-        <move> 8 </move>
         <level> 3 </level>
         <sprite> dungeon_crawl/player/base/centaur_brown_male.png </sprite>
         <equipment>
@@ -125,7 +121,6 @@
         <defense> 3 </defense>
         <resistance> 1 </resistance>
         <hp> 10 </hp>
-        <move> 6 </move>
         <level> 3 </level>
         <sprite> dungeon_crawl/player/base/gnome_male.png </sprite>
         <equipment>

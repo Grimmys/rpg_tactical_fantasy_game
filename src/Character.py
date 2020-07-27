@@ -16,10 +16,11 @@ class Character(Movable):
         Character.races_data = races
         Character.classes_data = classes
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, classes, equipments,
+    def __init__(self, name, pos, sprite, hp, defense, res, strength, attack_kind, classes, equipments,
                  strategy, lvl, skills, race, gold, interaction, compl_sprite=None):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy,
-                         lvl, skills, compl_sprite)
+        Movable.__init__(self, name, pos, sprite, hp, defense, res,
+                         Character.races_data[race]['move'] + Character.classes_data[classes[0]]['move'],
+                         strength, attack_kind, strategy, lvl, skills, compl_sprite)
         self.equipments = equipments
         self.classes = classes
         self.race = race

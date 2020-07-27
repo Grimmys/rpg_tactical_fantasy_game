@@ -344,7 +344,7 @@
                     weapon
                 </category>
                 <power>
-                    3
+                    4
                 </power>
                 <kind>
                     PHYSICAL
@@ -370,6 +370,99 @@
                     </classes>
                 </restrictions>
             </short_sword>
+            <basic_spear>
+                <name>
+                    Wooden Spear
+                </name>
+                <sprite>
+                    weapon/spear.png
+                </sprite>
+                <info>
+                    A spear can be really useful to charge the opponent
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    3
+                </power>
+                <kind>
+                    PHYSICAL
+                </kind>
+                <range>
+                    1
+                </range>
+                <fragility>
+                    30
+                </fragility>
+                <weight>
+                    4
+                </weight>
+                <equipped_sprite>
+                    spear_4.png
+                </equipped_sprite>
+                <price>
+                    500
+                </price>
+                <restrictions>
+                    <classes>
+                        warrior
+                    </classes>
+                </restrictions>
+                <charge>
+                    <move_required>
+                        5
+                    </move_required>
+                    <bonus_granted>
+                        3
+                    </bonus_granted>
+                </charge>
+            </basic_spear>
+            <basic_halberd>
+                <name>
+                    Halberd
+                </name>
+                <sprite>
+                    halberd_2.png
+                </sprite>
+                <info>
+                    An halberd can helps to get rid of cavalry
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    3
+                </power>
+                <kind>
+                    PHYSICAL
+                </kind>
+                <range>
+                    1
+                </range>
+                <fragility>
+                    15
+                </fragility>
+                <weight>
+                    4
+                </weight>
+                <equipped_sprite>
+                    harlberd_new.png
+                </equipped_sprite>
+                <price>
+                    600
+                </price>
+                <restrictions>
+                    <classes>
+                        warrior
+                    </classes>
+                </restrictions>
+                <strong_against>
+                    <races>
+                        centaur
+                    </races>
+                </strong_against>
+            </basic_halberd>
             <basic_bow>
                 <name>
                     Wooden Bow

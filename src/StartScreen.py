@@ -165,7 +165,6 @@ class StartScreen:
                     strength = int(player.find("strength").text.strip())
                     defense = int(player.find("defense").text.strip())
                     res = int(player.find("resistance").text.strip())
-                    move = int(player.find("move").text.strip())
                     current_hp = int(player.find("currentHp").text.strip())
                     pos = (int(player.find("position/x").text.strip()) * TILE_SIZE,
                            int(player.find("position/y").text.strip()) * TILE_SIZE)
@@ -196,7 +195,7 @@ class StartScreen:
                     if compl_sprite is not None:
                         compl_sprite = 'imgs/' + compl_sprite.text.strip()
 
-                    p = Player(name, sprite, hp, defense, res, move, strength, [p_class], equipments, race, gold, level,
+                    p = Player(name, sprite, hp, defense, res, strength, [p_class], equipments, race, gold, level,
                                skills, compl_sprite=compl_sprite)
                     p.earn_xp(exp)
                     p.items = inv
