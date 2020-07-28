@@ -1157,7 +1157,12 @@ class Level:
 
             self.background_menus.append([self.active_menu, True])
             self.active_menu = MenuCreatorManager.create_alteration_info_menu(alteration)
+        # Get infos about a skill
+        elif method_id is StatusMenu.INFO_SKILL:
+            skill = args[1]
 
+            self.background_menus.append([self.active_menu, True])
+            self.active_menu = MenuCreatorManager.create_skill_info_menu(skill)
     def execute_trade_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
         if method_id is TradeMenu.INTERAC_ITEM:
@@ -1336,9 +1341,10 @@ class Level:
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
-                    else:
-                        return
-                self.execute_action(self.active_menu.type, (GenericActions.CLOSE, ""))
+                        self.active_menu = None
+                    return
+                self.execute_action(self.active_menu.type,
+                                    self.active_menu.buttons[len(self.active_menu.buttons) - 1].action_triggered())
             # Want to cancel an interaction (not already performed)
             elif self.possible_interactions or self.possible_attacks:
                 self.selected_player.cancel_interaction()

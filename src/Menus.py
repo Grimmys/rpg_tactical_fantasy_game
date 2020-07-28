@@ -99,6 +99,8 @@ class ItemMenu(Enum):
 class StatusMenu(Enum):
     #   - Get infos about alteration
     INFO_ALTERATION = auto()
+    #   - Get infos about skill
+    INFO_SKILL = auto()
 
 
 # > Equipment menu

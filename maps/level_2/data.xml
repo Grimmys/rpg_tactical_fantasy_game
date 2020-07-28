@@ -26,16 +26,16 @@
                 <title>Doran</title>
                 <talks>
                     <talk>
-                        You ! Help me, please !
+                        You! Help me, please!
                     </talk>
                     <talk>
-                        I know, I shoudn't be here, but someone said me I could find some jewel in this place...
+                        I know, I shoudn't be here, but someone told me I could find jewels in this place...
                     </talk>
                     <talk>
-                        But I never heard about some sort of zombie around here !
+                        But I never heard there were zombies of any kind around here!
                     </talk>
                     <talk>
-                        I don't care about your business, but save me and my services will be yours.
+                        I don't care about your business, but save me and I'll offer you my services.
                     </talk>
                 </talks>
             </dialog>
@@ -45,7 +45,7 @@
                 <title>The village is safe</title>
                 <talks>
                     <talk>
-                        Only a few seconds after you replaced the remains in the altar you hear some weird noises...
+                        Only a few seconds after you placed the remains back on the altar you hear some weird noises...
                     </talk>
                     <talk>
                         All the undeads in the crypt are crumbling into dust.
@@ -54,10 +54,10 @@
                         You assume it's the same for those who are outside.
                     </talk>
                     <talk>
-                        Thanks to your intervention, the villagers have been saved and the peace should be back.
+                        Thanks to your intervention, the villagers have been saved and the peace should be back in Nervie.
                     </talk>
                     <talk>
-                        You are now on your way to the town, thirsty for the reward promised by the innkeeper.
+                        You are now on your way to the town, thinking of the reward promised by the innkeeper.
                     </talk>
                 </talks>
             </dialog>
@@ -531,7 +531,7 @@
         <main>
             <type>TOUCH_POSITION</type>
             <description>
-                Replace the remains in the altar
+                Place the remains back on the altar
             </description>
             <position>
                 <x>19</x>

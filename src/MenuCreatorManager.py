@@ -195,7 +195,8 @@ def create_status_menu(player):
     # Display skills
     i = 2
     for skill in player.skills:
-        skill_displayed = {'type': 'text', 'color': WHITE, 'text': '> ' + skill.formatted_name}
+        skill_displayed = {'type': 'text_button', 'name': skill.formatted_name, 'id': StatusMenu.INFO_SKILL,
+                           'color': WHITE, 'color_hover': TURQUOISE, 'obj': skill}
         entries[i].append(skill_displayed)
         i += 1
     for j in range(i, len(entries)):
@@ -425,6 +426,18 @@ def create_alteration_info_menu(alteration):
                  'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
     return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+                   STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
+
+def create_skill_info_menu(skill):
+    entries = [[{'type': 'text', 'text': skill.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+    if skill.power > 0:
+        entries.append([{'type': 'text', 'text': 'POWER :', 'font': fonts['ITEM_DESC_FONT']},
+                        {'type': 'text', 'text': str(skill.power), 'font': fonts['ITEM_DESC_FONT'], 'color': DARK_GREEN}])
+
+    entries.append([{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}])
+
+    return InfoBox(skill.formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 

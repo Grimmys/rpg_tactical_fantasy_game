@@ -148,10 +148,10 @@
         <gold> 100 </gold>
         <interaction>
             <talk>
-                Thank you for rescuing me !
+                Thank you for rescuing me!
             </talk>
             <talk>
-                I'm all yours now. As a spy, I could open locked doors and chests.
+                As I promised, I'll help you now! As a spy, I could open locked doors and chests.
             </talk>
             <join_team />
         </interaction>
