@@ -32,7 +32,7 @@
                         I know, I shoudn't be here, but someone said me I could find some jewel in this place...
                     </talk>
                     <talk>
-                        But I never heard about some kind of zombie here !
+                        But I never heard about some sort of zombie around here !
                     </talk>
                     <talk>
                         I don't care about your business, but save me and my services will be yours.
@@ -40,6 +40,28 @@
                 </talks>
             </dialog>
         </after_init>
+        <at_end>
+            <dialog>
+                <title>The village is safe</title>
+                <talks>
+                    <talk>
+                        Only a few seconds after you replaced the remains in the altar you hear some weird noises...
+                    </talk>
+                    <talk>
+                        All the undeads in the crypt are crumbling into dust.
+                    </talk>
+                    <talk>
+                        You assume it's the same for those who are outside.
+                    </talk>
+                    <talk>
+                        Thanks to your intervention, the villagers have been saved and the peace should be back.
+                    </talk>
+                    <talk>
+                        You are now on your way to the town, thirsty for the reward promised by the innkeeper.
+                    </talk>
+                </talks>
+            </dialog>
+        </at_end>
     </events>
     <allies>
         <ally>

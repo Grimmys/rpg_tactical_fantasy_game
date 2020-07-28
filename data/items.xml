@@ -458,9 +458,9 @@
                     </classes>
                 </restrictions>
                 <strong_against>
-                    <races>
-                        centaur
-                    </races>
+                    <keywords>
+                        cavalry
+                    </keywords>
                 </strong_against>
             </basic_halberd>
             <basic_bow>

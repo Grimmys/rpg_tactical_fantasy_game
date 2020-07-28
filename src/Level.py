@@ -129,11 +129,7 @@ class Level:
             from_save = False
             if 'before_init' in self.events:
                 if 'dialog' in self.events['before_init']:
-                    entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                               for s in self.events['before_init']['dialog']['talks']]
-                    self.active_menu = InfoBox(self.events['before_init']['dialog']['title'], "",
-                                               "imgs/interface/PopUpMenu.png",
-                                               entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+                    self.active_menu = Level.load_event_dialog(self.events['before_init']['dialog'])
         else:
             data_tree = data
             from_save = True
@@ -183,6 +179,13 @@ class Level:
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions)
         self.wait_for_dest_tp = False
 
+    @staticmethod
+    def load_event_dialog(dialog_el):
+        entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+                               for s in dialog_el['talks']]
+        return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
+                       entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+
     def save_game(self):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game()
@@ -207,10 +210,13 @@ class Level:
                     if mission.items:
                         # TODO
                         pass
+        # Check if there are some post-level events
+        if 'at_end' in self.events:
+            if 'dialog' in self.events['at_end']:
+                self.background_menus.append(Level.load_event_dialog(self.events['at_end']['dialog']))
+
         self.active_menu = self.background_menus.pop() if self.background_menus else None
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
-        # No more mission to check the status
-        self.missions = []
 
     def update_state(self):
         if self.quit_request:
@@ -228,17 +234,22 @@ class Level:
         if self.active_menu:
             return None
 
+        # Game should be left if it's ended and there is no more animation nor menu
+        if self.game_phase is Status.ENDED_DEFEAT or self.game_phase is Status.ENDED_VICTORY:
+            return self.game_phase
+
         for mission in self.missions:
             mission.update_state(entities=self.entities, turns=self.turn)
         if self.main_mission.ended:
             self.victory = True
 
-        if not self.players and self.game_phase is Status.IN_PROGRESS:
+        if not self.players:
             if not self.main_mission.succeeded_chars:
                 self.defeat = True
             else:
                 self.victory = True
 
+        # Verify if game should be ended
         if self.victory:
             self.end_level(VICTORY, VICTORY_POS)
             self.game_phase = Status.ENDED_VICTORY
@@ -343,11 +354,7 @@ class Level:
         self.new_turn()
         if 'after_init' in self.events:
             if 'dialog' in self.events['after_init']:
-                entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                           for s in self.events['after_init']['dialog']['talks']]
-                self.active_menu = InfoBox(self.events['after_init']['dialog']['title'], "",
-                                           "imgs/interface/PopUpMenu.png",
-                                           entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+                self.active_menu = Level.load_event_dialog(self.events['after_init']['dialog'])
             if 'new_player' in self.events['after_init']:
                 player = Loader.load_player(self.events['after_init']['new_player']['name'])
                 player.pos = self.events['after_init']['new_player']['position']

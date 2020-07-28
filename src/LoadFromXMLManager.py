@@ -518,8 +518,9 @@ def load_events(events_el, gap_x, gap_y):
         events[event.tag] = {}
         dialog_el = event.find('dialog')
         if dialog_el is not None:
+            title_el = dialog_el.find('title')
             events[event.tag]['dialog'] = {
-                'title': dialog_el.find('title').text.strip(),
+                'title': title_el.text.strip() if title_el is not None else '',
                 'talks': [talk.text.strip() for talk in dialog_el.find('talks').findall('talk')]
             }
         new_player_el = event.find('new_player')
