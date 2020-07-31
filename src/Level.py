@@ -475,10 +475,19 @@ class Level:
 
     def ally_to_player(self, character):
         self.entities['allies'].remove(character)
-        player = Player(character.name, character.sprite, character.hp, character.defense, character.res,
-                        character.max_moves, character.strength, character.classes, character.equipments,
-                        character.race,
-                        character.gold, character.lvl, character.skills)
+        player = Player(
+            name=character.name,
+            sprite=character.sprite,
+            hp=character.hp,
+            defense=character.defense,
+            res=character.res,
+            strength=character.strength,
+            classes=character.classes,
+            equipments=character.equipments,
+            race=character.race,
+            gold=character.gold,
+            lvl=character.lvl,
+            skills=character.skills)
         self.entities['players'].append(player)
         player.earn_xp(character.xp)
         player.set_current_hp(character.hp)
