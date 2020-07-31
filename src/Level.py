@@ -630,7 +630,8 @@ class Level:
             # If target has less than 0 HP at the end of the attack
             if target.hp <= 0:
                 # XP gain increased
-                xp += target.xp_gain
+                if isinstance(attacker, Character):
+                    xp += target.xp_gain
 
                 entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
                                  'font': fonts['ITEM_DESC_FONT']}])
