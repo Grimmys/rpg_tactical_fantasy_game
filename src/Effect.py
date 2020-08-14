@@ -12,6 +12,12 @@ class Effect:
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = alteration_root.find("info").text.strip().replace('{val}', str(self.power))
             self.alteration = Alteration(self.name, self.power, self.duration, desc)
+        elif self.name == 'stun':
+            alteration_root = etree.parse("data/alterations.xml").find(name)
+            desc = alteration_root.find("info").text.strip()
+            effs_el = alteration_root.find("effects")
+            effects = effs_el.text.strip().split(',') if effs_el is not None else []
+            self.alteration = Alteration(self.name, self.power, self.duration, desc, effects)
 
     def apply_on_ent(self, ent):
         msg = ""
@@ -26,11 +32,14 @@ class Effect:
         elif self.name == 'speed_up':
             ent.set_alteration(self.alteration)
             msg = "The speed of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
-                  " turns."
+                  " turns"
         elif self.name == 'strength_up':
             ent.set_alteration(self.alteration)
             msg = "The strength of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
-                  " turns."
+                  " turns"
+        elif self.name == 'stun':
+            ent.set_alteration(self.alteration)
+            msg = ent.get_formatted_name() + " has been stunned for " + str(self.duration) + " turns"
         return success, msg
 
     def get_formatted_desc(self):
@@ -38,3 +47,6 @@ class Effect:
             return 'Recover ' + str(self.power) + ' HP'
         else:
             return self.alteration.desc
+
+    def get_formatted_name(self):
+        return self.name.replace('_', ' ').title()

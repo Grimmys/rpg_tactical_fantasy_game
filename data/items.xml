@@ -7,7 +7,7 @@
             food/bone.png
         </sprite>
         <info>
-            The remains of a skeleton... Maybe there is a way to bring it back to life.
+            The remains of a skeleton... Maybe there is a way to bring it back to life
         </info>
         <price>
             200
@@ -24,7 +24,7 @@
             ring/iron.png
         </sprite>
         <info>
-            A simple ring, made of iron. Can be enchanted or sold.
+            A simple ring, made of iron. Can be enchanted or sold
         </info>
         <price>
             400
@@ -41,7 +41,7 @@
             gem_stone/topaz.png
         </sprite>
         <info>
-            A somewhat precious stone, could be sold for a good price.
+            A somewhat precious stone, could be sold for a good price
         </info>
         <price>
             2000
@@ -60,7 +60,7 @@
                     food/chunk.png
                 </sprite>
                 <info>
-                    It smells bad... Can be eaten to recover HP.
+                    It smells bad... Can be eaten to recover HP
                 </info>
                 <category>
                     consumable
@@ -88,7 +88,7 @@
                     potion/ruby_new.png
                 </sprite>
                 <info>
-                    Use it to recover some HP.
+                    Use it to recover some HP
                 </info>
                 <category>
                     potion
@@ -114,7 +114,7 @@
                     potion/murky.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost speed.
+                    Use it to temporarily boost speed
                 </info>
                 <category>
                     potion
@@ -140,7 +140,7 @@
                     potion/yellow_new.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost strength.
+                    Use it to temporarily boost strength
                 </info>
                 <category>
                     potion
@@ -167,7 +167,7 @@
                 misc/key.png
             </sprite>
             <info>
-                Could be used to open some chest.
+                Could be used to open some chest
             </info>
             <open_chest />
             <category>
@@ -228,7 +228,7 @@
                     weapon/knife.png
                 </sprite>
                 <info>
-                    A very fast blade, with discretion guaranteed.
+                    A very fast blade, with discretion guaranteed
                 </info>
                 <category>
                     weapon
@@ -263,7 +263,7 @@
                     weapon/dagger_new.png
                 </sprite>
                 <info>
-                    A simple dagger. A small blade, but it's sharp.
+                    A simple dagger. A small blade, but it's sharp
                 </info>
                 <category>
                     weapon
@@ -298,7 +298,7 @@
                     weapon/club_new.png
                 </sprite>
                 <info>
-                    Not a real weapon, but you could hurt someone with. Very frail.
+                    Not a real weapon, but you could hurt someone with. Very frail
                 </info>
                 <category>
                     weapon
@@ -338,7 +338,7 @@
                     weapon/short_sword_2_old.png
                 </sprite>
                 <info>
-                    A basic little sword, but one that can already prove very useful.
+                    A basic little sword, but one that can already prove very useful
                 </info>
                 <category>
                     weapon
@@ -396,7 +396,7 @@
                     30
                 </fragility>
                 <weight>
-                    4
+                    5
                 </weight>
                 <equipped_sprite>
                     spear_4.png
@@ -463,6 +463,59 @@
                     </keywords>
                 </strong_against>
             </basic_halberd>
+            <pickaxe>
+                <name>
+                    Pickaxe
+                </name>
+                <sprite>
+                    weapon/pickaxe.png
+                </sprite>
+                <info>
+                    This doesn't look like a weapon, but still, well handled it could stun someone
+                </info>
+                <category>
+                    weapon
+                </category>
+                <power>
+                    1
+                </power>
+                <kind>
+                    PHYSICAL
+                </kind>
+                <range>
+                    1
+                </range>
+                <fragility>
+                    30
+                </fragility>
+                <weight>
+                    3
+                </weight>
+                <equipped_sprite>
+                    pick_axe.png
+                </equipped_sprite>
+                <price>
+                    300
+                </price>
+                <restrictions>
+                    <classes>
+                        warrior
+                    </classes>
+                </restrictions>
+                <effects>
+                    <effect>
+                        <name>
+                            stun
+                        </name>
+                        <duration>
+                            1
+                        </duration>
+                        <probability>
+                            0.2
+                        </probability>
+                    </effect>
+                </effects>
+            </pickaxe>
             <basic_bow>
                 <name>
                     Wooden Bow
@@ -471,7 +524,7 @@
                     weapon/ranged/bow_1.png
                 </sprite>
                 <info>
-                    A simple wooden bow, effective at a short distance.
+                    A simple wooden bow, effective at a short distance
                 </info>
                 <category>
                     weapon
@@ -511,7 +564,7 @@
                     staff/staff_2.png
                 </sprite>
                 <info>
-                    A frail staff, usable to make a range attack with weak spells.
+                    A frail staff, usable to make a range attack with weak spells
                 </info>
                 <category>
                     weapon
@@ -551,7 +604,7 @@
                     weapon/artefact/spwpn_sceptre_of_torment.png
                 </sprite>
                 <info>
-                    A really dark staff, aimed to the occultists.
+                    A really dark staff, aimed to the occultists
                 </info>
                 <category>
                     weapon
@@ -592,7 +645,7 @@
                 armor/headgear/plumed_helmet.png
             </sprite>
             <info>
-                A helmet, with a nice plume.
+                A helmet, with a nice plume
             </info>
             <category>
                 armor
@@ -621,7 +674,7 @@
                 armor/headgear/black_hood.png
             </sprite>
             <info>
-                A discret hood, to watch but not to be watched.
+                A discret hood, to watch but not to be watched
             </info>
             <category>
                 armor
@@ -655,7 +708,7 @@
                 armor/headgear/helmet_1.png
             </sprite>
             <info>
-                A very basic helmet.
+                A very basic helmet
             </info>
             <category>
                 armor
@@ -676,6 +729,35 @@
                 250
             </price>
         </helmet>
+        <horned_helmet>
+             <name>
+                Horned Helmet
+            </name>
+            <sprite>
+                armor/headgear/helmet_4.png
+            </sprite>
+            <info>
+                A basic helmet, but with impressive horns
+            </info>
+            <category>
+                armor
+            </category>
+            <bodypart>
+                head
+            </bodypart>
+            <def>
+                1
+            </def>
+            <weight>
+                2
+            </weight>
+            <equipped_sprite>
+                head/horn_gray.png
+            </equipped_sprite>
+            <price>
+                250
+            </price>
+        </horned_helmet>
         <gold_helmet>
             <name>
                 Gold Helmet
@@ -684,7 +766,7 @@
                 armor/headgear/helmet_3_old.png
             </sprite>
             <info>
-                A full gold helmet... Seems really nice.
+                A full gold helmet... Seems really nice
             </info>
             <category>
                 armor
@@ -710,7 +792,7 @@
                 armor/torso/chain_mail_3.png
             </sprite>
             <info>
-                A basic chainmail... Useful to have a good defense and keep an average speed.
+                A basic chainmail... Useful to have a good defense and keep an average speed
             </info>
             <category>
                 armor
@@ -779,7 +861,7 @@
                 armor/torso/scale_mail_1_new.png
             </sprite>
             <info>
-                A veritable scale mail. Particularly useful for avoiding arrows.
+                A veritable scale mail. Particularly useful for avoiding arrows
             </info>
             <category>
                 armor
@@ -813,7 +895,7 @@
                 armor/torso/gold_dragon_armor_new.png
             </sprite>
             <info>
-                An armor inspired from a gold dragon.
+                An armor inspired from a gold dragon
             </info>
             <category>
                 armor
@@ -881,7 +963,7 @@
                 armor/bardings/centaur_barding_magenta.png
             </sprite>
             <info>
-                Armor reserved to centaur. Not really efficient, but very elegant.
+                Armor reserved to centaur. Not really efficient, but very elegant
             </info>
             <category>
                 armor
@@ -912,7 +994,7 @@
                 armor/feet/boots_1_brown_new.png
             </sprite>
             <info>
-                Brown boots, most basic boots you can find.
+                Brown boots, most basic boots you can find
             </info>
             <category>
                 armor
@@ -941,7 +1023,7 @@
                 armor/feet/boots_1_brown_new.png
             </sprite>
             <info>
-                Black boots, fashion ones.
+                Black boots, fashion ones
             </info>
             <category>
                 armor
@@ -970,7 +1052,7 @@
                 armor/feet/boots_iron_2.png
             </sprite>
             <info>
-                Beautiful boots with golden style.
+                Beautiful boots with golden style
             </info>
             <category>
                 armor
@@ -996,7 +1078,7 @@
                 armor/shields/buckler_1_new.png
             </sprite>
             <info>
-                A small light shield that could help dodging attacks.
+                A small light shield that could help dodging attacks
             </info>
             <category>
                 shield

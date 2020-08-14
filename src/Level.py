@@ -669,6 +669,14 @@ class Level:
                 entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
                                                          str(target.hp) + " HP",
                                  'font': fonts['ITEM_DESC_FONT']}])
+                # Check if a side effect is applied to target
+                if isinstance(attacker, Character):
+                    w = attacker.get_weapon()
+                    if w:
+                        applied_effects = w.applied_effects(attacker, target)
+                        for eff in applied_effects:
+                            _, msg = eff.apply_on_ent(target)
+                            entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
 
             # XP gain
             if isinstance(attacker, Player):

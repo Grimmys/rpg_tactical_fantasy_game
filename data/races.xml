@@ -15,6 +15,21 @@
             5
         </move>
     </elf>
+    <dwarf>
+        <constitution>
+            12
+        </constitution>
+        <move>
+            4
+        </move>
+        <skills>
+            <skill>
+                <name>
+                    brutal_hitter
+                </name>
+            </skill>
+        </skills>
+    </dwarf>
     <centaur>
         <constitution>
             12

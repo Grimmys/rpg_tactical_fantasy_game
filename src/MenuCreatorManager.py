@@ -405,6 +405,9 @@ def create_item_desc_menu(item):
             reach_txt = reach_txt[:len(reach_txt) - 2]
             entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
             entries.append(create_item_desc_stat('REACH', reach_txt))
+            for possible_effect in item.effects:
+                entries.append(create_item_desc_stat('EFFECT', possible_effect['effect'].get_formatted_name() +
+                                                     ' (' + str(possible_effect['probability']) + '%)'))
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
         if isinstance(item, Weapon) or isinstance(item, Shield):
@@ -430,12 +433,8 @@ def create_alteration_info_menu(alteration):
 
 
 def create_skill_info_menu(skill):
-    entries = [[{'type': 'text', 'text': skill.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-    if skill.power > 0:
-        entries.append([{'type': 'text', 'text': 'POWER :', 'font': fonts['ITEM_DESC_FONT']},
-                        {'type': 'text', 'text': str(skill.power), 'font': fonts['ITEM_DESC_FONT'], 'color': DARK_GREEN}])
-
-    entries.append([{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}])
+    entries = [[{'type': 'text', 'text': skill.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
+               [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
 
     return InfoBox(skill.formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
@@ -480,6 +479,7 @@ def create_status_entity_menu(ent):
         entries.append([{'type': 'text', 'text': 'None'}])
     for alt in alts:
         entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
+                         'color': WHITE,
                          'color_hover': TURQUOISE, 'obj': alt}])
 
     if isinstance(ent, Foe):
@@ -500,7 +500,7 @@ def create_status_entity_menu(ent):
         entries[i][3] = {'type': 'text', 'text': '> ' + skill.formatted_name}
         i += 1
 
-    return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(formatted_name, StatusMenu, "imgs/interface/PopUpMenu.png", entries,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 

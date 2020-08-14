@@ -190,13 +190,20 @@ class Movable(Destroyable):
         if not self.on_move:
             self.state = EntityState.HAVE_TO_ATTACK
 
+    def can_attack(self):
+        # Check if no alteration forbids the entity to attack
+        for alt in self.alterations:
+            if 'no_attack' in alt.effects:
+                return False
+        return True
+
     def act(self, possible_moves, targets):
         if self.state is EntityState.HAVE_TO_ACT:
             return self.determine_move(possible_moves, targets)
         elif self.state is EntityState.ON_MOVE:
             self.move()
         elif self.state is EntityState.HAVE_TO_ATTACK:
-            if self.target:
+            if self.target and self.can_attack():
                 return self.target.pos
             else:
                 self.end_turn()
@@ -252,6 +259,17 @@ class Movable(Destroyable):
             skill_el = etree.SubElement(skills, 'skill')
             skill_name = etree.SubElement(skill_el, 'name')
             skill_name.text = str(skill)
+
+        # Save alterations
+        alterations = etree.SubElement(tree, 'alterations')
+        for alteration in self.alterations:
+            alteration_el = etree.SubElement(alterations, 'alteration')
+            alteration_name = etree.SubElement(alteration_el, 'name')
+            alteration_name.text = alteration.name
+            alteration_duration = etree.SubElement(alteration_el, 'duration')
+            alteration_duration.text = str(alteration.time)
+            alteration_power = etree.SubElement(alteration_el, 'power')
+            alteration_power.text = str(alteration.power)
 
         # Save stats
         hp_m = etree.SubElement(tree, 'hp')

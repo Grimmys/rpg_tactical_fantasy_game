@@ -39,6 +39,8 @@ def load_races():
         cons = race_el.find('constitution')
         race['constitution'] = int(cons.text.strip()) if cons is not None else 0
         race['move'] = int(race_el.find('move').text.strip())
+        race['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
+                        for skill in race_el.findall('skills/skill/name')]
         races[race_el.tag] = race
     return races
 
@@ -88,8 +90,12 @@ def load_skill(name):
         stats_el = skill_el.find('stats')
         if stats_el is not None:
             stats = [stat for stat in stats_el.text.replace(' ', '').split(',')]
+        alterations = []
+        alterations_el = skill_el.find('alteration')
+        if alterations_el is not None:
+            alterations = [alt for alt in alterations_el.text.replace(' ', '').split(',')]
 
-        skills_infos[name] = Skill(name, formatted_name, nature, desc, power, stats)
+        skills_infos[name] = Skill(name, formatted_name, nature, desc, power, stats, alterations)
     return skills_infos[name]
 
 
@@ -189,7 +195,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
                    if not skill.text.strip() in skills_infos else skills_infos[skill.text.strip()])
                   for skill in dynamic_data.findall('skills/skill/name')]
     else:
-        skills = Character.classes_data[classes[0]]['skills']
+        skills = Character.classes_data[classes[0]]['skills'] + Character.races_data[race]['skills']
 
     loaded_ally = Character(formatted_name, pos, sprite, hp, defense, res, strength, attack_kind,
                             classes, equipments, strategy, lvl, skills, race, gold, interaction)
@@ -560,7 +566,7 @@ def load_player(name):
         equipments.append(parse_item_file(eq.text.strip()))
     gold = int(player_t.find('gold').text.strip())
 
-    skills = Character.classes_data[player_class]['skills']
+    skills = Character.classes_data[player_class]['skills'] + Character.races_data[race]['skills']
 
     # Creating player instance
     player = Player(name, sprite, hp, defense, res, strength, [player_class], equipments, race, gold, lvl, skills,
@@ -578,6 +584,23 @@ def load_player(name):
             player.set_item(item)
 
     return player
+
+
+def load_weapon_effect(eff):
+    loaded_eff = {}
+
+    # Load effect
+    name = eff.find('name').text.strip()
+    power_el = eff.find('power')
+    power = int(power_el.text.strip()) if power_el is not None else 0
+    duration_el = eff.find('duration')
+    duration = int(duration_el.text.strip()) if duration_el is not None else 0
+    loaded_eff['effect'] = Effect(name, power, duration)
+
+    # Load probability
+    loaded_eff['probability'] = int(float(eff.find('probability').text.strip()) * 100)
+
+    return loaded_eff
 
 
 def parse_item_file(name):
@@ -640,8 +663,12 @@ def parse_item_file(name):
         equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/' + it_tree_root.find(
             'equipped_sprite').text.strip()]
         restrictions = load_restrictions(it_tree_root.find('restrictions'))
+        effects = it_tree_root.find('effects')
+        possible_effects = []
+        if effects is not None:
+            possible_effects = [load_weapon_effect(eff) for eff in effects.findall('effect')]
         item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
-                      w_range, restrictions)
+                      w_range, restrictions, possible_effects)
     elif category == 'key':
         for_chest = it_tree_root.find('open_chest') is not None
         for_door = it_tree_root.find('open_door') is not None

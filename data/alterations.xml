@@ -9,4 +9,12 @@
             The strength is increased by {val}
         </info>
     </strength_up>
+    <stun>
+       <info>
+           Unit can't attack
+       </info>
+        <effects>
+            no_attack
+        </effects>
+    </stun>
 </alterations>
