@@ -11,13 +11,15 @@ class Effect:
         if self.name == 'speed_up' or self.name == 'strength_up' or self.name == 'defense_up':
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = alteration_root.find("info").text.strip().replace('{val}', str(self.power))
-            self.alteration = Alteration(self.name, self.power, self.duration, desc)
+            abbr = alteration_root.find("abbreviated_name").text.strip()
+            self.alteration = Alteration(self.name, abbr, self.power, self.duration, desc)
         elif self.name == 'stun':
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = alteration_root.find("info").text.strip()
+            abbr = alteration_root.find("abbreviated_name").text.strip()
             effs_el = alteration_root.find("effects")
             effects = effs_el.text.strip().split(',') if effs_el is not None else []
-            self.alteration = Alteration(self.name, self.power, self.duration, desc, effects)
+            self.alteration = Alteration(self.name, abbr, self.power, self.duration, desc, effects)
 
     def apply_on_ent(self, ent):
         msg = ""

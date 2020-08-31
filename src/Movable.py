@@ -122,6 +122,14 @@ class Movable(Destroyable):
             return "None"
         return formatted_string[:-2]
 
+    def get_abbreviated_alterations(self):
+        formatted_string = ""
+        for alteration in self.alterations:
+            formatted_string += alteration.abbreviated_name + ", "
+        if formatted_string == "":
+            return "None"
+        return formatted_string[:-2]
+
     def set_alteration(self, alteration):
         self.alterations.append(alteration)
 
@@ -249,7 +257,7 @@ class Movable(Destroyable):
     def new_turn(self):
         self.state = EntityState.HAVE_TO_ACT
         # Verify if any alteration is finished
-        for alteration in self.alterations:
+        for alteration in self.alterations.copy():
             if alteration.increment():
                 self.alterations.remove(alteration)
 

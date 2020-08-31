@@ -266,18 +266,18 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
             if mission.pos_is_valid(player.pos):
                 entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
 
-
     # Check if player could attack something, according to weapon range
-    w_range = [1] if player.get_weapon() is None else player.get_weapon().reach
-    end = False
-    for foe in foes:
-        for reach in w_range:
-            if abs(foe.pos[0] - player.pos[0]) + abs(foe.pos[1] - player.pos[1]) == TILE_SIZE * reach:
-                entries.insert(0, [{'name': 'Attack', 'id': CharacterMenu.ATTACK}])
-                end = True
+    if player.can_attack():
+        w_range = [1] if player.get_weapon() is None else player.get_weapon().reach
+        end = False
+        for foe in foes:
+            for reach in w_range:
+                if abs(foe.pos[0] - player.pos[0]) + abs(foe.pos[1] - player.pos[1]) == TILE_SIZE * reach:
+                    entries.insert(0, [{'name': 'Attack', 'id': CharacterMenu.ATTACK}])
+                    end = True
+                    break
+            if end:
                 break
-        if end:
-            break
 
     for row in entries:
         for entry in row:

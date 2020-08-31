@@ -131,7 +131,7 @@
                         2
                     </power>
                     <duration>
-                        2
+                        1
                     </duration>
                 </effect>
                 <price>
@@ -151,17 +151,27 @@
                 <category>
                     potion
                 </category>
-                <effect>
-                    <type>
-                        speed_up
-                    </type>
-                    <power>
-                        3
-                    </power>
-                    <duration>
-                        2
-                    </duration>
-                </effect>
+                <effects>
+                    <effect>
+                        <type>
+                            stun
+                        </type>
+                        <duration>
+                            2
+                        </duration>
+                    </effect>
+                    <effect>
+                        <type>
+                            speed_up
+                        </type>
+                        <power>
+                            3
+                        </power>
+                        <duration>
+                            2
+                        </duration>
+                    </effect>
+                </effects>
                 <price>
                     400
                 </price>

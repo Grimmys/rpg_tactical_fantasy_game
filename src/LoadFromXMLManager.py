@@ -620,8 +620,10 @@ def parse_item_file(name):
         effects = []
         for eff in it_tree_root.findall('.//effect'):
             effect_name = eff.find('type').text.strip()
-            power = int(eff.find('power').text.strip())
-            duration = int(eff.find('duration').text.strip())
+            pow_el = eff.find('power')
+            power = int(pow_el.text.strip()) if pow_el is not None else 0
+            duration_el = eff.find('duration')
+            duration = int(duration_el.text.strip()) if duration_el is not None else 0
             effects.append(Effect(effect_name, power, duration))
         item = Potion(name, sprite, info, price, effects)
     elif category == 'consumable':

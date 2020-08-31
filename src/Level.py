@@ -182,7 +182,7 @@ class Level:
     @staticmethod
     def load_event_dialog(dialog_el):
         entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                               for s in dialog_el['talks']]
+                   for s in dialog_el['talks']]
         return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
                        entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
@@ -1181,6 +1181,7 @@ class Level:
 
             self.background_menus.append([self.active_menu, True])
             self.active_menu = MenuCreatorManager.create_skill_info_menu(skill)
+
     def execute_trade_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
         if method_id is TradeMenu.INTERAC_ITEM:
@@ -1335,7 +1336,7 @@ class Level:
                     self.possible_moves = self.get_possible_moves(player.pos,
                                                                   player.max_moves + player.get_stat_change('speed'))
                     self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
-                                                                      True)
+                                                                      True) if player.can_attack() else {}
                 return
         for ent in self.entities['foes'] + self.entities['allies']:
             if ent.is_on_pos(pos):
@@ -1402,7 +1403,8 @@ class Level:
                             self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
                             reach = self.watched_ent.reach
                             self.possible_attacks = self.get_possible_attacks(self.possible_moves,
-                                                                              reach, isinstance(ent, Character))
+                                                                              reach, isinstance(ent, Character)) \
+                                if ent.can_attack() else {}
                             return
 
     def motion(self, pos):

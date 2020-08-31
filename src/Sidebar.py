@@ -142,7 +142,7 @@ class Sidebar:
                     # Status
                     status_pre_text = fonts['ITEM_FONT_STRONG'].render("ALTERATIONS : ", 1, color)
                     win.blit(status_pre_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
-                    status_text = fonts['ITEM_FONT_STRONG'].render(" " * 18 + ent.get_formatted_alterations(),
+                    status_text = fonts['ITEM_FONT_STRONG'].render(" " * 18 + ent.get_abbreviated_alterations(),
                                                                    1, BLACK)
                     win.blit(status_text, (text_pos_x, frame_pos[1] + FRAME.get_height()))
 
