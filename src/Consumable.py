@@ -2,12 +2,18 @@ from src.Item import Item
 
 
 class Consumable(Item):
-    def __init__(self, name, sprite, description, price, effect):
+    def __init__(self, name, sprite, description, price, effects):
         Item.__init__(self, name, sprite, description, price)
-        self.effect = effect
+        self.effects = effects
 
     def use(self, player):
-        success, msg = self.effect.apply_on_ent(player)
+        success = False
+        msgs = []
+        for eff in self.effects:
+            sub_success, msg = eff.apply_on_ent(player)
+            msgs.append(msg)
+            if sub_success:
+                success = True
         if success:
             player.remove_item(self)
-        return success, msg
+        return success, msgs

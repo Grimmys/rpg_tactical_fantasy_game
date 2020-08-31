@@ -167,17 +167,7 @@ class Character(Movable):
             total_weight = sum([eq.weight for eq in self.equipments])
             diff = total_weight - self.constitution
             malus = 0 if diff < 0 else - math.ceil(diff / 2)
-        # Check if character as a bonus due to alteration
-        bonus = sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_up')))
-        return malus + bonus
-
-    def get_formatted_stat_change(self, stat):
-        change = self.get_stat_change(stat)
-        if change > 0:
-            return ' (+ ' + str(change) + ')'
-        elif change < 0:
-            return ' (- ' + str(change) + ')'
-        return ''
+        return malus + Movable.get_stat_change(self, stat)
 
     def save(self, tree_name):
         tree = Movable.save(self, tree_name)

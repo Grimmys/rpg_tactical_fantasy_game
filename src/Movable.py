@@ -1,3 +1,5 @@
+import math
+
 from src.Destroyable import *
 from src.Key import Key
 from enum import IntEnum, Enum, auto
@@ -72,25 +74,26 @@ class Movable(Destroyable):
         allies_dist = [(ally, (abs(self.pos[0] - ally.pos[0]) + abs(self.pos[1] - ally.pos[1])) // TILE_SIZE)
                        for ally in allies]
 
+        # Check if stats are modified by some alterations
+        temp_def_change = self.get_stat_change('defense')
+        temp_res_change = self.get_stat_change('resistance')
         # Check if a skill is boosting stats during combat
-        temp_def_boost = 0
-        temp_res_boost = 0
         for skill in self.skills:
             if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist if ally[1] == 1]:
                 if 'defense' in skill.stats:
-                    temp_def_boost += skill.power
+                    temp_def_change += skill.power
                 if 'resistance' in skill.stats:
-                    temp_res_boost += skill.power
-        # Apply boosts
-        self.defense += temp_def_boost
-        self.res += temp_res_boost
+                    temp_res_change += skill.power
+        # Apply boosts (including alterations changes)
+        self.defense += temp_def_change
+        self.res += temp_res_change
 
         # Resolve attack with boosted stats
         Destroyable.attacked(self, ent, damages, kind, allies)
 
         # Restore stats to normal
-        self.defense -= temp_def_boost
-        self.res -= temp_res_boost
+        self.defense -= temp_def_change
+        self.res -= temp_res_change
 
         return self.hp
 
@@ -124,6 +127,18 @@ class Movable(Destroyable):
 
     def get_alterations_effect(self, eff):
         return [alteration for alteration in self.alterations if alteration.name == eff]
+
+    def get_stat_change(self, stat):
+        # Check if character as a bonus due to alteration
+        return sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_up')))
+
+    def get_formatted_stat_change(self, stat):
+        change = self.get_stat_change(stat)
+        if change > 0:
+            return ' (+ ' + str(change) + ')'
+        elif change < 0:
+            return ' (- ' + str(change) + ')'
+        return ''
 
     def earn_xp(self, xp):
         self.xp += xp

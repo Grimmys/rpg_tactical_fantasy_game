@@ -414,7 +414,8 @@ def create_item_desc_menu(item):
             entries.append(create_item_desc_stat('DURABILITY', str(item.durability) + ' / ' + str(item.durability_max)))
         entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
     elif isinstance(item, Consumable):
-        entries.append(create_item_desc_stat('EFFECT', item.effect.get_formatted_desc()))
+        for eff in item.effects:
+            entries.append(create_item_desc_stat('EFFECT', eff.get_formatted_desc()))
 
     return InfoBox(item_title, "", "imgs/interface/PopUpMenu.png", entries,
                    ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)

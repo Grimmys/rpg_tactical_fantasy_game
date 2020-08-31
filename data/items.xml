@@ -66,14 +66,16 @@
                     consumable
                 </category>
                 <effect>
-                    heal
+                    <type>
+                        heal
+                    </type>
+                    <power>
+                        5
+                    </power>
+                    <duration>
+                        0
+                    </duration>
                 </effect>
-                <power>
-                    5
-                </power>
-                <duration>
-                    0
-                </duration>
                 <price>
                     50
                 </price>
@@ -94,14 +96,16 @@
                     potion
                 </category>
                 <effect>
-                    heal
+                    <type>
+                        heal
+                    </type>
+                    <power>
+                        10
+                    </power>
+                    <duration>
+                        0
+                    </duration>
                 </effect>
-                <power>
-                    10
-                </power>
-                <duration>
-                    0
-                </duration>
                 <price>
                     150
                 </price>
@@ -111,27 +115,57 @@
                     Speed Potion
                 </name>
                 <sprite>
-                    potion/murky.png
+                    potion/orange_new.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost speed
+                    Use it to temporarily boost move speed
                 </info>
                 <category>
                     potion
                 </category>
                 <effect>
-                    speed_up
+                    <type>
+                        speed_up
+                    </type>
+                    <power>
+                        2
+                    </power>
+                    <duration>
+                        2
+                    </duration>
                 </effect>
-                <power>
-                    2
-                </power>
-                <duration>
-                    3
-                </duration>
                 <price>
-                    250
+                    500
                 </price>
             </speed_potion>
+            <rabbit_potion>
+                <name>
+                    Rabbit Step Potion
+                </name>
+                <sprite>
+                    potion/white_new.png
+                </sprite>
+                <info>
+                    Use it to temporarily boost move speed, but be stun too
+                </info>
+                <category>
+                    potion
+                </category>
+                <effect>
+                    <type>
+                        speed_up
+                    </type>
+                    <power>
+                        3
+                    </power>
+                    <duration>
+                        2
+                    </duration>
+                </effect>
+                <price>
+                    400
+                </price>
+            </rabbit_potion>
             <strength_potion>
                 <name>
                     Strength Potion
@@ -146,18 +180,61 @@
                     potion
                 </category>
                 <effect>
-                    strength_up
+                    <type>
+                        strength_up
+                    </type>
+                    <power>
+                        2
+                    </power>
+                    <duration>
+                        2
+                    </duration>
                 </effect>
-                <power>
-                    2
-                </power>
-                <duration>
-                    2
-                </duration>
                 <price>
                     300
                 </price>
             </strength_potion>
+            <vigor_potion>
+                <name>
+                    Vigor Potion
+                </name>
+                <sprite>
+                    potion/bubbly.png
+                </sprite>
+                <info>
+                    Use it to temporarily boost defense and strength
+                </info>
+                <category>
+                    potion
+                </category>
+                <effects>
+                    <effect>
+                        <type>
+                            defense_up
+                        </type>
+                        <power>
+                            2
+                        </power>
+                        <duration>
+                            2
+                        </duration>
+                    </effect>
+                    <effect>
+                        <type>
+                            strength_up
+                        </type>
+                        <power>
+                            1
+                        </power>
+                        <duration>
+                            2
+                        </duration>
+                    </effect>
+                </effects>
+                <price>
+                    450
+                </price>
+            </vigor_potion>
         </potions>
         <key>
             <name>

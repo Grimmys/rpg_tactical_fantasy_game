@@ -991,7 +991,7 @@ class Level:
             formatted_item_name = self.selected_item.get_formatted_name()
 
             # Try to use the object
-            used, result_msg = self.selected_player.use_item(self.selected_item)
+            used, result_msgs = self.selected_player.use_item(self.selected_item)
 
             # Inventory display is update if object has been used
             if used:
@@ -1008,8 +1008,8 @@ class Level:
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
 
-            entries = [[{'type': 'text', 'text': result_msg,
-                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+            entries = [[{'type': 'text', 'text': msg,
+                         'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in result_msgs]
             self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equip an item

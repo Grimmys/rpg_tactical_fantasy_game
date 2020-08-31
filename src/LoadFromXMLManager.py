@@ -617,17 +617,21 @@ def parse_item_file(name):
     category = it_tree_root.find('category').text.strip()
 
     if category == 'potion':
-        effect_name = it_tree_root.find('effect').text.strip()
-        power = int(it_tree_root.find('power').text.strip())
-        duration = int(it_tree_root.find('duration').text.strip())
-        effect = Effect(effect_name, power, duration)
-        item = Potion(name, sprite, info, price, effect)
+        effects = []
+        for eff in it_tree_root.findall('.//effect'):
+            effect_name = eff.find('type').text.strip()
+            power = int(eff.find('power').text.strip())
+            duration = int(eff.find('duration').text.strip())
+            effects.append(Effect(effect_name, power, duration))
+        item = Potion(name, sprite, info, price, effects)
     elif category == 'consumable':
-        effect_name = it_tree_root.find('effect').text.strip()
-        power = int(it_tree_root.find('power').text.strip())
-        duration = int(it_tree_root.find('duration').text.strip())
-        effect = Effect(effect_name, power, duration)
-        item = Consumable(name, sprite, info, price, effect)
+        effects = []
+        for eff in it_tree_root.findall('.//effect'):
+            effect_name = eff.find('type').text.strip()
+            power = int(eff.find('power').text.strip())
+            duration = int(eff.find('duration').text.strip())
+            effects.append(Effect(effect_name, power, duration))
+        item = Consumable(name, sprite, info, price, effects)
     elif category == 'armor':
         body_part = it_tree_root.find('bodypart').text.strip()
         defense_el = it_tree_root.find('def')

@@ -85,10 +85,10 @@ class Player(Character):
         self.state = PlayerState.WAITING_POST_ACTION
 
     def use_item(self, item):
-        used, result_msg = Character.use_item(self, item)
+        used, result_msgs = Character.use_item(self, item)
         if used:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
-        return used, result_msg
+        return used, result_msgs
 
     def equip(self, eq):
         equipped = Character.equip(self, eq)
