@@ -8,6 +8,8 @@ I'm currently looking for a good name.
 ## How to help development
 
 You can submit any request you want, or notify me about any bug you encountered, by sending an e-mail to grimmys.programming@gmail.com or by opening an issue.
+<br>
+Also, I just opened a discord server. Feel free to join and talk about anything : https://discord.gg/d3CYmgq
 
 Please, don't hesitate about suggesting ideas : it's my first " serious " game project. ;)
 
@@ -19,7 +21,7 @@ Please, don't hesitate about suggesting ideas : it's my first " serious " game p
   <li> Ideas about future levels could be submitted, however, I'm currently working on a scenario. </li>
  </ul>
 
-<b>Version</b> : 1.0.2
+<b>Version</b> : 1.0.3
 
 ![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
 ![Inventory menu](/screenshots/inventory_screen.png?raw=True)
