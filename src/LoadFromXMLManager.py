@@ -40,9 +40,10 @@ def load_races():
         race['constitution'] = int(cons.text.strip()) if cons is not None else 0
         race['move'] = int(race_el.find('move').text.strip())
         race['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
-                        for skill in race_el.findall('skills/skill/name')]
+                          for skill in race_el.findall('skills/skill/name')]
         races[race_el.tag] = race
     return races
+
 
 def load_classes():
     classes = {}
@@ -66,11 +67,11 @@ def load_stat_up(el, stat_name):
 
 def load_stats_up(el):
     return {
-            'hp': load_stat_up(el, 'hp'),
-            'def': load_stat_up(el, 'defense'),
-            'res': load_stat_up(el, 'resistance'),
-            'str': load_stat_up(el, 'strength')
-        }
+        'hp': load_stat_up(el, 'hp'),
+        'def': load_stat_up(el, 'defense'),
+        'res': load_stat_up(el, 'resistance'),
+        'str': load_stat_up(el, 'strength')
+    }
 
 
 def load_skill(name):
@@ -111,15 +112,15 @@ def load_placements(positions, gap_x, gap_y):
 
 def load_all_entities(data, from_save, gap_x, gap_y):
     return {
-            'allies': load_entities('character', data.findall('allies/ally'), from_save, gap_x, gap_y),
-            'foes': load_entities('foe', data.findall('foes/foe'), from_save, gap_x, gap_y),
-            'breakables': load_entities('breakable', data.findall('breakables/breakable'), from_save, gap_x, gap_y),
-            'chests': load_entities('chest', data.findall('chests/chest'), from_save, gap_x, gap_y),
-            'doors': load_entities('door', data.findall('doors/door'), from_save, gap_x, gap_y),
-            'buildings': load_entities('building', data.findall('buildings/building'), from_save, gap_x, gap_y),
-            'fountains': load_entities('fountain', data.findall('fountains/fountain'), from_save, gap_x, gap_y),
-            'portals': load_entities('portal', data.findall('portals/couple'), from_save, gap_x, gap_y)
-            }
+        'allies': load_entities('character', data.findall('allies/ally'), from_save, gap_x, gap_y),
+        'foes': load_entities('foe', data.findall('foes/foe'), from_save, gap_x, gap_y),
+        'breakables': load_entities('breakable', data.findall('breakables/breakable'), from_save, gap_x, gap_y),
+        'chests': load_entities('chest', data.findall('chests/chest'), from_save, gap_x, gap_y),
+        'doors': load_entities('door', data.findall('doors/door'), from_save, gap_x, gap_y),
+        'buildings': load_entities('building', data.findall('buildings/building'), from_save, gap_x, gap_y),
+        'fountains': load_entities('fountain', data.findall('fountains/fountain'), from_save, gap_x, gap_y),
+        'portals': load_entities('portal', data.findall('portals/couple'), from_save, gap_x, gap_y)
+    }
 
 
 def load_entities(ent_nature, data, from_save, gap_x, gap_y):
@@ -170,9 +171,9 @@ def load_ally(ally, from_save, gap_x, gap_y):
     for talk in interaction_el.findall('talk'):
         dialog.append(talk.text.strip())
     interaction = {
-                   'dialog': dialog,
-                   'join_team': interaction_el.find('join_team') is not None
-                   }
+        'dialog': dialog,
+        'join_team': interaction_el.find('join_team') is not None
+    }
 
     strategy = infos.find('strategy').text.strip()
     attack_kind = infos.find('attack_kind').text.strip()
@@ -207,7 +208,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
             loaded_ally.set_item(item)
 
     if from_save:
-        current_hp = int(ally.find('currentHp').text.strip())
+        current_hp = int(ally.find('current_hp').text.strip())
         loaded_ally.set_current_hp(current_hp)
 
         xp = int(ally.find('exp').text.strip())
@@ -271,10 +272,11 @@ def load_foe(foe, from_save, gap_x, gap_y):
     defense = int(stats_tree.find('defense').text.strip())
     res = int(stats_tree.find('resistance').text.strip())
 
-    loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, strategy, reach, xp_gain, loot, lvl)
+    loaded_foe = Foe(name, pos, sprite, hp, defense, res, move, strength, attack_kind, strategy, reach, xp_gain, loot,
+                     lvl)
 
     if from_save:
-        current_hp = int(foe.find('currentHp').text.strip())
+        current_hp = int(foe.find('current_hp').text.strip())
         loaded_foe.set_current_hp(current_hp)
 
         xp = int(foe.find('exp').text.strip())
@@ -497,7 +499,7 @@ def load_breakable(breakable, gap_x, gap_y):
     y = int(breakable.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
-    hp = int(breakable.find('currentHp').text.strip())
+    hp = int(breakable.find('current_hp').text.strip())
 
     return Breakable(pos, sprite, hp, 0, 0)
 
@@ -556,7 +558,7 @@ def load_player(el, from_save):
     strength = int(el.find("strength").text.strip())
     defense = int(el.find("defense").text.strip())
     res = int(el.find("resistance").text.strip())
-    current_hp = int(el.find("currentHp").text.strip()) if from_save else hp
+    current_hp = int(el.find("current_hp").text.strip()) if from_save else hp
     inv = []
     for it in el.findall("inventory/item"):
         it_name = it.text.strip()
@@ -582,7 +584,7 @@ def load_player(el, from_save):
 
     # -- Reading of the XML file for default character's values (i.e. sprites)
     sprite = 'imgs/' + player_t.find('sprite').text.strip()
-    compl_sprite = player_t.find('complementSprite')
+    compl_sprite = player_t.find('complement_sprite')
     if compl_sprite is not None:
         compl_sprite = 'imgs/' + compl_sprite.text.strip()
 
@@ -651,7 +653,7 @@ def parse_item_file(name):
         price = 0
     category = it_tree_root.find('category').text.strip()
 
-    if category == 'potion':
+    if category == 'potion' or category == 'consumable':
         effects = []
         for eff in it_tree_root.findall('.//effect'):
             effect_name = eff.find('type').text.strip()
@@ -660,15 +662,8 @@ def parse_item_file(name):
             duration_el = eff.find('duration')
             duration = int(duration_el.text.strip()) if duration_el is not None else 0
             effects.append(Effect(effect_name, power, duration))
-        item = Potion(name, sprite, info, price, effects)
-    elif category == 'consumable':
-        effects = []
-        for eff in it_tree_root.findall('.//effect'):
-            effect_name = eff.find('type').text.strip()
-            power = int(eff.find('power').text.strip())
-            duration = int(eff.find('duration').text.strip())
-            effects.append(Effect(effect_name, power, duration))
-        item = Consumable(name, sprite, info, price, effects)
+        item = Potion(name, sprite, info, price, effects) if category == 'potion' else \
+            Consumable(name, sprite, info, price, effects)
     elif category == 'armor':
         body_part = it_tree_root.find('bodypart').text.strip()
         defense_el = it_tree_root.find('def')

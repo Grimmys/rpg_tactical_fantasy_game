@@ -66,7 +66,7 @@
         <resistance> 0 </resistance>
         <hp> 14 </hp>
         <sprite> dungeon_crawl/player/base/human_female.png </sprite>
-        <complementSprite> legs/pants_short_brown.png </complementSprite>
+        <complement_sprite> legs/pants_short_brown.png </complement_sprite>
         <equipment>
             <head>
                 plumed_helmet

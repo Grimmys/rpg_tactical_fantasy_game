@@ -92,7 +92,7 @@ class Destroyable(Entity):
         tree = Entity.save(self, tree_name)
 
         # Save current hp
-        hp = etree.SubElement(tree, 'currentHp')
+        hp = etree.SubElement(tree, 'current_hp')
         hp.text = str(self.hp)
 
         return tree
