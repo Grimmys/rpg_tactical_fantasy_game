@@ -4,7 +4,6 @@ def show_fps(win, inner_clock, font):
 
 
 if __name__ == "__main__":
-    import pygame as pg
     from src.constants import *
     import src.fonts as fonts
     from src.Destroyable import Destroyable

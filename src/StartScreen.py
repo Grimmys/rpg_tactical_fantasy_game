@@ -2,9 +2,7 @@ from lxml import etree
 
 from src.constants import *
 from src.fonts import fonts
-from src import LoadFromXMLManager
 from src.Level import Level, Status
-from src.Player import Player
 from src.InfoBox import InfoBox
 from src.Movable import Movable
 from src.Menus import StartMenu, OptionsMenu, GenericActions
@@ -129,16 +127,13 @@ class StartScreen:
                 self.level = None
 
     @staticmethod
-    def load_level(level, team):
-        return Level('maps/level_' + str(level) + '/', team, level)
+    def load_level(level):
+        return Level('maps/level_' + str(level) + '/', level)
 
     def new_game(self):
-        # Init player's team (one character at beginning)
-        team = [LoadFromXMLManager.load_player("raimund"), LoadFromXMLManager.load_player("braern"), LoadFromXMLManager.load_player("thokdrum")]
-
         # Init the first level
         self.level_id = 0
-        self.play(StartScreen.load_level(self.level_id, team))
+        self.play(StartScreen.load_level(self.level_id))
 
     def load_game(self):
         try:
@@ -153,62 +148,10 @@ class StartScreen:
                 turn_nb = 0
                 if game_status != 'I':
                     turn_nb = int(tree_root.find("level/turn").text.strip())
-                team = []
-                for player in tree_root.findall("team/player"):
-                    name = player.find("name").text.strip()
-                    level = int(player.find("level").text.strip())
-                    p_class = player.find("class").text.strip()
-                    race = player.find("race").text.strip()
-                    gold = int(player.find("gold").text.strip())
-                    exp = int(player.find("exp").text.strip())
-                    hp = int(player.find("hp").text.strip())
-                    strength = int(player.find("strength").text.strip())
-                    defense = int(player.find("defense").text.strip())
-                    res = int(player.find("resistance").text.strip())
-                    current_hp = int(player.find("currentHp").text.strip())
-                    pos = (int(player.find("position/x").text.strip()) * TILE_SIZE,
-                           int(player.find("position/y").text.strip()) * TILE_SIZE)
-                    state = player.find("turnFinished").text.strip()
-                    inv = []
-                    for it in player.findall("inventory/item"):
-                        it_name = it.find("name").text.strip()
-                        item = LoadFromXMLManager.parse_item_file(it_name)
-                        inv.append(item)
-
-                    equipments = []
-                    for eq in player.findall("equipment/*"):
-                        eq_name = eq.text.strip()
-                        eq = LoadFromXMLManager.parse_item_file(eq_name)
-                        equipments.append(eq)
-
-                    skills = [(LoadFromXMLManager.load_skill(skill.text.strip())
-                              if skill.text.strip() not in LoadFromXMLManager.skills_infos
-                               else LoadFromXMLManager.skills_infos[skill.text.strip()])
-                              for skill in player.findall('skills/skill/name')]
-
-                    # -- Reading of the XML file for default character's values (i.e. sprites)
-                    tree = etree.parse("data/characters.xml").getroot()
-                    player_t = tree.xpath(name)[0]
-
-                    sprite = 'imgs/' + player_t.find('sprite').text.strip()
-                    compl_sprite = player_t.find('complementSprite')
-                    if compl_sprite is not None:
-                        compl_sprite = 'imgs/' + compl_sprite.text.strip()
-
-                    p = Player(name, sprite, hp, defense, res, strength, [p_class], equipments, race, gold, level,
-                               skills, compl_sprite=compl_sprite)
-                    p.earn_xp(exp)
-                    p.items = inv
-                    p.set_current_hp(current_hp)
-                    p.pos = pos
-                    if state == "True":
-                        p.turn_finished()
-
-                    team.append(p)
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level = Level(level_name, team, self.level_id, game_status, turn_nb, tree_root.find("level/entities"))
+                level = Level(level_name, self.level_id, game_status, turn_nb, tree_root.find("level/entities"))
                 self.play(level)
                 save.close()
                 return

@@ -189,8 +189,7 @@ class Character(Movable):
         inv = etree.SubElement(tree, 'inventory')
         for it in self.items:
             it_el = etree.SubElement(inv, 'item')
-            it_name = etree.SubElement(it_el, 'name')
-            it_name.text = it.name
+            it_el.text = it.name
 
         # Save equipment
         equip = etree.SubElement(tree, 'equipment')

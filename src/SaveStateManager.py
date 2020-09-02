@@ -13,9 +13,6 @@ class SaveStateManager:
         level = self.save_level()
         self.tree.append(level)
 
-        team = self.save_team()
-        self.tree.append(team)
-
         # Store XML tree in file
         save_file.write(etree.tostring(self.tree, pretty_print=True, encoding="unicode"))
 
@@ -53,6 +50,7 @@ class SaveStateManager:
         entities.append(self.save_collection('fountains', 'fountain', self.level.entities['fountains']))
         entities.append(self.save_collection('buildings', 'building', self.level.entities['buildings']))
         entities.append(self.save_collection('doors', 'door', self.level.entities['doors']))
+        entities.append(self.save_collection('players', 'player', self.level.players))
 
         return entities
 
@@ -61,10 +59,3 @@ class SaveStateManager:
         element = etree.Element(collection_name)
         element.extend([ent.save(element_name) for ent in collection])
         return element
-
-    def save_team(self):
-        team = etree.Element('team')
-        for player in self.level.players:
-            team.append(player.save('player'))
-
-        return team

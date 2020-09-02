@@ -529,61 +529,96 @@ def load_events(events_el, gap_x, gap_y):
                 'title': title_el.text.strip() if title_el is not None else '',
                 'talks': [talk.text.strip() for talk in dialog_el.find('talks').findall('talk')]
             }
-        new_player_el = event.find('new_player')
-        if new_player_el is not None:
-            events[event.tag]['new_player'] = {
-                'name': new_player_el.find('name').text.strip(),
-                'position': (int(new_player_el.find('position/x').text.strip()) * TILE_SIZE + gap_x,
-                             int(new_player_el.find('position/y').text.strip()) * TILE_SIZE + gap_y)
-            }
+        new_players_els = event.findall('new_player')
+        if new_players_els:
+            events[event.tag]['new_players'] = [{
+                'name': player_el.find('name').text.strip(),
+                'position': (int(player_el.find('position/x').text.strip()) * TILE_SIZE + gap_x,
+                             int(player_el.find('position/y').text.strip()) * TILE_SIZE + gap_y)
+            } for player_el in new_players_els]
 
     return events
 
 
-def load_player(name):
-    # -- Reading of the XML file
-    tree = etree.parse("data/characters.xml").getroot()
-    player_t = tree.xpath(name)[0]
-    player_class = player_t.find('class').text.strip()
-    race = player_t.find('race').text.strip()
-    lvl = player_t.find('level')
-    if lvl is None:
-        # If lvl is not informed, default value is assumes to be 1
-        lvl = 1
+def load_player(el, from_save):
+    name = el.find("name").text.strip()
+    level = el.find('level')
+    if level is None:
+        # If level is not specified, default value is 1
+        level = 1
     else:
-        lvl = int(lvl.text.strip())
-    defense = int(player_t.find('defense').text.strip())
-    res = int(player_t.find('resistance').text.strip())
-    hp = int(player_t.find('hp').text.strip())
-    strength = int(player_t.find('strength').text.strip())
+        level = int(level.text.strip())
+    p_class = el.find("class").text.strip()
+    race = el.find("race").text.strip()
+    gold = int(el.find("gold").text.strip())
+    exp = int(el.find("exp").text.strip()) if from_save else 0
+    hp = int(el.find("hp").text.strip())
+    strength = int(el.find("strength").text.strip())
+    defense = int(el.find("defense").text.strip())
+    res = int(el.find("resistance").text.strip())
+    current_hp = int(el.find("currentHp").text.strip()) if from_save else hp
+    inv = []
+    for it in el.findall("inventory/item"):
+        it_name = it.text.strip()
+        item = parse_item_file(it_name)
+        inv.append(item)
+
+    equipments = []
+    for eq in el.findall("equipment/*"):
+        eq_name = eq.text.strip()
+        eq = parse_item_file(eq_name)
+        equipments.append(eq)
+
+    if from_save:
+        skills = [(load_skill(skill.text.strip())
+                   if skill.text.strip() not in skills_infos
+                   else skills_infos[skill.text.strip()])
+                  for skill in el.findall('skills/skill/name')]
+        tree = etree.parse("data/characters.xml").getroot()
+        player_t = tree.xpath(name)[0]
+    else:
+        skills = Character.classes_data[p_class]['skills'] + Character.races_data[race]['skills']
+        player_t = el
+
+    # -- Reading of the XML file for default character's values (i.e. sprites)
     sprite = 'imgs/' + player_t.find('sprite').text.strip()
     compl_sprite = player_t.find('complementSprite')
     if compl_sprite is not None:
-        compl_sprite = 'imgs/dungeon_crawl/player/' + compl_sprite.text.strip()
+        compl_sprite = 'imgs/' + compl_sprite.text.strip()
 
-    equipments = []
-    for eq in player_t.findall('equipment/*'):
-        equipments.append(parse_item_file(eq.text.strip()))
-    gold = int(player_t.find('gold').text.strip())
+    p = Player(name, sprite, hp, defense, res, strength, [p_class], equipments, race, gold, level,
+               skills, compl_sprite=compl_sprite)
+    p.earn_xp(exp)
+    p.items = inv
+    p.set_current_hp(current_hp)
+    if from_save:
+        pos = (int(el.find("position/x").text.strip()) * TILE_SIZE,
+               int(el.find("position/y").text.strip()) * TILE_SIZE)
+        p.pos = pos
+        state = el.find("turnFinished").text.strip()
+        if state == "True":
+            p.turn_finished()
+    else:
+        # Up stats according to current lvl
+        p.stats_up(level - 1)
+        # Restore hp due to lvl up
+        p.healed()
 
-    skills = Character.classes_data[player_class]['skills'] + Character.races_data[race]['skills']
+    return p
 
-    # Creating player instance
-    player = Player(name, sprite, hp, defense, res, strength, [player_class], equipments, race, gold, lvl, skills,
-                    compl_sprite=compl_sprite)
 
-    # Up stats according to current lvl
-    player.stats_up(lvl - 1)
-    # Restore hp due to lvl up
-    player.healed()
+def load_players(data):
+    players = []
+    for player_el in data.findall('players/player'):
+        players.append(load_player(player_el, True))
+    return players
 
-    inventory = player_t.find('inventory')
-    if inventory is not None:
-        for it in inventory.findall('item'):
-            item = parse_item_file(it.text.strip())
-            player.set_item(item)
 
-    return player
+def init_player(name):
+    # -- Reading of the XML file
+    tree = etree.parse("data/characters.xml").getroot()
+    player_t = tree.xpath(name)[0]
+    return load_player(player_t, False)
 
 
 def load_weapon_effect(eff):

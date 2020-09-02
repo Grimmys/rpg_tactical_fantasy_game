@@ -96,7 +96,7 @@ class Level:
                            DEFEAT.get_height() / 2 - defeat_text.get_height() / 2)
         DEFEAT.blit(defeat_text, defeat_text_pos)
 
-    def __init__(self, directory, players, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None):
+    def __init__(self, directory, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None):
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.quit_request = False
@@ -123,6 +123,7 @@ class Level:
                                                               self.map['x'], self.map['y'])
 
         self.active_menu = None
+        self.players = []
         if data is None:
             # Game is new
             data_tree = tree
@@ -130,19 +131,24 @@ class Level:
             if 'before_init' in self.events:
                 if 'dialog' in self.events['before_init']:
                     self.active_menu = Level.load_event_dialog(self.events['before_init']['dialog'])
+                if 'new_players' in self.events['before_init']:
+                    for player_el in self.events['before_init']['new_players']:
+                        player = Loader.init_player(player_el['name'])
+                        player.pos = player_el['position']
+                        self.players.append(player)
+            gap_x, gap_y = (self.map['x'], self.map['y'])
         else:
             data_tree = data
             from_save = True
+            gap_x, gap_y = (0, 0)
+            self.players = Loader.load_players(data_tree)
 
         # Load obstacles
         self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
-        # Load players
-        self.players = players
         # List for players who are now longer in the level
         self.passed_players = []
 
         # Load and store all entities
-        gap_x, gap_y = (self.map['x'], self.map['y']) if data is None else (0, 0)
         self.entities = Loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
         self.entities['players'] = self.players
 
@@ -355,10 +361,11 @@ class Level:
         if 'after_init' in self.events:
             if 'dialog' in self.events['after_init']:
                 self.active_menu = Level.load_event_dialog(self.events['after_init']['dialog'])
-            if 'new_player' in self.events['after_init']:
-                player = Loader.load_player(self.events['after_init']['new_player']['name'])
-                player.pos = self.events['after_init']['new_player']['position']
-                self.players.append(player)
+            if 'new_players' in self.events['after_init']:
+                for player_el in self.events['after_init']['new_players']:
+                    player = Loader.init_player(player_el['name'])
+                    player.pos = player_el['position']
+                    self.players.append(player)
 
     def get_next_cases(self, pos):
         tiles = []

@@ -42,6 +42,27 @@
                     </talk>
                 </talks>
             </dialog>
+            <new_player>
+                <name>raimund</name>
+                <position>
+                    <x>14</x>
+                    <y>7</y>
+                </position>
+            </new_player>
+            <new_player>
+                <name>braern</name>
+                <position>
+                    <x>14</x>
+                    <y>8</y>
+                </position>
+            </new_player>
+            <new_player>
+                <name>thokdrum</name>
+                <position>
+                    <x>15</x>
+                    <y>7</y>
+                </position>
+            </new_player>
         </before_init>
     </events>
     <chests>
