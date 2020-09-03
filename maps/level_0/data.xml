@@ -23,6 +23,26 @@
     <events>
         <before_init>
             <dialog>
+                <title>CONTROLS</title>
+                <talks>
+                    <talk>
+                        The game starts in the initialization phase.
+                    </talk>
+                    <talk>
+                        During this phase, you can switch the initial position of any of your characters by selecting them (left click) and clicking on the desired position.
+                    </talk>
+                    <talk>
+                        Don't forget to unselect the character (right click) when you're done.
+                    </talk>
+                    <talk>
+                        When you are ready to play, just click on any empty square to open the main menu.
+                    </talk>
+                    <talk>
+                        Enjoy the experience.
+                    </talk>
+                </talks>
+            </dialog>
+            <dialog>
                 <title>Jist</title>
                 <talks>
                     <talk>

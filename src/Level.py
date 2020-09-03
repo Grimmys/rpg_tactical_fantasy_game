@@ -123,14 +123,17 @@ class Level:
                                                               self.map['x'], self.map['y'])
 
         self.active_menu = None
+        self.background_menus = []
         self.players = []
         if data is None:
             # Game is new
             data_tree = tree
             from_save = False
             if 'before_init' in self.events:
-                if 'dialog' in self.events['before_init']:
-                    self.active_menu = Level.load_event_dialog(self.events['before_init']['dialog'])
+                if 'dialogs' in self.events['before_init']:
+                    for dialog in self.events['before_init']['dialogs']:
+                        self.background_menus.append((Level.load_event_dialog(dialog), False))
+                self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
                 if 'new_players' in self.events['before_init']:
                     for player_el in self.events['before_init']['new_players']:
                         player = Loader.init_player(player_el['name'])
@@ -180,7 +183,6 @@ class Level:
         self.possible_moves = {}
         self.possible_attacks = []
         self.possible_interactions = []
-        self.background_menus = []
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions)
         self.wait_for_dest_tp = False
@@ -218,10 +220,11 @@ class Level:
                         pass
         # Check if there are some post-level events
         if 'at_end' in self.events:
-            if 'dialog' in self.events['at_end']:
-                self.background_menus.append(Level.load_event_dialog(self.events['at_end']['dialog']))
+            if 'dialogs' in self.events['at_end']:
+                for dialog in self.events['at_end']['dialogs']:
+                    self.background_menus.append((Level.load_event_dialog(dialog), False))
 
-        self.active_menu = self.background_menus.pop() if self.background_menus else None
+        self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
 
     def update_state(self):
@@ -359,8 +362,10 @@ class Level:
         self.game_phase = Status.IN_PROGRESS
         self.new_turn()
         if 'after_init' in self.events:
-            if 'dialog' in self.events['after_init']:
-                self.active_menu = Level.load_event_dialog(self.events['after_init']['dialog'])
+            if 'dialogs' in self.events['after_init']:
+                for dialog in self.events['after_init']['dialogs']:
+                    self.background_menus.append((Level.load_event_dialog(dialog), False))
+            self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
             if 'new_players' in self.events['after_init']:
                 for player_el in self.events['after_init']['new_players']:
                     player = Loader.init_player(player_el['name'])
