@@ -96,7 +96,7 @@ class Level:
                            DEFEAT.get_height() / 2 - defeat_text.get_height() / 2)
         DEFEAT.blit(defeat_text, defeat_text_pos)
 
-    def __init__(self, directory, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None):
+    def __init__(self, directory, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None, players=[]):
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.quit_request = False
@@ -124,7 +124,9 @@ class Level:
 
         self.active_menu = None
         self.background_menus = []
-        self.players = []
+        self.players = players
+        # List for players who are now longer in the level
+        self.passed_players = []
         if data is None:
             # Game is new
             data_tree = tree
@@ -145,11 +147,10 @@ class Level:
             from_save = True
             gap_x, gap_y = (0, 0)
             self.players = Loader.load_players(data_tree)
+            self.passed_players = Loader.load_escaped_players(data_tree)
 
         # Load obstacles
         self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
-        # List for players who are now longer in the level
-        self.passed_players = []
 
         # Load and store all entities
         self.entities = Loader.load_all_entities(data_tree, from_save, gap_x, gap_y)

@@ -127,8 +127,10 @@ class StartScreen:
                 self.level = None
 
     @staticmethod
-    def load_level(level):
-        return Level('maps/level_' + str(level) + '/', level)
+    def load_level(level, team=None):
+        if team is None:
+            team = []
+        return Level('maps/level_' + str(level) + '/', level, players=team)
 
     def new_game(self):
         # Init the first level
