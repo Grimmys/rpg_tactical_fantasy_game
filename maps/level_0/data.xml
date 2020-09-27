@@ -125,7 +125,7 @@
         </ally>
     </allies>
     <foes>
-        <foe>
+        <!--<foe>
             <name>
                 skeleton
             </name>
@@ -172,7 +172,7 @@
             <level>
                 1
             </level>
-        </foe>
+        </foe>-->
         <foe>
             <name>
                 skeleton
@@ -221,7 +221,7 @@
                 1
             </level>
         </foe>
-        <foe>
+       <!-- <foe>
             <name>
                 necrophage
             </name>
@@ -244,7 +244,7 @@
             <level>
                 1
             </level>
-        </foe>
+        </foe> -->
     </foes>
     <buildings>
         <building>

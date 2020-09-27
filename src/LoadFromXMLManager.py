@@ -543,7 +543,6 @@ def load_events(events_el, gap_x, gap_y):
 
     return events
 
-
 def load_player(el, from_save):
     name = el.find("name").text.strip()
     level = el.find('level')
@@ -614,6 +613,13 @@ def load_player(el, from_save):
 def load_players(data):
     players = []
     for player_el in data.findall('players/player'):
+        players.append(load_player(player_el, True))
+    return players
+
+
+def load_escaped_players(data):
+    players = []
+    for player_el in data.findall('escaped_players/player'):
         players.append(load_player(player_el, True))
     return players
 
