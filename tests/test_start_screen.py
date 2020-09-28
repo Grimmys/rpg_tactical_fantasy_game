@@ -1,4 +1,5 @@
 import os
+import shutil
 import unittest
 
 import pygame as pg
@@ -29,6 +30,7 @@ class TestStartScreen(unittest.TestCase):
         os.chdir(os.getcwd() + '/..')
         pg.init()
         font.init_fonts()
+        cls.save_url = "saves/main_save.xml"
         cls.level_class = Level
         cls.buttons = []
         cls.buttons.append(Rect(NEW_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
@@ -54,13 +56,14 @@ class TestStartScreen(unittest.TestCase):
         self.start_screen = StartScreen(screen)
         self.start_screen.display()
 
+    def test_no_game_at_launch(self):
+        # Verify no game is launched
+        self.assertIsNone(self.start_screen.level)
+        self.assertIsNone(self.start_screen.level_id)
+
     def test_new_game(self):
         # Memorize old screen
         screen = self.start_screen.screen.copy()
-
-        # Verify no game is actually launched
-        self.assertIsNone(self.start_screen.level)
-        self.assertIsNone(self.start_screen.level_id)
 
         # Generate random pos on new game button
         pos = self.generate_position(NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE)
@@ -79,9 +82,8 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(len(self.start_screen.background_menus), 0)
 
         # Erase save file if any
-        save_url = "saves/main_save.xml"
-        if os.path.exists(save_url):
-            os.remove(save_url)
+        if os.path.exists(self.save_url):
+            os.remove(self.save_url)
 
         # Generate random pos on load game button
         pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
@@ -96,8 +98,19 @@ class TestStartScreen(unittest.TestCase):
         self.assertNotEqual(self.start_screen.active_menu, old_active_menu)
 
     def test_load_existent_save(self):
-        # TODO
-        pass
+        # Memorize old screen
+        screen = self.start_screen.screen.copy()
+
+        # Import simple save file
+        shutil.copyfile("tests/test_saves/simple_save.xml", self.save_url)
+
+        # Generate random pos on load game button
+        pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(LEFT_BUTTON, pos)
+
+        self.assertIsInstance(self.start_screen.level, self.level_class)
+        self.assertEqual(self.start_screen.level_id, 0)
+        self.assertNotEqual(self.start_screen.screen.get_rect(), screen.get_rect())
 
     def test_options_menu(self):
         # Make a copy of the current window
