@@ -51,11 +51,13 @@ class SaveStateManager:
         entities.append(self.save_collection('buildings', 'building', self.level.entities['buildings']))
         entities.append(self.save_collection('doors', 'door', self.level.entities['doors']))
         entities.append(self.save_collection('players', 'player', self.level.players))
+        entities.append(self.save_collection('escaped_players', 'player', self.level.passed_players))
 
         return entities
 
     @staticmethod
     def save_collection(collection_name, element_name, collection):
+        print(collection)
         element = etree.Element(collection_name)
         element.extend([ent.save(element_name) for ent in collection])
         return element
