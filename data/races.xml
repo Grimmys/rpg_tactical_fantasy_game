@@ -4,7 +4,7 @@
             10
         </constitution>
         <move>
-            20
+            5
         </move>
     </human>
     <elf>
@@ -12,7 +12,7 @@
             8
         </constitution>
         <move>
-            20
+            5
         </move>
     </elf>
     <dwarf>
@@ -20,7 +20,7 @@
             12
         </constitution>
         <move>
-            20
+            4
         </move>
         <skills>
             <skill>
