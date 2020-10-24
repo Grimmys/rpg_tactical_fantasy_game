@@ -39,7 +39,6 @@ class Chest(Entity):
         # Save state
         state = etree.SubElement(tree, 'state')
         state.text = str(self.opened)
-
         # Save sprites
         closed = etree.SubElement(tree, 'closed')
         closed_sprite = etree.SubElement(closed, 'sprite')
