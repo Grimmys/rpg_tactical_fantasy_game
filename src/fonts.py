@@ -1,6 +1,6 @@
 import pygame as pg
 
-fonts = {
+fonts_descs = {
     'BUTTON_FONT': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',
                     'size': 16},
     'ITEM_FONT': {'name': 'fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf',
@@ -26,12 +26,14 @@ fonts = {
     'FPS_FONT': {'default': True}
 }
 
+fonts = {}
+
 
 def init_fonts():
     global fonts
-    for font in fonts:
-        if 'default' in fonts[font]:
+    for font in fonts_descs:
+        if 'default' in fonts_descs[font]:
             # Use pygame's default font
             fonts[font] = pg.font.SysFont(None, 20, True)
         else:
-            fonts[font] = pg.font.Font(fonts[font]['name'], fonts[font]['size'])
+            fonts[font] = pg.font.Font(fonts_descs[font]['name'], fonts_descs[font]['size'])

@@ -8,6 +8,10 @@ from random import randrange
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.StartScreen import StartScreen
+import src.fonts as font
+from src.Level import Level
+from src.Character import Character
+from src import LoadFromXMLManager as Loader
 
 NEW_GAME_BUTTON_POS = (325, 349)
 LOAD_GAME_BUTTON_POS = (325, 389)
@@ -23,11 +27,7 @@ RIGHT_BUTTON = 3
 class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from src.Level import Level
-        from src.Character import Character
-        from src import LoadFromXMLManager as Loader
-        import src.fonts as font
-        os.chdir(os.getcwd() + '/..')
+        super(TestStartScreen, cls).setUpClass()
         pg.init()
         font.init_fonts()
         cls.save_url = "saves/main_save.xml"
@@ -137,6 +137,7 @@ class TestStartScreen(unittest.TestCase):
 
         # Generate random pos not on any existent buttons
         valid_pos = False
+        pos = (0, 0)
         while not valid_pos:
             pos = (randrange(0, self.start_screen.screen.get_size()[0]),
                    randrange(0, self.start_screen.screen.get_size()[1]))

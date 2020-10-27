@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level>
+    <width>20</width>
+    <height>10</height>
     <placementArea>
         <position>
             <x>2</x>
@@ -18,6 +20,31 @@
             <y>1</y>
         </position>
     </placementArea>
+    <events>
+        <before_init>
+            <new_player>
+                <name>raimund</name>
+                <position>
+                    <x>14</x>
+                    <y>7</y>
+                </position>
+            </new_player>
+            <new_player>
+                <name>braern</name>
+                <position>
+                    <x>14</x>
+                    <y>8</y>
+                </position>
+            </new_player>
+            <new_player>
+                <name>thokdrum</name>
+                <position>
+                    <x>15</x>
+                    <y>7</y>
+                </position>
+            </new_player>
+        </before_init>
+    </events>
     <foes>
         <foe>
             <name>
@@ -136,7 +163,6 @@
     </fountains>
     <chests>
         <chest>
-            <id> 1 </id>
             <closed>
                 <sprite>
                     imgs/dungeon_crawl/dungeon/chest_2_closed.png
@@ -170,31 +196,60 @@
                 <y>6</y>
             </position>
         </chest>
-        <chest>
-            <id> 2 </id>
+                <chest>
             <closed>
                 <sprite>
-                    dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.png
                 </sprite>
             </opened>
             <contains>
                 <item>
                     <probability>
-                        1
+                        0.8
                     </probability>
                     <name>
-                        life_potion
+                        speed_potion
+                    </name>
+                </item>
+                <item>
+                    <probability>
+                        0.2
+                    </probability>
+                    <name>
+                        green_book
                     </name>
                 </item>
             </contains>
             <position>
-                <x>13</x>
-                <y>7</y>
+                <x>3</x>
+                <y>1</y>
+            </position>
+        </chest>
+        <chest>
+            <closed>
+                <sprite>
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                </sprite>
+            </closed>
+            <opened>
+                <sprite>
+                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                </sprite>
+            </opened>
+            <contains>
+                <gold>
+                    <amount>50</amount>
+                    <probability>1.0</probability>
+                </gold>
+            </contains>
+            <position>
+                <x>3</x>
+                <y>2</y>
             </position>
         </chest>
     </chests>
@@ -530,7 +585,7 @@
     </obstacles>
     <breakables>
         <breakable>
-            <currentHp> 5 </currentHp>
+            <current_hp> 5 </current_hp>
             <position>
                <x>8</x>
                <y>8</y>
@@ -542,7 +597,7 @@
     </breakables>
     <missions>
         <main>
-            <type>position</type>
+            <type>POSITION</type>
             <description>
                 Take the stairs
             </description>

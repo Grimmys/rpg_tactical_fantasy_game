@@ -1,4 +1,5 @@
 from src.Door import Door
+from src.Gold import Gold
 from src.Item import Item
 from src.fonts import fonts
 from src import LoadFromXMLManager as Loader, MenuCreatorManager
@@ -465,17 +466,20 @@ class Level:
     def open_chest(self, actor, chest):
         # Get object inside the chest
         item = chest.open()
-        actor.set_item(item)
 
-        # Get item data
-        name = item.get_formatted_name()
+        if isinstance(item, Gold):
+            # If it was some gold, it should be added to the total amount of the player
+            actor.gold += item.amount
+        else:
+            # Else the item should be added to the inventory
+            actor.set_item(item)
+
         entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
                       'id': InventoryMenu.INTERAC_ITEM}
-
         entries = [[entry_item],
                    [{'type': 'text', 'text': "Item has been added to your inventory",
                      'font': fonts['ITEM_DESC_FONT']}]]
-        self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
+        self.active_menu = InfoBox("You found in the chest", "", "imgs/interface/PopUpMenu.png",
                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def open_door(self, door):

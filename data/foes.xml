@@ -232,6 +232,23 @@
         <attack_kind>
             PHYSICAL
         </attack_kind>
+        <strategy>
+            SEMI_ACTIVE
+        </strategy>
+        <stats_up>
+            <hp>
+                2, 2, 3, 3, 4, 5
+            </hp>
+            <strength>
+                0, 1, 1, 2
+            </strength>
+            <defense>
+                0, 1, 1
+            </defense>
+            <resistance>
+                0, 1, 1
+            </resistance>
+        </stats_up>
     </fire_eye>
     <cultist>
         <sprite>

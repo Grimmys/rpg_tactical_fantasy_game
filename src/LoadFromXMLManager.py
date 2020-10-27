@@ -3,6 +3,7 @@ from lxml import etree
 from src.Breakable import Breakable
 from src.Character import Character
 from src.Door import Door
+from src.Gold import Gold
 from src.Item import Item
 from src.Player import Player
 from src.Building import Building
@@ -311,6 +312,11 @@ def load_chest(chest, from_save, gap_x, gap_y):
             it = parse_item_file(it_name)
             probability = float(item.find('probability').text)
 
+            potential_items.append((it, probability))
+        for gold in chest.xpath("contains/gold"):
+            amount = int(gold.find('amount').text)
+            probability = float(gold.find('probability').text)
+            it = Gold(amount)
             potential_items.append((it, probability))
         opened = False
 

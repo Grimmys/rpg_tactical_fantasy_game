@@ -5,16 +5,19 @@ import pygame as pg
 
 import src.fonts as font
 from src.Chest import Chest
+from src.Gold import Gold
 from src.Item import Item
 from src.StartScreen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
-from tests.random_data_library import random_chest, random_item
+from tests.random_data_library import random_chest, random_item, random_item_or_gold
+
+NB_TESTS_FOR_PROPORTIONS = 1000
 
 
 class TestChest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        os.chdir(os.getcwd() + '/..')
+        super(TestChest, cls).setUpClass()
         pg.init()
         font.init_fonts()
 
@@ -53,13 +56,62 @@ class TestChest(unittest.TestCase):
         self.assertEqual(item, chest.open())
 
     def test_open_chest_gold(self):
-        pass
+        chest = random_chest(gold_proportion=1.0)
+        self.assertTrue(isinstance(chest.open(), Gold))
 
-    def test_open_chest_choose_two_items(self):
-        pass
+    def test_open_chest_multiple_possibilities(self):
+        item_1 = random_item_or_gold()
+        item_2 = random_item_or_gold()
+        item_3 = random_item_or_gold()
+        potential_items = [(item_1, 0.3), (item_2, 0.6), (item_3, 0.1)]
+        items = [item_1, item_2, item_3]
+        chest = random_chest(item_set=potential_items)
+        self.assertTrue(isinstance(chest.item, Item))  # Test that there is only one item selected
+        self.assertTrue(chest.item in items)  # Test that this item is one of the eligible
+
+    def test_open_chest_choose_same_probabilities(self):
+        item_1 = random_item_or_gold()
+        item_2 = random_item_or_gold()
+        potential_items = [(item_1, 0.5), (item_2, 0.5)]
+
+        proportion_item_1 = 0.
+        proportion_item_2 = 0.
+        for i in range(NB_TESTS_FOR_PROPORTIONS):
+            chest = random_chest(item_set=potential_items)
+            if chest.item is item_1:
+                proportion_item_1 += 1
+            if chest.item is item_2:
+                proportion_item_2 += 1
+        proportion_item_1 /= NB_TESTS_FOR_PROPORTIONS
+        proportion_item_2 /= NB_TESTS_FOR_PROPORTIONS
+
+        self.assertAlmostEqual(proportion_item_1, 0.5, delta=0.05)
+        self.assertAlmostEqual(proportion_item_2, 0.5, delta=0.05)
 
     def test_open_chest_choose_diff_probabilities(self):
-        pass
+        item_1 = random_item_or_gold()
+        item_2 = random_item_or_gold()
+        item_3 = random_item_or_gold()
+        potential_items = [(item_1, 0.3), (item_2, 0.6), (item_3, 0.1)]
+
+        proportion_item_1 = 0.
+        proportion_item_2 = 0.
+        proportion_item_3 = 0.
+        for i in range(NB_TESTS_FOR_PROPORTIONS):
+            chest = random_chest(item_set=potential_items)
+            if chest.item is item_1:
+                proportion_item_1 += 1
+            if chest.item is item_2:
+                proportion_item_2 += 1
+            if chest.item is item_3:
+                proportion_item_3 += 1
+        proportion_item_1 /= NB_TESTS_FOR_PROPORTIONS
+        proportion_item_2 /= NB_TESTS_FOR_PROPORTIONS
+        proportion_item_3 /= NB_TESTS_FOR_PROPORTIONS
+
+        self.assertAlmostEqual(proportion_item_1, 0.3, delta=0.05)
+        self.assertAlmostEqual(proportion_item_2, 0.6, delta=0.05)
+        self.assertAlmostEqual(proportion_item_3, 0.1, delta=0.05)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 import random as rd
 
 from src.Chest import Chest
+from src.Gold import Gold
 from src.Item import Item
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
@@ -11,10 +12,10 @@ def generate_random_string(min_len=4, max_len=8):
     return ''.join([rd.choice(ALPHABET) for _ in range(size)])
 
 
-def random_item_or_gold(gold_prob=0.5):
+def random_item_or_gold(gold_prob=0.3):
     if rd.random() <= gold_prob:
-        # Gold is not implemented for chests
-        pass
+        amount = rd.randint(10, 1000)
+        return Gold(amount)
     else:
         return random_item()
 
@@ -28,7 +29,7 @@ def random_item():
     return item
 
 
-def random_chest(item_set=None, nb_items=None, equal_probs=False, gold=False):
+def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportion=0.3):
     pos = (0, 0)
     sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.png'
     sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.png'
@@ -39,10 +40,7 @@ def random_chest(item_set=None, nb_items=None, equal_probs=False, gold=False):
         if not nb_items:
             nb_items = rd.randint(1, 10)
         for i in range(nb_items):
-            if gold:
-                item = random_item_or_gold()
-            else:
-                item = random_item()
+            item = random_item_or_gold(gold_proportion)
             if not equal_probs:
                 prob = rd.random()
             else:
