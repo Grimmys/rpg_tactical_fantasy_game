@@ -487,7 +487,7 @@ class Level:
 
         entries = [[{'type': 'text', 'text': "Door has been opened.",
                      'font': fonts['ITEM_DESC_FONT']}]]
-        self.active_menu = InfoBox(door.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+        self.active_menu = InfoBox(str(door), "", "imgs/interface/PopUpMenu.png",
                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def ally_to_player(self, character):
@@ -507,7 +507,7 @@ class Level:
             skills=character.skills)
         self.entities['players'].append(player)
         player.earn_xp(character.xp)
-        player.set_current_hp(character.hp)
+        player.hp = character.hp
         player.pos = character.pos
         player.items = character.items
 
@@ -567,7 +567,7 @@ class Level:
                     target.pick_lock_initiated = True
                     entries = [[{'type': 'text', 'text': "Started picking, one more turn to go.",
                                  'font': fonts['ITEM_DESC_FONT']}]]
-                    self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+                    self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
                                                entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                 else:
                     # Lock picking is finished, get content
@@ -588,7 +588,7 @@ class Level:
         # Check if player tries to drink in a fountain
         elif isinstance(target, Fountain):
             entries = target.drink(actor)
-            self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
             # No more menu : turn is finished
@@ -599,7 +599,7 @@ class Level:
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
             entries = target.talk(actor)
-            self.active_menu = InfoBox(target.get_formatted_name(), "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
             # No more menu : turn is finished
             self.background_menus = []
@@ -614,7 +614,7 @@ class Level:
                 kind = ShopMenu
 
             entries = target.interact(actor)
-            self.active_menu = InfoBox(target.get_formatted_name(), kind, "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(str(target), kind, "imgs/interface/PopUpMenu.png",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
 
             # No more menu : turn is finished
@@ -640,8 +640,8 @@ class Level:
 
             if isinstance(target, Character) and target.parried():
                 # Target parried attack
-                msg = attacker.get_formatted_name() + " attacked " + target.get_formatted_name() + \
-                      "... But " + target.get_formatted_name() + " parried !"
+                msg = str(attacker) + " attacked " + str(target) + \
+                      "... But " + str(target) + " parried !"
                 entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
                 # Current attack is ended
                 continue
@@ -649,8 +649,8 @@ class Level:
             damages = attacker.attack(target)
             real_damages = target.hp - target.attacked(attacker, damages, kind, target_allies)
             entries.append([{'type': 'text',
-                             'text': attacker.get_formatted_name() + " dealed " + str(real_damages) +
-                                     " damages to " + target.get_formatted_name(), 'font': fonts['ITEM_DESC_FONT']}])
+                             'text': str(attacker) + " dealed " + str(real_damages) +
+                                     " damage to " + str(target), 'font': fonts['ITEM_DESC_FONT']}])
             # XP gain for dealed damages
             xp += real_damages // 2
             # If target has less than 0 HP at the end of the attack
@@ -659,7 +659,7 @@ class Level:
                 if isinstance(attacker, Character):
                     xp += target.xp_gain
 
-                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " died !",
+                entries.append([{'type': 'text', 'text': str(target) + " died !",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 # Loot
                 if isinstance(attacker, Player):
@@ -668,22 +668,18 @@ class Level:
                     for item in loot:
                         if isinstance(item, Item):
                             entries.append([{'type': 'text',
-                                             'text': target.get_formatted_name() + " dropped " +
-                                                     item.get_formatted_name(),
+                                             'text': str(target) + " dropped " +
+                                                     str(item),
                                              'font': fonts['ITEM_DESC_FONT']}])
-                            if not attacker.set_item(item):
+                            if isinstance(item, Gold):
+                                attacker.gold += item.amount
+                            elif not attacker.set_item(item):
                                 entries.append([{'type': 'text',
                                                  'text': 'But there is not enough space in inventory to take it !',
                                                  'font': fonts['ITEM_DESC_FONT']}])
-                        else:
-                            entries.append([{'type': 'text',
-                                             'text': target.get_formatted_name() + " dropped " + str(item) + ' gold',
-                                             'font': fonts['ITEM_DESC_FONT']}])
-                            attacker.gold += item
-
                 self.remove_entity(target)
             else:
-                entries.append([{'type': 'text', 'text': target.get_formatted_name() + " has now " +
+                entries.append([{'type': 'text', 'text': str(target) + " has now " +
                                                          str(target.hp) + " HP",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
@@ -700,12 +696,12 @@ class Level:
                 old_level = attacker.lvl
                 attacker.earn_xp(xp)
                 entries.append([{'type': 'text',
-                                 'text': attacker.get_formatted_name() + " earned " + str(xp) + " XP",
+                                 'text': str(attacker) + " earned " + str(xp) + " XP",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 if attacker.lvl != old_level:
                     # Attacker gained a level
                     entries.append([{'type': 'text',
-                                     'text': attacker.get_formatted_name() + " gained a level !",
+                                     'text': str(attacker) + " gained a level !",
                                      'font': fonts['ITEM_DESC_FONT']}])
 
             if target.hp <= 0:
@@ -978,8 +974,6 @@ class Level:
             self.active_menu = MenuCreatorManager.create_item_desc_menu(self.selected_item)
         # Remove an item
         elif method_id is ItemMenu.THROW_ITEM:
-            formatted_item_name = self.selected_item.get_formatted_name()
-
             # Remove item from inventory/equipment according to the index
             if self.selected_player.has_equipment(self.selected_item):
                 self.selected_player.remove_equipment(self.selected_item)
@@ -999,13 +993,11 @@ class Level:
 
             remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.',
                                     'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", remove_msg_entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", remove_msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Use an item from the inventory
         elif method_id is ItemMenu.USE_ITEM:
-            self.background_menus.append([self.active_menu, False])
-
-            formatted_item_name = self.selected_item.get_formatted_name()
+            self.background_menus.append((self.active_menu, False))
 
             # Try to use the object
             used, result_msgs = self.selected_player.use_item(self.selected_item)
@@ -1027,20 +1019,18 @@ class Level:
 
             entries = [[{'type': 'text', 'text': msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in result_msgs]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equip an item
         elif method_id is ItemMenu.EQUIP_ITEM:
-            self.background_menus.append([self.active_menu, False])
-
-            formatted_item_name = self.selected_item.get_formatted_name()
+            self.background_menus.append((self.active_menu, False))
 
             # Try to equip the item
             return_equipped = self.selected_player.equip(self.selected_item)
             if return_equipped == -1:
                 # Item can't be equipped by this player
                 result_msg = "This item can't be equipped : " \
-                             + self.selected_player.get_formatted_name() + " doesn't satisfy the requirements."
+                             + str(self.selected_player) + " doesn't satisfy the requirements."
             else:
                 # In this case returned value is > 0, item has been equipped
                 result_msg = "The item has been equipped."
@@ -1062,13 +1052,11 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Unequip an item
         elif method_id is ItemMenu.UNEQUIP_ITEM:
-            self.background_menus.append([self.active_menu, False])
-
-            formatted_item_name = self.selected_item.get_formatted_name()
+            self.background_menus.append((self.active_menu, False))
 
             # Try to unequip the item
             unequipped = self.selected_player.unequip(self.selected_item)
@@ -1086,12 +1074,11 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'],
                          'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Buy an item
         elif method_id is ItemMenu.BUY_ITEM:
             price = args[2][0]
-            formatted_item_name = self.selected_item.get_formatted_name()
 
             # Try to buy the item
             if self.selected_player.gold >= price:
@@ -1119,12 +1106,11 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Sell an item
         elif method_id is ItemMenu.SELL_ITEM:
             price = args[2][0][0]
-            formatted_item_name = self.selected_item.get_formatted_name()
 
             # Sell the item
             if price > 0:
@@ -1146,11 +1132,11 @@ class Level:
                 self.background_menus[len(self.background_menus) - 1] = (new_sell_menu, True)
             else:
                 result_msg = "This item can't be selled !"
-                self.background_menus.append([self.active_menu, False])
+                self.background_menus.append((self.active_menu, False))
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
@@ -1159,13 +1145,11 @@ class Level:
             owner = first_player if args[2][2] == 0 else second_player
             receiver = second_player if args[2][2] == 0 else first_player
 
-            formatted_item_name = self.selected_item.get_formatted_name()
-
             # Add item if possible
             added = receiver.set_item(self.selected_item)
             if not added:
                 msg_entries = [[{'type': 'text', 'text': 'Item can\'t be traded : not enough place in'
-                                                         + receiver.get_formatted_name() + '\'s inventory .',
+                                                         + str(receiver) + '\'s inventory .',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
                 self.background_menus.append((self.active_menu, False))
@@ -1180,7 +1164,7 @@ class Level:
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
-            self.active_menu = InfoBox(formatted_item_name, "", "imgs/interface/PopUpMenu.png", msg_entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
             print("Unknown action in item menu... : " + str(method_id))
@@ -1190,13 +1174,13 @@ class Level:
         if method_id is StatusMenu.INFO_ALTERATION:
             alteration = args[1]
 
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
             self.active_menu = MenuCreatorManager.create_alteration_info_menu(alteration)
         # Get infos about a skill
         elif method_id is StatusMenu.INFO_SKILL:
             skill = args[1]
 
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
             self.active_menu = MenuCreatorManager.create_skill_info_menu(skill)
 
     def execute_trade_action(self, method_id, args):
@@ -1207,7 +1191,7 @@ class Level:
             players = args[2]
 
             self.selected_item = item
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
             self.active_menu = MenuCreatorManager.create_trade_item_menu(item_button_pos, item, players)
         elif method_id is TradeMenu.SEND_GOLD:
             players = args[2][:2]

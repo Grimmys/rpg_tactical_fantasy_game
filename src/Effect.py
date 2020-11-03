@@ -27,25 +27,25 @@ class Effect:
         if self.name == 'heal':
             recovered = ent.healed(self.power)
             if recovered > 0:
-                msg = ent.get_formatted_name() + " recovered " + str(recovered) + " HP."
+                msg = str(ent) + " recovered " + str(recovered) + " HP."
             else:
-                msg = ent.get_formatted_name() + " is at full health and can't be healed !"
+                msg = str(ent) + " is at full health and can't be healed !"
                 success = False
         elif self.name == 'speed_up':
             ent.set_alteration(self.alteration)
-            msg = "The speed of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
+            msg = "The speed of " + str(ent) + " has been increased for " + str(self.duration) + \
                   " turns"
         elif self.name == 'strength_up':
             ent.set_alteration(self.alteration)
-            msg = "The strength of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
+            msg = "The strength of " + str(ent) + " has been increased for " + str(self.duration) + \
                   " turns"
         elif self.name == 'defense_up':
             ent.set_alteration(self.alteration)
-            msg = "The defense of " + ent.get_formatted_name() + " has been increased for " + str(self.duration) + \
+            msg = "The defense of " + str(ent) + " has been increased for " + str(self.duration) + \
                   " turns"
         elif self.name == 'stun':
             ent.set_alteration(self.alteration)
-            msg = ent.get_formatted_name() + " has been stunned for " + str(self.duration) + " turns"
+            msg = str(ent) + " has been stunned for " + str(self.duration) + " turns"
         return success, msg
 
     def get_formatted_desc(self):

@@ -41,6 +41,9 @@
                 0, 1
             </resistance>
         </stats_up>
+        <loot>
+
+        </loot>
     </snake>
     <skeleton>
         <sprite>
@@ -344,12 +347,8 @@
                 </probability>
             </item>
             <gold>
-                <amount>
-                    50
-                </amount>
-                <probability>
-                    0.1
-                </probability>
+                <amount>50</amount>
+                <probability>0.1</probability>
             </gold>
         </loot>
         <stats_up>

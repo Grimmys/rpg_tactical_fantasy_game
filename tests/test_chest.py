@@ -1,4 +1,3 @@
-import os
 import unittest
 
 import pygame as pg
@@ -7,7 +6,6 @@ import src.fonts as font
 from src.Chest import Chest
 from src.Gold import Gold
 from src.Item import Item
-from src.StartScreen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from tests.random_data_library import random_chest, random_item, random_item_or_gold
 
@@ -20,12 +18,8 @@ class TestChest(unittest.TestCase):
         super(TestChest, cls).setUpClass()
         pg.init()
         font.init_fonts()
-
-    def setUp(self):
         # Window parameters
-        screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-        self.start_screen = StartScreen(screen)
-        self.start_screen.display()
+        pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     def test_init_chest(self):
         pos = (0, 0)
@@ -112,6 +106,11 @@ class TestChest(unittest.TestCase):
         self.assertAlmostEqual(proportion_item_1, 0.3, delta=0.05)
         self.assertAlmostEqual(proportion_item_2, 0.6, delta=0.05)
         self.assertAlmostEqual(proportion_item_3, 0.1, delta=0.05)
+
+    def test_open_chest_twice(self):
+        chest = random_chest()
+        chest.open()
+        self.assertFalse(chest.open())
 
 
 if __name__ == '__main__':

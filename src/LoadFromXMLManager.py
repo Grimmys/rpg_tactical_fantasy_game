@@ -210,7 +210,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
 
     if from_save:
         current_hp = int(ally.find('current_hp').text.strip())
-        loaded_ally.set_current_hp(current_hp)
+        loaded_ally.hp = current_hp
 
         xp = int(ally.find('exp').text.strip())
         loaded_ally.earn_xp(xp)
@@ -243,7 +243,7 @@ def load_foe(foe, from_save, gap_x, gap_y):
             for it in foes_infos[name].findall('loot/item')]
     gold_looted = foes_infos[name].find('loot/gold')
     if gold_looted is not None:
-        loot.append((int(gold_looted.find('amount').text), float(gold_looted.find('probability').text)))
+        loot.append((Gold(int(gold_looted.find('amount').text)), float(gold_looted.find('probability').text)))
 
     # Dynamic data
     x = int(foe.find('position/x').text) * TILE_SIZE + gap_x
@@ -256,10 +256,13 @@ def load_foe(foe, from_save, gap_x, gap_y):
                 for it in foe.findall('loot/item')]
         gold_looted = foe.find('loot/gold')
         if gold_looted is not None:
-            loot.append((int(gold_looted.find('amount').text), float(gold_looted.find('probability').text)))
+            loot.append((Gold(int(gold_looted.find('amount').text)), float(gold_looted.find('probability').text)))
     else:
         dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
         loot.extend(dynamic_loot)
+        gold_looted = foe.find('loot/gold')
+        if gold_looted is not None:
+            loot.extend([(Gold(int(gold_looted.find('amount').text)), 1.0)])
     specific_strategy = foe.find('strategy')
     if specific_strategy is not None:
         strategy = specific_strategy.text.strip()
@@ -278,7 +281,7 @@ def load_foe(foe, from_save, gap_x, gap_y):
 
     if from_save:
         current_hp = int(foe.find('current_hp').text.strip())
-        loaded_foe.set_current_hp(current_hp)
+        loaded_foe.hp = current_hp
 
         xp = int(foe.find('exp').text.strip())
         loaded_foe.earn_xp(xp)
@@ -599,7 +602,7 @@ def load_player(el, from_save):
                skills, compl_sprite=compl_sprite)
     p.earn_xp(exp)
     p.items = inv
-    p.set_current_hp(current_hp)
+    p.hp = current_hp
     if from_save:
         pos = (int(el.find("position/x").text.strip()) * TILE_SIZE,
                int(el.find("position/y").text.strip()) * TILE_SIZE)

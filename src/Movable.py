@@ -41,9 +41,11 @@ class Movable(Destroyable):
         Movable.SELECTED_DISPLAY = pg.transform.scale(pg.image.load(selected_sprite).convert_alpha(),
                                                       (TILE_SIZE, TILE_SIZE))
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1, skills=[],
-                 compl_sprite=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1,
+                 skills=None, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
+        if skills is None:
+            skills = []
         self._max_moves = max_moves
         self.on_move = []
         self.timer = TIMER

@@ -13,8 +13,5 @@ class Item:
         self.id = Item.internal_id
         Item.internal_id += 1
 
-    def get_formatted_name(self):
-        return self.name.replace('_', ' ').title()
-
     def __str__(self):
-        return self.name
+        return self.name.replace('_', ' ').title().strip()

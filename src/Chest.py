@@ -29,9 +29,11 @@ class Chest(Entity):
         return random.choice(bag)
 
     def open(self):
-        self.sprite = self.sprite_open
-        self.opened = True
-        return self.item
+        if not self.opened:
+            self.sprite = self.sprite_open
+            self.opened = True
+            return self.item
+        return None
 
     def save(self, tree_name):
         tree = Entity.save(self, tree_name)

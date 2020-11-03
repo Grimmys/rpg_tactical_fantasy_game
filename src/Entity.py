@@ -10,7 +10,8 @@ class Entity:
     def __init__(self, name, pos, sprite):
         self.name = name
         self.pos = pos
-        self.sprite = sprite if isinstance(sprite, pg.Surface) else pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        self.sprite = sprite if isinstance(sprite, pg.Surface) \
+            else pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
     def display(self, screen):
         screen.blit(self.sprite, self.pos)
@@ -20,11 +21,8 @@ class Entity:
 
     def __str__(self):
         s = self.name.replace('_', ' ').title()
-        return re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
-
-    def get_formatted_name(self):
-        s = self.name.replace('_', ' ').title()
-        return re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
+        s = re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
+        return s.strip()
 
     def is_on_pos(self, pos):
         return self.get_rect().collidepoint(pos)

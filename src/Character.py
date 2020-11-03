@@ -11,6 +11,9 @@ from src.fonts import fonts
 
 
 class Character(Movable):
+    races_data = {}
+    classes_data = {}
+
     @staticmethod
     def init_data(races, classes):
         Character.races_data = races
@@ -29,7 +32,7 @@ class Character(Movable):
         self.join_team = False
         self.reach_ = [1]
         self.constitution = Character.races_data[race]['constitution'] + \
-                            Character.classes_data[classes[0]]['constitution']
+            Character.classes_data[classes[0]]['constitution']
 
     def talk(self, actor):
         self.join_team = self.interaction['join_team']

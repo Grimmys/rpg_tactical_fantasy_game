@@ -1,2 +1,2 @@
-lxml~=4.3.2
-pygame~=1.9.3
+lxml~=4.6.1
+pygame~=1.9.6
