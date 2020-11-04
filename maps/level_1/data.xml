@@ -21,51 +21,6 @@
         </position>
     </placementArea>
     <events>
-            <events>
-        <before_init>
-            <dialog>
-                <title>CONTROLS</title>
-                <talks>
-                    <talk>
-                        The game starts in the initialization phase.
-                    </talk>
-                    <talk>
-                        During this phase, you can switch the initial position of any of your characters by selecting them (left click) and clicking on the desired position.
-                    </talk>
-                    <talk>
-                        Don't forget to unselect the character (right click) when you're done.
-                    </talk>
-                    <talk>
-                        When you are ready to play, just click on any empty square to open the main menu.
-                    </talk>
-                    <talk>
-                        Enjoy the experience.
-                    </talk>
-                </talks>
-            </dialog>
-            <dialog>
-                <title>Jist</title>
-                <talks>
-                    <talk>
-                        Hello adventurers ! The situation is critical, some thugs have stolen ogre bones that were buried in the crypt.
-                    </talk>
-                    <talk>
-                        Since the village is constantly being raided by undeads...
-                    </talk>
-                    <talk>
-                        Fortunately, I managed to recover the bones from the thugs.
-                    </talk>
-                    <talk>
-                        You must take them back to their place in the crypt. The necropolis is far to the west of here.
-                    </talk>
-                    <talk>
-                        Good luck, adventurers. All the inhabitants of Nervie are behind you.
-                    </talk>
-                </talks>
-            </dialog>
-
-        </before_init>
-    </events>
         <before_init>
             <dialog>
                 <title>Assassin</title>
@@ -146,7 +101,7 @@
         </chest>
     </chests>
     <foes>
-       <!-- <foe>
+        <foe>
             <name>
                 assassin
             </name>
@@ -254,7 +209,7 @@
             <level>
                 1
             </level>
-        </foe>-->
+        </foe>
         <foe>
             <name>
                 cultist
