@@ -58,7 +58,7 @@ class Destroyable(Entity):
                 damage_bar = HEAVILY_DAMAGED
             elif self.hp < self.hp_max * 0.75:
                 damage_bar = MODERATELY_DAMAGED
-            damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * self.hp / self.hp_max),
+            damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * (self.hp / self.hp_max)),
                                                          damage_bar.get_height()))
             screen.blit(HP_BAR, self.pos)
             screen.blit(damage_bar, self.pos)

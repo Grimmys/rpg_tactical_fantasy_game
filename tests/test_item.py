@@ -31,7 +31,15 @@ class TestItem(unittest.TestCase):
         self.assertEqual('Life Potion', str(item))
 
     def test_init_item_with_price(self):
-        pass
+        name = 'life_potion'
+        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.png'
+        description = 'This is a test description'
+        price = 200
+        item = Item(name, sprite, description, price)
+        self.assertEqual(name, item.name)
+        self.assertEqual(description, item.desc)
+        self.assertEqual('Life Potion', str(item))
+        self.assertEqual(price, item.price)
 
     def test_name_format(self):
         sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.png'

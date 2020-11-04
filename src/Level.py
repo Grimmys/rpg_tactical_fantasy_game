@@ -213,7 +213,7 @@ class Level:
         if self.main_mission.ended:
             for mission in self.missions:
                 if not mission.main and mission.ended:
-                    self.background_menus.append(MenuCreatorManager.create_reward_menu(mission))
+                    self.background_menus.append((MenuCreatorManager.create_reward_menu(mission), False))
                     if mission.gold:
                         for player in self.players:
                             player.gold += mission.gold
