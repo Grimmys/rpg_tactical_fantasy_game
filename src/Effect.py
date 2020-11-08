@@ -29,8 +29,12 @@ class Effect:
             if recovered > 0:
                 msg = str(ent) + " recovered " + str(recovered) + " HP."
             else:
-                msg = str(ent) + " is at full health and can't be healed !"
+                msg = str(ent) + " is at full health and can't be healed!"
                 success = False
+        elif self.name == 'xp_up':
+            msg = str(ent) + " earned " + str(self.power) + " XP"
+            if ent.earn_xp(self.power):
+                msg += ". " + str(ent) + " gained a level!"
         elif self.name == 'speed_up':
             ent.set_alteration(self.alteration)
             msg = "The speed of " + str(ent) + " has been increased for " + str(self.duration) + \

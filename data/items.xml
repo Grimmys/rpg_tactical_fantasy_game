@@ -246,6 +246,35 @@
                 </price>
             </vigor_potion>
         </potions>
+        <scrolls>
+            <scroll_of_knowledge>
+                <name>
+                    Scroll of Knowledge
+                </name>
+                <sprite>
+                    scroll/scroll-blue.png
+                </sprite>
+                <info>
+                    This scroll can gives some XP to the reader
+                </info>
+                <category>
+                    consumable
+                </category>
+                <effects>
+                    <effect>
+                        <type>
+                            xp_up
+                        </type>
+                        <power>
+                            10
+                        </power>
+                    </effect>
+                </effects>
+                <price>
+                    400
+                </price>
+            </scroll_of_knowledge>
+        </scrolls>
         <key>
             <name>
                 Chest Key

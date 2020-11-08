@@ -364,6 +364,11 @@
                         wooden_shield
                     </name>
                 </item>
+                <item>
+                    <name>
+                        scroll_of_knowledge
+                    </name>
+                </item>
             </items>
         </building>
     </buildings>

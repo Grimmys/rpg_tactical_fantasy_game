@@ -150,10 +150,13 @@ class Movable(Destroyable):
             return ' (- ' + str(change) + ')'
         return ''
 
+    # The return value is a boolean indicating if the target gained a level
     def earn_xp(self, xp):
         self.xp += xp
         if self.xp >= self.xp_next_lvl:
             self.lvl_up()
+            return True
+        return False
 
     def determine_xp_goal(self):
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
