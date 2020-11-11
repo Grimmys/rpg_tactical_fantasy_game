@@ -381,10 +381,8 @@ class Level:
                 case_x = pos[0] + (x * TILE_SIZE)
                 case_y = pos[1] + (y * TILE_SIZE)
                 case_pos = (case_x, case_y)
-                if (self.map['x'], self.map['y']) < case_pos < (self.map['x'] + self.map['width'], self.map['y'] +
-                                                                                                   self.map['height']):
-                    case = self.get_entity_on_case(case_pos)
-                    tiles.append(case)
+                case = self.get_entity_on_case(case_pos)
+                tiles.append(case)
         return tiles
 
     def get_possible_moves(self, pos, max_moves):
@@ -643,7 +641,7 @@ class Level:
             damages = attacker.attack(target)
             real_damages = target.hp - target.attacked(attacker, damages, kind, target_allies)
             entries.append([{'type': 'text',
-                             'text': str(attacker) + " dealed " + str(real_damages) +
+                             'text': str(attacker) + " dealt " + str(real_damages) +
                                      " damage to " + str(target), 'font': fonts['ITEM_DESC_FONT']}])
             # XP gain for dealed damages
             xp += real_damages // 2
@@ -673,7 +671,7 @@ class Level:
                                                  'font': fonts['ITEM_DESC_FONT']}])
                 self.remove_entity(target)
             else:
-                entries.append([{'type': 'text', 'text': str(target) + " has now " +
+                entries.append([{'type': 'text', 'text': str(target) + " now has " +
                                                          str(target.hp) + " HP",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
@@ -703,11 +701,21 @@ class Level:
         self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
                                    close_button=UNFINAL_ACTION)
 
+    def distance_between_all(self, ent_1, ents):
+        free_tiles_distance = self.get_possible_moves(ent_1.pos, (self.map['width'] * self.map['height']) // (
+                    TILE_SIZE * TILE_SIZE))
+        ents_dist = {ent: self.map['width'] * self.map['height'] for ent in ents}
+        for tile, dist in free_tiles_distance.items():
+            for neighbour in self.get_next_cases(tile):
+                if neighbour in ents and dist < ents_dist[neighbour]:
+                    ents_dist[neighbour] = dist
+        return ents_dist
+
     def entity_action(self, ent, is_ally):
         possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
         targets = self.entities['foes'] if is_ally else self.players + self.entities['allies']
         allies = self.players + self.entities['allies'] if is_ally else self.entities['foes']
-        case = ent.act(possible_moves, targets)
+        case = ent.act(possible_moves, self.distance_between_all(ent, targets))
 
         if case:
             if case in possible_moves:

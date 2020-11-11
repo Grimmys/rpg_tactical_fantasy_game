@@ -68,7 +68,6 @@ class Movable(Destroyable):
 
     def display(self, screen):
         Destroyable.display(self, screen)
-        print("[DISPLAY] " + self.name + " state is : " + str(self.state))
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
             screen.blit(Movable.SELECTED_DISPLAY, self.pos)
 
@@ -102,7 +101,6 @@ class Movable(Destroyable):
 
     def end_turn(self):
         self.state = EntityState.FINISHED
-        print(self.name + " state is : " + str(self.state))
         # Remove all alterations that are finished
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
@@ -235,28 +233,46 @@ class Movable(Destroyable):
         elif self.state is EntityState.ON_MOVE:
             self.move()
         elif self.state is EntityState.HAVE_TO_ATTACK:
-            if self.target and self.can_attack():
-                return self.target.pos
+            attack = self.determine_attack(targets)
+            if self.can_attack() and attack:
+                return attack
             else:
                 self.end_turn()
         return None
 
+    def determine_attack(self, targets):
+        temporary_attack = None
+        for r in self.reach:
+            for target in targets:
+                if abs(self.pos[0] - target.pos[0]) + abs(self.pos[1] - target.pos[1]) == TILE_SIZE * r:
+                    if self.target and target == self.target:
+                        return target.pos
+                    temporary_attack = target.pos
+        return temporary_attack
+
     def determine_move(self, possible_moves, targets):
         self.target = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
-            for target in targets:
-                for d in self.reach:
+            for target, dist in targets.items():
+                for r in self.reach:
                     for move in possible_moves:
                         # Try to find move next to one target
-                        if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * d:
+                        if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * r:
                             self.target = target
                             return move
-        if self.strategy is EntityStrategy.ACTIVE:
-            # TODO
-            pass
-        elif self.strategy is EntityStrategy.PASSIVE:
-            # TODO
-            pass
+        elif self.strategy is EntityStrategy.ACTIVE:
+            # Targets the nearest opponent
+            self.target = min(targets.keys(), key=(lambda k: targets[k]))
+            best_move = possible_moves[self.pos]
+            min_dist = INITIAL_MAX
+            for r in self.reach:
+                for move in possible_moves:
+                    # Search for the nearest move to target
+                    dist = abs(move[0] - self.target.pos[0]) + abs(move[1] - self.target.pos[1]) - (TILE_SIZE * r)
+                    if 0 <= dist < min_dist:
+                        best_move = move
+                        min_dist = dist
+            return best_move
         return self.pos
 
     # Should return damage dealt

@@ -276,7 +276,7 @@
             15
         </xp_gain>
         <strategy>
-            SEMI_ACTIVE
+            ACTIVE
         </strategy>
         <reach>
             2
@@ -332,7 +332,7 @@
             15
         </xp_gain>
         <strategy>
-            SEMI_ACTIVE
+            ACTIVE
         </strategy>
         <attack_kind>
             PHYSICAL

@@ -50,5 +50,6 @@ class TestShop(unittest.TestCase):
         print(entries)
         # No assert for the moment
 
+
 if __name__ == '__main__':
     unittest.main()

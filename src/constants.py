@@ -5,6 +5,8 @@ Can be imported from anywhere. Where more than one constant is needed, import * 
 """
 import pygame as pg
 
+INITIAL_MAX = 10000
+
 TILE_SIZE = 48
 MENU_WIDTH = TILE_SIZE * 22
 MENU_HEIGHT = 100
