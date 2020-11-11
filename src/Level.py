@@ -162,7 +162,7 @@ class Level:
             # Set initial pos of players arbitrarily
             for player in self.players:
                 for tile in self.possible_placements:
-                    if self.case_is_empty(tile):
+                    if self.get_entity_on_case(tile) is None:
                         player.set_initial_pos(tile)
                         break
                 else:
@@ -398,7 +398,7 @@ class Level:
                         case_x = tile[0] + (x * TILE_SIZE)
                         case_y = tile[1] + (y * TILE_SIZE)
                         case_pos = (case_x, case_y)
-                        if self.case_is_empty(case_pos) and case_pos not in tiles:
+                        if self.case_is_available(case_pos) and case_pos not in tiles:
                             tiles_next_level[case_pos] = i
             tiles.update(tiles_prev_level)
             tiles_prev_level = tiles_next_level
@@ -427,19 +427,13 @@ class Level:
 
         return set(tiles)
 
-    def case_is_empty(self, case):
+    def case_is_available(self, case):
         min_case = (self.map['x'], self.map['y'])
         max_case = (self.map['x'] + self.map['width'], self.map['y'] + self.map['height'])
         if not (all([(minimum <= case < maximum) for minimum, case, maximum in zip(min_case, case, max_case)])):
             return False
 
-        # Check all entities
-        ent_cases = []
-        for collection in self.entities.values():
-            for ent in collection:
-                ent_cases.append(ent.pos)
-
-        return case not in ent_cases and case not in self.obstacles
+        return self.get_entity_on_case(case) is None and case not in self.obstacles
 
     def get_entity_on_case(self, case):
         # Check all entities
@@ -512,7 +506,7 @@ class Level:
         player.items = character.items
 
     def interact(self, actor, target, target_pos):
-        # Since player chose his interaction, possible interactions should be reseted
+        # Since player chose his interaction, possible interactions should be reset
         self.possible_interactions = []
 
         # Check if target is an empty pos
@@ -523,7 +517,7 @@ class Level:
 
                 # Turn is finished
                 self.background_menus = []
-                self.selected_player.turn_finished()
+                self.selected_player.end_turn()
                 self.selected_player = None
         # Check if player tries to open a chest
         elif isinstance(target, Chest):
@@ -783,6 +777,8 @@ class Level:
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         elif method_id is MainMenu.END_TURN:
             self.active_menu = None
+            for player in self.players:
+                player.end_turn()
             self.side_turn = self.side_turn.get_next()
             self.begin_turn()
         elif method_id is MainMenu.SUSPEND:
@@ -829,7 +825,7 @@ class Level:
         elif method_id is CharacterMenu.WAIT:
             self.active_menu = None
             self.selected_item = None
-            self.selected_player.turn_finished()
+            self.selected_player.end_turn()
             self.selected_player = None
             self.possible_moves = []
             self.possible_attacks = []
@@ -942,7 +938,7 @@ class Level:
                                 # Turn is finished
                                 self.active_menu = None
                                 self.background_menus = []
-                                self.selected_player.turn_finished()
+                                self.selected_player.end_turn()
                                 self.selected_player = None
 
     def execute_inv_action(self, method_id, args):
@@ -1213,7 +1209,7 @@ class Level:
             if len(args) >= 3 and args[2][0] == FINAL_ACTION:
                 # Turn is finished
                 self.background_menus = []
-                self.selected_player.turn_finished()
+                self.selected_player.end_turn()
                 self.selected_player = None
             elif self.background_menus:
                 self.active_menu = self.background_menus.pop()[0]
@@ -1303,7 +1299,7 @@ class Level:
                                       self.players + self.entities['allies'], self.entities['foes'], attack_kind)
                             # Turn is finished
                             self.background_menus = []
-                            self.selected_player.turn_finished()
+                            self.selected_player.end_turn()
                             self.selected_player = None
                             return
                 elif self.possible_interactions:

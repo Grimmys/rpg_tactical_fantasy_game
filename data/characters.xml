@@ -116,6 +116,9 @@
             <item>
                 life_potion
             </item>
+            <item>
+                vigor_potion
+            </item>
         </inventory>
         <gold> 250 </gold>
     </thokdrum>

@@ -107,12 +107,14 @@ class Player(Character):
         self.state = PlayerState.FINISHED
         return damages
 
-    def turn_finished(self):
+    def end_turn(self):
         self.state = PlayerState.FINISHED
         self._selected = False
         self.sprite = self.sprite_unavaible
         for eq in self.equipments:
             eq.set_grey()
+        # Remove all alterations that are finished
+        self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def new_turn(self):
         Character.new_turn(self)

@@ -68,6 +68,7 @@ class Movable(Destroyable):
 
     def display(self, screen):
         Destroyable.display(self, screen)
+        print("[DISPLAY] " + self.name + " state is : " + str(self.state))
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
             screen.blit(Movable.SELECTED_DISPLAY, self.pos)
 
@@ -101,6 +102,9 @@ class Movable(Destroyable):
 
     def end_turn(self):
         self.state = EntityState.FINISHED
+        print(self.name + " state is : " + str(self.state))
+        # Remove all alterations that are finished
+        self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def turn_is_finished(self):
         return self.state == EntityState.FINISHED
@@ -119,7 +123,7 @@ class Movable(Destroyable):
     def get_formatted_alterations(self):
         formatted_string = ""
         for alteration in self.alterations:
-            formatted_string += alteration.get_formatted_name() + ", "
+            formatted_string += str(alteration) + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
@@ -261,10 +265,9 @@ class Movable(Destroyable):
 
     def new_turn(self):
         self.state = EntityState.HAVE_TO_ACT
-        # Verify if any alteration is finished
-        for alteration in self.alterations.copy():
-            if alteration.increment():
-                self.alterations.remove(alteration)
+        # Increment alterations turns passed
+        for alteration in self.alterations:
+            alteration.increment()
 
     def save(self, tree_name):
         tree = Destroyable.save(self, tree_name)

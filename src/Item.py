@@ -10,6 +10,7 @@ class Item:
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         self.desc = description
         self.price = price
+        self.resell_price = price // 2
         self.id = Item.internal_id
         Item.internal_id += 1
 

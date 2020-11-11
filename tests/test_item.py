@@ -7,9 +7,9 @@ import src.fonts as font
 from src.Entity import Entity
 from src.Item import Item
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
-from tests.random_data_library import random_pos
+from tests.random_data_library import random_pos, random_item
 
-NB_TESTS_FOR_PROPORTIONS = 1000
+NB_TESTS_FOR_PROPORTIONS = 100
 
 
 class TestItem(unittest.TestCase):
@@ -40,6 +40,7 @@ class TestItem(unittest.TestCase):
         self.assertEqual(description, item.desc)
         self.assertEqual('Life Potion', str(item))
         self.assertEqual(price, item.price)
+        self.assertEqual(price // 2, item.resell_price)
 
     def test_name_format(self):
         sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.png'
@@ -60,6 +61,13 @@ class TestItem(unittest.TestCase):
         name = '5item_test_01'
         item = Item(name, sprite, description)
         self.assertEqual('5Item Test 01', str(item))
+
+    def test_id_uniqueness(self):
+        items = []
+        for i in range(NB_TESTS_FOR_PROPORTIONS):
+            items.append(random_item())
+
+        self.assertTrue(len(set(map(lambda it: it.id, items))), NB_TESTS_FOR_PROPORTIONS)
 
 
 if __name__ == '__main__':

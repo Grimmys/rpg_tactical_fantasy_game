@@ -58,5 +58,5 @@ class Effect:
         else:
             return self.alteration.desc
 
-    def get_formatted_name(self):
+    def __str__(self):
         return self.name.replace('_', ' ').title()

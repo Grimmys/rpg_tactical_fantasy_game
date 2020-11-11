@@ -189,7 +189,7 @@ def create_status_menu(player):
     if not alts:
         entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
     for alt in alts:
-        entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
+        entries.append([{'type': 'text_button', 'name': str(alt), 'id': StatusMenu.INFO_ALTERATION,
                          'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
 
     # Display skills
@@ -406,7 +406,7 @@ def create_item_desc_menu(item):
             entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
             entries.append(create_item_desc_stat('REACH', reach_txt))
             for possible_effect in item.effects:
-                entries.append(create_item_desc_stat('EFFECT', possible_effect['effect'].get_formatted_name() +
+                entries.append(create_item_desc_stat('EFFECT', str(possible_effect['effect']) +
                                                      ' (' + str(possible_effect['probability']) + '%)'))
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
@@ -422,14 +422,13 @@ def create_item_desc_menu(item):
 
 
 def create_alteration_info_menu(alteration):
-    formatted_name = alteration.get_formatted_name()
 
     turns_left = alteration.get_turns_left()
     entries = [[{'type': 'text', 'text': alteration.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
                  'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
-    return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(str(alteration), "", "imgs/interface/PopUpMenu.png", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -477,7 +476,7 @@ def create_status_entity_menu(ent):
     if not alts:
         entries.append([{'type': 'text', 'text': 'None'}])
     for alt in alts:
-        entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
+        entries.append([{'type': 'text_button', 'name': str(alt), 'id': StatusMenu.INFO_ALTERATION,
                          'color': WHITE,
                          'color_hover': TURQUOISE, 'obj': alt}])
 
