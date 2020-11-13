@@ -99,31 +99,30 @@ class StartScreen:
                     menu[0].display(self.screen)
             if self.active_menu:
                 self.active_menu.display(self.screen)
+            print(self.screen)
 
     def play(self, level):
         # Modify screen
-        self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+        self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.FULLSCREEN)
+        print("FULL SCREEN :")
+        print(self.screen)
         self.level = level
 
     def update_state(self):
         if self.level:
             status = self.level.update_state()
-            if status is Status.ENDED_VICTORY:
+            if status is Status.ENDED_VICTORY and (self.level_id + 1) in self.levels:
                 self.level_id += 1
-                if self.level_id in self.levels:
-                    team = self.level.passed_players + self.level.players
-                    for player in team:
-                        # Players are fully restored between level
-                        player.healed(player.hp_max)
-                        # Reset player's state
-                        player.new_turn()
-                    self.play(StartScreen.load_level(self.level_id, team))
-                else:
-                    # TODO: Game win dialog?
-                    self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
-                    self.level = None
-            elif status is Status.ENDED_DEFEAT:
-                self.screen = pg.display.set_mode((self.menu_screen.get_width(), self.menu_screen.get_height()))
+                team = self.level.passed_players + self.level.players
+                for player in team:
+                    # Players are fully restored between level
+                    player.healed(player.hp_max)
+                    # Reset player's state
+                    player.new_turn()
+                self.play(StartScreen.load_level(self.level_id, team))
+            elif status is Status.ENDED_VICTORY or status is Status.ENDED_DEFEAT:
+                # TODO: Game win dialog?
+                self.screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
 
     @staticmethod
