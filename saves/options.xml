@@ -1,3 +1,4 @@
 <options>
-    <move_speed>4</move_speed>
+    <move_speed>8</move_speed>
+    <screen_size>2</screen_size>
 </options>
