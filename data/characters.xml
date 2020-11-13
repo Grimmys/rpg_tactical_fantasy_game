@@ -27,7 +27,7 @@
         <class> warrior </class>
         <race> human </race>
         <level> 1 </level>
-        <strength> 3 </strength>
+        <strength> 5 </strength>
         <defense> 0 </defense>
         <resistance> 0 </resistance>
         <hp> 20 </hp>
@@ -61,7 +61,7 @@
         <class> ranger </class>
         <race> elf </race>
         <level> 1 </level>
-        <strength> 2 </strength>
+        <strength> 3 </strength>
         <defense> 1 </defense>
         <resistance> 0 </resistance>
         <hp> 14 </hp>
@@ -93,7 +93,7 @@
         <class> warrior </class>
         <race> dwarf </race>
         <level> 1 </level>
-        <strength> 3 </strength>
+        <strength> 4 </strength>
         <defense> 2 </defense>
         <resistance> 0 </resistance>
         <hp> 20 </hp>
@@ -116,6 +116,9 @@
             <item>
                 life_potion
             </item>
+            <item>
+                vigor_potion
+            </item>
         </inventory>
         <gold> 250 </gold>
     </thokdrum>
@@ -124,7 +127,7 @@
         <class> warrior </class>
         <race> centaur </race>
         <level> 3 </level>
-        <strength> 3 </strength>
+        <strength> 5 </strength>
         <defense> 1 </defense>
         <resistance> 0 </resistance>
         <hp> 22 </hp>

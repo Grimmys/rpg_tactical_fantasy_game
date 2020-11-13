@@ -10,11 +10,9 @@ class Item:
         self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         self.desc = description
         self.price = price
+        self.resell_price = price // 2
         self.id = Item.internal_id
         Item.internal_id += 1
 
-    def get_formatted_name(self):
-        return self.name.replace('_', ' ').title()
-
     def __str__(self):
-        return self.name
+        return self.name.replace('_', ' ').title().strip()

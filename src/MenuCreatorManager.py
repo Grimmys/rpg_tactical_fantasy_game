@@ -128,9 +128,9 @@ def create_trade_menu(first_player, second_player):
     entries.append(entry)
 
     # Gold at end
-    entry = [{'type': 'text', 'text': first_player.get_formatted_name() + '\'s gold : ' + str(first_player.gold),
+    entry = [{'type': 'text', 'text': str(first_player) + '\'s gold : ' + str(first_player.gold),
               'font': fonts['ITEM_DESC_FONT']},
-             {'type': 'text', 'text': second_player.get_formatted_name() + '\'s gold : ' + str(second_player.gold),
+             {'type': 'text', 'text': str(second_player)+ '\'s gold : ' + str(second_player.gold),
               'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
@@ -156,7 +156,7 @@ def determine_hp_color(hp, hp_max):
 
 def create_status_menu(player):
     entries = [[{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': player.get_formatted_name()}, {}],
+                {'type': 'text', 'text': str(player)}, {}],
                [{}, {}, {'type': 'text', 'color': DARK_GREEN, 'text': 'SKILLS',
                      'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
                [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
@@ -189,7 +189,7 @@ def create_status_menu(player):
     if not alts:
         entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
     for alt in alts:
-        entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
+        entries.append([{'type': 'text_button', 'name': str(alt), 'id': StatusMenu.INFO_ALTERATION,
                          'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
 
     # Display skills
@@ -311,7 +311,7 @@ def create_item_shop_menu(item_button_pos, item, price):
         [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button', 'args': [price]}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
-    formatted_item_name = item.get_formatted_name()
+    formatted_item_name = str(item)
     item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
                         ITEM_BUTTON_SIZE[1])
 
@@ -324,7 +324,7 @@ def create_item_sell_menu(item_button_pos, item, price):
         [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button', 'args': [price]}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
-    formatted_item_name = item.get_formatted_name()
+    formatted_item_name = str(item)
     item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
                         ITEM_BUTTON_SIZE[1])
 
@@ -337,7 +337,7 @@ def create_trade_item_menu(item_button_pos, item, players):
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
         [{'name': 'Trade', 'id': ItemMenu.TRADE_ITEM, 'args': players}]
     ]
-    formatted_item_name = item.get_formatted_name()
+    formatted_item_name = str(item)
 
     for row in entries:
         for entry in row:
@@ -356,7 +356,7 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
         [{'name': 'Throw', 'id': ItemMenu.THROW_ITEM}]
     ]
-    formatted_item_name = item.get_formatted_name()
+    formatted_item_name = str(item)
 
     if isinstance(item, Consumable):
         entries.insert(0, [{'name': 'Use', 'id': ItemMenu.USE_ITEM}])
@@ -384,7 +384,7 @@ def create_item_desc_stat(stat_name, stat_value):
 
 
 def create_item_desc_menu(item):
-    item_title = item.get_formatted_name()
+    item_title = str(item)
 
     entries = [[{'type': 'text', 'text': item.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
 
@@ -406,7 +406,7 @@ def create_item_desc_menu(item):
             entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
             entries.append(create_item_desc_stat('REACH', reach_txt))
             for possible_effect in item.effects:
-                entries.append(create_item_desc_stat('EFFECT', possible_effect['effect'].get_formatted_name() +
+                entries.append(create_item_desc_stat('EFFECT', str(possible_effect['effect']) +
                                                      ' (' + str(possible_effect['probability']) + '%)'))
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
@@ -422,14 +422,13 @@ def create_item_desc_menu(item):
 
 
 def create_alteration_info_menu(alteration):
-    formatted_name = alteration.get_formatted_name()
 
     turns_left = alteration.get_turns_left()
     entries = [[{'type': 'text', 'text': alteration.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
                  'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
-    return InfoBox(formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(str(alteration), "", "imgs/interface/PopUpMenu.png", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -442,8 +441,6 @@ def create_skill_info_menu(skill):
 
 
 def create_status_entity_menu(ent):
-    formatted_name = ent.get_formatted_name()
-
     entries = [[{'type': 'text', 'text': 'LEVEL : ' + str(ent.lvl), 'font': fonts['ITEM_DESC_FONT']}],
                [{'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (20, 0, 20, 0)}, {}, {}, {'type': 'text', 'text': 'LOOT',
@@ -479,7 +476,7 @@ def create_status_entity_menu(ent):
     if not alts:
         entries.append([{'type': 'text', 'text': 'None'}])
     for alt in alts:
-        entries.append([{'type': 'text_button', 'name': alt.get_formatted_name(), 'id': StatusMenu.INFO_ALTERATION,
+        entries.append([{'type': 'text_button', 'name': str(alt), 'id': StatusMenu.INFO_ALTERATION,
                          'color': WHITE,
                          'color_hover': TURQUOISE, 'obj': alt}])
 
@@ -487,10 +484,7 @@ def create_status_entity_menu(ent):
         loot = ent.potential_loot
         i = 2
         for (item, probability) in loot:
-            if isinstance(item, Item):
-                name = item.get_formatted_name()
-            else:
-                name = str(item) + ' Gold'
+            name = str(item)
             entries[i][3] = {'type': 'text', 'text': name}
             entries[i][4] = {'type': 'text', 'text': ' (' + str(probability * 100) + '%)'}
             i += 1
@@ -501,7 +495,7 @@ def create_status_entity_menu(ent):
         entries[i][3] = {'type': 'text', 'text': '> ' + skill.formatted_name}
         i += 1
 
-    return InfoBox(formatted_name, StatusMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(str(ent), StatusMenu, "imgs/interface/PopUpMenu.png", entries,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -510,7 +504,7 @@ def create_reward_menu(mission):
     if mission.gold:
         entries.append([{'type': 'text', 'text': 'Earned gold : ' + str(mission.gold) + ' (all characters)'}])
     for item in mission.items:
-        entries.append([{'type': 'text', 'text': 'Earned item : ' + item.get_formatted_name()}])
+        entries.append([{'type': 'text', 'text': 'Earned item : ' + str(item)}])
 
     return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
                    close_button=UNFINAL_ACTION)

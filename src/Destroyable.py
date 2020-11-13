@@ -58,25 +58,24 @@ class Destroyable(Entity):
                 damage_bar = HEAVILY_DAMAGED
             elif self.hp < self.hp_max * 0.75:
                 damage_bar = MODERATELY_DAMAGED
-            damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * self.hp / self.hp_max),
+            damage_bar = pg.transform.scale(damage_bar, (int(damage_bar.get_width() * (self.hp / self.hp_max)),
                                                          damage_bar.get_height()))
             screen.blit(HP_BAR, self.pos)
             screen.blit(damage_bar, self.pos)
 
-    def set_current_hp(self, hp):
-        self.hp = hp
-
-    def attacked(self, ent, damages, kind, allies):
+    def attacked(self, ent, damage, kind, allies):
         if kind is DamageKind.SPIRITUAL:
-            real_damages = damages - self.res
+            real_damage = damage - self.res
         elif kind is DamageKind.PHYSICAL:
-            real_damages = damages - self.defense
+            real_damage = damage - self.defense
         else:
             print('Error : Invalid kind of attack : ' + str(kind))
             raise SystemError
-        if real_damages < 0:
-            real_damages = 0
-        self.hp -= real_damages
+        if real_damage < 0:
+            real_damage = 0
+        elif real_damage > self.hp:
+            real_damage = self.hp
+        self.hp -= real_damage
         return self.hp
 
     def healed(self, value=None):

@@ -41,9 +41,11 @@ class Movable(Destroyable):
         Movable.SELECTED_DISPLAY = pg.transform.scale(pg.image.load(selected_sprite).convert_alpha(),
                                                       (TILE_SIZE, TILE_SIZE))
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1, skills=[],
-                 compl_sprite=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1,
+                 skills=None, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
+        if skills is None:
+            skills = []
         self._max_moves = max_moves
         self.on_move = []
         self.timer = TIMER
@@ -99,6 +101,8 @@ class Movable(Destroyable):
 
     def end_turn(self):
         self.state = EntityState.FINISHED
+        # Remove all alterations that are finished
+        self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def turn_is_finished(self):
         return self.state == EntityState.FINISHED
@@ -117,7 +121,7 @@ class Movable(Destroyable):
     def get_formatted_alterations(self):
         formatted_string = ""
         for alteration in self.alterations:
-            formatted_string += alteration.get_formatted_name() + ", "
+            formatted_string += str(alteration) + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
@@ -148,10 +152,13 @@ class Movable(Destroyable):
             return ' (- ' + str(change) + ')'
         return ''
 
+    # The return value is a boolean indicating if the target gained a level
     def earn_xp(self, xp):
         self.xp += xp
         if self.xp >= self.xp_next_lvl:
             self.lvl_up()
+            return True
+        return False
 
     def determine_xp_goal(self):
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
@@ -226,28 +233,46 @@ class Movable(Destroyable):
         elif self.state is EntityState.ON_MOVE:
             self.move()
         elif self.state is EntityState.HAVE_TO_ATTACK:
-            if self.target and self.can_attack():
-                return self.target.pos
+            attack = self.determine_attack(targets)
+            if self.can_attack() and attack:
+                return attack
             else:
                 self.end_turn()
         return None
 
+    def determine_attack(self, targets):
+        temporary_attack = None
+        for r in self.reach:
+            for target in targets:
+                if abs(self.pos[0] - target.pos[0]) + abs(self.pos[1] - target.pos[1]) == TILE_SIZE * r:
+                    if self.target and target == self.target:
+                        return target.pos
+                    temporary_attack = target.pos
+        return temporary_attack
+
     def determine_move(self, possible_moves, targets):
         self.target = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
-            for target in targets:
-                for d in self.reach:
+            for target, dist in targets.items():
+                for r in self.reach:
                     for move in possible_moves:
                         # Try to find move next to one target
-                        if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * d:
+                        if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * r:
                             self.target = target
                             return move
-        if self.strategy is EntityStrategy.ACTIVE:
-            # TODO
-            pass
-        elif self.strategy is EntityStrategy.PASSIVE:
-            # TODO
-            pass
+        elif self.strategy is EntityStrategy.ACTIVE:
+            # Targets the nearest opponent
+            self.target = min(targets.keys(), key=(lambda k: targets[k]))
+            best_move = possible_moves[self.pos]
+            min_dist = INITIAL_MAX
+            for r in self.reach:
+                for move in possible_moves:
+                    # Search for the nearest move to target
+                    dist = abs(move[0] - self.target.pos[0]) + abs(move[1] - self.target.pos[1]) - (TILE_SIZE * r)
+                    if 0 <= dist < min_dist:
+                        best_move = move
+                        min_dist = dist
+            return best_move
         return self.pos
 
     # Should return damage dealt
@@ -256,10 +281,9 @@ class Movable(Destroyable):
 
     def new_turn(self):
         self.state = EntityState.HAVE_TO_ACT
-        # Verify if any alteration is finished
-        for alteration in self.alterations.copy():
-            if alteration.increment():
-                self.alterations.remove(alteration)
+        # Increment alterations turns passed
+        for alteration in self.alterations:
+            alteration.increment()
 
     def save(self, tree_name):
         tree = Destroyable.save(self, tree_name)

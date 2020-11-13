@@ -11,7 +11,7 @@ class ItemButton(Button):
     def __init__(self, method_id, args, size, pos, item, margin, index, price, disabled=False):
         name = ""
         if item:
-            name = item.get_formatted_name()
+            name = str(item)
         price_text = ""
         if price > 0:
             price_text = "(" + str(price) + " gold)"

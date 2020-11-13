@@ -25,7 +25,7 @@ class Building(Entity):
                 entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'], 'color': GREEN}])
             if self.interaction['item'] is not None:
                 actor.set_item(self.interaction['item'])
-                earn_text = '[You received ' + self.interaction['item'].get_formatted_name() + ']'
+                earn_text = '[You received ' + str(self.interaction['item']) + ']'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'], 'color': GREEN}])
 
             # Interaction could not been repeated : should be remove after been used
@@ -48,9 +48,7 @@ class Building(Entity):
         sprite.text = self.sprite_name
 
         # Save interaction
-        if not self.interaction:
-            etree.SubElement(tree, 'uninteractable')
-        else:
+        if self.interaction:
             interaction = etree.SubElement(tree, 'interaction')
             talks = etree.SubElement(interaction, 'talks')
             for t in self.interaction['talks']:

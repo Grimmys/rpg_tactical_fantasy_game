@@ -116,7 +116,7 @@ class Sidebar:
             text_pos_x = frame_pos[0] + FRAME.get_width() + 15
             name_pre_text = fonts['ITEM_FONT_STRONG'].render("NAME : ", 1, color)
             win.blit(name_pre_text, (text_pos_x, frame_pos[1]))
-            name_text = fonts['ITEM_FONT_STRONG'].render("         " + ent.get_formatted_name(), 1, BLACK)
+            name_text = fonts['ITEM_FONT_STRONG'].render("         " + str(ent), 1, BLACK)
             win.blit(name_text, (text_pos_x, frame_pos[1]))
 
             # HP if it's a destroyable entity

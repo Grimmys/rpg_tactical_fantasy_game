@@ -63,6 +63,23 @@
                 snake
             </name>
             <position>
+                <x>5</x>
+                <y>1</y>
+            </position>
+            <level>
+                1
+            </level>
+            <loot>
+                <gold>
+                    <amount>25</amount>
+                </gold>
+            </loot>
+        </foe>
+        <foe>
+            <name>
+                snake
+            </name>
+            <position>
                 <x>11</x>
                 <y>3</y>
             </position>

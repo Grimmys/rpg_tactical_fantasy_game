@@ -41,6 +41,9 @@
                 0, 1
             </resistance>
         </stats_up>
+        <loot>
+
+        </loot>
     </snake>
     <skeleton>
         <sprite>
@@ -50,7 +53,7 @@
             3
         </move>
         <hp>
-            6
+            10
         </hp>
         <strength>
             4
@@ -154,7 +157,7 @@
             2
         </move>
         <hp>
-            10
+            15
         </hp>
         <strength>
             7
@@ -258,7 +261,7 @@
             3
         </move>
         <hp>
-            8
+            13
         </hp>
         <strength>
             5
@@ -273,7 +276,7 @@
             15
         </xp_gain>
         <strategy>
-            SEMI_ACTIVE
+            ACTIVE
         </strategy>
         <reach>
             2
@@ -314,7 +317,7 @@
             4
         </move>
         <hp>
-            8
+            13
         </hp>
         <strength>
             5
@@ -329,7 +332,7 @@
             15
         </xp_gain>
         <strategy>
-            SEMI_ACTIVE
+            ACTIVE
         </strategy>
         <attack_kind>
             PHYSICAL
@@ -344,12 +347,8 @@
                 </probability>
             </item>
             <gold>
-                <amount>
-                    50
-                </amount>
-                <probability>
-                    0.1
-                </probability>
+                <amount>50</amount>
+                <probability>0.1</probability>
             </gold>
         </loot>
         <stats_up>

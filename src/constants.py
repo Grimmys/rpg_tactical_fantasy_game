@@ -5,6 +5,8 @@ Can be imported from anywhere. Where more than one constant is needed, import * 
 """
 import pygame as pg
 
+INITIAL_MAX = 10000
+
 TILE_SIZE = 48
 MENU_WIDTH = TILE_SIZE * 22
 MENU_HEIGHT = 100
@@ -15,8 +17,8 @@ MAX_MAP_HEIGHT = 14 * TILE_SIZE
 WIN_WIDTH = MAX_MAP_WIDTH
 WIN_HEIGHT = MAX_MAP_HEIGHT + MENU_HEIGHT
 
-MAIN_WIN_WIDTH = 800
-MAIN_WIN_HEIGHT = 800
+MAIN_WIN_WIDTH = 600
+MAIN_WIN_HEIGHT = 600
 
 # Colors
 WHITE = pg.Color('white')

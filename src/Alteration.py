@@ -10,15 +10,17 @@ class Alteration:
         self.desc = desc
         self.effects = effects
 
-    def get_formatted_name(self):
-        return self.name.replace('_', ' ').capitalize()
-
     def get_turns_left(self):
         return self.duration - self.time
 
     def increment(self):
         self.time += 1
-        return self.time > self.duration
+
+    def is_finished(self):
+        return self.time >= self.duration
+
+    def __str__(self):
+        return self.name.replace('_', ' ').capitalize()
 
     def __eq__(self, o):
         return self.name == o

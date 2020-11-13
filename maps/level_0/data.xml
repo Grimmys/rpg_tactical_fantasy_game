@@ -279,7 +279,6 @@
                 <y>1</y>
             </position>
             <sprite>imgs/houses/blue_house_side.png</sprite>
-            <uninteractable />
         </building>
         <building>
             <name>
@@ -336,7 +335,6 @@
                 <y>5</y>
             </position>
             <sprite>imgs/houses/tavern.png</sprite>
-            <uninteractable />
         </building>
         <building>
             <type>
@@ -364,6 +362,11 @@
                 <item>
                     <name>
                         wooden_shield
+                    </name>
+                </item>
+                <item>
+                    <name>
+                        scroll_of_knowledge
                     </name>
                 </item>
             </items>
