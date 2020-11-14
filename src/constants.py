@@ -68,6 +68,7 @@ CLOSE_BUTTON_SIZE = (150, 50)
 
 # Options default values
 ANIMATION_SPEED = 4
+SCREEN_SIZE = 2
 
 # Value for kind of action on close button
 UNFINAL_ACTION = 1

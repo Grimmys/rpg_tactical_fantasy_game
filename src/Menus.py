@@ -23,6 +23,8 @@ class StartMenu(Enum):
 class OptionsMenu(Enum):
     #   - Modify movement speed
     CHANGE_MOVE_SPEED = auto()
+    #   - Modify screen size
+    CHANGE_SCREEN_SIZE = auto()
 
 
 # > Main menu options

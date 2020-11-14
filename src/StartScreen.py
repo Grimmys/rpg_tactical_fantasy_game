@@ -9,6 +9,8 @@ from src.Menus import StartMenu, OptionsMenu, GenericActions
 
 
 class StartScreen:
+    screen_size = SCREEN_SIZE
+
     def __init__(self, screen):
         self.screen = screen
         self.menu_screen = self.screen.copy()
@@ -35,6 +37,7 @@ class StartScreen:
     def load_options(self):
         # Load current move speed
         Movable.move_speed = int(self.read_options_file("move_speed"))
+        StartScreen.screen_size = int(self.read_options_file("screen_size"))
 
     @staticmethod
     def create_menu():
@@ -65,8 +68,10 @@ class StartScreen:
         entries = [[StartScreen.load_parameter_entry("move_speed", "Move speed : ",
                                                      [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
                                                       {'label': 'Normal', 'value': ANIMATION_SPEED},
-                                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
-                                                     OptionsMenu.CHANGE_MOVE_SPEED)]]
+                                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],OptionsMenu.CHANGE_MOVE_SPEED)],
+                   [StartScreen.load_parameter_entry("screen_size", "Screen Size : ",
+                                                     [{'label': 'Window', 'value': SCREEN_SIZE // 2},
+                                                      {'label': 'Full', 'value': SCREEN_SIZE}],OptionsMenu.CHANGE_SCREEN_SIZE)]]
         for row in entries:
             for entry in row:
                 entry['type'] = 'parameter_button'
@@ -103,10 +108,17 @@ class StartScreen:
 
     def play(self, level):
         # Modify screen
-        self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.FULLSCREEN)
-        print("FULL SCREEN :")
-        print(self.screen)
-        self.level = level
+        screen_size = StartScreen.screen_size
+        if screen_size == 2:
+            self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.FULLSCREEN)
+            print("FULL SCREEN :")
+            print(self.screen)
+            self.level = level
+        if screen_size == 1:
+            self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT),)
+            print("WINDOW :")
+            print(self.screen)
+            self.level = level
 
     def update_state(self):
         if self.level:
@@ -192,6 +204,9 @@ class StartScreen:
         if method_id is OptionsMenu.CHANGE_MOVE_SPEED:
             Movable.move_speed = args[2][0]
             StartScreen.modify_options_file("move_speed", args[2][0])
+        elif method_id is OptionsMenu.CHANGE_SCREEN_SIZE:
+            StartScreen.screen_size = args[2][0]
+            StartScreen.modify_options_file("screen_size", args[2][0])
         else:
             print("Unknown action... : ", method_id)
 
