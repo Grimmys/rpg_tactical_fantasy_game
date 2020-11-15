@@ -68,10 +68,12 @@ class StartScreen:
         entries = [[StartScreen.load_parameter_entry("move_speed", "Move speed : ",
                                                      [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
                                                       {'label': 'Normal', 'value': ANIMATION_SPEED},
-                                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],OptionsMenu.CHANGE_MOVE_SPEED)],
-                   [StartScreen.load_parameter_entry("screen_size", "Screen Size : ",
+                                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
+                                                     OptionsMenu.CHANGE_MOVE_SPEED)],
+                   [StartScreen.load_parameter_entry("screen_size", "Screen mode : ",
                                                      [{'label': 'Window', 'value': SCREEN_SIZE // 2},
-                                                      {'label': 'Full', 'value': SCREEN_SIZE}],OptionsMenu.CHANGE_SCREEN_SIZE)]]
+                                                      {'label': 'Full', 'value': SCREEN_SIZE}],
+                                                     OptionsMenu.CHANGE_SCREEN_SIZE)]]
         for row in entries:
             for entry in row:
                 entry['type'] = 'parameter_button'
@@ -104,21 +106,12 @@ class StartScreen:
                     menu[0].display(self.screen)
             if self.active_menu:
                 self.active_menu.display(self.screen)
-            print(self.screen)
 
     def play(self, level):
         # Modify screen
-        screen_size = StartScreen.screen_size
-        if screen_size == 2:
-            self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.FULLSCREEN)
-            print("FULL SCREEN :")
-            print(self.screen)
-            self.level = level
-        if screen_size == 1:
-            self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT),)
-            print("WINDOW :")
-            print(self.screen)
-            self.level = level
+        flags = pg.FULLSCREEN if StartScreen.screen_size == 2 else 0
+        self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), flags)
+        self.level = level
 
     def update_state(self):
         if self.level:
