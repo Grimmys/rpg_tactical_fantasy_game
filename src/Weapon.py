@@ -19,6 +19,7 @@ class Weapon(Equipment):
 
     def used(self):
         self.durability -= 1
+        self.resell_price = int((self.price // 2) * (self.durability / self.durability_max))
         return self.durability
 
     def applied_effects(self, user, target):

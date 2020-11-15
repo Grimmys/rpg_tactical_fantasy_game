@@ -13,10 +13,10 @@ from src.Level import Level
 from src.Character import Character
 from src import LoadFromXMLManager as Loader
 
-NEW_GAME_BUTTON_POS = (325, 349)
-LOAD_GAME_BUTTON_POS = (325, 389)
-OPTIONS_BUTTON_POS = (325, 429)
-EXIT_GAME_BUTTON_POS = (325, 469)
+NEW_GAME_BUTTON_POS = (210, 249)
+LOAD_GAME_BUTTON_POS = (210, 289)
+OPTIONS_BUTTON_POS = (210, 329)
+EXIT_GAME_BUTTON_POS = (210, 369)
 BUTTON_SIZE = (150, 30)
 
 LEFT_BUTTON = 1

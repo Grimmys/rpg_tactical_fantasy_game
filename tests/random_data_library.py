@@ -7,6 +7,7 @@ from src.Destroyable import Destroyable
 from src.Gold import Gold
 from src.Item import Item
 from src.Movable import Movable
+from src.Weapon import Weapon
 from src.constants import TILE_SIZE, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
@@ -30,13 +31,35 @@ def random_item_or_gold(gold_prob=0.3):
         return random_item()
 
 
-def random_item():
-    name = random_string()
-    sample_img = 'imgs/dungeon_crawl/item/potion/yellow_new.png'
-    desc = random_string(min_len=10, max_len=100)
-    cost = rd.randint(0, 1000)
-    item = Item(name, sample_img, desc, cost)
-    return item
+def random_item_attributes(price):
+    return {'name': random_string(),
+            'sample_img': 'imgs/dungeon_crawl/item/potion/yellow_new.png',
+            'desc': random_string(min_len=10, max_len=100),
+            'cost': rd.randint(0, 1000) if price is None else price}
+
+
+def random_item(price=None):
+    attrs = random_item_attributes(price)
+    return Item(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'])
+
+
+def random_weapon_attributes(price, durability):
+    attrs = random_item_attributes(price)
+    attrs['power'] = rd.randint(1, 10)
+    attrs['attack_kind'] = rd.choice(['PHYSICAL', 'SPIRITUAL'])
+    attrs['weight'] = rd.randint(1, 10)
+    attrs['durability'] = rd.randint(10, 60) if durability is None else durability
+    attrs['reach'] = rd.choice([[1], [1, 2], [2]])
+    attrs['restrictions'] = []
+    attrs['effects'] = []
+    return attrs
+
+
+def random_weapon(price=None, durability=None):
+    attrs = random_weapon_attributes(price, durability)
+    return Weapon(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'], [attrs['sample_img']],
+                  attrs['power'], attrs['attack_kind'], attrs['weight'], attrs['durability'], attrs['reach'],
+                  attrs['restrictions'], attrs['effects'])
 
 
 def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportion=0.3):

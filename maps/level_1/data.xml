@@ -200,6 +200,18 @@
         </foe>
         <foe>
             <name>
+                assassin
+            </name>
+            <position>
+                <x>9</x>
+                <y>0</y>
+            </position>
+            <level>
+                2
+            </level>
+        </foe>
+        <foe>
+            <name>
                 cultist
             </name>
             <position>
@@ -217,6 +229,18 @@
             <position>
                 <x>1</x>
                 <y>6</y>
+            </position>
+            <level>
+                2
+            </level>
+        </foe>
+        <foe>
+            <name>
+                cultist
+            </name>
+            <position>
+                <x>10</x>
+                <y>9</y>
             </position>
             <level>
                 2
