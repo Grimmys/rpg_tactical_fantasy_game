@@ -49,7 +49,7 @@ def create_inventory_menu(items, gold, price=False):
         entry = {'type': 'item_button', 'item': it, 'index': i, 'id': method_id}
         # Test if price should appeared
         if price and it:
-            entry['price'] = it.price // 2 if it.price != 0 else 0
+            entry['price'] = it.resell_price
         row.append(entry)
         if len(row) == 2:
             entries.append(row)
