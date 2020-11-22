@@ -100,7 +100,6 @@ class Level:
     def __init__(self, directory, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None, players=[]):
         # Store directory path if player wants to save and exit game
         self.directory = directory
-        self.quit_request = False
         self.nb_level = nb_level
 
         # Reading of the XML file
@@ -118,6 +117,7 @@ class Level:
         # Load events
         self.events = Loader.load_events(tree.find('events'), self.map['x'], self.map['y'])
 
+        self.possible_placements = []
         if status == Status.INITIALIZATION.name:
             # Load available tiles for characters' placement
             self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'),
@@ -175,16 +175,22 @@ class Level:
         self.victory = False
         self.defeat = False
 
-        self.game_phase = Status[status]
-        self.side_turn = EntityTurn.PLAYER
-        self.turn = turn
-        self.selected_item = None
-        self.animation = None
-        self.selected_player = None
-        self.watched_ent = None
+        # Data structures for possible actions
         self.possible_moves = {}
         self.possible_attacks = []
         self.possible_interactions = []
+
+        # Storage of current selected entity
+        self.selected_player = None
+        self.selected_item = None
+        self.active_shop = None
+
+        self.quit_request = False
+        self.game_phase = Status[status]
+        self.side_turn = EntityTurn.PLAYER
+        self.turn = turn
+        self.animation = None
+        self.watched_ent = None
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions)
         self.wait_for_dest_tp = False
@@ -603,6 +609,7 @@ class Level:
             kind = ""
             # Check if player tries to visit a shop
             if isinstance(target, Shop):
+                self.active_shop = target
                 kind = ShopMenu
 
             entries = target.interact(actor)
@@ -733,12 +740,11 @@ class Level:
         if method_id is BuyMenu.INTERAC_BUY:
             item_button_pos = args[0]
             item = args[1]
-            price = args[2][0]
 
             self.selected_item = item
 
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = MenuCreatorManager.create_item_shop_menu(item_button_pos, item, price)
+            self.active_menu = MenuCreatorManager.create_item_shop_menu(item_button_pos, item)
         else:
             print("Unknown action in buy menu... : " + str(method_id))
 
@@ -746,21 +752,18 @@ class Level:
         if method_id is SellMenu.INTERAC_SELL:
             item_button_pos = args[0]
             item = args[1]
-            price = args[2]
 
             self.selected_item = item
 
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = MenuCreatorManager.create_item_sell_menu(item_button_pos, item, price)
+            self.active_menu = MenuCreatorManager.create_item_sell_menu(item_button_pos, item)
         else:
             print("Unknown action in sell menu... : " + str(method_id))
 
     def execute_shop_action(self, method_id, args):
         if method_id is ShopMenu.BUY:
-            shop = args[2][0]
-
             self.background_menus.append((self.active_menu, False))
-            self.active_menu = MenuCreatorManager.create_shop_menu(shop.items, self.selected_player.gold)
+            self.active_menu = self.active_shop.menu
         elif method_id is ShopMenu.SELL:
             items_max = self.selected_player.nb_items_max
 
@@ -769,7 +772,7 @@ class Level:
             items += [None] * free_spaces
 
             self.background_menus.append((self.active_menu, False))
-            self.active_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold, price=True)
+            self.active_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold, for_sell=True)
         else:
             print("Unknown action in shop menu... : " + str(method_id))
 
@@ -1080,31 +1083,8 @@ class Level:
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Buy an item
         elif method_id is ItemMenu.BUY_ITEM:
-            price = args[2][0]
-
             # Try to buy the item
-            if self.selected_player.gold >= price:
-                if len(self.selected_player.items) < self.selected_player.nb_items_max:
-                    # Item can be bought
-                    self.selected_player.set_item(self.selected_item)
-                    self.selected_player.gold -= price
-                    result_msg = "The item has been bought."
-
-                    # Update shop screen content (gold total amount has been reduced)
-                    shop_menu = self.background_menus[len(self.background_menus) - 1][0]
-
-                    for row in shop_menu.entries:
-                        for entry in row:
-                            if entry['type'] == 'text':
-                                entry['text'] = 'Your gold : ' + str(self.selected_player.gold)
-
-                    shop_menu.update_content(shop_menu.entries)
-                else:
-                    # Not enough space in inventory
-                    result_msg = "Not enough space in inventory to buy this item."
-            else:
-                # Not enough gold to purchase item
-                result_msg = "Not enough gold to buy this item."
+            result_msg = self.active_shop.buy(self.selected_player, self.selected_item)
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
@@ -1112,14 +1092,11 @@ class Level:
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Sell an item
         elif method_id is ItemMenu.SELL_ITEM:
-            price = args[2][0][0]
+            sold, result_msg = self.active_shop.sell(self.selected_player, self.selected_item)
 
-            # Sell the item
-            if price > 0:
-                self.selected_player.remove_item(self.selected_item)
+            if sold:
+                # Remove ref to item
                 self.selected_item = None
-                self.selected_player.gold += price
-                result_msg = "The item has been selled."
 
                 # Update shop screen content (item has been removed from inventory)
                 items_max = self.selected_player.nb_items_max
@@ -1128,12 +1105,12 @@ class Level:
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                new_sell_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold, price=True)
+                new_sell_menu = MenuCreatorManager.create_inventory_menu(items, self.selected_player.gold,
+                                                                         for_sell=True)
 
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_sell_menu, True)
             else:
-                result_msg = "This item can't be selled !"
                 self.background_menus.append((self.active_menu, False))
 
             entries = [[{'type': 'text', 'text': result_msg,

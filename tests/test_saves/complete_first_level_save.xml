@@ -414,12 +414,15 @@
           <items>
             <item>
               <name>life_potion</name>
+              <quantity>5</quantity>
             </item>
             <item>
               <name>short_sword</name>
+              <quantity>2</quantity>
             </item>
             <item>
               <name>wooden_shield</name>
+              <quantity>2</quantity>
             </item>
           </items>
         </building>

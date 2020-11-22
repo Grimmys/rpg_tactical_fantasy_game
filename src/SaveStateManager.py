@@ -57,7 +57,6 @@ class SaveStateManager:
 
     @staticmethod
     def save_collection(collection_name, element_name, collection):
-        print(collection)
         element = etree.Element(collection_name)
         element.extend([ent.save(element_name) for ent in collection])
         return element

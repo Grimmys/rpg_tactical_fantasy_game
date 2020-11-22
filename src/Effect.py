@@ -55,6 +55,8 @@ class Effect:
     def get_formatted_desc(self):
         if self.name == 'heal':
             return 'Recover ' + str(self.power) + ' HP'
+        elif self.name == 'xp_up':
+            return 'Earn ' + str(self.power) + ' XP'
         else:
             return self.alteration.desc
 

@@ -16,10 +16,10 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
-    def __init__(self, name, type_id, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0,
+    def __init__(self, name, id_type, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0,
                  sep=False, title_color=WHITE):
         self.name = name
-        self.type = type_id
+        self.type = id_type
         self.element_linked = el_rect_linked
         self.close_button = close_button
         self.title_color = title_color
@@ -96,17 +96,20 @@ class InfoBox:
                                           entry['obj']))
 
                 elif entry['type'] == 'item_button':
-                    button_size = ITEM_BUTTON_SIZE
+                    button_size = entry['size'] if 'size' in entry else ITEM_BUTTON_SIZE
+
                     disabled = 'disabled' in entry
                     if 'subtype' in entry:
                         if entry['subtype'] == 'trade':
                             button_size = TRADE_ITEM_BUTTON_SIZE
                     if 'price' not in entry:
                         entry['price'] = 0
+                    if 'quantity' not in entry:
+                        entry['quantity'] = 0
                     if 'args' not in entry:
                         entry['args'] = []
                     element.append(ItemButton(entry['id'], entry['args'], button_size, (0, 0), entry['item'], entry['margin'],
-                                              entry['index'], entry['price'], disabled))
+                                              entry['index'], entry['price'], entry['quantity'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
                         entry['font'] = fonts['ITEM_FONT']
@@ -166,9 +169,6 @@ class InfoBox:
             return pos
         return []
 
-    def get_type(self):
-        return self.type
-
     def find_buttons(self):
         buttons = []
         for row in self.elements:
@@ -196,9 +196,9 @@ class InfoBox:
 
     def update_content(self, entries):
         self.elements = self.init_elements(entries, self.size[0])
-        self.determine_height(self.close_button)
-        if self.pos:
-            self.determine_elements_pos()
+        self.size = (self.size[0], self.determine_height(self.close_button))
+        self.sprite = pg.transform.scale(self.sprite, self.size)
+        self.pos = []
         self.buttons = self.find_buttons()
 
     def display(self, win):
@@ -206,7 +206,7 @@ class InfoBox:
             win.blit(self.sprite, self.pos)
         else:
             win_size = win.get_size()
-            self.pos = (win_size[0] // 2 - self.size[0] // 2, win_size[1] // 2 - self.size[1] // 2)
+            self.pos = [win_size[0] // 2 - self.size[0] // 2, win_size[1] // 2 - self.size[1] // 2]
             win.blit(self.sprite, self.pos)
             self.determine_elements_pos()
 

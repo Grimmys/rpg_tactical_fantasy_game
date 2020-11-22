@@ -373,10 +373,13 @@ def load_building(building, from_save, gap_x, gap_y):
     if nature is not None:
         nature = nature.text.strip()
         if nature == "shop":
-            items = []
-            for it in building.findall('items/item/name'):
-                items.append(parse_item_file(it.text.strip()))
-            loaded_building = Shop(name, pos, sprite, None, items)
+            stock = []
+            for it in building.findall('items/item'):
+                entry = {'item': parse_item_file(it.find('name').text.strip()),
+                         'quantity': int(it.find('quantity').text.strip())
+                         }
+                stock.append(entry)
+            loaded_building = Shop(name, pos, sprite, None, stock)
         else:
             print("Error : building type isn't recognized : ", type)
             raise SystemError
@@ -552,6 +555,7 @@ def load_events(events_el, gap_x, gap_y):
 
     return events
 
+
 def load_player(el, from_save):
     name = el.find("name").text.strip()
     level = el.find('level')
@@ -609,7 +613,7 @@ def load_player(el, from_save):
         p.pos = pos
         state = el.find("turnFinished").text.strip()
         if state == "True":
-            p.turn_finished()
+            p.end_turn()
     else:
         # Up stats according to current lvl
         p.stats_up(level - 1)

@@ -140,3 +140,16 @@ def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, 
         }
     print(interaction)
     return Building(name, pos, sprite, interaction)
+
+
+def random_stock():
+    stock = []
+    nb_items = rd.randint(1, 10)
+    for _ in range(nb_items):
+        stock.append({'item': random_item(), 'quantity': rd.randint(1, 10)})
+
+    return stock
+
+
+def random_shop():
+    pass

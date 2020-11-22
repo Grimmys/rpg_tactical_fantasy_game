@@ -20,11 +20,12 @@ MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
 
-def create_shop_menu(items, gold):
+def create_shop_menu(stock, gold):
     entries = []
     row = []
-    for i, it in enumerate(items):
-        entry = {'type': 'item_button', 'item': it, 'price': it.price, 'index': i, 'id': BuyMenu.INTERAC_BUY}
+    for i, it in enumerate(stock):
+        entry = {'type': 'item_button', 'item': it['item'], 'price': it['item'].price, 'quantity': it['quantity'],
+                 'index': i, 'id': BuyMenu.INTERAC_BUY}
         row.append(entry)
         if len(row) == 2:
             entries.append(row)
@@ -41,14 +42,14 @@ def create_shop_menu(items, gold):
                    ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
-def create_inventory_menu(items, gold, price=False):
+def create_inventory_menu(items, gold, for_sell=False):
     entries = []
     row = []
-    method_id = SellMenu.INTERAC_SELL if price else InventoryMenu.INTERAC_ITEM
+    method_id = SellMenu.INTERAC_SELL if for_sell else InventoryMenu.INTERAC_ITEM
     for i, it in enumerate(items):
         entry = {'type': 'item_button', 'item': it, 'index': i, 'id': method_id}
         # Test if price should appeared
-        if price and it:
+        if for_sell and it:
             entry['price'] = it.resell_price
         row.append(entry)
         if len(row) == 2:
@@ -61,9 +62,9 @@ def create_inventory_menu(items, gold, price=False):
     entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
-    title = "Shop - Selling" if price else "Inventory"
-    menu_id = SellMenu if price else InventoryMenu
-    title_color = ORANGE if price else WHITE
+    title = "Shop - Selling" if for_sell else "Inventory"
+    menu_id = SellMenu if for_sell else InventoryMenu
+    title_color = ORANGE if for_sell else WHITE
     return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.png", entries,
                    ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=title_color)
 
@@ -74,12 +75,15 @@ def create_equipment_menu(equipments):
     for part in body_parts:
         row = []
         for member in part:
-            entry = {'type': 'item_button', 'item': None, 'index': -1,
-                     'id': EquipmentMenu.INTERAC_EQUIPMENT}
+            equipment = None
+            index = -1
             for i, eq in enumerate(equipments):
                 if member == eq.body_part:
-                    entry = {'type': 'item_button', 'item': eq, 'index': i,
-                             'id': EquipmentMenu.INTERAC_EQUIPMENT}
+                    equipment = eq
+                    index = i
+                    break
+            entry = {'type': 'item_button', 'item': equipment, 'index': index, 'size': ITEM_BUTTON_SIZE_EQ,
+                     'id': EquipmentMenu.INTERAC_EQUIPMENT}
             row.append(entry)
         entries.append(row)
     return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
@@ -306,9 +310,9 @@ def create_main_menu(initialization_phase, pos):
                    ACTION_MENU_WIDTH, el_rect_linked=tile)
 
 
-def create_item_shop_menu(item_button_pos, item, price):
+def create_item_shop_menu(item_button_pos, item):
     entries = [
-        [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button', 'args': [price]}],
+        [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button'}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
     formatted_item_name = str(item)
@@ -319,9 +323,9 @@ def create_item_shop_menu(item_button_pos, item, price):
                    entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
-def create_item_sell_menu(item_button_pos, item, price):
+def create_item_sell_menu(item_button_pos, item):
     entries = [
-        [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button', 'args': [price]}],
+        [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button'}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
     formatted_item_name = str(item)
