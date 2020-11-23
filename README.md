@@ -9,7 +9,6 @@ I'm currently looking for a good name.
 
 You can submit any request you want, or notify me about any bug you encountered, by sending an e-mail to grimmys.programming@gmail.com or by opening an issue.
 <br>
-Also, I just opened a discord server. Feel free to join and talk about anything : https://discord.gg/d3CYmgq
 
 Please, don't hesitate about suggesting ideas : it's my first " serious " game project. ;)
 
