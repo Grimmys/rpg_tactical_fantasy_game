@@ -4,9 +4,9 @@ import unittest
 import pygame as pg
 
 import src.fonts as font
-import src.LoadFromXMLManager as Loader
-from src.Character import Character
-from src.StartScreen import StartScreen
+import src.loadFromXMLManager as Loader
+from src.character import Character
+from src.startScreen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON
 

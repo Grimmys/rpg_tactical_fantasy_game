@@ -1,13 +1,13 @@
 import random as rd
 
-from src.Building import Building
-from src.Character import Character
-from src.Chest import Chest
-from src.Destroyable import Destroyable
-from src.Gold import Gold
-from src.Item import Item
-from src.Movable import Movable
-from src.Weapon import Weapon
+from src.building import Building
+from src.character import Character
+from src.chest import Chest
+from src.destroyable import Destroyable
+from src.gold import Gold
+from src.item import Item
+from src.movable import Movable
+from src.weapon import Weapon
 from src.constants import TILE_SIZE, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'

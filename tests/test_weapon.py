@@ -4,11 +4,10 @@ import pygame as pg
 import random as rd
 
 import src.fonts as font
-from src.Destroyable import DamageKind
-from src.Entity import Entity
-from src.Weapon import Weapon
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
-from tests.random_data_library import random_pos, random_item, random_weapon
+from src.destroyable import DamageKind
+from src.weapon import Weapon
+from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from tests.random_data_library import random_weapon
 
 NB_TESTS_FOR_PROPORTIONS = 100
 

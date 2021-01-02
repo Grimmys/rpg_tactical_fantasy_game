@@ -4,7 +4,7 @@ import pygame as pg
 import random as rd
 
 import src.fonts as font
-from src.Destroyable import Destroyable, DamageKind
+from src.destroyable import Destroyable, DamageKind
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from tests.random_data_library import random_destroyable_entity, random_movable_entity
 

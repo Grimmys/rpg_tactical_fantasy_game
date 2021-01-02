@@ -4,9 +4,9 @@ import pygame as pg
 import random as rd
 
 import src.fonts as font
-import src.LoadFromXMLManager as Loader
-from src.Character import Character
-from src.Shop import Shop
+import src.loadFromXMLManager as Loader
+from src.character import Character
+from src.shop import Shop
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from tests.random_data_library import random_item, random_character_entity
 

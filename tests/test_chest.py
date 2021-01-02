@@ -3,9 +3,9 @@ import unittest
 import pygame as pg
 
 import src.fonts as font
-from src.Chest import Chest
-from src.Gold import Gold
-from src.Item import Item
+from src.chest import Chest
+from src.gold import Gold
+from src.item import Item
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from tests.random_data_library import random_chest, random_item, random_item_or_gold
 

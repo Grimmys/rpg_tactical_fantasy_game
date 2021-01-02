@@ -4,7 +4,7 @@ import pygame as pg
 import random as rd
 
 import src.fonts as font
-from src.Entity import Entity
+from src.entity import Entity
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from tests.random_data_library import random_pos
 
