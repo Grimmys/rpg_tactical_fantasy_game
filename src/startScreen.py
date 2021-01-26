@@ -1,11 +1,12 @@
 from lxml import etree
 
+from src import menuCreatorManager
 from src.constants import *
 from src.fonts import fonts
 from src.level import Level, Status
 from src.infoBox import InfoBox
 from src.movable import Movable
-from src.menus import StartMenu, OptionsMenu, GenericActions
+from src.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
 
 
 class StartScreen:
@@ -20,7 +21,7 @@ class StartScreen:
         self.background = pg.transform.scale(bg_image, screen.get_size())
 
         # Creating menu
-        self.active_menu = StartScreen.create_menu()
+        self.active_menu = menuCreatorManager.create_start_menu()
         self.background_menus = []
 
         # Memorize if a game is currently being performed
@@ -30,56 +31,21 @@ class StartScreen:
         self.level_id = None
 
         # Load current saved parameters
-        self.load_options()
+        StartScreen.load_options()
 
         self.exit = False
 
-    def load_options(self):
+    @staticmethod
+    def load_options():
         # Load current move speed
-        Movable.move_speed = int(self.read_options_file("move_speed"))
-        StartScreen.screen_size = int(self.read_options_file("screen_size"))
+        Movable.move_speed = int(StartScreen.read_options_file("move_speed"))
+        StartScreen.screen_size = int(StartScreen.read_options_file("screen_size"))
 
     @staticmethod
-    def create_menu():
-        entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}], [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
-                   [{'name': 'Options', 'id': StartMenu.OPTIONS}], [{'name': 'Exit game', 'id': StartMenu.EXIT}]]
-
-        for row in entries:
-            for entry in row:
-                entry['type'] = 'button'
-
-        return InfoBox("In the name of the Five Cats", StartMenu,
-                       "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
-
-    @staticmethod
-    def load_parameter_entry(param, formatted_name, values, identifier):
-        val = int(StartScreen.read_options_file(param))
-
-        entry = {'name': formatted_name, 'values': values, 'id': identifier, 'current_value_ind': 0}
-
-        for i in range(len(entry['values'])):
-            if entry['values'][i]['value'] == val:
-                entry['current_value_ind'] = i
-
-        return entry
-
-    @staticmethod
-    def create_options_menu():
-        entries = [[StartScreen.load_parameter_entry("move_speed", "Move speed : ",
-                                                     [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
-                                                      {'label': 'Normal', 'value': ANIMATION_SPEED},
-                                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
-                                                     OptionsMenu.CHANGE_MOVE_SPEED)],
-                   [StartScreen.load_parameter_entry("screen_size", "Screen mode : ",
-                                                     [{'label': 'Window', 'value': SCREEN_SIZE // 2},
-                                                      {'label': 'Full', 'value': SCREEN_SIZE}],
-                                                     OptionsMenu.CHANGE_SCREEN_SIZE)]]
-        for row in entries:
-            for entry in row:
-                entry['type'] = 'parameter_button'
-
-        return InfoBox("Options", OptionsMenu,
-                       "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+    def read_options_file(el_to_read):
+        tree = etree.parse("saves/options.xml").getroot()
+        el = tree.find(".//" + el_to_read)
+        return el.text.strip()
 
     @staticmethod
     def modify_options_file(el_to_edit, new_value):
@@ -87,13 +53,6 @@ class StartScreen:
         el = tree.find(".//" + el_to_edit)
         el.text = str(new_value)
         tree.write("saves/options.xml")
-
-    @staticmethod
-    def read_options_file(el_to_read):
-        tree = etree.parse("saves/options.xml").getroot()
-
-        el = tree.find(".//" + el_to_read)
-        return el.text.strip()
 
     def display(self):
         if self.level:
@@ -141,13 +100,13 @@ class StartScreen:
         self.level_id = 0
         self.play(StartScreen.load_level(self.level_id))
 
-    def load_game(self):
+    def load_game(self, game_id):
         try:
-            save = open("saves/main_save.xml", "r")
+            save = open(f"saves/save_{game_id}.xml", "r")
 
             # Test if there is a current saved game
             if save:
-                tree_root = etree.parse("saves/main_save.xml").getroot()
+                tree_root = etree.parse(save).getroot()
                 index = tree_root.find("level/index").text.strip()
                 level_name = 'maps/level_' + index + '/'
                 game_status = tree_root.find("level/phase").text.strip()
@@ -171,9 +130,14 @@ class StartScreen:
             self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                        entries, width, close_button=1)
 
+    def load_menu(self):
+        self.background_menus.append([self.active_menu, False])
+        self.active_menu = menuCreatorManager.create_load_menu()
+
     def options_menu(self):
         self.background_menus.append([self.active_menu, False])
-        self.active_menu = StartScreen.create_options_menu()
+        self.active_menu = menuCreatorManager.create_options_menu({'move_speed': int(self.read_options_file('move_speed')),
+                                                                   'screen_size': int(self.read_options_file('screen_size'))})
 
     def exit_game(self):
         self.exit = True
@@ -183,13 +147,20 @@ class StartScreen:
         if method_id is StartMenu.NEW_GAME:
             self.new_game()
         elif method_id is StartMenu.LOAD_GAME:
-            self.load_game()
+            self.load_menu()
         elif method_id is StartMenu.OPTIONS:
             self.options_menu()
         elif method_id is StartMenu.EXIT:
             self.exit_game()
         else:
-            print("Unknown action... : ", str(method_id))
+            print(f"Unknown action : {method_id}")
+
+    def load_menu_action(self, method_id, args):
+        # Execute action
+        if method_id is LoadMenu.LOAD:
+            self.load_game(args[2][0])
+        else:
+            print(f"Unknown action: {method_id}")
 
     @staticmethod
     def options_menu_action(method_id, args):
@@ -201,7 +172,7 @@ class StartScreen:
             StartScreen.screen_size = args[2][0]
             StartScreen.modify_options_file("screen_size", args[2][0])
         else:
-            print("Unknown action... : ", method_id)
+            print(f"Unknown action : {method_id}")
 
     def execute_action(self, menu_type, action):
         if not action:
@@ -212,17 +183,17 @@ class StartScreen:
         # Test if the action is a generic one (according to the method_id)
         # Close menu : Active menu is closed
         if method_id is GenericActions.CLOSE:
-            self.active_menu = None
-            if self.background_menus:
-                self.active_menu = self.background_menus.pop()[0]
+            self.active_menu = self.background_menus.pop()[0] if self.background_menus else None
             return
 
         if menu_type is StartMenu:
             self.main_menu_action(method_id, args)
         elif menu_type is OptionsMenu:
-            self.options_menu_action(method_id, args)
+            StartScreen.options_menu_action(method_id, args)
+        elif menu_type is LoadMenu:
+            self.load_menu_action(method_id, args)
         else:
-            print("Unknown menu... : ", str(menu_type))
+            print(f"Unknown menu : {menu_type}")
 
     def motion(self, pos):
         if self.level is None:

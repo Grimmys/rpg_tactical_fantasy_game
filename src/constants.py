@@ -74,3 +74,6 @@ SCREEN_SIZE = 2
 # Value for kind of action on close button
 UNFINAL_ACTION = 1
 FINAL_ACTION = 2
+
+# Number of save slots
+SAVE_SLOTS = 3

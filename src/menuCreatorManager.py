@@ -134,7 +134,7 @@ def create_trade_menu(first_player, second_player):
     # Gold at end
     entry = [{'type': 'text', 'text': str(first_player) + '\'s gold : ' + str(first_player.gold),
               'font': fonts['ITEM_DESC_FONT']},
-             {'type': 'text', 'text': str(second_player)+ '\'s gold : ' + str(second_player.gold),
+             {'type': 'text', 'text': str(second_player) + '\'s gold : ' + str(second_player.gold),
               'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
@@ -162,7 +162,7 @@ def create_status_menu(player):
     entries = [[{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': str(player)}, {}],
                [{}, {}, {'type': 'text', 'color': DARK_GREEN, 'text': 'SKILLS',
-                     'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
+                         'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
                [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': player.get_formatted_classes()}],
                [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': fonts['ITALIC_ITEM_FONT']},
@@ -426,7 +426,6 @@ def create_item_desc_menu(item):
 
 
 def create_alteration_info_menu(alteration):
-
     turns_left = alteration.get_turns_left()
     entries = [[{'type': 'text', 'text': alteration.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
@@ -446,7 +445,6 @@ def create_skill_info_menu(skill):
 
 def create_status_entity_menu(ent):
     keywords_display = ent.get_formatted_keywords() if isinstance(ent, Foe) else ''
-    print(keywords_display)
     entries = [[{'type': 'text', 'text': keywords_display, 'font': fonts['ITALIC_ITEM_FONT']}],
                [{'type': 'text', 'text': 'LEVEL : ' + str(ent.lvl), 'font': fonts['ITEM_DESC_FONT']}],
                [{'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
@@ -507,7 +505,8 @@ def create_status_entity_menu(ent):
 
 
 def create_reward_menu(mission):
-    entries = [[{'type': 'text', 'text': 'Congratulations ! Objective has been completed !', 'font': fonts['ITEM_DESC_FONT']}]]
+    entries = [
+        [{'type': 'text', 'text': 'Congratulations ! Objective has been completed !', 'font': fonts['ITEM_DESC_FONT']}]]
     if mission.gold:
         entries.append([{'type': 'text', 'text': 'Earned gold : ' + str(mission.gold) + ' (all characters)'}])
     for item in mission.items:
@@ -515,3 +514,63 @@ def create_reward_menu(mission):
 
     return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
                    close_button=UNFINAL_ACTION)
+
+
+def create_start_menu():
+    entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}], [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
+               [{'name': 'Options', 'id': StartMenu.OPTIONS}], [{'name': 'Exit game', 'id': StartMenu.EXIT}]]
+
+    for row in entries:
+        for entry in row:
+            entry['type'] = 'button'
+
+    return InfoBox("In the name of the Five Cats", StartMenu,
+                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
+
+
+def load_parameter_entry(formatted_name, values, current_value, identifier):
+    entry = {'type': 'parameter_button', 'name': formatted_name, 'values': values, 'id': identifier,
+             'current_value_ind': 0}
+
+    for i in range(len(entry['values'])):
+        if entry['values'][i]['value'] == current_value:
+            entry['current_value_ind'] = i
+
+    return entry
+
+
+def create_options_menu(params):
+    entries = [[load_parameter_entry("Move speed : ",
+                                     [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
+                                      {'label': 'Normal', 'value': ANIMATION_SPEED},
+                                      {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
+                                     params['move_speed'],
+                                     OptionsMenu.CHANGE_MOVE_SPEED)],
+               [load_parameter_entry("Screen mode : ",
+                                     [{'label': 'Window', 'value': SCREEN_SIZE // 2},
+                                      {'label': 'Full', 'value': SCREEN_SIZE}],
+                                     params['screen_size'],
+                                     OptionsMenu.CHANGE_SCREEN_SIZE)]]
+
+    return InfoBox("Options", OptionsMenu,
+                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+
+
+def create_load_menu():
+    entries = []
+
+    for i in range(SAVE_SLOTS):
+        entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': LoadMenu.LOAD, 'args': [i]}])
+
+    return InfoBox("Load Game", LoadMenu,
+                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+
+
+def create_save_menu():
+    entries = []
+
+    for i in range(SAVE_SLOTS):
+        entries.append([{'type': 'button', 'name': 'Save' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
+
+    return InfoBox("Save Game", SaveMenu,
+                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)

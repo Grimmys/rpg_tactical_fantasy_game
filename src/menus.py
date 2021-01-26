@@ -27,6 +27,18 @@ class OptionsMenu(Enum):
     CHANGE_SCREEN_SIZE = auto()
 
 
+# > Load menu
+class LoadMenu(Enum):
+    #   - Load save
+    LOAD = auto()
+
+
+# > Save menu
+class SaveMenu(Enum):
+    #   - Save game
+    SAVE = auto()
+
+
 # > Main menu options
 class MainMenu(Enum):
     #   - Start game

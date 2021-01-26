@@ -7,8 +7,8 @@ class SaveStateManager:
         # Init XML tree
         self.tree = etree.Element('save')
 
-    def save_game(self):
-        save_file = open("saves/main_save.xml", "w+")
+    def save_game(self, file_id):
+        save_file = open(f"saves/save_{file_id}.xml", "w+")
 
         level = self.save_level()
         self.tree.append(level)

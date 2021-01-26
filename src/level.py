@@ -202,9 +202,9 @@ class Level:
         return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
                        entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
-    def save_game(self):
+    def save_game(self, id):
         save_state_manager = SaveStateManager(self)
-        save_state_manager.save_game()
+        save_state_manager.save_game(id)
 
     def exit_game(self):
         # At next update, level will be destroyed
@@ -780,12 +780,8 @@ class Level:
         if method_id is MainMenu.START:
             self.start_game()
         elif method_id is MainMenu.SAVE:
-            self.save_game()
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.png",
-                                       [[{'type': 'text', 'text': "Game has been saved",
-                                          'font': fonts['ITEM_DESC_FONT']}]],
-                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = menuCreatorManager.create_save_menu()
         elif method_id is MainMenu.END_TURN:
             self.active_menu = None
             for player in self.players:
@@ -1146,7 +1142,7 @@ class Level:
             self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
-            print("Unknown action in item menu... : " + str(method_id))
+            print(f"Unknown action in item menu : {method_id}")
 
     def execute_status_action(self, method_id, args):
         # Get infos about an alteration
@@ -1180,6 +1176,17 @@ class Level:
 
             Player.trade_gold(sender, players[(sender_id + 1) % 2], gold_traded)
             self.active_menu = menuCreatorManager.create_trade_menu(players[0], players[1])
+
+    def execute_save_action(self, method_id, args):
+        if method_id is SaveMenu.SAVE:
+            self.save_game(args[2][0])
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.png",
+                                       [[{'type': 'text', 'text': "Game has been saved",
+                                          'font': fonts['ITEM_DESC_FONT']}]],
+                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+        else:
+            print(f"Unknown action in save menu : {method_id}")
 
     def execute_action(self, menu_type, action):
         if not action:
@@ -1230,6 +1237,8 @@ class Level:
             self.execute_sell_action(method_id, args)
         elif menu_type is TradeMenu:
             self.execute_trade_action(method_id, args)
+        elif menu_type is SaveMenu:
+            self.execute_save_action(method_id, args)
         else:
             print("Unknown menu... : " + str(menu_type))
 
