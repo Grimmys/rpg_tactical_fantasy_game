@@ -7,14 +7,15 @@ from pygame.rect import Rect
 from random import randrange
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
-from src.startScreen import StartScreen
-import src.fonts as font
-from src.level import Level
-from src.character import Character
-from src import loadFromXMLManager as Loader
+from src.scenes.startScreen import StartScreen
+import src.gui.fonts as font
+from src.scenes.level import Level
+from src.game_entities.character import Character
+from src.services import loadFromXMLManager as Loader
 
 NEW_GAME_BUTTON_POS = (210, 249)
 LOAD_GAME_BUTTON_POS = (210, 289)
+LOAD_FIRST_SLOT_BUTTON_POS = (210, 228)
 OPTIONS_BUTTON_POS = (210, 329)
 EXIT_GAME_BUTTON_POS = (210, 369)
 BUTTON_SIZE = (150, 30)
@@ -104,8 +105,11 @@ class TestStartScreen(unittest.TestCase):
         # Import simple save file
         shutil.copyfile("tests/test_saves/simple_save.xml", self.save_url)
 
-        # Generate random pos on load game button
+        # Generate random pos on load game buttons
         pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(LEFT_BUTTON, pos)
+        self.start_screen.display()
+        pos = self.generate_position(LOAD_FIRST_SLOT_BUTTON_POS, LOAD_FIRST_SLOT_BUTTON_POS + BUTTON_SIZE)
         self.start_screen.click(LEFT_BUTTON, pos)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)

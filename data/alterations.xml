@@ -3,6 +3,9 @@
         <info>
             The move cap is increased by {val}
         </info>
+        <effects>
+            speed_up
+        </effects>
         <abbreviated_name>
             Spd.Up
         </abbreviated_name>
@@ -11,6 +14,9 @@
         <info>
             The strength is increased by {val}
         </info>
+        <effects>
+            strength_up
+        </effects>
         <abbreviated_name>
             Str.Up
         </abbreviated_name>
@@ -19,6 +25,9 @@
         <info>
             The defense is increased by {val}
         </info>
+        <effects>
+            defense_up
+        </effects>
         <abbreviated_name>
             Def.Up
         </abbreviated_name>

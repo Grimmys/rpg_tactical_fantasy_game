@@ -1,12 +1,10 @@
 import unittest
 
-import pygame as pg
 import random as rd
 
-import src.fonts as font
-from src.destroyable import Destroyable, DamageKind
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.game_entities.destroyable import Destroyable, DamageKind
 from tests.random_data_library import random_destroyable_entity, random_movable_entity
+from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 1000
 
@@ -14,11 +12,7 @@ NB_TESTS_FOR_PROPORTIONS = 1000
 class TestDestroyable(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestDestroyable, cls).setUpClass()
-        pg.init()
-        font.init_fonts()
-        # Window parameters
-        pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+        minimal_setup_for_game()
 
     def test_init_destroyable(self):
         name = 'destroyable'

@@ -1,14 +1,10 @@
 import unittest
 
-import pygame as pg
 import random as rd
 
-import src.fonts as font
-import src.loadFromXMLManager as Loader
-from src.building import Building
-from src.character import Character
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.game_entities.building import Building
 from tests.random_data_library import random_item, random_string, random_building, random_character_entity
+from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 1000
 
@@ -16,15 +12,7 @@ NB_TESTS_FOR_PROPORTIONS = 1000
 class TestBuilding(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestBuilding, cls).setUpClass()
-        pg.init()
-        font.init_fonts()
-        # Window parameters
-        pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-        # Load some data
-        races = Loader.load_races()
-        classes = Loader.load_classes()
-        Character.init_data(races, classes)
+        minimal_setup_for_game()
 
     def test_init_building_no_interaction(self):
         name = 'house'

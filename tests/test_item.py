@@ -1,13 +1,8 @@
 import unittest
 
-import pygame as pg
-import random as rd
-
-import src.fonts as font
-from src.entity import Entity
-from src.item import Item
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
-from tests.random_data_library import random_pos, random_item
+from src.game_entities.item import Item
+from tests.random_data_library import random_item
+from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 100
 
@@ -15,11 +10,7 @@ NB_TESTS_FOR_PROPORTIONS = 100
 class TestItem(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestItem, cls).setUpClass()
-        pg.init()
-        font.init_fonts()
-        # Window parameters
-        pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+        minimal_setup_for_game()
 
     def test_init_item(self):
         name = 'life_potion'

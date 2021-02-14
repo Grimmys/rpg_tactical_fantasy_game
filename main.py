@@ -5,15 +5,15 @@ def show_fps(win, inner_clock, font):
 
 if __name__ == "__main__":
     from src.constants import *
-    import src.fonts as fonts
-    from src.destroyable import Destroyable
-    from src.breakable import Breakable
-    from src.movable import Movable
-    from src.character import Character
-    from src.sidebar import Sidebar
-    from src.level import Level
-    from src.startScreen import StartScreen
-    from src import loadFromXMLManager as Loader
+    import src.gui.fonts as fonts
+    from src.game_entities.destroyable import Destroyable
+    from src.game_entities.breakable import Breakable
+    from src.game_entities.movable import Movable
+    from src.game_entities.character import Character
+    from src.gui.sidebar import Sidebar
+    from src.scenes.level import Level
+    from src.scenes.startScreen import StartScreen
+    from src.services import loadFromXMLManager as Loader
 
     pg.init()
 

@@ -1,13 +1,10 @@
 import unittest
 
-import pygame as pg
-
-import src.fonts as font
-from src.chest import Chest
-from src.gold import Gold
-from src.item import Item
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.game_entities.chest import Chest
+from src.game_entities.gold import Gold
+from src.game_entities.item import Item
 from tests.random_data_library import random_chest, random_item, random_item_or_gold
+from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 1000
 
@@ -15,11 +12,7 @@ NB_TESTS_FOR_PROPORTIONS = 1000
 class TestChest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestChest, cls).setUpClass()
-        pg.init()
-        font.init_fonts()
-        # Window parameters
-        pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+        minimal_setup_for_game()
 
     def test_init_chest(self):
         pos = (0, 0)
@@ -79,8 +72,8 @@ class TestChest(unittest.TestCase):
         proportion_item_1 /= NB_TESTS_FOR_PROPORTIONS
         proportion_item_2 /= NB_TESTS_FOR_PROPORTIONS
 
-        self.assertAlmostEqual(proportion_item_1, 0.5, delta=0.05)
-        self.assertAlmostEqual(proportion_item_2, 0.5, delta=0.05)
+        self.assertAlmostEqual(proportion_item_1, 0.5, delta=0.1)
+        self.assertAlmostEqual(proportion_item_2, 0.5, delta=0.1)
 
     def test_open_chest_choose_diff_probabilities(self):
         item_1 = random_item_or_gold()

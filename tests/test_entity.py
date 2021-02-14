@@ -1,12 +1,11 @@
 import unittest
 
-import pygame as pg
 import random as rd
 
-import src.fonts as font
-from src.entity import Entity
+from src.game_entities.entity import Entity
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from tests.random_data_library import random_pos
+from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 1000
 
@@ -14,11 +13,7 @@ NB_TESTS_FOR_PROPORTIONS = 1000
 class TestEntity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestEntity, cls).setUpClass()
-        pg.init()
-        font.init_fonts()
-        # Window parameters
-        pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+        minimal_setup_for_game()
 
     def test_init_entity(self):
         name = 'entity'

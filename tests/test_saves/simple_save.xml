@@ -41,13 +41,7 @@
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
-          <alterations>
-            <alteration>
-              <name>stun</name>
-              <duration>0</duration>
-              <power>0</power>
-            </alteration>
-          </alterations>
+          <alterations/>
           <hp>6</hp>
           <strength>4</strength>
           <defense>0</defense>

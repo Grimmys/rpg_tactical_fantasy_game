@@ -3,12 +3,10 @@ import unittest
 
 import pygame as pg
 
-import src.fonts as font
-import src.loadFromXMLManager as Loader
-from src.character import Character
-from src.startScreen import StartScreen
+from src.scenes.startScreen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
-from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON
+from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS
+from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 1000
 
@@ -16,23 +14,23 @@ NB_TESTS_FOR_PROPORTIONS = 1000
 class TestLevel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestLevel, cls).setUpClass()
-        cls.save_url = "saves/main_save.xml"
-        pg.init()
-        font.init_fonts()
+        minimal_setup_for_game()
+        cls.save_url = "saves/save_0.xml"
+
+    def setUp(self):
         # Window parameters
         screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-        cls.start_screen = StartScreen(screen)
-        cls.start_screen.display()
-        # Load some data
-        races = Loader.load_races()
-        classes = Loader.load_classes()
-        Character.init_data(races, classes)
+        self.start_screen = StartScreen(screen)
+        self.start_screen.display()
 
     def test_distance_between_two_entities(self):
+        print(self.start_screen.level)
         # Import simple save file
         shutil.copyfile("tests/test_saves/simple_save.xml", self.save_url)
         self.start_screen.click(LEFT_BUTTON, LOAD_GAME_BUTTON_POS)
+        print(self.start_screen.level)
+        self.start_screen.display()
+        self.start_screen.click(LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS)
 
         level = self.start_screen.level
         players = level.players
@@ -45,6 +43,8 @@ class TestLevel(unittest.TestCase):
         # Import complete save file
         shutil.copyfile("tests/test_saves/complete_first_level_save.xml", self.save_url)
         self.start_screen.click(LEFT_BUTTON, LOAD_GAME_BUTTON_POS)
+        self.start_screen.display()
+        self.start_screen.click(LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS)
 
         level = self.start_screen.level
         players = level.players

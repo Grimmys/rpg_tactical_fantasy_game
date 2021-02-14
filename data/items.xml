@@ -274,6 +274,33 @@
                     400
                 </price>
             </scroll_of_knowledge>
+            <scroll_of_cerberus>
+                <name>
+                    Scroll of Cerberus
+                </name>
+                <sprite>
+                    scroll/scroll-red.png
+                </sprite>
+                <info>
+                    This scroll contains the secret of Cerberus' strength
+                </info>
+                <category>
+                    consumable
+                </category>
+                <effects>
+                    <effect>
+                        <type>
+                            strength_lvl_up
+                        </type>
+                        <power>
+                            2
+                        </power>
+                    </effect>
+                </effects>
+                <price>
+                    1500
+                </price>
+            </scroll_of_cerberus>
         </scrolls>
         <key>
             <name>
@@ -539,7 +566,7 @@
                     Halberd
                 </name>
                 <sprite>
-                    halberd_2.png
+                    weapon/halberd_2.png
                 </sprite>
                 <info>
                     An halberd can helps to get rid of cavalry
@@ -563,7 +590,7 @@
                     4
                 </weight>
                 <equipped_sprite>
-                    harlberd_new.png
+                    halberd_new.png
                 </equipped_sprite>
                 <price>
                     600
