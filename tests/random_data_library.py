@@ -5,6 +5,7 @@ from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.chest import Chest
 from src.game_entities.destroyable import Destroyable
+from src.game_entities.foe import Foe, Keyword
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
@@ -26,10 +27,19 @@ def random_pos():
            rd.randrange(0, MAIN_WIN_HEIGHT // TILE_SIZE) * TILE_SIZE
 
 
+def random_item(price=None):
+    attrs = random_item_attributes(price)
+    return Item(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'])
+
+
+def random_gold():
+    amount = rd.randint(10, 1000)
+    return Gold(amount)
+
+
 def random_item_or_gold(gold_prob=0.3):
     if rd.random() <= gold_prob:
-        amount = rd.randint(10, 1000)
-        return Gold(amount)
+        return random_gold()
     else:
         return random_item()
 
@@ -39,11 +49,6 @@ def random_item_attributes(price):
             'sample_img': 'imgs/dungeon_crawl/item/potion/yellow_new.png',
             'desc': random_string(min_len=10, max_len=100),
             'cost': rd.randint(0, 1000) if price is None else price}
-
-
-def random_item(price=None):
-    attrs = random_item_attributes(price)
-    return Item(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'])
 
 
 def random_weapon_attributes(price, durability):
@@ -129,6 +134,24 @@ def random_character_entity(min_hp=10, max_defense=10, max_res=10, name=None, cl
     return Character(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
                      attrs['strength'], attrs['classes'], attrs['equipments'], attrs['strategy'],
                      attrs['lvl'], attrs['skills'], [], attrs['race'], attrs['gold'], attrs['interaction'])
+
+
+def random_foe_attributes(min_hp, max_defense, max_res, name, reach, keywords, loot):
+    attrs = random_movable_attributes(min_hp, max_defense, max_res, name)
+    attrs['reach'] = reach if reach else rd.choice([[1], [2], [1, 2], [3], [1, 2, 3]])
+    attrs['xp_gain'] = rd.randint(10, 300)
+    attrs['lvl'] = rd.randint(1, 10)
+    attrs['loot'] = loot if loot else [(random_item_or_gold(), rd.random()) for _ in range(rd.randint(1, 5))]
+    attrs['keywords'] = keywords if keywords else [rd.choice(list(Keyword)).name]
+    attrs['alterations'] = []
+    return attrs
+
+
+def random_foe_entity(min_hp=10, max_defense=10, max_res=10, name=None, reach=None, keywords=None, loot=None):
+    attrs = random_foe_attributes(min_hp, max_defense, max_res, name, reach, keywords, loot)
+    return Foe(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
+               attrs['max_moves'], attrs['strength'], attrs['attack_kind'], attrs['strategy'], attrs['reach'],
+               attrs['xp_gain'], attrs['loot'], attrs['keywords'], attrs['lvl'], attrs['alterations'])
 
 
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0, gold=True, item=True):

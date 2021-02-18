@@ -1,9 +1,11 @@
 import unittest
+import random as rd
 
-from lxml import etree
-
-from src.services.loadFromXMLManager import load_ally, load_alteration
-from tests.random_data_library import random_character_entity, random_alteration
+from src.game_entities.gold import Gold
+from src.game_entities.item import Item
+from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, parse_item_file
+from tests.random_data_library import random_character_entity, random_alteration, random_foe_entity, random_item, \
+    random_gold
 from tests.tools import minimal_setup_for_game
 
 
@@ -49,6 +51,7 @@ class TestSaveAndLoad(unittest.TestCase):
         self.assertEqual(character.gold, loaded_character.gold)
         self.assertEqual(character.interaction, loaded_character.interaction)
         self.assertEqual(character.join_team, loaded_character.join_team)
+        self.assertEqual(character.alterations, loaded_character.alterations)
 
     def test_save_and_load_character_with_alterations(self):
         character = random_character_entity(name="jist", classes=['innkeeper'])
@@ -61,3 +64,21 @@ class TestSaveAndLoad(unittest.TestCase):
         loaded_character = load_ally(character_saved, True, 0, 0)
 
         self.assertEqual(character.alterations, loaded_character.alterations)
+
+    def test_save_and_load_foe(self):
+        foe = random_foe_entity(name="skeleton_cobra", reach=[2], keywords=["cavalry"], loot=[(parse_item_file('monster_meat'), rd.random()), (random_gold(), rd.random())])
+        foe_saved = foe.save('foe')
+        loaded_foe = load_foe(foe_saved, True, 0, 0)
+        self.assertEqual(foe.name, loaded_foe.name)
+        self.assertEqual(foe.pos, loaded_foe.pos)
+        self.assertEqual(foe.hp, loaded_foe.hp)
+        self.assertEqual(foe.defense, loaded_foe.defense)
+        self.assertEqual(foe.res, loaded_foe.res)
+        self.assertEqual(foe.strength, loaded_foe.strength)
+        self.assertEqual(foe.strategy, loaded_foe.strategy)
+        self.assertEqual(foe.lvl, loaded_foe.lvl)
+        self.assertEqual(foe.skills, loaded_foe.skills)
+        self.assertEqual(foe.reach, loaded_foe.reach)
+        self.assertEqual(foe.keywords, loaded_foe.keywords)
+        self.assertEqual(foe.alterations, loaded_foe.alterations)
+        self.assertEqual(foe.potential_loot, loaded_foe.potential_loot)

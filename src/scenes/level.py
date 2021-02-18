@@ -1,6 +1,7 @@
 from src.game_entities.door import Door
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
+from src.game_entities.key import Key
 from src.gui.fonts import fonts
 from src.services import loadFromXMLManager as Loader, menuCreatorManager
 from src.game_entities.building import Building

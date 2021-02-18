@@ -16,3 +16,6 @@ class Item:
 
     def __str__(self):
         return self.name.replace('_', ' ').title().strip()
+
+    def __eq__(self, it):
+        return self.name == it.name

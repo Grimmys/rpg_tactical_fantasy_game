@@ -60,7 +60,7 @@ class Foe(Movable):
             if isinstance(item, Gold):
                 it_el = etree.SubElement(loot, 'gold')
                 it_name = etree.SubElement(it_el, 'amount')
-                it_name.text = item.amount
+                it_name.text = str(item.amount)
             else:
                 it_el = etree.SubElement(loot, 'item')
                 it_name = etree.SubElement(it_el, 'name')
