@@ -32,7 +32,9 @@ class Mission:
             return pos in self.positions
         if self.type is MissionType.TOUCH_POSITION:
             for mission_pos in self.positions:
-                return abs(pos[0] - mission_pos[0]) + abs(pos[1] - mission_pos[1]) == TILE_SIZE
+                if abs(pos[0] - mission_pos[0]) + abs(pos[1] - mission_pos[1]) == TILE_SIZE:
+                    return True
+        return False
 
     def update_state(self, player=None, entities=None, turns=0):
         if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) and player is not None:

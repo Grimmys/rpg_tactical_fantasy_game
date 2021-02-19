@@ -511,7 +511,7 @@ def load_fountain(fountain, from_save, gap_x, gap_y):
     y = int(fountain.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x, y)
     if name not in fountains_infos:
-        fountains_infos[name] = etree.parse('data/fountains/' + name + '.xml').getroot()
+        fountains_infos[name] = etree.parse('data/fountains.xml').find(name)
     sprite = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite').text.strip()
     sprite_empty = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite_empty').text.strip()
     effect_name = fountains_infos[name].find('effect').text.strip()

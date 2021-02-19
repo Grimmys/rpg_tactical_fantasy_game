@@ -4,7 +4,7 @@ import random as rd
 
 from src.game_entities.entity import Entity
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
-from tests.random_data_library import random_pos
+from tests.random_data_library import random_position
 from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 1000
@@ -26,7 +26,7 @@ class TestEntity(unittest.TestCase):
         self.assertTrue(entity.is_on_pos(pos))
 
     def test_name_format(self):
-        pos = random_pos()
+        pos = random_position()
         sprite = 'imgs/dungeon_crawl/monster/angel.png'
 
         name = 'test'
@@ -48,7 +48,7 @@ class TestEntity(unittest.TestCase):
     def test_position(self):
         name = 'test'
         sprite = 'imgs/dungeon_crawl/monster/angel.png'
-        pos = random_pos()
+        pos = random_position()
         entity = Entity(name, pos, sprite)
 
         self.assertTrue(entity.is_on_pos(pos))

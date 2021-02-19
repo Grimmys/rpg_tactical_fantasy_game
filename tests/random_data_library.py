@@ -22,7 +22,7 @@ def random_string(min_len=4, max_len=10):
     return ''.join([rd.choice(ALPHABET) for _ in range(size)])
 
 
-def random_pos():
+def random_position():
     return rd.randrange(0, MAIN_WIN_WIDTH // TILE_SIZE) * TILE_SIZE, \
            rd.randrange(0, MAIN_WIN_HEIGHT // TILE_SIZE) * TILE_SIZE
 
@@ -71,7 +71,7 @@ def random_weapon(price=None, durability=None):
 
 
 def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportion=0.3):
-    pos = random_pos()
+    pos = random_position()
     sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.png'
     sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.png'
     if item_set:
@@ -91,7 +91,7 @@ def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportio
 
 
 def random_destroyable_attributes(min_hp, max_defense, max_res, name):
-    return {'name': name if name else random_string(), 'pos': random_pos(),
+    return {'name': name if name else random_string(), 'pos': random_position(),
             'sprite': 'imgs/dungeon_crawl/monster/angel.png',
             'hp': rd.randint(min_hp, 30), 'defense': rd.randint(0, max_defense), 'res': rd.randint(0, max_res)}
 
@@ -156,7 +156,7 @@ def random_foe_entity(min_hp=10, max_defense=10, max_res=10, name=None, reach=No
 
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0, gold=True, item=True):
     name = random_string()
-    pos = random_pos()
+    pos = random_position()
     sprite = 'imgs/houses/blue_house.png'
     interaction = {}
     if is_interactive:

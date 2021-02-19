@@ -331,9 +331,9 @@
         <mission>
             <type>TURN_LIMIT</type>
             <description>
-                Win in 8 turns
+                Win in 10 turns
             </description>
-            <turns>8</turns>
+            <turns>10</turns>
             <reward>
                 <gold>200</gold>
             </reward>

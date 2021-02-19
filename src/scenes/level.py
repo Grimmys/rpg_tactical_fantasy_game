@@ -222,11 +222,11 @@ class Level:
                     if mission.items:
                         # TODO
                         pass
-        # Check if there are some post-level events
-        if 'at_end' in self.events:
-            if 'dialogs' in self.events['at_end']:
-                for dialog in self.events['at_end']['dialogs']:
-                    self.background_menus.append((Level.load_event_dialog(dialog), False))
+            # Check if there are some post-level events
+            if 'at_end' in self.events:
+                if 'dialogs' in self.events['at_end']:
+                    for dialog in self.events['at_end']['dialogs']:
+                        self.background_menus.append((Level.load_event_dialog(dialog), False))
 
         self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)

@@ -4,6 +4,8 @@ import src.gui.fonts as font
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.game_entities.character import Character
 
+NB_TESTS_FOR_PROPORTIONS = 100
+
 
 def minimal_setup_for_game():
     pg.init()
