@@ -569,7 +569,7 @@ def create_save_menu():
     entries = []
 
     for i in range(SAVE_SLOTS):
-        entries.append([{'type': 'button', 'name': 'Save' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
+        entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
 
     return InfoBox("Save Game", SaveMenu,
                    "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)

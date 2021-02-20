@@ -33,7 +33,7 @@ class Character(Movable):
         self.join_team = False
         self.reach_ = [1]
         self.constitution = Character.races_data[race]['constitution'] + \
-            Character.classes_data[classes[0]]['constitution']
+                            Character.classes_data[classes[0]]['constitution']
 
     def talk(self, actor):
         self.join_team = self.interaction['join_team']
@@ -52,6 +52,7 @@ class Character(Movable):
         Movable.lvl_up(self)
         self.stats_up()
 
+    # TODO : refactor part of this code in Shield class
     def parried(self):
         for eq in self.equipments:
             if isinstance(eq, Shield):

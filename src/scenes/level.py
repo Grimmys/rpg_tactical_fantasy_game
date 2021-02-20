@@ -498,7 +498,8 @@ class Level:
             race=character.race,
             gold=character.gold,
             lvl=character.lvl,
-            skills=character.skills)
+            skills=character.skills,
+            alterations=character.alterations)
         self.entities['players'].append(player)
         player.earn_xp(character.xp)
         player.hp = character.hp

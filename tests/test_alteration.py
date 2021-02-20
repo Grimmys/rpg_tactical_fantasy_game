@@ -33,6 +33,7 @@ class TestAlteration(unittest.TestCase):
         self.assertEqual(alteration.duration, alteration.get_turns_left())
         self.assertFalse(alteration.is_finished())
         alteration.increment()
+        self.assertEqual(alteration.duration - 1, alteration.get_turns_left())
         self.assertFalse(alteration.is_finished())
 
     def test_alteration_end(self):
@@ -42,4 +43,5 @@ class TestAlteration(unittest.TestCase):
         self.assertFalse(alteration.is_finished())
         for i in range(alteration.duration):
             alteration.increment()
+        self.assertEqual(0, alteration.get_turns_left())
         self.assertTrue(alteration.is_finished())
