@@ -751,7 +751,10 @@ def parse_item_file(name):
         possible_effects = []
         if effects is not None:
             possible_effects = [load_weapon_effect(eff) for eff in effects.findall('effect')]
-        strong_against = []
+
+        keywords_el = it_tree_root.find('strong_against/keywords')
+        strong_against = [Keyword[keyword.upper()] for keyword in keywords_el.text.strip().split(',')] if keywords_el is not None else []
+
         item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
                       w_range, restrictions, possible_effects, strong_against)
     elif category == 'key':

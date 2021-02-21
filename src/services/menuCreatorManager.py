@@ -411,6 +411,9 @@ def create_item_desc_menu(item):
             for possible_effect in item.effects:
                 entries.append(create_item_desc_stat('EFFECT', str(possible_effect['effect']) +
                                                      ' (' + str(possible_effect['probability']) + '%)'))
+            strong_against_formatted = item.get_formatted_strong_against()
+            if strong_against_formatted:
+                entries.append(create_item_desc_stat('STRONG AGAINST', strong_against_formatted))
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
         if isinstance(item, Weapon) or isinstance(item, Shield):

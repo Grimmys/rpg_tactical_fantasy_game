@@ -18,6 +18,9 @@ class Weapon(Equipment):
         self.effects = possible_effects
         self.strong_against = strong_against
 
+    def get_formatted_strong_against(self):
+        return ", ".join([k.name.lower().capitalize() for k in self.strong_against])
+
     def hit(self, ent):
         multiplier = 1
         for keyword in ent.keywords:

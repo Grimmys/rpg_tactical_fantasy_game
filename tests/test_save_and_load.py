@@ -6,7 +6,7 @@ from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, parse_item_file
 from tests.random_data_library import random_character_entity, random_alteration, random_foe_entity, random_item, \
-    random_gold
+    random_gold, random_equipment
 from tests.tools import minimal_setup_for_game
 
 
