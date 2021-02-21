@@ -1,8 +1,9 @@
 import unittest
 
 from src.game_entities.destroyable import DamageKind
+from src.game_entities.foe import Keyword
 from src.game_entities.weapon import Weapon
-from tests.random_data_library import random_weapon
+from tests.random_data_library import random_weapon, random_foe_entity
 from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 100
@@ -26,8 +27,9 @@ class TestWeapon(unittest.TestCase):
         weight = 2
         restrictions = []
         possible_effects = []
+        strong_against = [Keyword.LARGE]
         sword = Weapon(name, sprite, description, price, equipped_sprite, power, kind, weight, durability, reach,
-                       restrictions, possible_effects)
+                       restrictions, possible_effects, strong_against)
         self.assertEqual(name, sword.name)
         self.assertEqual(description, sword.desc)
         self.assertEqual('Short Sword', str(sword))
@@ -41,6 +43,7 @@ class TestWeapon(unittest.TestCase):
         self.assertEqual(weight, sword.weight)
         self.assertEqual(restrictions, sword.restrictions)
         self.assertEqual(possible_effects, sword.effects)
+        self.assertEqual(strong_against, sword.strong_against)
 
     def test_decreasing_durability(self):
         durability = 40
@@ -69,6 +72,36 @@ class TestWeapon(unittest.TestCase):
             self.assertTrue(weapon.resell_price < before_use_price)
 
         self.assertEqual(0, weapon.resell_price)
+
+    def test_hit_power(self):
+        power = 3
+        weapon = random_weapon(atk=power)
+        self.assertEqual(power, weapon.hit(random_foe_entity()))
+
+    def test_stronger_against_specific_entity_kind(self):
+        power = 5
+        strong_against = [Keyword.LARGE]
+        weapon = random_weapon(atk=power, strong_against=strong_against)
+
+        normal_foe = random_foe_entity()
+        self.assertEqual(power, weapon.hit(normal_foe))
+
+        vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
+        self.assertEqual(power * 2, weapon.hit(vulnerable_foe))
+
+    def test_stronger_against_multiple_entity_kinds(self):
+        power = 4
+        strong_against = [Keyword.LARGE, Keyword.CAVALRY]
+        weapon = random_weapon(atk=power, strong_against=strong_against)
+
+        non_vulnerable_foe = random_foe_entity(keywords=[Keyword.SMALL])
+        self.assertEqual(power, weapon.hit(non_vulnerable_foe))
+
+        vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
+        self.assertEqual(power * 2, weapon.hit(vulnerable_foe))
+
+        super_vulnerable_foe = random_foe_entity(keywords=[Keyword.CAVALRY, Keyword.LARGE])
+        self.assertEqual(power * 3, weapon.hit(super_vulnerable_foe))
 
 
 if __name__ == '__main__':

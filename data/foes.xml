@@ -10,7 +10,7 @@
             8
         </hp>
         <strength>
-            3
+            6
         </strength>
         <defense>
             3
@@ -60,7 +60,7 @@
             10
         </hp>
         <strength>
-            3
+            7
         </strength>
         <defense>
             4
@@ -107,7 +107,7 @@
             10
         </hp>
         <strength>
-            5
+            8
         </strength>
         <defense>
             3
@@ -200,10 +200,10 @@
             10
         </hp>
         <strength>
-            4
+            7
         </strength>
         <defense>
-            0
+            1
         </defense>
         <resistance>
             0
@@ -305,7 +305,7 @@
             15
         </hp>
         <strength>
-            7
+            8
         </strength>
         <defense>
             0
@@ -410,7 +410,7 @@
             13
         </hp>
         <strength>
-            5
+            7
         </strength>
         <defense>
             0
@@ -466,7 +466,7 @@
             20
         </hp>
         <strength>
-            7
+            9
         </strength>
         <defense>
             2
@@ -518,7 +518,7 @@
             13
         </hp>
         <strength>
-            5
+            8
         </strength>
         <defense>
             1
@@ -575,7 +575,7 @@
             8
         </hp>
         <strength>
-            3
+            5
         </strength>
         <defense>
             0
@@ -632,7 +632,7 @@
             20
         </hp>
         <strength>
-            6
+            9
         </strength>
         <defense>
             5

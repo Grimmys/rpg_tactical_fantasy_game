@@ -53,38 +53,40 @@ def random_item_or_gold(gold_prob=0.3):
         return random_item()
 
 
-def random_equipment_attributes(price, durability, defense=None, res=None):
+def random_equipment_attributes(price, durability, atk=None, defense=None, res=None):
     attrs = random_item_attributes(price)
     attrs['weight'] = rd.randint(1, 10)
     attrs['durability'] = durability if durability else rd.randint(10, 60)
     attrs['restrictions'] = []
     attrs['body_part'] = rd.choice(['head', 'body', 'feet'])
-    attrs['defense'] = defense if defense else rd.randint(1, 10)
-    attrs['res'] = res if res else rd.randint(1, 10)
-    attrs['atk'] = rd.randint(1, 10)
+    attrs['defense'] = rd.randint(1, 10) if defense is None else defense
+    attrs['res'] = rd.randint(1, 10) if res is None else res
+    attrs['atk'] = rd.randint(1, 10) if atk is None else atk
     return attrs
 
 
-def random_equipment(price=None, durability=None, defense=None, res=None):
-    attrs = random_equipment_attributes(price, durability, defense, res)
+def random_equipment(price=None, durability=None, atk=None, defense=None, res=None):
+    attrs = random_equipment_attributes(price, durability, atk, defense, res)
     return Equipment(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'], [attrs['sample_img']],
                      attrs['body_part'], attrs['defense'], attrs['res'], attrs['atk'], attrs['weight'],
                      attrs['restrictions'])
 
 
-def random_weapon_attributes(price, durability):
-    attrs = random_equipment_attributes(price, durability)
+def random_weapon_attributes(price, durability, atk, charge, strong_against):
+    attrs = random_equipment_attributes(price, durability, atk)
     attrs['attack_kind'] = rd.choice(['PHYSICAL', 'SPIRITUAL'])
     attrs['reach'] = rd.choice([[1], [1, 2], [2]])
     attrs['effects'] = []
+    attrs['strong_against'] = [rd.choice(list(Keyword))] if strong_against is None else strong_against
+    attrs['charge'] = charge
     return attrs
 
 
-def random_weapon(price=None, durability=None):
-    attrs = random_weapon_attributes(price, durability)
+def random_weapon(price=None, durability=None, atk=None, strong_against=None, charge=False):
+    attrs = random_weapon_attributes(price, durability, atk, charge, strong_against)
     return Weapon(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'], [attrs['sample_img']],
                   attrs['atk'], attrs['attack_kind'], attrs['weight'], attrs['durability'], attrs['reach'],
-                  attrs['restrictions'], attrs['effects'])
+                  attrs['restrictions'], attrs['effects'], attrs['strong_against'], attrs['charge'])
 
 
 def random_shield_attributes(price, durability, parry_rate):
@@ -172,7 +174,7 @@ def random_foe_attributes(min_hp, max_defense, max_res, name, reach, keywords, l
     attrs['xp_gain'] = rd.randint(10, 300)
     attrs['lvl'] = rd.randint(1, 10)
     attrs['loot'] = loot if loot else [(random_item_or_gold(), rd.random()) for _ in range(rd.randint(1, 5))]
-    attrs['keywords'] = keywords if keywords else [rd.choice(list(Keyword)).name]
+    attrs['keywords'] = keywords if keywords else [rd.choice(list(Keyword))]
     attrs['alterations'] = []
     return attrs
 

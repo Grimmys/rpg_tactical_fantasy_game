@@ -37,29 +37,6 @@
         </position>
     </placementArea>
     <events>
-        <before_init>
-            <new_player>
-                <name>raimund</name>
-                <position>
-                    <x>0</x>
-                    <y>2</y>
-                </position>
-            </new_player>
-            <new_player>
-                <name>braern</name>
-                <position>
-                    <x>1</x>
-                    <y>2</y>
-                </position>
-            </new_player>
-            <new_player>
-                <name>thokdrum</name>
-                <position>
-                    <x>0</x>
-                    <y>3</y>
-                </position>
-            </new_player>
-        </before_init>
     </events>
     <foes>
         <foe>

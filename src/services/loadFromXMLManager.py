@@ -11,7 +11,7 @@ from src.game_entities.building import Building
 from src.game_entities.chest import Chest
 from src.game_entities.effect import Effect
 from src.game_entities.equipment import Equipment
-from src.game_entities.foe import Foe
+from src.game_entities.foe import Foe, Keyword
 from src.game_entities.fountain import Fountain
 from src.game_entities.key import Key
 from src.game_entities.mission import Mission, MissionType
@@ -278,7 +278,7 @@ def load_foe(foe, from_save, gap_x, gap_y):
     if gold_looted is not None:
         loot.append((Gold(int(gold_looted.find('amount').text)), float(gold_looted.find('probability').text)))
     keywords_el = foes_infos[name].find('keywords')
-    keywords = keywords_el.text.strip().split(',') if keywords_el is not None else []
+    keywords = [Keyword[keyword.upper()] for keyword in keywords_el.text.strip().split(',')] if keywords_el is not None else []
 
     # Dynamic data foe
     if from_save:
@@ -558,7 +558,6 @@ def load_restrictions(restrictions_el):
 
 def load_events(events_el, gap_x, gap_y):
     events = {}
-
     for event in events_el:
         events[event.tag] = {}
         dialog_els = event.findall('dialog')
@@ -752,8 +751,9 @@ def parse_item_file(name):
         possible_effects = []
         if effects is not None:
             possible_effects = [load_weapon_effect(eff) for eff in effects.findall('effect')]
+        strong_against = []
         item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
-                      w_range, restrictions, possible_effects)
+                      w_range, restrictions, possible_effects, strong_against)
     elif category == 'key':
         for_chest = it_tree_root.find('open_chest') is not None
         for_door = it_tree_root.find('open_door') is not None

@@ -75,7 +75,7 @@ class Character(Movable):
         damages = self.strength + self.get_stat_change('strength')
         weapon = self.get_weapon()
         if weapon:
-            damages += weapon.atk
+            damages += weapon.hit(ent)
             if weapon.used() == 0:
                 self.remove_equipment(weapon)
         return damages
@@ -140,7 +140,7 @@ class Character(Movable):
             allowed = False
         if eq.restrictions != {}:
             allowed = False
-            if 'classes' in eq.restrictions and self.race != 'centaur':
+            if 'classes' in eq.restrictions and (self.race != 'centaur' or isinstance(eq, Weapon) or isinstance(eq, Shield)):
                 for cl in eq.restrictions['classes']:
                     if cl in self.classes:
                         allowed = True

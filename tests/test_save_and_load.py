@@ -1,6 +1,7 @@
 import unittest
 import random as rd
 
+from src.game_entities.foe import Keyword
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, parse_item_file
@@ -66,7 +67,7 @@ class TestSaveAndLoad(unittest.TestCase):
         self.assertEqual(character.alterations, loaded_character.alterations)
 
     def test_save_and_load_foe(self):
-        foe = random_foe_entity(name="skeleton_cobra", reach=[2], keywords=["cavalry"], loot=[(parse_item_file('monster_meat'), rd.random()), (random_gold(), rd.random())])
+        foe = random_foe_entity(name="skeleton_cobra", reach=[2], keywords=[Keyword.CAVALRY], loot=[(parse_item_file('monster_meat'), rd.random()), (random_gold(), rd.random())])
         foe_saved = foe.save('foe')
         loaded_foe = load_foe(foe_saved, True, 0, 0)
         self.assertEqual(foe.name, loaded_foe.name)
