@@ -222,7 +222,11 @@ def load_ally(ally, from_save, gap_x, gap_y):
 
     equipments = []
     for eq in dynamic_data.findall('equipment/*'):
-        equipments.append(parse_item_file(eq.text.strip()))
+        if from_save:
+            eq_loaded = load_item(eq)
+        else:
+            eq_loaded = parse_item_file(eq.text.strip)
+        equipments.append(eq_loaded)
 
     if from_save:
         skills = [(load_skill(skill.text.strip())
@@ -240,8 +244,11 @@ def load_ally(ally, from_save, gap_x, gap_y):
     inventory = infos.find('inventory')
     if inventory is not None:
         for it in inventory.findall('item'):
-            item = parse_item_file(it.text.strip())
-            loaded_ally.set_item(item)
+            if from_save:
+                item_loaded = load_item(it)
+            else:
+                item_loaded = parse_item_file(it.text.strip())
+            loaded_ally.set_item(item_loaded)
 
     if from_save:
         current_hp = int(ally.find('current_hp').text.strip())
@@ -278,7 +285,8 @@ def load_foe(foe, from_save, gap_x, gap_y):
     if gold_looted is not None:
         loot.append((Gold(int(gold_looted.find('amount').text)), float(gold_looted.find('probability').text)))
     keywords_el = foes_infos[name].find('keywords')
-    keywords = [Keyword[keyword.upper()] for keyword in keywords_el.text.strip().split(',')] if keywords_el is not None else []
+    keywords = [Keyword[keyword.upper()] for keyword in
+                keywords_el.text.strip().split(',')] if keywords_el is not None else []
 
     # Dynamic data foe
     if from_save:
@@ -599,15 +607,13 @@ def load_player(el, from_save):
     current_hp = int(el.find("current_hp").text.strip()) if from_save else hp
     inv = []
     for it in el.findall("inventory/item"):
-        it_name = it.text.strip()
-        item = parse_item_file(it_name)
-        inv.append(item)
+        item_loaded = load_item(it) if from_save else parse_item_file(it.text.strip())
+        inv.append(item_loaded)
 
     equipments = []
     for eq in el.findall("equipment/*"):
-        eq_name = eq.text.strip()
-        eq = parse_item_file(eq_name)
-        equipments.append(eq)
+        eq_loaded = load_item(eq) if from_save else parse_item_file(eq.text.strip())
+        equipments.append(eq_loaded)
 
     alterations = []
     if from_save:
@@ -688,6 +694,18 @@ def load_weapon_effect(eff):
     return loaded_eff
 
 
+def load_item(data):
+    name = data.find("name").text.strip()
+
+    # Retrieve static data
+    item = parse_item_file(name)
+    item.resell_price = data.find('value').text.strip()
+    if isinstance(item, Weapon) or isinstance(item, Shield):
+        item.durability = int(data.find('durability').text.strip())
+
+    return item
+
+
 def parse_item_file(name):
     # Retrieve data root for item
     it_tree_root = etree.parse('data/items.xml').getroot().find('.//' + name)
@@ -753,7 +771,8 @@ def parse_item_file(name):
             possible_effects = [load_weapon_effect(eff) for eff in effects.findall('effect')]
 
         keywords_el = it_tree_root.find('strong_against/keywords')
-        strong_against = [Keyword[keyword.upper()] for keyword in keywords_el.text.strip().split(',')] if keywords_el is not None else []
+        strong_against = [Keyword[keyword.upper()] for keyword in
+                          keywords_el.text.strip().split(',')] if keywords_el is not None else []
 
         item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
                       w_range, restrictions, possible_effects, strong_against)

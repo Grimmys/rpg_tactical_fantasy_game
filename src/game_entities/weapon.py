@@ -1,3 +1,5 @@
+from lxml import etree
+
 from src.game_entities.equipment import Equipment
 from src.game_entities.destroyable import DamageKind
 
@@ -46,3 +48,12 @@ class Weapon(Equipment):
             if rd.randint(0, 100) < probability:
                 effects.append(eff['effect'])
         return effects
+
+    def save(self, tree_name):
+        tree = Equipment.save(self, tree_name)
+
+        # Save durability
+        durability = etree.SubElement(tree, 'durability')
+        durability.text = str(self.durability)
+
+        return tree

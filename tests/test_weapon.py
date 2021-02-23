@@ -75,7 +75,8 @@ class TestWeapon(unittest.TestCase):
 
     def test_hit_power(self):
         power = 3
-        weapon = random_weapon(atk=power)
+        strong_against = []
+        weapon = random_weapon(atk=power, strong_against=strong_against)
         self.assertEqual(power, weapon.hit(random_foe_entity()))
 
     def test_stronger_against_specific_entity_kind(self):
@@ -83,7 +84,7 @@ class TestWeapon(unittest.TestCase):
         strong_against = [Keyword.LARGE]
         weapon = random_weapon(atk=power, strong_against=strong_against)
 
-        normal_foe = random_foe_entity()
+        normal_foe = random_foe_entity(keywords=[])
         self.assertEqual(power, weapon.hit(normal_foe))
 
         vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])

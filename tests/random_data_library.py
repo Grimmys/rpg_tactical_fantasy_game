@@ -10,6 +10,7 @@ from src.game_entities.foe import Foe, Keyword
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
+from src.game_entities.player import Player
 from src.game_entities.shield import Shield
 from src.game_entities.weapon import Weapon
 from src.constants import TILE_SIZE, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
@@ -159,9 +160,8 @@ def random_character_attributes(min_hp, max_defense, max_res, name, lvl, equipme
     return attrs
 
 
-def random_character_entity(min_hp=10, max_defense=10, max_res=10, name=None, lvl=None, equipments=None, classes=None,
-                            race=None,
-                            interaction=None):
+def random_character_entity(min_hp=10, max_defense=10, max_res=10, name=None, lvl=None, equipments=None,
+                            classes=None, race=None, interaction=None):
     attrs = random_character_attributes(min_hp, max_defense, max_res, name, lvl, equipments, classes, race, interaction)
     return Character(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
                      attrs['strength'], attrs['classes'], attrs['equipments'], attrs['strategy'],
@@ -184,6 +184,24 @@ def random_foe_entity(min_hp=10, max_defense=10, max_res=10, name=None, reach=No
     return Foe(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
                attrs['max_moves'], attrs['strength'], attrs['attack_kind'], attrs['strategy'], attrs['reach'],
                attrs['xp_gain'], attrs['loot'], attrs['keywords'], attrs['lvl'], attrs['alterations'])
+
+
+def random_player_attributes(min_hp, max_defense, max_res, name, lvl, equipments, classes, race):
+    attrs = random_character_attributes(min_hp, max_defense, max_res, name, lvl, equipments, classes, race, None)
+    return attrs
+
+
+def random_player_entity(min_hp=10, max_defense=10, max_res=10, name=None, lvl=None, equipments=None, classes=None, race=None, items=None):
+    if items is None:
+        items = []
+    attrs = random_player_attributes(min_hp, max_defense, max_res, name, lvl, equipments, classes, race)
+    player = Player(attrs['name'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
+                  attrs['strength'], attrs['classes'], attrs['equipments'], attrs['race'], attrs['gold'],
+                  attrs['lvl'], attrs['skills'], [])
+    player.set_initial_pos(attrs['pos'])
+    for item in items:
+        player.set_item(item)
+    return player
 
 
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0, gold=True, item=True):

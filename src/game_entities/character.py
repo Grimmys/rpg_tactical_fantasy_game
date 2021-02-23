@@ -185,6 +185,28 @@ class Character(Movable):
             malus = 0 if diff < 0 else - math.ceil(diff / 2)
         return malus + Movable.get_stat_change(self, stat)
 
+    def remove_chest_key(self):
+        best_candidate = None
+        for it in self.items:
+            if isinstance(it, Key) and it.for_chest:
+                if not best_candidate:
+                    best_candidate = it
+                elif not it.for_door:
+                    # If a key could be used to open a chest but not a door, it's better to use it
+                    best_candidate = it
+        self.items.remove(best_candidate)
+
+    def remove_door_key(self):
+        best_candidate = None
+        for it in self.items:
+            if isinstance(it, Key) and it.for_door:
+                if not best_candidate:
+                    best_candidate = it
+                elif not it.for_chest:
+                    # If a key could be used to open a door but not a chest, it's better to use it
+                    best_candidate = it
+        self.items.remove(best_candidate)
+
     def save(self, tree_name):
         tree = Movable.save(self, tree_name)
 
@@ -202,39 +224,13 @@ class Character(Movable):
         gold.text = str(self.gold)
 
         # Save inventory
-        inv = etree.SubElement(tree, 'inventory')
-        for it in self.items:
-            it_el = etree.SubElement(inv, 'item')
-            it_el.text = it.name
+        inventory = etree.SubElement(tree, 'inventory')
+        for item in self.items:
+            inventory.append(item.save('item'))
 
         # Save equipment
-        equip = etree.SubElement(tree, 'equipment')
-        for eq in self.equipments:
-            eq_el = etree.SubElement(equip, eq.body_part)
-            eq_el.text = eq.name
+        equipments = etree.SubElement(tree, 'equipment')
+        for equipment in self.equipments:
+            equipments.append(equipment.save(equipment.body_part))
 
         return tree
-
-
-def remove_chest_key(items):
-    best_candidate = None
-    for it in items:
-        if isinstance(it, Key) and it.for_chest:
-            if not best_candidate:
-                best_candidate = it
-            elif not it.for_door:
-                # If a key could be used to open a chest but not a door, it's better to use it
-                best_candidate = it
-    items.remove(best_candidate)
-
-
-def remove_door_key(items):
-    best_candidate = None
-    for it in items:
-        if isinstance(it, Key) and it.for_door:
-            if not best_candidate:
-                best_candidate = it
-            elif not it.for_chest:
-                # If a key could be used to open a door but not a chest, it's better to use it
-                best_candidate = it
-    items.remove(best_candidate)

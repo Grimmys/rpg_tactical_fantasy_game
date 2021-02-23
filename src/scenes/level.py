@@ -6,7 +6,7 @@ from src.gui.fonts import fonts
 from src.services import loadFromXMLManager as Loader, menuCreatorManager
 from src.game_entities.building import Building
 from src.game_entities.shop import Shop
-from src.game_entities.character import Character, remove_chest_key, remove_door_key
+from src.game_entities.character import Character
 from src.game_entities.player import Player
 from src.game_entities.foe import Foe
 from src.game_entities.movable import *
@@ -525,7 +525,7 @@ class Level:
             if actor.has_free_space():
                 if self.selected_player.current_action is CharacterMenu.OPEN_CHEST:
                     # Key is used to open the chest
-                    remove_chest_key(actor.items)
+                    actor.remove_chest_key()
 
                     # Get content
                     self.open_chest(actor, target)
@@ -549,7 +549,7 @@ class Level:
         elif isinstance(target, Door):
             if self.selected_player.current_action is CharacterMenu.OPEN_DOOR:
                 # Key is used to open the door
-                remove_door_key(actor.items)
+                actor.remove_door_key()
 
                 # Remove door
                 self.open_door(target)

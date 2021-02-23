@@ -4,9 +4,10 @@ import random as rd
 from src.game_entities.foe import Keyword
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
-from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, parse_item_file
+from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, parse_item_file, load_player, \
+    load_item
 from tests.random_data_library import random_character_entity, random_alteration, random_foe_entity, random_item, \
-    random_gold, random_equipment
+    random_gold, random_equipment, random_weapon, random_player_entity
 from tests.tools import minimal_setup_for_game
 
 
@@ -67,7 +68,8 @@ class TestSaveAndLoad(unittest.TestCase):
         self.assertEqual(character.alterations, loaded_character.alterations)
 
     def test_save_and_load_foe(self):
-        foe = random_foe_entity(name="skeleton_cobra", reach=[2], keywords=[Keyword.CAVALRY], loot=[(parse_item_file('monster_meat'), rd.random()), (random_gold(), rd.random())])
+        foe = random_foe_entity(name="skeleton_cobra", reach=[2], keywords=[Keyword.CAVALRY],
+                                loot=[(parse_item_file('monster_meat'), rd.random()), (random_gold(), rd.random())])
         foe_saved = foe.save('foe')
         loaded_foe = load_foe(foe_saved, True, 0, 0)
         self.assertEqual(foe.name, loaded_foe.name)
@@ -83,3 +85,38 @@ class TestSaveAndLoad(unittest.TestCase):
         self.assertEqual(foe.keywords, loaded_foe.keywords)
         self.assertEqual(foe.alterations, loaded_foe.alterations)
         self.assertEqual(foe.potential_loot, loaded_foe.potential_loot)
+
+    def test_save_and_load_player_with_items(self):
+        first_item = parse_item_file('short_sword')
+        second_item = parse_item_file('life_potion')
+        inventory = [first_item, second_item]
+        player = random_player_entity(name="raimund", classes=['warrior'], race='human', items=inventory)
+        player_saved = player.save('player')
+        loaded_player = load_player(player_saved, True)
+        self.assertFalse(loaded_player.turn_is_finished())
+        self.assertTrue(first_item in loaded_player.items)
+        self.assertTrue(second_item in loaded_player.items)
+
+    def test_save_and_load_player_with_equipment(self):
+        helmet = parse_item_file('helmet')
+        equipment = [helmet]
+        player = random_player_entity(name="raimund", classes=['warrior'], race='human', equipments=equipment)
+        player_saved = player.save('player')
+        loaded_player = load_player(player_saved, True)
+        self.assertFalse(loaded_player.turn_is_finished())
+        self.assertTrue(helmet in loaded_player.equipments)
+
+    def test_save_and_load_player_turn_finished(self):
+        player = random_player_entity(name="raimund", classes=['warrior'], race='human')
+        player.end_turn()
+        player_saved = player.save('player')
+        loaded_player = load_player(player_saved, True)
+        self.assertTrue(loaded_player.turn_is_finished())
+
+    def test_save_and_load_used_weapon(self):
+        weapon = parse_item_file('short_sword')
+        weapon.used()
+        weapon_saved = weapon.save('item')
+        loaded_weapon = load_item(weapon_saved)
+        self.assertEqual(weapon.durability_max, loaded_weapon.durability_max)
+        self.assertEqual(weapon.durability, loaded_weapon.durability)
