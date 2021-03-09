@@ -190,11 +190,6 @@
         </loot>
     </snake>
     <skeleton>
-        <sound_effects>
-                <walk>
-                        sound_fx/skeleton_walk.ogg
-                </walk>
-        </sound_effects>
         <sprite>
             undead/skeletons/skeleton_humanoid_small_old.png
         </sprite>
@@ -300,11 +295,6 @@
         </stats_up>
     </simple_statue>
     <necrophage>
-        <sound_effects>
-                <walk>
-                        sound_fx/necro_walk.ogg
-                </walk>
-        </sound_effects>
         <sprite>
             undead/necrophage_new.png
         </sprite>

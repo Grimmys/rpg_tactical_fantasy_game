@@ -3,10 +3,6 @@ from enum import IntEnum, Enum, auto
 
 from src.game_entities.skill import SkillNature
 
-#beiba
-import pygame.mixer
-import os
-
 TIMER = 60
 NB_ITEMS_MAX = 8
 
@@ -69,10 +65,6 @@ class Movable(Destroyable):
         self.strategy = EntityStrategy[strategy]
         self.skills = skills
 
-        #beiba
-        pg.mixer.init()
-        self.walksfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
-
     def display(self, screen):
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
@@ -125,9 +117,6 @@ class Movable(Destroyable):
     def set_move(self, path):
         self.on_move = path
         self.state = EntityState.ON_MOVE
-
-        #beiba
-        pygame.mixer.Sound.play(self.walksfx)
 
     def get_formatted_alterations(self):
         formatted_string = ""

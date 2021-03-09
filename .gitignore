@@ -5,3 +5,6 @@ saves/*.xml
 
 # For those who use PyCharm
 .idea/
+
+beiba
+venv/

@@ -69,7 +69,6 @@ class Player(Character):
     def move(self):
         if self.state is PlayerState.ON_MOVE:
             Character.move(self)
-
             if not self.on_move:
                 self.state = PlayerState.WAITING_POST_ACTION
                 return True

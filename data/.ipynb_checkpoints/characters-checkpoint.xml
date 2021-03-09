@@ -23,11 +23,6 @@
         <attack_kind> PHYSICAL </attack_kind>
     </jist>
     <raimund>
-        <sound_effects>
-            <walk>
-                    sound_fx/walk.ogg
-            </walk>
-        </sound_effects>
         <name> raimund </name>
         <class> warrior </class>
         <race> human </race>
@@ -62,11 +57,6 @@
         <gold> 250 </gold>
     </raimund>
     <braern>
-        <sound_effects>
-            <walk>
-                    sound_fx/walk.ogg
-            </walk>
-        </sound_effects>
         <name> braern </name>
         <class> ranger </class>
         <race> elf </race>
@@ -99,11 +89,6 @@
         <gold> 250 </gold>
     </braern>
     <thokdrum>
-        <sound_effects>
-            <walk>
-                    sound_fx/walk.ogg
-            </walk>
-        </sound_effects>
         <name> thokdrum </name>
         <class> warrior </class>
         <race> dwarf </race>
