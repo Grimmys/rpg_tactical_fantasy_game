@@ -1,9 +1,18 @@
 __pycache__/
-build
+build/
 *.zip
 saves/*.xml
+.coverage
+.coverage.*
 
 # For those who use PyCharm
 .idea/
 
+# Environments
+.env
+.venv
+env/
 venv/
+ENV/
+env.bak/
+venv.bak/
