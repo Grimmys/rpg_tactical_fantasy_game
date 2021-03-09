@@ -69,7 +69,7 @@ class Movable(Destroyable):
         self.strategy = EntityStrategy[strategy]
         self.skills = skills
 
-        #beiba
+        #beiba added
         pg.mixer.init()
         self.walksfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
 
