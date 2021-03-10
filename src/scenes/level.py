@@ -200,6 +200,7 @@ class Level:
         self.waitsfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
         self.invsfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
         self.armsfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
+        self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
 
     @staticmethod
     def load_event_dialog(dialog_el):
@@ -603,6 +604,9 @@ class Level:
             self.active_menu = menuCreatorManager.create_trade_menu(self.selected_player, target)
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
+
+            pygame.mixer.Sound.play(self.talksfx)
+
             entries = target.talk(actor)
             self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
