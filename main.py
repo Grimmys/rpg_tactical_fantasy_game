@@ -15,6 +15,10 @@ if __name__ == "__main__":
     from src.scenes.startScreen import StartScreen
     from src.services import loadFromXMLManager as Loader
 
+    # beiba
+    import pygame.mixer
+    import os
+
     pg.init()
 
     # Load fonts
@@ -39,6 +43,10 @@ if __name__ == "__main__":
     clock = pg.time.Clock()
 
     start_screen = StartScreen(screen)
+
+    msc = pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
+
+    pygame.mixer.music.play(-1)
 
     quit_game = False
     while not quit_game:
