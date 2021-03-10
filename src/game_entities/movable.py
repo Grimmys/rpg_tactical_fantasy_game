@@ -72,6 +72,9 @@ class Movable(Destroyable):
         #beiba
         pg.mixer.init()
         self.walksfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
+        self.skltnsfx = pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
+        self.ncrphgsfx = pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
+        self.centsfx = pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
 
     def display(self, screen):
         Destroyable.display(self, screen)
@@ -127,7 +130,20 @@ class Movable(Destroyable):
         self.state = EntityState.ON_MOVE
 
         #beiba
-        pygame.mixer.Sound.play(self.walksfx)
+        if self.strategy == EntityStrategy.MANUAL:
+            if self.name == "chrisemon":
+                pygame.mixer.Sound.play(self.centsfx)
+            else:
+                pygame.mixer.Sound.play(self.walksfx)
+        if self.name == "skeleton":
+            if self.target is not None:
+                pygame.mixer.Sound.play(self.skltnsfx)
+        if self.name == "necrophage":
+            if self.target is not None:
+                pygame.mixer.Sound.play(self.ncrphgsfx)
+        if self.name == "assassin":
+            if self.target is not None:
+                pygame.mixer.Sound.play(self.walksfx)
 
     def get_formatted_alterations(self):
         formatted_string = ""
