@@ -1,10 +1,15 @@
 from src.game_entities.item import Item
 
+import pygame.mixer
+import os
 
 class Consumable(Item):
     def __init__(self, name, sprite, description, price, effects):
         Item.__init__(self, name, sprite, description, price)
         self.effects = effects
+
+        pygame.mixer.init()
+        self.drinksfx = pygame.mixer.Sound(os.path.join('sound_fx', 'potion.ogg'))
 
     def use(self, player):
         success = False
@@ -15,5 +20,6 @@ class Consumable(Item):
             if sub_success:
                 success = True
         if success:
+            pygame.mixer.Sound.play(self.drinksfx)
             player.remove_item(self)
         return success, msgs

@@ -21,6 +21,10 @@ from src.game_entities.mission import MissionType
 from src.services.menus import *
 from src.services.saveStateManager import SaveStateManager
 
+#beiba
+import pygame.mixer
+import os
+
 LANDING = None
 LANDING_OPACITY = 80
 ATTACKABLE = None
@@ -190,6 +194,13 @@ class Level:
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions)
         self.wait_for_dest_tp = False
+
+        # beiba
+        pg.mixer.init()
+        self.waitsfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
+        self.invsfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
+        self.armsfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
+        self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
 
     @staticmethod
     def load_event_dialog(dialog_el):
@@ -593,6 +604,9 @@ class Level:
             self.active_menu = menuCreatorManager.create_trade_menu(self.selected_player, target)
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
+
+            pygame.mixer.Sound.play(self.talksfx)
+
             entries = target.talk(actor)
             self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
@@ -806,6 +820,10 @@ class Level:
             self.active_menu = None
         # Item action : Character's inventory is opened
         elif method_id is CharacterMenu.INV:
+
+            # beiba
+            pygame.mixer.Sound.play(self.invsfx)
+
             self.background_menus.append((self.active_menu, True))
 
             items_max = self.selected_player.nb_items_max
@@ -817,6 +835,10 @@ class Level:
             self.active_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
         # Equipment action : open the equipment screen
         elif method_id is CharacterMenu.EQUIPMENT:
+
+            # beiba
+            pygame.mixer.Sound.play(self.armsfx)
+
             self.background_menus.append((self.active_menu, True))
 
             equipments = list(self.selected_player.equipments)
@@ -827,6 +849,10 @@ class Level:
             self.active_menu = menuCreatorManager.create_status_menu(self.selected_player)
         # Wait action : Given Character's turn is finished
         elif method_id is CharacterMenu.WAIT:
+
+            # beiba
+            pygame.mixer.Sound.play(self.waitsfx)
+
             self.active_menu = None
             self.selected_item = None
             self.selected_player.end_turn()
