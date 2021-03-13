@@ -1,47 +1,31 @@
+from src.game_entities.breakable import Breakable
+from src.game_entities.building import Building
+from src.game_entities.character import Character
+from src.game_entities.chest import Chest
 from src.game_entities.door import Door
+from src.game_entities.foe import Foe
+from src.game_entities.fountain import Fountain
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.key import Key
-from src.gui.fonts import fonts
-from src.services import loadFromXMLManager as Loader, menuCreatorManager
-from src.game_entities.building import Building
-from src.game_entities.shop import Shop
-from src.game_entities.character import Character
-from src.game_entities.player import Player
-from src.game_entities.foe import Foe
+from src.game_entities.mission import MissionType
 from src.game_entities.movable import *
-from src.game_entities.chest import Chest
+from src.game_entities.player import Player
 from src.game_entities.portal import Portal
-from src.game_entities.fountain import Fountain
-from src.game_entities.breakable import Breakable
+from src.game_entities.shop import Shop
+from src.gui.animation import Animation
+from src.gui.constantSprites import ATTACKABLE_OPACITY, LANDING_OPACITY, INTERACTION_OPACITY
+from src.gui.fonts import fonts
 from src.gui.infoBox import InfoBox
 from src.gui.sidebar import Sidebar
-from src.gui.animation import Animation
-from src.game_entities.mission import MissionType
+from src.gui.tools import blit_alpha
+from src.services import loadFromXMLManager as Loader, menuCreatorManager
+from src.services.menuCreatorManager import create_event_dialog
 from src.services.menus import *
 from src.services.saveStateManager import SaveStateManager
 
-LANDING = None
-LANDING_OPACITY = 80
-ATTACKABLE = None
-ATTACKABLE_OPACITY = 80
-INTERACTION = None
-INTERACTION_OPACITY = 500
 
-NEW_TURN = None
-NEW_TURN_POS = None
-VICTORY = None
-VICTORY_POS = None
-DEFEAT = None
-DEFEAT_POS = None
-
-
-def blit_alpha(target, source, location, opacity):
-    source.set_alpha(opacity)
-    target.blit(source, location)
-
-
-class Status(IntEnum):
+class LevelStatus(IntEnum):
     INITIALIZATION = auto()
     IN_PROGRESS = auto()
     ENDED_VICTORY = auto()
@@ -60,101 +44,57 @@ class EntityTurn(IntEnum):
 
 class Level:
 
-    @staticmethod
-    def init_constant_sprites():
-        global LANDING, ATTACKABLE, INTERACTION, NEW_TURN, NEW_TURN_POS, VICTORY, VICTORY_POS, DEFEAT, DEFEAT_POS
-        landing_sprite = 'imgs/dungeon_crawl/misc/move.png'
-        LANDING = pg.transform.scale(pg.image.load(landing_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-        attackable_sprite = 'imgs/dungeon_crawl/misc/attackable.png'
-        ATTACKABLE = pg.transform.scale(pg.image.load(attackable_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-        interaction_sprite = 'imgs/dungeon_crawl/misc/landing.png'
-        INTERACTION = pg.transform.scale(pg.image.load(interaction_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+    def __init__(self, directory, nb_level, status=LevelStatus.INITIALIZATION, turn=0, data=None, players=None):
+        if players is None:
+            players = []
 
-        new_turn_sprite = 'imgs/interface/new_turn.png'
-        NEW_TURN = pg.transform.scale(pg.image.load(new_turn_sprite).convert_alpha(), (int(392 * 1.5), int(107 * 1.5)))
-        VICTORY = NEW_TURN.copy()
-        DEFEAT = NEW_TURN.copy()
-
-        NEW_TURN_POS = (MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
-        new_turn_text = fonts['TITLE_FONT'].render("New turn !", 1, WHITE)
-        new_turn_text_pos = (NEW_TURN.get_width() / 2 - new_turn_text.get_width() / 2,
-                             NEW_TURN.get_height() / 2 - new_turn_text.get_height() / 2)
-        NEW_TURN.blit(new_turn_text, new_turn_text_pos)
-
-        VICTORY_POS = NEW_TURN_POS
-        victory_text = fonts['TITLE_FONT'].render("VICTORY !", 1, WHITE)
-        victory_text_pos = (VICTORY.get_width() / 2 - victory_text.get_width() / 2,
-                            VICTORY.get_height() / 2 - victory_text.get_height() / 2)
-        VICTORY.blit(victory_text, victory_text_pos)
-
-        DEFEAT_POS = NEW_TURN_POS
-        defeat_text = fonts['TITLE_FONT'].render("DEFEAT !", 1, WHITE)
-        defeat_text_pos = (DEFEAT.get_width() / 2 - defeat_text.get_width() / 2,
-                           DEFEAT.get_height() / 2 - defeat_text.get_height() / 2)
-        DEFEAT.blit(defeat_text, defeat_text_pos)
-
-    def __init__(self, directory, nb_level, status=Status.INITIALIZATION.name, turn=0, data=None, players=[]):
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.nb_level = nb_level
 
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
-        map_width = int(tree.find('width').text.strip()) * TILE_SIZE
-        map_height = int(tree.find('height').text.strip()) * TILE_SIZE
+        map_image = pg.image.load(self.directory + 'map.png')
         self.map = {
-            'img': pg.image.load(self.directory + 'map.png'),
-            'width': map_width,
-            'height': map_height,
-            'x': (MAX_MAP_WIDTH - map_width) // 2,
-            'y': (MAX_MAP_HEIGHT - map_height) // 2,
+            'img': map_image,
+            'width': map_image.get_width(),
+            'height': map_image.get_height(),
+            'x': (MAX_MAP_WIDTH - map_image.get_width()) // 2,
+            'y': (MAX_MAP_HEIGHT - map_image.get_height()) // 2,
         }
+
+        # Load obstacles
+        self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
 
         # Load events
         self.events = Loader.load_events(tree.find('events'), self.map['x'], self.map['y'])
 
-        self.possible_placements = []
-        if status == Status.INITIALIZATION.name:
-            # Load available tiles for characters' placement
-            self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'),
-                                                              self.map['x'], self.map['y'])
+        # Load available tiles for characters' placement
+        self.possible_placements = Loader.load_placements(tree.findall('placementArea/position'),
+                                                          self.map['x'], self.map['y'])
 
         self.active_menu = None
         self.background_menus = []
         self.players = players
+        self.entities = {'players': self.players}
         # List for players who are now longer in the level
-        self.passed_players = []
         if data is None:
             # Game is new
-            data_tree = tree
             from_save = False
+            data_tree = tree
+            gap_x, gap_y = (self.map['x'], self.map['y'])
+            self.passed_players = []
             if 'before_init' in self.events:
                 if 'dialogs' in self.events['before_init']:
                     for dialog in self.events['before_init']['dialogs']:
-                        self.background_menus.append((Level.load_event_dialog(dialog), False))
+                        self.background_menus.append((create_event_dialog(dialog), False))
                 self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
                 if 'new_players' in self.events['before_init']:
                     for player_el in self.events['before_init']['new_players']:
                         player = Loader.init_player(player_el['name'])
                         player.pos = player_el['position']
                         self.players.append(player)
-            gap_x, gap_y = (self.map['x'], self.map['y'])
-        else:
-            data_tree = data
-            from_save = True
-            gap_x, gap_y = (0, 0)
-            self.players = Loader.load_players(data_tree)
-            self.passed_players = Loader.load_escaped_players(data_tree)
 
-        # Load obstacles
-        self.obstacles = Loader.load_obstacles(tree.find('obstacles'), self.map['x'], self.map['y'])
-
-        # Load and store all entities
-        self.entities = Loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
-        self.entities['players'] = self.players
-
-        # Game is new, players' positions should be initialized
-        if data is None:
             # Set initial pos of players arbitrarily
             for player in self.players:
                 for tile in self.possible_placements:
@@ -163,9 +103,20 @@ class Level:
                         break
                 else:
                     print("Error ! Not enough free tiles to set players...")
+        else:
+            # Game is loaded from a save (data)
+            from_save = True
+            data_tree = data
+            gap_x, gap_y = (0, 0)
+            self.players = Loader.load_players(data_tree)
+            self.passed_players = Loader.load_escaped_players(data_tree)
 
         # Load missions
         self.missions, self.main_mission = Loader.load_missions(tree, self.players, self.map['x'], self.map['y'])
+
+        # Load and store all entities
+        self.entities = Loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
+        self.entities['players'] = self.players
 
         # Booleans for end game
         self.victory = False
@@ -182,32 +133,25 @@ class Level:
         self.active_shop = None
 
         self.quit_request = False
-        self.game_phase = Status[status]
+        self.game_phase = status
         self.side_turn = EntityTurn.PLAYER
         self.turn = turn
         self.animation = None
         self.watched_ent = None
         self.hovered_ent = None
-        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions)
+        self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions, self.nb_level)
         self.wait_for_dest_tp = False
 
-    @staticmethod
-    def load_event_dialog(dialog_el):
-        entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                   for s in dialog_el['talks']]
-        return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
-                       entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
-
-    def save_game(self, id):
+    def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
-        save_state_manager.save_game(id)
+        save_state_manager.save_game(slot)
 
     def exit_game(self):
         # At next update, level will be destroyed
         self.quit_request = True
 
-    def game_started(self):
-        return self.game_phase is not Status.INITIALIZATION
+    def is_game_started(self):
+        return self.game_phase is not LevelStatus.INITIALIZATION
 
     def end_level(self, anim_surf, pos):
         self.background_menus = []
@@ -220,13 +164,13 @@ class Level:
                         for player in self.players:
                             player.gold += mission.gold
                     if mission.items:
-                        # TODO
+                        # TODO : Add items reward of optional objective to players
                         pass
             # Check if there are some post-level events
             if 'at_end' in self.events:
                 if 'dialogs' in self.events['at_end']:
                     for dialog in self.events['at_end']['dialogs']:
-                        self.background_menus.append((Level.load_event_dialog(dialog), False))
+                        self.background_menus.append((create_event_dialog(dialog), False))
 
         self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
@@ -238,7 +182,7 @@ class Level:
         if self.animation:
             if self.animation.anim():
                 self.animation = None
-                if self.game_phase > Status.IN_PROGRESS and not self.active_menu:
+                if self.game_phase > LevelStatus.IN_PROGRESS and not self.active_menu:
                     # End game animation is finished, level can be quit if there is no more menu
                     self.exit_game()
             return None
@@ -248,7 +192,8 @@ class Level:
             return None
 
         # Game should be left if it's ended and there is no more animation nor menu
-        if self.game_phase is Status.ENDED_DEFEAT or self.game_phase is Status.ENDED_VICTORY:
+        if self.game_phase is LevelStatus.ENDED_DEFEAT or self.game_phase is LevelStatus.ENDED_VICTORY:
+            print("Passed in 'ENDED_DEFEAT / ENDED_VICTORY' condition")
             return self.game_phase
 
         for mission in self.missions:
@@ -264,13 +209,13 @@ class Level:
 
         # Verify if game should be ended
         if self.victory:
-            self.end_level(VICTORY, VICTORY_POS)
-            self.game_phase = Status.ENDED_VICTORY
+            self.end_level(constant_sprites['victory'], constant_sprites['victory_pos'])
+            self.game_phase = LevelStatus.ENDED_VICTORY
             self.victory = False
             return None
         elif self.defeat:
-            self.end_level(DEFEAT, DEFEAT_POS)
-            self.game_phase = Status.ENDED_DEFEAT
+            self.end_level(constant_sprites['defeat'], constant_sprites['defeat_pos'])
+            self.game_phase = LevelStatus.ENDED_DEFEAT
             self.defeat = False
             return None
 
@@ -306,7 +251,7 @@ class Level:
 
     def display(self, win):
         win.blit(self.map['img'], (self.map['x'], self.map['y']))
-        self.sidebar.display(win, self.turn, self.hovered_ent, self.nb_level)
+        self.sidebar.display(win, self.turn, self.hovered_ent)
 
         for collection in self.entities.values():
             for ent in collection:
@@ -318,17 +263,16 @@ class Level:
             self.show_possible_actions(self.watched_ent, win)
 
         # If the game hasn't yet started
-        if self.game_phase is Status.INITIALIZATION:
+        if self.game_phase is LevelStatus.INITIALIZATION:
             self.show_possible_placements(win)
-        else:
-            if self.selected_player:
-                # If player is waiting to move
-                if self.possible_moves:
-                    self.show_possible_actions(self.selected_player, win)
-                elif self.possible_attacks:
-                    self.show_possible_attacks(self.selected_player, win)
-                elif self.possible_interactions:
-                    self.show_possible_interactions(win)
+        elif self.selected_player:
+            # If player is waiting to move
+            if self.possible_moves:
+                self.show_possible_actions(self.selected_player, win)
+            elif self.possible_attacks:
+                self.show_possible_attacks(self.selected_player, win)
+            elif self.possible_interactions:
+                self.show_possible_interactions(win)
 
         if self.animation:
             self.animation.display(win)
@@ -346,29 +290,29 @@ class Level:
     def show_possible_attacks(self, movable, win):
         for tile in self.possible_attacks:
             if movable.pos != tile:
-                blit_alpha(win, ATTACKABLE, tile, ATTACKABLE_OPACITY)
+                blit_alpha(win, constant_sprites['attackable'], tile, ATTACKABLE_OPACITY)
 
     def show_possible_moves(self, movable, win):
         for tile in self.possible_moves.keys():
             if movable.pos != tile:
-                blit_alpha(win, LANDING, tile, LANDING_OPACITY)
+                blit_alpha(win, constant_sprites['landing'], tile, LANDING_OPACITY)
 
     def show_possible_interactions(self, win):
         for tile in self.possible_interactions:
-            blit_alpha(win, INTERACTION, tile, INTERACTION_OPACITY)
+            blit_alpha(win, constant_sprites['interaction'], tile, INTERACTION_OPACITY)
 
     def show_possible_placements(self, win):
         for tile in self.possible_placements:
-            blit_alpha(win, LANDING, tile, LANDING_OPACITY)
+            blit_alpha(win, constant_sprites['landing'], tile, LANDING_OPACITY)
 
     def start_game(self):
         self.active_menu = None
-        self.game_phase = Status.IN_PROGRESS
+        self.game_phase = LevelStatus.IN_PROGRESS
         self.new_turn()
         if 'after_init' in self.events:
             if 'dialogs' in self.events['after_init']:
                 for dialog in self.events['after_init']['dialogs']:
-                    self.background_menus.append((Level.load_event_dialog(dialog), False))
+                    self.background_menus.append((create_event_dialog(dialog), False))
             self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
             if 'new_players' in self.events['after_init']:
                 for player_el in self.events['after_init']['new_players']:
@@ -675,8 +619,7 @@ class Level:
                                                  'font': fonts['ITEM_DESC_FONT']}])
                 self.remove_entity(target)
             else:
-                entries.append([{'type': 'text', 'text': str(target) + " now has " +
-                                                         str(target.hp) + " HP",
+                entries.append([{'type': 'text', 'text': str(target) + " now has " + str(target.hp) + " HP",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
                 if isinstance(attacker, Character):
@@ -707,7 +650,7 @@ class Level:
 
     def distance_between_all(self, ent_1, ents):
         free_tiles_distance = self.get_possible_moves(ent_1.pos, (self.map['width'] * self.map['height']) // (
-                    TILE_SIZE * TILE_SIZE))
+                TILE_SIZE * TILE_SIZE))
         ents_dist = {ent: self.map['width'] * self.map['height'] for ent in ents}
         for tile, dist in free_tiles_distance.items():
             for neighbour in self.get_next_cases(tile):
@@ -787,7 +730,7 @@ class Level:
             self.begin_turn()
         elif method_id is MainMenu.SUSPEND:
             # Because player choose to leave game before end, it's obviously a defeat
-            self.game_phase = Status.ENDED_DEFEAT
+            self.game_phase = LevelStatus.ENDED_DEFEAT
             self.exit_game()
         else:
             print("Unknown action in main menu... : " + str(method_id))
@@ -798,27 +741,23 @@ class Level:
 
         # Attack action : Character has to choose a target
         if method_id is CharacterMenu.ATTACK:
+            self.background_menus.append((self.active_menu, False))
             self.selected_player.choose_target()
             self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], self.selected_player.reach,
                                                               True)
             self.possible_interactions = []
-            self.background_menus.append((self.active_menu, False))
             self.active_menu = None
         # Item action : Character's inventory is opened
         elif method_id is CharacterMenu.INV:
             self.background_menus.append((self.active_menu, True))
-
             items_max = self.selected_player.nb_items_max
-
             items = list(self.selected_player.items)
             free_spaces = items_max - len(items)
             items += [None] * free_spaces
-
             self.active_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
         # Equipment action : open the equipment screen
         elif method_id is CharacterMenu.EQUIPMENT:
             self.background_menus.append((self.active_menu, True))
-
             equipments = list(self.selected_player.equipments)
             self.active_menu = menuCreatorManager.create_equipment_menu(equipments)
         # Display player's status
@@ -869,13 +808,7 @@ class Level:
                 self.active_menu = InfoBox("You have no key to open a door", "", "imgs/interface/PopUpMenu.png", [],
                                            ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             else:
-                self.background_menus.append((self.active_menu, False))
-                self.active_menu = None
-                self.selected_player.choose_target()
-                self.possible_interactions = []
-                for ent in self.get_next_cases(self.selected_player.pos):
-                    if isinstance(ent, Door):
-                        self.possible_interactions.append(ent.pos)
+                self.select_interaction_with(Door)
         elif method_id is CharacterMenu.PICK_LOCK:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
@@ -886,22 +819,10 @@ class Level:
                     self.possible_interactions.append(ent.pos)
         # Use a portal
         elif method_id is CharacterMenu.USE_PORTAL:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = None
-            self.selected_player.choose_target()
-            self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.pos):
-                if isinstance(ent, Portal):
-                    self.possible_interactions.append(ent.pos)
+            self.select_interaction_with(Portal)
         # Drink into a fountain
         elif method_id is CharacterMenu.DRINK:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = None
-            self.selected_player.choose_target()
-            self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.pos):
-                if isinstance(ent, Fountain):
-                    self.possible_interactions.append(ent.pos)
+            self.select_interaction_with(Fountain)
         # Talk with an ally
         elif method_id is CharacterMenu.TALK:
             self.background_menus.append((self.active_menu, False))
@@ -912,13 +833,7 @@ class Level:
                 if isinstance(ent, Character) and not isinstance(ent, Player):
                     self.possible_interactions.append(ent.pos)
         elif method_id is CharacterMenu.TRADE:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = None
-            self.selected_player.choose_target()
-            self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.pos):
-                if isinstance(ent, Player):
-                    self.possible_interactions.append(ent.pos)
+            self.select_interaction_with(Player)
         # Visit a house
         elif method_id is CharacterMenu.VISIT:
             self.background_menus.append((self.active_menu, False))
@@ -944,6 +859,16 @@ class Level:
                                 self.background_menus = []
                                 self.selected_player.end_turn()
                                 self.selected_player = None
+                                break
+
+    def select_interaction_with(self, entity_kind):
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = None
+        self.selected_player.choose_target()
+        self.possible_interactions = []
+        for ent in self.get_next_cases(self.selected_player.pos):
+            if isinstance(ent, entity_kind):
+                self.possible_interactions.append(ent.pos)
 
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -962,13 +887,13 @@ class Level:
             item = args[1]
 
             self.selected_item = item
-            self.background_menus.append([self.active_menu, True])
+            self.background_menus.append((self.active_menu, True))
             self.active_menu = menuCreatorManager.create_item_menu(item_button_pos, item, True)
 
     def execute_item_action(self, method_id, args):
         # Get info about an item
         if method_id is ItemMenu.INFO_ITEM:
-            self.background_menus.append([self.active_menu, False])
+            self.background_menus.append((self.active_menu, False))
             self.active_menu = menuCreatorManager.create_item_desc_menu(self.selected_item)
         # Remove an item
         elif method_id is ItemMenu.THROW_ITEM:
@@ -1002,18 +927,7 @@ class Level:
 
             # Inventory display is update if object has been used
             if used:
-                items_max = self.selected_player.nb_items_max
-
-                items = list(self.selected_player.items)
-                free_spaces = items_max - len(items)
-                items += [None] * free_spaces
-
-                new_inventory_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
-
-                # Cancel item menu
-                self.background_menus.pop()
-                # Update the inventory menu (i.e. first menu backward)
-                self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
+                self.refresh_inventory()
 
             entries = [[{'type': 'text', 'text': msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in result_msgs]
@@ -1036,17 +950,7 @@ class Level:
                     result_msg += " Previous equipped item has been added to your inventory."
 
                 # Inventory has changed
-                items_max = self.selected_player.nb_items_max
-                items = list(self.selected_player.items)
-                free_spaces = items_max - len(items)
-                items += [None] * free_spaces
-
-                new_inventory_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
-
-                # Cancel item menu
-                self.background_menus.pop()
-                # Update the inventory menu (i.e. first menu backward)
-                self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
+                self.refresh_inventory()
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
@@ -1140,6 +1044,17 @@ class Level:
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
             print(f"Unknown action in item menu : {method_id}")
+
+    def refresh_inventory(self):
+        items_max = self.selected_player.nb_items_max
+        items = list(self.selected_player.items)
+        free_spaces = items_max - len(items)
+        items += [None] * free_spaces
+        new_inventory_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
+        # Cancel item menu
+        self.background_menus.pop()
+        # Update the inventory menu (i.e. first menu backward)
+        self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
 
     def execute_status_action(self, method_id, args):
         # Get infos about an alteration
@@ -1254,7 +1169,8 @@ class Level:
 
     def new_turn(self):
         self.turn += 1
-        self.animation = Animation([{'sprite': NEW_TURN, 'pos': NEW_TURN_POS}], 60)
+        self.animation = Animation([{'sprite': constant_sprites['new_turn'], 'pos': constant_sprites['new_turn_pos']}],
+                                   60)
 
     def left_click(self, pos):
         if self.active_menu:
@@ -1266,7 +1182,7 @@ class Level:
             return
 
         if self.selected_player is not None:
-            if self.game_phase is not Status.INITIALIZATION:
+            if self.game_phase is not LevelStatus.INITIALIZATION:
                 if self.possible_moves:
                     # Player is waiting to move
                     for move in self.possible_moves:
@@ -1327,7 +1243,7 @@ class Level:
                 self.active_menu = menuCreatorManager.create_status_entity_menu(ent)
                 return
 
-        is_initialization = self.game_phase is Status.INITIALIZATION
+        is_initialization = self.game_phase is LevelStatus.INITIALIZATION
         self.active_menu = menuCreatorManager.create_main_menu(is_initialization, pos)
 
     def right_click(self):

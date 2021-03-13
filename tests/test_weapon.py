@@ -1,9 +1,10 @@
 import unittest
 
+from src.constants import TILE_SIZE
 from src.game_entities.destroyable import DamageKind
 from src.game_entities.foe import Keyword
 from src.game_entities.weapon import Weapon
-from tests.random_data_library import random_weapon, random_foe_entity
+from tests.random_data_library import random_weapon, random_foe_entity, random_player_entity
 from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 100
@@ -103,6 +104,37 @@ class TestWeapon(unittest.TestCase):
 
         super_vulnerable_foe = random_foe_entity(keywords=[Keyword.CAVALRY, Keyword.LARGE])
         self.assertEqual(power * 3, weapon.hit(super_vulnerable_foe))
+
+    def test_charge_bonus(self):
+        power = 4
+        spear = random_weapon(atk=power, attack_kind='PHYSICAL', charge=True)
+        player = random_player_entity()
+        player.strength = 5
+        attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
+        player.equip(spear)
+        # No charge
+        self.assertEqual(player.strength + spear.atk, player.attack(attacked_ent))
+
+        # Charge
+        player.pos = (player.pos[0] + 5 * TILE_SIZE, player.pos[1])
+        self.assertEqual(player.strength + int(spear.atk * 1.5), player.attack(attacked_ent))
+
+        # Stronger charge
+        player.pos = (player.pos[0] + 8 * TILE_SIZE, player.pos[1])
+        self.assertEqual(player.strength + int(spear.atk * 2), player.attack(attacked_ent))
+
+    def test_no_charge_bonus_for_weapon_with_no_charge(self):
+        power = 4
+        weapon = random_weapon(atk=power, attack_kind='PHYSICAL', charge=False)
+        player = random_player_entity()
+        player.strength = 5
+        attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
+        player.equip(weapon)
+
+        # No charge bonus even if there is a " charge "
+        player.pos = (player.pos[0] + 5 * TILE_SIZE, player.pos[1])
+        self.assertEqual(player.strength + weapon.atk, player.attack(attacked_ent))
+
 
 
 if __name__ == '__main__':

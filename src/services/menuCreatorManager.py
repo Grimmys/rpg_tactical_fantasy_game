@@ -506,6 +506,13 @@ def create_status_entity_menu(ent):
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
+def create_event_dialog(dialog_el):
+    entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+               for s in dialog_el['talks']]
+    return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
+                   entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+
+
 def create_reward_menu(mission):
     entries = [
         [{'type': 'text', 'text': 'Congratulations ! Objective has been completed !', 'font': fonts['ITEM_DESC_FONT']}]]

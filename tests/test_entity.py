@@ -52,9 +52,9 @@ class TestEntity(unittest.TestCase):
         entity = Entity(name, pos, sprite)
 
         self.assertTrue(entity.is_on_pos(pos))
-        self.assertTrue(entity.is_on_pos((pos[0] + rd.randint(0, TILE_SIZE), pos[1] + rd.randint(0, TILE_SIZE))))
-        self.assertFalse(entity.is_on_pos((pos[0] - rd.randint(0, MAIN_WIN_WIDTH), pos[1])))
-        self.assertFalse(entity.is_on_pos((pos[0], pos[1] - rd.randint(0, MAIN_WIN_HEIGHT))))
+        self.assertTrue(entity.is_on_pos((pos[0] + rd.randrange(0, TILE_SIZE), pos[1] + rd.randrange(0, TILE_SIZE))))
+        self.assertFalse(entity.is_on_pos((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1])))
+        self.assertFalse(entity.is_on_pos((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT))))
 
 
 if __name__ == '__main__':

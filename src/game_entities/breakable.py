@@ -1,17 +1,10 @@
-import pygame as pg
 from lxml import etree
 
 from src.game_entities.destroyable import Destroyable
-from src.constants import TILE_SIZE
+from src.gui.constantSprites import constant_sprites
 
 
 class Breakable(Destroyable):
-    CRACKED = None
-
-    @staticmethod
-    def init_constant_sprites():
-        cracked_sprite = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
-        CRACKED = pg.transform.scale(pg.image.load(cracked_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
     def __init__(self, pos, sprite, hp, defense, res):
         Destroyable.__init__(self, "Breakable", pos, sprite, hp, defense, res)
@@ -20,7 +13,7 @@ class Breakable(Destroyable):
 
     def display(self, screen):
         Destroyable.display(self, screen)
-        screen.blit(CRACKED, self.pos)
+        screen.blit(constant_sprites['cracked'], self.pos)
 
     def save(self, tree_name):
         tree = Destroyable.save(self, tree_name)

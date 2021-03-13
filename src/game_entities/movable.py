@@ -185,6 +185,7 @@ class Movable(Destroyable):
         for index, it in enumerate(self.items):
             if it.id == item.id:
                 return self.items.pop(index)
+        return -1
 
     def use_item(self, item):
         return item.use(self)
