@@ -3,6 +3,10 @@ from enum import IntEnum, Enum, auto
 
 from src.game_entities.skill import SkillNature
 
+#beiba
+import pygame.mixer
+import os
+
 TIMER = 60
 NB_ITEMS_MAX = 8
 
@@ -65,6 +69,13 @@ class Movable(Destroyable):
         self.strategy = EntityStrategy[strategy]
         self.skills = skills
 
+        #beiba
+        pg.mixer.init()
+        self.walksfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
+        self.skltnsfx = pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
+        self.ncrphgsfx = pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
+        self.centsfx = pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
+
     def display(self, screen):
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
@@ -117,6 +128,22 @@ class Movable(Destroyable):
     def set_move(self, path):
         self.on_move = path
         self.state = EntityState.ON_MOVE
+
+        #beiba
+        if self.strategy == EntityStrategy.MANUAL:
+            if self.name == "chrisemon":
+                pygame.mixer.Sound.play(self.centsfx)
+            else:
+                pygame.mixer.Sound.play(self.walksfx)
+        if self.name == "skeleton":
+            if self.target is not None:
+                pygame.mixer.Sound.play(self.skltnsfx)
+        if self.name == "necrophage":
+            if self.target is not None:
+                pygame.mixer.Sound.play(self.ncrphgsfx)
+        if self.name == "assassin":
+            if self.target is not None:
+                pygame.mixer.Sound.play(self.walksfx)
 
     def get_formatted_alterations(self):
         formatted_string = ""

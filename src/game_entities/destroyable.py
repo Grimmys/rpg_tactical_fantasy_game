@@ -5,6 +5,10 @@ from src.game_entities.entity import Entity
 from src.constants import *
 from src.gui.constantSprites import constant_sprites
 
+#beiba
+import pygame.mixer
+import os
+
 
 class DamageKind(Enum):
     PHYSICAL = 'Physical'
@@ -19,6 +23,10 @@ class Destroyable(Entity):
         self.hp = hp
         self.defense = defense
         self.res = res
+
+        #beiba
+        pg.mixer.init()
+        self.atcksfx = pg.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
 
     def display_hp(self, screen):
         if self.hp != self.hp_max:
@@ -41,6 +49,9 @@ class Destroyable(Entity):
             real_damage = damage - self.res
         elif kind is DamageKind.PHYSICAL:
             real_damage = damage - self.defense
+
+            #beiba
+            pg.mixer.Sound.play(self.atcksfx)
         else:
             print('Error : Invalid kind of attack : ' + str(kind))
             raise SystemError
