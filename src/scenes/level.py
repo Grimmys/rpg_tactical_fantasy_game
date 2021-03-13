@@ -142,7 +142,6 @@ class Level:
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions, self.nb_level)
         self.wait_for_dest_tp = False
 
-    def save_game(self, slot):
         # beiba
         pg.mixer.init()
         self.waitsfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
@@ -150,14 +149,7 @@ class Level:
         self.armsfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
         self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
 
-    @staticmethod
-    def load_event_dialog(dialog_el):
-        entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                   for s in dialog_el['talks']]
-        return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
-                       entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
-
-    def save_game(self, id):
+    def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot)
 
@@ -768,10 +760,8 @@ class Level:
             self.active_menu = None
         # Item action : Character's inventory is opened
         elif method_id is CharacterMenu.INV:
-
             # beiba
             pygame.mixer.Sound.play(self.invsfx)
-
             self.background_menus.append((self.active_menu, True))
             items_max = self.selected_player.nb_items_max
             items = list(self.selected_player.items)

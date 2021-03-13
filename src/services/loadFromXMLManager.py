@@ -699,7 +699,7 @@ def load_item(data):
 
     # Retrieve static data
     item = parse_item_file(name)
-    item.resell_price = data.find('value').text.strip()
+    item.resell_price = int(data.find('value').text.strip())
     if isinstance(item, Weapon) or isinstance(item, Shield):
         item.durability = int(data.find('durability').text.strip())
 

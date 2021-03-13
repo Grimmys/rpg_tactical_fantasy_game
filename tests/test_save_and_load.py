@@ -120,3 +120,12 @@ class TestSaveAndLoad(unittest.TestCase):
         loaded_weapon = load_item(weapon_saved)
         self.assertEqual(weapon.durability_max, loaded_weapon.durability_max)
         self.assertEqual(weapon.durability, loaded_weapon.durability)
+
+    def test_save_and_load_item(self):
+        potion = parse_item_file('life_potion')
+        potion_saved = potion.save('item')
+        loaded_potion = load_item(potion_saved)
+        self.assertEqual(potion.desc, loaded_potion.desc)
+        self.assertEqual(potion.price, loaded_potion.price)
+        self.assertEqual(potion.resell_price, loaded_potion.resell_price)
+
