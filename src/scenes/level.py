@@ -47,7 +47,10 @@ class EntityTurn(IntEnum):
 
 class Level:
 
-    def __init__(self, directory, nb_level, status=LevelStatus.INITIALIZATION, turn=0, data=None, players=[]):
+    def __init__(self, directory, nb_level, status=LevelStatus.INITIALIZATION, turn=0, data=None, players=None):
+        if players is None:
+            players = []
+
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.nb_level = nb_level
