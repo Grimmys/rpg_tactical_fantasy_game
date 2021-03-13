@@ -4,6 +4,7 @@ build/
 saves/*.xml
 .coverage
 .coverage.*
+.ipynb_checkpoints/
 
 # For those who use PyCharm
 .idea/
