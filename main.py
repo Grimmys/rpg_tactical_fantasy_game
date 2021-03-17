@@ -40,8 +40,7 @@ if __name__ == "__main__":
 
     start_screen = StartScreen(screen)
 
-    msc = pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
-
+    pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
     pygame.mixer.music.play(-1)
 
     quit_game = False
