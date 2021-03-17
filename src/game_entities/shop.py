@@ -6,12 +6,18 @@ from src.services import menuCreatorManager
 from src.game_entities.building import Building
 from src.services.menus import ShopMenu
 
+#beiba
+import pygame.mixer
+import os
 
 class Shop(Building):
     def __init__(self, name, pos, sprite, interaction, stock):
         Building.__init__(self, name, pos, sprite, interaction)
         self.stock = stock
         self.menu = menuCreatorManager.create_shop_menu(self.stock, 0)
+
+        pygame.mixer.init()
+        self.goldsfx = pygame.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
     def get_item_entry(self, item):
         for entry in self.stock:
@@ -44,6 +50,9 @@ class Shop(Building):
     def buy(self, actor, item):
         if actor.gold >= item.price:
             if len(actor.items) < actor.nb_items_max:
+
+                pygame.mixer.Sound.play(self.goldsfx)
+
                 actor.gold -= item.price
                 actor.set_item(copy(item))
 

@@ -151,6 +151,8 @@ class Level:
         self.invsfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
         self.armsfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
         self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
+        self.chestsfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
+        self.goldsfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
     def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
@@ -415,6 +417,8 @@ class Level:
     def open_chest(self, actor, chest):
         # Get object inside the chest
         item = chest.open()
+
+        pygame.mixer.Sound.play(self.chestsfx)
 
         if isinstance(item, Gold):
             # If it was some gold, it should be added to the total amount of the player
@@ -1040,6 +1044,9 @@ class Level:
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
+
+            pg.mixer.Sound.play(self.invsfx)
+
             first_player = args[2][0]
             second_player = args[2][1]
             owner = first_player if args[2][2] == 0 else second_player
@@ -1105,6 +1112,9 @@ class Level:
             self.background_menus.append((self.active_menu, True))
             self.active_menu = menuCreatorManager.create_trade_item_menu(item_button_pos, item, players)
         elif method_id is TradeMenu.SEND_GOLD:
+
+            pg.mixer.Sound.play(self.goldsfx)
+
             players = args[2][:2]
             sender_id = args[2][2]
             sender = players[sender_id]
