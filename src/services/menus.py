@@ -81,6 +81,8 @@ class CharacterMenu(Enum):
     TAKE = auto()
     #   - Trade with other playable character
     TRADE = auto()
+    #   - Open Diary
+    DIARY = auto()
 
 
 # > Inventory menu

@@ -212,7 +212,9 @@ def create_status_menu(player):
 def create_player_menu(player, buildings, interact_entities, missions, foes):
     entries = [[{'name': 'Inventory', 'id': CharacterMenu.INV}],
                [{'name': 'Equipment', 'id': CharacterMenu.EQUIPMENT}],
-               [{'name': 'Status', 'id': CharacterMenu.STATUS}], [{'name': 'Wait', 'id': CharacterMenu.WAIT}]]
+               [{'name': 'Status', 'id': CharacterMenu.STATUS}],
+               [{'name': 'Diary', 'id': CharacterMenu.DIARY}],
+               [{'name': 'Wait', 'id': CharacterMenu.WAIT}]]
 
     # Options flags
     chest_option = False
@@ -289,6 +291,10 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
     return InfoBox("Select an action", CharacterMenu, "imgs/interface/PopUpMenu.png",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=player.get_rect())
 
+#beiba
+def create_diary_menu(entries):
+    return InfoBox("Diary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
+                                   close_button=UNFINAL_ACTION)
 
 def create_main_menu(initialization_phase, pos):
     # Transform pos tuple into rect
@@ -583,3 +589,4 @@ def create_save_menu():
 
     return InfoBox("Save Game", SaveMenu,
                    "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+
