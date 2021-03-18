@@ -203,8 +203,14 @@ class Level:
         self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
         self.chestsfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
         self.goldsfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
-
         self.diary_entries = []
+
+    @staticmethod
+    def load_event_dialog(dialog_el):
+        entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+                   for s in dialog_el['talks']]
+        return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
+                       entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
     def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
