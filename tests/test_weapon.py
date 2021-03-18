@@ -1,8 +1,10 @@
 import unittest
 
+from src.constants import TILE_SIZE
 from src.game_entities.destroyable import DamageKind
+from src.game_entities.foe import Keyword
 from src.game_entities.weapon import Weapon
-from tests.random_data_library import random_weapon
+from tests.random_data_library import random_weapon, random_foe_entity, random_player_entity
 from tests.tools import minimal_setup_for_game
 
 NB_TESTS_FOR_PROPORTIONS = 100
@@ -26,8 +28,9 @@ class TestWeapon(unittest.TestCase):
         weight = 2
         restrictions = []
         possible_effects = []
+        strong_against = [Keyword.LARGE]
         sword = Weapon(name, sprite, description, price, equipped_sprite, power, kind, weight, durability, reach,
-                       restrictions, possible_effects)
+                       restrictions, possible_effects, strong_against)
         self.assertEqual(name, sword.name)
         self.assertEqual(description, sword.desc)
         self.assertEqual('Short Sword', str(sword))
@@ -41,6 +44,7 @@ class TestWeapon(unittest.TestCase):
         self.assertEqual(weight, sword.weight)
         self.assertEqual(restrictions, sword.restrictions)
         self.assertEqual(possible_effects, sword.effects)
+        self.assertEqual(strong_against, sword.strong_against)
 
     def test_decreasing_durability(self):
         durability = 40
@@ -69,6 +73,68 @@ class TestWeapon(unittest.TestCase):
             self.assertTrue(weapon.resell_price < before_use_price)
 
         self.assertEqual(0, weapon.resell_price)
+
+    def test_hit_power(self):
+        power = 3
+        strong_against = []
+        weapon = random_weapon(atk=power, strong_against=strong_against)
+        self.assertEqual(power, weapon.hit(random_foe_entity()))
+
+    def test_stronger_against_specific_entity_kind(self):
+        power = 5
+        strong_against = [Keyword.LARGE]
+        weapon = random_weapon(atk=power, strong_against=strong_against)
+
+        normal_foe = random_foe_entity(keywords=[])
+        self.assertEqual(power, weapon.hit(normal_foe))
+
+        vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
+        self.assertEqual(power * 2, weapon.hit(vulnerable_foe))
+
+    def test_stronger_against_multiple_entity_kinds(self):
+        power = 4
+        strong_against = [Keyword.LARGE, Keyword.CAVALRY]
+        weapon = random_weapon(atk=power, strong_against=strong_against)
+
+        non_vulnerable_foe = random_foe_entity(keywords=[Keyword.SMALL])
+        self.assertEqual(power, weapon.hit(non_vulnerable_foe))
+
+        vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
+        self.assertEqual(power * 2, weapon.hit(vulnerable_foe))
+
+        super_vulnerable_foe = random_foe_entity(keywords=[Keyword.CAVALRY, Keyword.LARGE])
+        self.assertEqual(power * 3, weapon.hit(super_vulnerable_foe))
+
+    def test_charge_bonus(self):
+        power = 4
+        spear = random_weapon(atk=power, attack_kind='PHYSICAL', charge=True)
+        player = random_player_entity()
+        player.strength = 5
+        attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
+        player.equip(spear)
+        # No charge
+        self.assertEqual(player.strength + spear.atk, player.attack(attacked_ent))
+
+        # Charge
+        player.pos = (player.pos[0] + 5 * TILE_SIZE, player.pos[1])
+        self.assertEqual(player.strength + int(spear.atk * 1.5), player.attack(attacked_ent))
+
+        # Stronger charge
+        player.pos = (player.pos[0] + 8 * TILE_SIZE, player.pos[1])
+        self.assertEqual(player.strength + int(spear.atk * 2), player.attack(attacked_ent))
+
+    def test_no_charge_bonus_for_weapon_with_no_charge(self):
+        power = 4
+        weapon = random_weapon(atk=power, attack_kind='PHYSICAL', charge=False)
+        player = random_player_entity()
+        player.strength = 5
+        attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
+        player.equip(weapon)
+
+        # No charge bonus even if there is a " charge "
+        player.pos = (player.pos[0] + 5 * TILE_SIZE, player.pos[1])
+        self.assertEqual(player.strength + weapon.atk, player.attack(attacked_ent))
+
 
 
 if __name__ == '__main__':

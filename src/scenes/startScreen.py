@@ -3,7 +3,7 @@ from lxml import etree
 from src.services import menuCreatorManager
 from src.constants import *
 from src.gui.fonts import fonts
-from src.scenes.level import Level, Status
+from src.scenes.level import Level, LevelStatus
 from src.gui.infoBox import InfoBox
 from src.game_entities.movable import Movable
 from src.services.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
@@ -75,7 +75,7 @@ class StartScreen:
     def update_state(self):
         if self.level:
             status = self.level.update_state()
-            if status is Status.ENDED_VICTORY and (self.level_id + 1) in self.levels:
+            if status is LevelStatus.ENDED_VICTORY and (self.level_id + 1) in self.levels:
                 self.level_id += 1
                 team = self.level.passed_players + self.level.players
                 for player in team:
@@ -84,7 +84,7 @@ class StartScreen:
                     # Reset player's state
                     player.new_turn()
                 self.play(StartScreen.load_level(self.level_id, team))
-            elif status is Status.ENDED_VICTORY or status is Status.ENDED_DEFEAT:
+            elif status is LevelStatus.ENDED_VICTORY or status is LevelStatus.ENDED_DEFEAT:
                 # TODO: Game win dialog?
                 self.screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
@@ -116,7 +116,7 @@ class StartScreen:
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level = Level(level_name, self.level_id, game_status, turn_nb, tree_root.find("level/entities"))
+                level = Level(level_name, self.level_id, LevelStatus[game_status], turn_nb, tree_root.find("level/entities"))
                 self.play(level)
                 save.close()
                 return

@@ -34,6 +34,6 @@ def init_fonts():
     for font in fonts_descs:
         if 'default' in fonts_descs[font]:
             # Use pygame's default font
-            fonts[font] = pg.font.SysFont(None, 20, True)
+            fonts[font] = pg.font.SysFont('arial', 20, True)
         else:
             fonts[font] = pg.font.Font(fonts_descs[font]['name'], fonts_descs[font]['size'])

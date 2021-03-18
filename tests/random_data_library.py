@@ -10,6 +10,7 @@ from src.game_entities.foe import Foe, Keyword
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
+from src.game_entities.player import Player
 from src.game_entities.shield import Shield
 from src.game_entities.weapon import Weapon
 from src.constants import TILE_SIZE, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
@@ -53,38 +54,40 @@ def random_item_or_gold(gold_prob=0.3):
         return random_item()
 
 
-def random_equipment_attributes(price, durability, defense=None, res=None):
+def random_equipment_attributes(price, durability, atk=None, defense=None, res=None):
     attrs = random_item_attributes(price)
     attrs['weight'] = rd.randint(1, 10)
     attrs['durability'] = durability if durability else rd.randint(10, 60)
-    attrs['restrictions'] = []
+    attrs['restrictions'] = {}
     attrs['body_part'] = rd.choice(['head', 'body', 'feet'])
-    attrs['defense'] = defense if defense else rd.randint(1, 10)
-    attrs['res'] = res if res else rd.randint(1, 10)
-    attrs['atk'] = rd.randint(1, 10)
+    attrs['defense'] = rd.randint(1, 10) if defense is None else defense
+    attrs['res'] = rd.randint(1, 10) if res is None else res
+    attrs['atk'] = rd.randint(1, 10) if atk is None else atk
     return attrs
 
 
-def random_equipment(price=None, durability=None, defense=None, res=None):
-    attrs = random_equipment_attributes(price, durability, defense, res)
+def random_equipment(price=None, durability=None, atk=None, defense=None, res=None):
+    attrs = random_equipment_attributes(price, durability, atk, defense, res)
     return Equipment(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'], [attrs['sample_img']],
                      attrs['body_part'], attrs['defense'], attrs['res'], attrs['atk'], attrs['weight'],
                      attrs['restrictions'])
 
 
-def random_weapon_attributes(price, durability):
-    attrs = random_equipment_attributes(price, durability)
-    attrs['attack_kind'] = rd.choice(['PHYSICAL', 'SPIRITUAL'])
+def random_weapon_attributes(price, durability, atk, strong_against, attack_kind, charge):
+    attrs = random_equipment_attributes(price, durability, atk)
+    attrs['attack_kind'] = rd.choice(['PHYSICAL', 'SPIRITUAL']) if attack_kind is None else attack_kind
     attrs['reach'] = rd.choice([[1], [1, 2], [2]])
     attrs['effects'] = []
+    attrs['strong_against'] = [rd.choice(list(Keyword))] if strong_against is None else strong_against
+    attrs['charge'] = charge
     return attrs
 
 
-def random_weapon(price=None, durability=None):
-    attrs = random_weapon_attributes(price, durability)
+def random_weapon(price=None, durability=None, atk=None, strong_against=None, attack_kind=None, charge=False):
+    attrs = random_weapon_attributes(price, durability, atk, strong_against, attack_kind, charge)
     return Weapon(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'], [attrs['sample_img']],
                   attrs['atk'], attrs['attack_kind'], attrs['weight'], attrs['durability'], attrs['reach'],
-                  attrs['restrictions'], attrs['effects'])
+                  attrs['restrictions'], attrs['effects'], attrs['strong_against'], attrs['charge'])
 
 
 def random_shield_attributes(price, durability, parry_rate):
@@ -119,19 +122,19 @@ def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportio
     return Chest(pos, sprite_close, sprite_open, potential_items)
 
 
-def random_destroyable_attributes(min_hp, max_defense, max_res, name):
+def random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name):
     return {'name': name if name else random_string(), 'pos': random_position(),
             'sprite': 'imgs/dungeon_crawl/monster/angel.png',
-            'hp': rd.randint(min_hp, 30), 'defense': rd.randint(0, max_defense), 'res': rd.randint(0, max_res)}
+            'hp': rd.randint(min_hp, max_hp), 'defense': rd.randint(0, max_defense), 'res': rd.randint(0, max_res)}
 
 
-def random_destroyable_entity(min_hp=10, max_defense=10, max_res=10, name=None):
-    attrs = random_destroyable_attributes(min_hp, max_defense, max_res, name)
+def random_destroyable_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None):
+    attrs = random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name)
     return Destroyable(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'])
 
 
-def random_movable_attributes(min_hp, max_defense, max_res, name):
-    attrs = random_destroyable_attributes(min_hp, max_defense, max_res, name)
+def random_movable_attributes(min_hp, max_hp, max_defense, max_res, name):
+    attrs = random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name)
     attrs['max_moves'] = rd.randint(0, 12)
     attrs['strength'] = rd.randint(0, 20)
     attrs['attack_kind'] = rd.choice(['PHYSICAL', 'SPIRITUAL'])
@@ -139,14 +142,15 @@ def random_movable_attributes(min_hp, max_defense, max_res, name):
     return attrs
 
 
-def random_movable_entity(min_hp=10, max_defense=10, max_res=10, name=None):
-    attrs = random_movable_attributes(min_hp, max_defense, max_res, name)
+def random_movable_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None):
+    attrs = random_movable_attributes(min_hp, max_hp, max_defense, max_res, name)
     return Movable(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
                    attrs['max_moves'], attrs['strength'], attrs['attack_kind'], attrs['strategy'])
 
 
-def random_character_attributes(min_hp, max_defense, max_res, name, lvl, equipments, classes, race, interaction):
-    attrs = random_movable_attributes(min_hp, max_defense, max_res, name)
+def random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments, classes, race,
+                                interaction):
+    attrs = random_movable_attributes(min_hp, max_hp, max_defense, max_res, name)
     attrs['classes'] = classes if classes else [rd.choice(list(Character.classes_data.keys()))]
     attrs['race'] = race if race else rd.choice(list(Character.races_data.keys()))
     attrs['equipments'] = equipments if equipments else []
@@ -157,31 +161,60 @@ def random_character_attributes(min_hp, max_defense, max_res, name, lvl, equipme
     return attrs
 
 
-def random_character_entity(min_hp=10, max_defense=10, max_res=10, name=None, lvl=None, equipments=None, classes=None,
-                            race=None,
-                            interaction=None):
-    attrs = random_character_attributes(min_hp, max_defense, max_res, name, lvl, equipments, classes, race, interaction)
+def random_character_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None, lvl=None, equipments=None,
+                            classes=None, race=None, interaction=None):
+    attrs = random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments, classes, race,
+                                        interaction)
     return Character(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
                      attrs['strength'], attrs['classes'], attrs['equipments'], attrs['strategy'],
                      attrs['lvl'], attrs['skills'], [], attrs['race'], attrs['gold'], attrs['interaction'])
 
 
-def random_foe_attributes(min_hp, max_defense, max_res, name, reach, keywords, loot):
-    attrs = random_movable_attributes(min_hp, max_defense, max_res, name)
+def random_foe_attributes(min_hp, max_hp, max_defense, max_res, name, reach, keywords, loot):
+    attrs = random_movable_attributes(min_hp, max_hp, max_defense, max_res, name)
     attrs['reach'] = reach if reach else rd.choice([[1], [2], [1, 2], [3], [1, 2, 3]])
     attrs['xp_gain'] = rd.randint(10, 300)
     attrs['lvl'] = rd.randint(1, 10)
     attrs['loot'] = loot if loot else [(random_item_or_gold(), rd.random()) for _ in range(rd.randint(1, 5))]
-    attrs['keywords'] = keywords if keywords else [rd.choice(list(Keyword)).name]
+    attrs['keywords'] = [rd.choice(list(Keyword))] if keywords is None else keywords
     attrs['alterations'] = []
     return attrs
 
 
-def random_foe_entity(min_hp=10, max_defense=10, max_res=10, name=None, reach=None, keywords=None, loot=None):
-    attrs = random_foe_attributes(min_hp, max_defense, max_res, name, reach, keywords, loot)
+def random_foe_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None, reach=None, keywords=None,
+                      loot=None):
+    attrs = random_foe_attributes(min_hp, max_hp, max_defense, max_res, name, reach, keywords, loot)
     return Foe(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
                attrs['max_moves'], attrs['strength'], attrs['attack_kind'], attrs['strategy'], attrs['reach'],
                attrs['xp_gain'], attrs['loot'], attrs['keywords'], attrs['lvl'], attrs['alterations'])
+
+
+def random_player_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments, classes, race):
+    attrs = random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments, classes, race,
+                                        None)
+    return attrs
+
+
+def random_player_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None, lvl=None, equipments=None,
+                         classes=None, race=None, items=None):
+    if items is None:
+        items = []
+    attrs = random_player_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments, classes, race)
+    player = Player(attrs['name'], attrs['sprite'], attrs['hp'], attrs['defense'], attrs['res'],
+                    attrs['strength'], attrs['classes'], attrs['equipments'], attrs['race'], attrs['gold'],
+                    attrs['lvl'], attrs['skills'], [])
+    player.set_initial_pos(attrs['pos'])
+    for item in items:
+        player.set_item(item)
+    return player
+
+
+def random_entities(entity_kind):
+    if entity_kind is Foe:
+        random_entity_callback = random_foe_entity
+    else:
+        random_entity_callback = random_player_entity
+    return [random_entity_callback() for _ in range(rd.randint(1, 10))]
 
 
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0, gold=True, item=True):

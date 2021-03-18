@@ -417,6 +417,9 @@ def create_item_desc_menu(item):
             for possible_effect in item.effects:
                 entries.append(create_item_desc_stat('EFFECT', str(possible_effect['effect']) +
                                                      ' (' + str(possible_effect['probability']) + '%)'))
+            strong_against_formatted = item.get_formatted_strong_against()
+            if strong_against_formatted:
+                entries.append(create_item_desc_stat('STRONG AGAINST', strong_against_formatted))
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
         if isinstance(item, Weapon) or isinstance(item, Shield):
@@ -507,6 +510,13 @@ def create_status_entity_menu(ent):
 
     return InfoBox(str(ent), StatusMenu, "imgs/interface/PopUpMenu.png", entries,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+
+
+def create_event_dialog(dialog_el):
+    entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+               for s in dialog_el['talks']]
+    return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
+                   entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
 def create_reward_menu(mission):

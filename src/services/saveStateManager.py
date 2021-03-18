@@ -30,7 +30,7 @@ class SaveStateManager:
         phase.text = self.level.game_phase.name
 
         # Save turn if game has started
-        if self.level.game_started:
+        if self.level.is_game_started:
             turn = etree.SubElement(level, 'turn')
             turn.text = str(self.level.turn)
 
