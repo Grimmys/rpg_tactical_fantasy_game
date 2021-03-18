@@ -213,9 +213,9 @@ class Level:
         return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
                        entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
-    def save_game(self, id):
+    def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
-        save_state_manager.save_game(id)
+        save_state_manager.save_game(slot)
 
     def exit_game(self):
         # At next update, level will be destroyed
