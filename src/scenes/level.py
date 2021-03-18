@@ -206,13 +206,6 @@ class Level:
 
         self.diary_entries = []
 
-    @staticmethod
-    def load_event_dialog(dialog_el):
-        entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-                   for s in dialog_el['talks']]
-        return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
-                       entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
-
     def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot)
