@@ -204,6 +204,8 @@ class Level:
         self.chestsfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
         self.goldsfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
+        self.diary_entries = []
+
     @staticmethod
     def load_event_dialog(dialog_el):
         entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
@@ -647,7 +649,6 @@ class Level:
         collection.remove(entity)
 
     def duel(self, attacker, target, attacker_allies, target_allies, kind):
-        entries = []
         nb_attacks = 2 if 'double_attack' in attacker.skills else 1
         for i in range(nb_attacks):
             xp = 0
@@ -656,13 +657,13 @@ class Level:
                 # Target parried attack
                 msg = str(attacker) + " attacked " + str(target) + \
                       "... But " + str(target) + " parried !"
-                entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
+                self.diary_entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
                 # Current attack is ended
                 continue
 
             damages = attacker.attack(target)
             real_damages = target.hp - target.attacked(attacker, damages, kind, target_allies)
-            entries.append([{'type': 'text',
+            self.diary_entries.append([{'type': 'text',
                              'text': str(attacker) + " dealt " + str(real_damages) +
                                      " damage to " + str(target), 'font': fonts['ITEM_DESC_FONT']}])
             # XP gain for dealt damages
@@ -673,7 +674,7 @@ class Level:
                 if isinstance(attacker, Character):
                     xp += target.xp_gain
 
-                entries.append([{'type': 'text', 'text': str(target) + " died !",
+                self.diary_entries.append([{'type': 'text', 'text': str(target) + " died !",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 # Loot
                 if isinstance(attacker, Player):
@@ -681,19 +682,19 @@ class Level:
                     loot = target.roll_for_loot()
                     for item in loot:
                         if isinstance(item, Item):
-                            entries.append([{'type': 'text',
+                            self.diary_entries.append([{'type': 'text',
                                              'text': str(target) + " dropped " +
                                                      str(item),
                                              'font': fonts['ITEM_DESC_FONT']}])
                             if isinstance(item, Gold):
                                 attacker.gold += item.amount
                             elif not attacker.set_item(item):
-                                entries.append([{'type': 'text',
+                                self.diary_entries.append([{'type': 'text',
                                                  'text': 'But there is not enough space in inventory to take it !',
                                                  'font': fonts['ITEM_DESC_FONT']}])
                 self.remove_entity(target)
             else:
-                entries.append([{'type': 'text', 'text': str(target) + " now has " +
+                self.diary_entries.append([{'type': 'text', 'text': str(target) + " now has " +
                                                          str(target.hp) + " HP",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
@@ -703,25 +704,27 @@ class Level:
                         applied_effects = w.applied_effects(attacker, target)
                         for eff in applied_effects:
                             _, msg = eff.apply_on_ent(target)
-                            entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
+                            self.diary_entries.append([{'type': 'text', 'text': msg, 'font': fonts['ITEM_DESC_FONT']}])
 
             # XP gain
             if isinstance(attacker, Player):
-                entries.append([{'type': 'text',
+                self.diary_entries.append([{'type': 'text',
                                  'text': str(attacker) + " earned " + str(xp) + " XP",
                                  'font': fonts['ITEM_DESC_FONT']}])
                 if attacker.earn_xp(xp):
                     # Attacker gained a level
-                    entries.append([{'type': 'text',
+                    self.diary_entries.append([{'type': 'text',
                                      'text': str(attacker) + " gained a level !",
                                      'font': fonts['ITEM_DESC_FONT']}])
 
             if target.hp <= 0:
                 # Target is dead, no more attack needed.
                 break
-
-        self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
-                                   close_button=UNFINAL_ACTION)
+        while len(self.diary_entries) > 10:
+            self.diary_entries.pop(0)
+        menuCreatorManager.create_diary_menu(self.diary_entries)
+        # self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
+        #                            close_button=UNFINAL_ACTION)
 
     def distance_between_all(self, ent_1, ents):
         free_tiles_distance = self.get_possible_moves(ent_1.pos, (self.map['width'] * self.map['height']) // (
@@ -974,6 +977,10 @@ class Level:
                                 self.background_menus = []
                                 self.selected_player.end_turn()
                                 self.selected_player = None
+        # Item action : Character's inventory is opened
+        elif method_id is CharacterMenu.DIARY:
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = menuCreatorManager.create_diary_menu(self.diary_entries)
 
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
