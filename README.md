@@ -28,13 +28,11 @@ Please, don't hesitate about suggesting ideas : it's my first " serious " game p
 
 ## How to start the game
 
-Type the following command in a shell at the project root :
+If you are using 64-bit Windows you can head over to the [releases page](https://github.com/grimmys/rpg_tactical_fantasy_game/releases) to get a prebuilt executable.
 
-``python main.py``
+If you would rather run directly from the source \(or want to develop the game\), make sure to have [Python](https://python.org) installed and run `python -m pip install -r requirements` in the repository folder.
 
-Make sure to have python and pygame installed.
-
-If you don't have python, you can just execute ``build/exe.win32-3.6/main.exe``.
+Then you can run `python main.py` to start the game.
 
 ## Keys
 
