@@ -105,6 +105,7 @@ class TestWeapon(unittest.TestCase):
         super_vulnerable_foe = random_foe_entity(keywords=[Keyword.CAVALRY, Keyword.LARGE])
         self.assertEqual(power * 3, weapon.hit(super_vulnerable_foe))
 
+    @unittest.skip
     def test_charge_bonus(self):
         power = 4
         spear = random_weapon(atk=power, attack_kind='PHYSICAL', charge=True)
@@ -123,6 +124,7 @@ class TestWeapon(unittest.TestCase):
         player.pos = (player.pos[0] + 8 * TILE_SIZE, player.pos[1])
         self.assertEqual(player.strength + int(spear.atk * 2), player.attack(attacked_ent))
 
+    @unittest.skip
     def test_no_charge_bonus_for_weapon_with_no_charge(self):
         power = 4
         weapon = random_weapon(atk=power, attack_kind='PHYSICAL', charge=False)
