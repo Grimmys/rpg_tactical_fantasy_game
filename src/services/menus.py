@@ -45,10 +45,12 @@ class MainMenu(Enum):
     START = auto()
     #   - Save game
     SAVE = auto()
-    #   - End current turn
-    END_TURN = auto()
     #   - Go back to start screen
     SUSPEND = auto()
+    #   - Open Diary
+    DIARY = auto()
+    #   - End current turn
+    END_TURN = auto()
 
 
 # > Main character menu
@@ -81,8 +83,6 @@ class CharacterMenu(Enum):
     TAKE = auto()
     #   - Trade with other playable character
     TRADE = auto()
-    #   - Open Diary
-    DIARY = auto()
 
 
 # > Inventory menu

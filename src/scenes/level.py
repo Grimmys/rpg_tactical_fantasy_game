@@ -658,7 +658,6 @@ class Level:
                 break
         while len(self.diary_entries) > 10:
             self.diary_entries.pop(0)
-        menuCreatorManager.create_diary_menu(self.diary_entries)
 
     def distance_between_all(self, ent_1, ents):
         free_tiles_distance = self.get_possible_moves(ent_1.pos, (self.map['width'] * self.map['height']) // (
@@ -734,16 +733,19 @@ class Level:
         elif method_id is MainMenu.SAVE:
             self.background_menus.append((self.active_menu, True))
             self.active_menu = menuCreatorManager.create_save_menu()
+        elif method_id is MainMenu.SUSPEND:
+            # Because player choose to leave game before end, it's obviously a defeat
+            self.game_phase = LevelStatus.ENDED_DEFEAT
+            self.exit_game()
         elif method_id is MainMenu.END_TURN:
             self.active_menu = None
             for player in self.players:
                 player.end_turn()
             self.side_turn = self.side_turn.get_next()
             self.begin_turn()
-        elif method_id is MainMenu.SUSPEND:
-            # Because player choose to leave game before end, it's obviously a defeat
-            self.game_phase = LevelStatus.ENDED_DEFEAT
-            self.exit_game()
+        elif method_id is MainMenu.DIARY:
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = menuCreatorManager.create_diary_menu(self.diary_entries)
         else:
             print("Unknown action in main menu... : " + str(method_id))
 
@@ -877,9 +879,6 @@ class Level:
                                 self.selected_player.end_turn()
                                 self.selected_player = None
                                 break
-        elif method_id is CharacterMenu.DIARY:
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_diary_menu(self.diary_entries)
 
     def select_interaction_with(self, entity_kind):
         self.background_menus.append((self.active_menu, False))
