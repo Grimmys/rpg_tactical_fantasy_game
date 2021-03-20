@@ -1,22 +1,17 @@
-from src.gui import constantSprites
-
-
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
 
 
 if __name__ == "__main__":
+    import os
+
     from src.constants import *
-    import src.gui.fonts as fonts
+    from src.gui import constantSprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
     from src.scenes.startScreen import StartScreen
     from src.services import loadFromXMLManager as Loader
-
-    # beiba
-    import pygame.mixer
-    import os
 
     pg.init()
 
@@ -40,8 +35,8 @@ if __name__ == "__main__":
 
     start_screen = StartScreen(screen)
 
-    pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
-    pygame.mixer.music.play(-1)
+    pg.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
+    pg.mixer.music.play(-1)
 
     quit_game = False
     while not quit_game:

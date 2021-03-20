@@ -22,7 +22,8 @@ class Fountain(Entity):
                 if self.times == 0:
                     self.sprite = self.sprite_empty
             entries.append([{'type': 'text', 'text': result[1], 'font': fonts['ITEM_DESC_FONT']}])
-            entries.append([{'type': 'text', 'text': str(self.times) + " remaining uses.", 'font': fonts['ITEM_DESC_FONT']}])
+            entries.append([{'type': 'text', 'text': str(self.times) + " remaining uses.",
+                             'font': fonts['ITEM_DESC_FONT']}])
         else:
             entries.append([{'type': 'text', 'text': 'The fountain is empty...', 'font': fonts['ITEM_DESC_FONT']}])
         return entries

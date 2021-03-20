@@ -1,10 +1,9 @@
+import random as rd
+
 from lxml import etree
 
 from src.game_entities.equipment import Equipment
 from src.game_entities.destroyable import DamageKind
-
-import random as rd
-
 from src.game_entities.skill import SkillNature
 
 

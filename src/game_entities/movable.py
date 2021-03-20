@@ -1,11 +1,12 @@
-from src.game_entities.destroyable import *
-from enum import IntEnum, Enum, auto
-
-from src.game_entities.skill import SkillNature
-
-#beiba
-import pygame.mixer
+from enum import IntEnum, auto, Enum
 import os
+
+import pygame as pg
+from lxml import etree
+
+from src.constants import TILE_SIZE, ANIMATION_SPEED, INITIAL_MAX
+from src.game_entities.destroyable import Destroyable, DamageKind
+from src.game_entities.skill import SkillNature
 
 TIMER = 60
 NB_ITEMS_MAX = 8
@@ -69,12 +70,10 @@ class Movable(Destroyable):
         self.strategy = EntityStrategy[strategy]
         self.skills = skills
 
-        #beiba
-        pg.mixer.init()
-        self.walksfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
-        self.skltnsfx = pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
-        self.ncrphgsfx = pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
-        self.centsfx = pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
+        self.walk_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
+        self.skeleton_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
+        self.necrophage_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
+        self.centaur_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
 
     def display(self, screen):
         Destroyable.display(self, screen)
@@ -129,21 +128,18 @@ class Movable(Destroyable):
         self.on_move = path
         self.state = EntityState.ON_MOVE
 
-        #beiba
         if self.strategy == EntityStrategy.MANUAL:
             if self.name == "chrisemon":
-                pygame.mixer.Sound.play(self.centsfx)
+                pg.mixer.Sound.play(self.centaur_sfx)
             else:
-                pygame.mixer.Sound.play(self.walksfx)
-        if self.name == "skeleton":
-            if self.target is not None:
-                pygame.mixer.Sound.play(self.skltnsfx)
-        if self.name == "necrophage":
-            if self.target is not None:
-                pygame.mixer.Sound.play(self.ncrphgsfx)
-        if self.name == "assassin":
-            if self.target is not None:
-                pygame.mixer.Sound.play(self.walksfx)
+                pg.mixer.Sound.play(self.walk_sfx)
+        elif self.target is not None:
+            if self.name == "skeleton":
+                pg.mixer.Sound.play(self.skeleton_sfx)
+            elif self.name == "necrophage":
+                pg.mixer.Sound.play(self.necrophage_sfx)
+            elif self.name == "assassin":
+                pg.mixer.Sound.play(self.walk_sfx)
 
     def get_formatted_alterations(self):
         formatted_string = ""

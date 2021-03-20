@@ -1,4 +1,5 @@
 from enum import Enum, auto
+
 from src.constants import TILE_SIZE
 
 

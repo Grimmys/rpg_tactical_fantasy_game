@@ -36,10 +36,7 @@ class Equipment(Item):
         return formatted_string
 
     def display(self, screen, pos, equipped=False):
-        sprite_to_blit = self.sprite
-        if equipped:
-            sprite_to_blit = self.equipped_sprite
-
+        sprite_to_blit = self.equipped_sprite if equipped else self.sprite
         screen.blit(sprite_to_blit, pos)
 
     def set_grey(self):

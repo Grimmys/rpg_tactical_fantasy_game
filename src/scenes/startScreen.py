@@ -17,8 +17,8 @@ class StartScreen:
         self.menu_screen = self.screen.copy()
 
         # Start screen loop
-        bg_image = pg.image.load('imgs/interface/main_menu_background.jpg').convert_alpha()
-        self.background = pg.transform.scale(bg_image, screen.get_size())
+        background_image = pg.image.load('imgs/interface/main_menu_background.jpg').convert_alpha()
+        self.background = pg.transform.scale(background_image, screen.get_size())
 
         # Creating menu
         self.active_menu = menuCreatorManager.create_start_menu()

@@ -1,5 +1,3 @@
-
-
 class Animation:
     def __init__(self, sprites_pos, timer):
         self.sprites_pos = sprites_pos

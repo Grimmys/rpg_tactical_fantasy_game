@@ -138,6 +138,5 @@ class TestWeapon(unittest.TestCase):
         self.assertEqual(player.strength + weapon.atk, player.attack(attacked_ent))
 
 
-
 if __name__ == '__main__':
     unittest.main()
