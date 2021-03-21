@@ -75,7 +75,7 @@ class Character(Movable):
         damages = self.strength + self.get_stat_change('strength')
         weapon = self.get_weapon()
         if weapon:
-            damages += weapon.hit(ent)
+            damages += weapon.hit(self, ent)
             if weapon.used() == 0:
                 self.remove_equipment(weapon)
         return damages

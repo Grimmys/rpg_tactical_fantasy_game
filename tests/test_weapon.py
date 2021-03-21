@@ -78,7 +78,7 @@ class TestWeapon(unittest.TestCase):
         power = 3
         strong_against = []
         weapon = random_weapon(atk=power, strong_against=strong_against)
-        self.assertEqual(power, weapon.hit(random_foe_entity()))
+        self.assertEqual(power, weapon.hit(random_player_entity(), random_foe_entity()))
 
     def test_stronger_against_specific_entity_kind(self):
         power = 5
@@ -86,10 +86,10 @@ class TestWeapon(unittest.TestCase):
         weapon = random_weapon(atk=power, strong_against=strong_against)
 
         normal_foe = random_foe_entity(keywords=[])
-        self.assertEqual(power, weapon.hit(normal_foe))
+        self.assertEqual(power, weapon.hit(random_player_entity(), normal_foe))
 
         vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
-        self.assertEqual(power * 2, weapon.hit(vulnerable_foe))
+        self.assertEqual(power * 2, weapon.hit(random_player_entity(), vulnerable_foe))
 
     def test_stronger_against_multiple_entity_kinds(self):
         power = 4
@@ -97,15 +97,14 @@ class TestWeapon(unittest.TestCase):
         weapon = random_weapon(atk=power, strong_against=strong_against)
 
         non_vulnerable_foe = random_foe_entity(keywords=[Keyword.SMALL])
-        self.assertEqual(power, weapon.hit(non_vulnerable_foe))
+        self.assertEqual(power, weapon.hit(random_player_entity(), non_vulnerable_foe))
 
         vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
-        self.assertEqual(power * 2, weapon.hit(vulnerable_foe))
+        self.assertEqual(power * 2, weapon.hit(random_player_entity(), vulnerable_foe))
 
         super_vulnerable_foe = random_foe_entity(keywords=[Keyword.CAVALRY, Keyword.LARGE])
-        self.assertEqual(power * 3, weapon.hit(super_vulnerable_foe))
+        self.assertEqual(power * 3, weapon.hit(random_player_entity(), super_vulnerable_foe))
 
-    @unittest.skip
     def test_charge_bonus(self):
         power = 4
         spear = random_weapon(atk=power, attack_kind='PHYSICAL', charge=True)
@@ -117,14 +116,13 @@ class TestWeapon(unittest.TestCase):
         self.assertEqual(player.strength + spear.atk, player.attack(attacked_ent))
 
         # Charge
-        player.pos = (player.pos[0] + 5 * TILE_SIZE, player.pos[1])
+        player.pos = (player.old_pos[0] + 5 * TILE_SIZE, player.old_pos[1])
         self.assertEqual(player.strength + int(spear.atk * 1.5), player.attack(attacked_ent))
 
         # Stronger charge
-        player.pos = (player.pos[0] + 8 * TILE_SIZE, player.pos[1])
+        player.pos = (player.old_pos[0] + 8 * TILE_SIZE, player.old_pos[1])
         self.assertEqual(player.strength + int(spear.atk * 2), player.attack(attacked_ent))
 
-    @unittest.skip
     def test_no_charge_bonus_for_weapon_with_no_charge(self):
         power = 4
         weapon = random_weapon(atk=power, attack_kind='PHYSICAL', charge=False)
@@ -134,7 +132,7 @@ class TestWeapon(unittest.TestCase):
         player.equip(weapon)
 
         # No charge bonus even if there is a " charge "
-        player.pos = (player.pos[0] + 5 * TILE_SIZE, player.pos[1])
+        player.pos = (player.old_pos[0] + 5 * TILE_SIZE, player.old_pos[1])
         self.assertEqual(player.strength + weapon.atk, player.attack(attacked_ent))
 
 
