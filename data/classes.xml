@@ -27,7 +27,7 @@
                 0, 1, 1, 2
             </strength>
             <defense>
-                0, 1, 1, 2
+                0, 1, 1, 2, 2, 3
             </defense>
             <resistance>
                 0, 1
@@ -40,13 +40,13 @@
         </constitution>
         <stats_up>
             <hp>
-                1, 1, 2, 2, 2, 3, 4
+                1, 2, 2, 2, 3, 3, 4
             </hp>
             <strength>
                 0, 1, 1
             </strength>
             <defense>
-                0, 1, 1, 2, 2, 3
+                0, 1, 1, 2
             </defense>
             <resistance>
                 0, 1

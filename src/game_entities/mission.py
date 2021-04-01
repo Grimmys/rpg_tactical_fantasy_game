@@ -12,7 +12,7 @@ class MissionType(Enum):
 
 class Mission:
     def __init__(self, is_main, nature, positions, description, nb_players,
-                 turn_limit, gold_reward=0, items_reward=None):
+                 turn_limit=None, gold_reward=0, items_reward=None):
         if items_reward is None:
             items_reward = []
         self.main = is_main

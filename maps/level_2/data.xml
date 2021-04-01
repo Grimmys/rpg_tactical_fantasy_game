@@ -147,7 +147,7 @@
                 <y>9</y>
             </position>
             <level>
-                3
+                4
             </level>
         </foe>
         <foe>
@@ -171,7 +171,7 @@
                 <y>8</y>
             </position>
             <level>
-                2
+                3
             </level>
         </foe>
         <foe>
@@ -183,7 +183,7 @@
                 <y>10</y>
             </position>
             <level>
-                3
+                4
             </level>
         </foe>
         <foe>
@@ -219,7 +219,7 @@
                 <y>6</y>
             </position>
             <level>
-                4
+                5
             </level>
         </foe>
         <foe>
@@ -363,7 +363,7 @@
                 <y>2</y>
             </position>
             <level>
-                5
+                7
             </level>
         </foe>
     </foes>

@@ -1,3 +1,6 @@
+from src.gui import constantSprites
+
+
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
@@ -6,12 +9,8 @@ def show_fps(win, inner_clock, font):
 if __name__ == "__main__":
     from src.constants import *
     import src.gui.fonts as fonts
-    from src.game_entities.destroyable import Destroyable
-    from src.game_entities.breakable import Breakable
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
-    from src.gui.sidebar import Sidebar
-    from src.scenes.level import Level
     from src.scenes.startScreen import StartScreen
     from src.services import loadFromXMLManager as Loader
 
@@ -29,11 +28,8 @@ if __name__ == "__main__":
     screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     # Load constant sprites
-    Destroyable.init_constant_sprites()
-    Breakable.init_constant_sprites()
     Movable.init_constant_sprites()
-    Sidebar.init_constant_sprites()
-    Level.init_constant_sprites()
+    constantSprites.init_constant_sprites()
 
     # Load some data
     races = Loader.load_races()
@@ -44,8 +40,7 @@ if __name__ == "__main__":
 
     start_screen = StartScreen(screen)
 
-    msc = pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
-
+    pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
     pygame.mixer.music.play(-1)
 
     quit_game = False

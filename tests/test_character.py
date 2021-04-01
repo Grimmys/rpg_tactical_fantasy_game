@@ -102,7 +102,7 @@ class TestCharacter(unittest.TestCase):
         self.assertEqual(character_test.hp_max - 2, character_test.hp)
 
     def test_attack_with_weapon(self):
-        weapon = random_weapon()
+        weapon = random_weapon(strong_against=[])
         equipments = [weapon]
         character_test = random_character_entity(equipments=equipments)
 

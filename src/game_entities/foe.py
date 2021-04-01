@@ -25,9 +25,7 @@ class Foe(Movable):
         self.reach = reach
         self.xp_gain = int(xp_gain * (1.1 ** (lvl - 1)))
         self.potential_loot = loot
-        self.keywords = []
-        if keywords:
-            self.keywords = [Keyword[k.upper()] for k in keywords]
+        self.keywords = [] if keywords is None else keywords
 
     def stats_up(self, nb_lvl=1):
         grow_rates = Foe.grow_rates[self.name]

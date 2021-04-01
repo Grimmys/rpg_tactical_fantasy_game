@@ -1,4 +1,6 @@
 import pygame as pg
+from lxml import etree
+
 from src.constants import TILE_SIZE
 
 
@@ -19,3 +21,17 @@ class Item:
 
     def __eq__(self, it):
         return self.name == it.name
+
+    def save(self, tree_name):
+        # Build XML tree
+        tree = etree.Element(tree_name)
+
+        # Save name
+        name = etree.SubElement(tree, 'name')
+        name.text = self.name
+
+        # Save resell price
+        resell_price = etree.SubElement(tree, 'value')
+        resell_price.text = str(self.resell_price)
+
+        return tree

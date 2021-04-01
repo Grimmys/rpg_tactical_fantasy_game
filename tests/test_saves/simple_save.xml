@@ -180,14 +180,25 @@
           <race>human</race>
           <gold>250</gold>
           <inventory>
-            <item>life_potion</item>
-            <item>key</item>
+            <item>
+              <name>life_potion</name>
+              <value>100</value>
+            </item>
+            <item>
+              <name>key</name>
+              <value>100</value>
+            </item>
           </inventory>
           <equipment>
-            <head>helmet</head>
-            <right_hand>club</right_hand>
-            <body>chainmail</body>
-            <feet>brown_boots</feet>
+            <right_hand>
+              <name>basic_bow</name>
+              <value>350</value>
+              <durability>40</durability>
+            </right_hand>
+            <feet>
+              <name>brown_boots</name>
+              <value>200</value>
+            </feet>
           </equipment>
           <turnFinished>False</turnFinished>
         </player>
