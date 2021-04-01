@@ -204,6 +204,8 @@ class Level:
         self.chestsfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
         self.goldsfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
         self.diary_entries = []
+        self.turn_items = []
+        self.turn_owner = None
 
     @staticmethod
     def load_event_dialog(dialog_el):
@@ -1174,7 +1176,8 @@ class Level:
 
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-
+            self.turn_items.append(self.selected_item)
+            self.turn_owner = owner
             self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
@@ -1295,6 +1298,8 @@ class Level:
             ent.new_turn()
 
     def new_turn(self):
+        self.turn_items.clear()
+        self.turn_owner = None
         self.turn += 1
         self.animation = Animation([{'sprite': NEW_TURN, 'pos': NEW_TURN_POS}], 60)
 
@@ -1383,6 +1388,11 @@ class Level:
                 # Test if player is on character's main menu, in this case, current move should be cancelled if possible
                 if self.active_menu.type is CharacterMenu:
                     if self.selected_player.cancel_move():
+                        if self.turn_items is not None:
+                            for item in self.turn_items:
+                                self.selected_player.remove_item(item)
+                                self.turn_owner.set_item(item)
+                            self.turn_items.clear()
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
