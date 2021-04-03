@@ -502,7 +502,7 @@
           <gold>250</gold>
           <inventory>
             <item>
-              <name>life_potion</name>
+              <name>speed_potion</name>
               <value>100</value>
             </item>
           </inventory>
