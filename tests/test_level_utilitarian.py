@@ -6,6 +6,7 @@ import pygame as pg
 
 from src.scenes.startScreen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
+from src.services import menuCreatorManager
 from src.services.menus import ItemMenu, GenericActions, TradeMenu
 from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS
 from tests.tools import minimal_setup_for_game, NB_TESTS_FOR_PROPORTIONS
@@ -99,6 +100,10 @@ class TestLevel(unittest.TestCase):
 
         item = rd.choice(active_player.items)
 
+        # Open character menu
+        character_menu = menuCreatorManager.create_player_menu(active_player, [], [], [], [])
+        self.level.background_menus.append((character_menu, False))
+
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, receiver_player, True)
 
@@ -123,6 +128,10 @@ class TestLevel(unittest.TestCase):
         self.level.selected_player = active_player
 
         item = rd.choice(sender_player.items)
+
+        # Open character menu
+        character_menu = menuCreatorManager.create_player_menu(active_player, [], [], [], [])
+        self.level.background_menus.append((character_menu, False))
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, sender_player, False)
@@ -149,6 +158,10 @@ class TestLevel(unittest.TestCase):
 
         item = rd.choice(trade_partner_player.items)
         second_item = rd.choice(active_player.items)
+
+        # Open character menu
+        character_menu = menuCreatorManager.create_player_menu(active_player, [], [], [], [])
+        self.level.background_menus.append((character_menu, False))
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, trade_partner_player, False)
