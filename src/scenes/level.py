@@ -1209,8 +1209,6 @@ class Level:
             ent.new_turn()
 
     def new_turn(self):
-        self.turn_items.clear()
-        self.turn_owner = None
         self.turn += 1
         self.animation = Animation([{'sprite': constant_sprites['new_turn'], 'pos': constant_sprites['new_turn_pos']}],
                                    60)
