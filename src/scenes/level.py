@@ -144,8 +144,9 @@ class Level:
         self.hovered_ent = None
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions, self.nb_level)
         self.wait_for_dest_tp = False
+        self.diary_entries = []
+        self.turn_items = []
 
-        # beiba
         pg.mixer.init()
         self.waitsfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
         self.invsfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
@@ -153,9 +154,7 @@ class Level:
         self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
         self.chestsfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
         self.goldsfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
-        self.diary_entries = []
-        self.turn_items = []
-        self.turn_owner = None
+
 
     def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
@@ -1078,8 +1077,7 @@ class Level:
 
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.turn_items.append(self.selected_item)
-            self.turn_owner = owner
+            self.turn_items.append([self.selected_item, owner, receiver])
             self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
@@ -1304,8 +1302,12 @@ class Level:
                     if self.selected_player.cancel_move():
                         if self.turn_items is not None:
                             for item in self.turn_items:
-                                self.selected_player.remove_item(item)
-                                self.turn_owner.set_item(item)
+                                if item[1] == self.selected_player:
+                                    item[2].remove_item(item[0])
+                                    self.selected_player.set_item(item[0])
+                                else:
+                                    self.selected_player.remove_item(item[0])
+                                    item[1].set_item(item[0])
                             self.turn_items.clear()
                         self.selected_player.selected = False
                         self.selected_player = None
