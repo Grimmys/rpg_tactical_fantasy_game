@@ -89,7 +89,6 @@ class TestLevel(unittest.TestCase):
         self.assertEqual(6, entities_with_dist[braern])
         self.assertEqual(7, entities_with_dist[thokdrum])
 
-    @unittest.skip
     def test_cancel_movement_after_trade_item_sent(self):
         # Import complete save file
         self.import_save_file("tests/test_saves/complete_first_level_save.xml")
@@ -117,7 +116,6 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(item in active_player.items)
         self.assertFalse(item in receiver_player.items)
 
-    @unittest.skip
     def test_cancel_movement_after_trade_item_received(self):
         # Import complete save file
         self.import_save_file("tests/test_saves/complete_first_level_save.xml")
@@ -145,7 +143,6 @@ class TestLevel(unittest.TestCase):
         self.assertFalse(item in active_player.items)
         self.assertTrue(item in sender_player.items)
 
-    @unittest.skip
     def test_cancel_movement_after_trade_items_sent_and_received(self):
         # Import complete save file
         self.import_save_file("tests/test_saves/complete_first_level_save.xml")
