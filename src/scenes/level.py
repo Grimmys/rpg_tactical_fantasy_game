@@ -144,6 +144,7 @@ class Level:
         self.sidebar = Sidebar((MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions, self.nb_level)
         self.wait_for_dest_tp = False
         self.diary_entries = []
+        self.turn_items = []
 
         self.wait_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
         self.inventory_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
@@ -1060,7 +1061,7 @@ class Level:
 
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-
+            self.turn_items.append([self.selected_item, owner, receiver])
             self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
@@ -1280,6 +1281,15 @@ class Level:
                 # Test if player is on character's main menu, in this case, current move should be cancelled if possible
                 if self.active_menu.type is CharacterMenu:
                     if self.selected_player.cancel_move():
+                        if self.turn_items is not None:
+                            for item in self.turn_items:
+                                if item[1] == self.selected_player:
+                                    item[2].remove_item(item[0])
+                                    self.selected_player.set_item(item[0])
+                                else:
+                                    self.selected_player.remove_item(item[0])
+                                    item[1].set_item(item[0])
+                            self.turn_items.clear()
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
