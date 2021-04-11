@@ -1,7 +1,6 @@
 import pygame as pg
 
 from src.gui.fonts import fonts
-
 from src.constants import TILE_SIZE, MAX_MAP_WIDTH, MAX_MAP_HEIGHT, WHITE, BLACK
 
 LANDING_OPACITY = 80

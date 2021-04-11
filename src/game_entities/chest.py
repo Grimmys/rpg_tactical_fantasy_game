@@ -1,6 +1,8 @@
+import os
+import random
+
 import pygame as pg
 from lxml import etree
-import random
 
 from src.game_entities.entity import Entity
 from src.constants import TILE_SIZE
@@ -18,6 +20,8 @@ class Chest(Entity):
         self.opened = False
         self.pick_lock_initiated = False
 
+        self.chest_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
+
     @staticmethod
     def determine_item(potential_items):
         bag = []
@@ -32,6 +36,7 @@ class Chest(Entity):
         if not self.opened:
             self.sprite = self.sprite_open
             self.opened = True
+            pg.mixer.Sound.play(self.chest_sfx)
             return self.item
         return None
 

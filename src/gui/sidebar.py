@@ -63,8 +63,8 @@ class Sidebar:
                                         self.pos[1] + 10 + constant_sprites['main_mission_text'].get_height()))
             else:
                 win.blit(mission_desc, (self.pos[0] + self.size[0] - 280,
-                                        self.pos[1] + 10 + constant_sprites[
-                                            'secondaries_mission_text'].get_height() + vertical_shift * mission_desc.get_height()))
+                                        self.pos[1] + 10 + constant_sprites['secondaries_mission_text'].get_height() +
+                                        vertical_shift * mission_desc.get_height()))
                 vertical_shift += 1
 
         # Display the current information about the entity hovered
@@ -86,8 +86,9 @@ class Sidebar:
             # Display the entity nature
             nature_display = fonts['MISSION_FONT'].render(nature, 1, color)
             nature_pos = (
-            self.pos[0] + self.size[0] / 4 + constant_sprites['frame'].get_width() / 2 - nature_display.get_width() / 2,
-            self.pos[1] + 5)
+                self.pos[0] + self.size[0] / 4 + constant_sprites[
+                    'frame'].get_width() / 2 - nature_display.get_width() / 2,
+                self.pos[1] + 5)
             win.blit(nature_display, nature_pos)
             # Display the entity sprite in a frame
             frame_pos = (self.pos[0] + self.size[0] / 4, self.pos[1] + 5 + nature_display.get_height())
@@ -116,7 +117,7 @@ class Sidebar:
                 hp_max = ent.hp_max
                 hp_pre_text = fonts['ITEM_FONT_STRONG'].render("HP : ", 1, color)
                 hp_text_pos = (
-                text_pos_x, frame_pos[1] + constant_sprites['frame'].get_height() - hp_pre_text.get_height())
+                    text_pos_x, frame_pos[1] + constant_sprites['frame'].get_height() - hp_pre_text.get_height())
                 win.blit(hp_pre_text, hp_text_pos)
                 hp_text = fonts['ITEM_FONT_STRONG'].render("      " + str(hp), 1,
                                                            Sidebar.determine_hp_color(hp, hp_max))

@@ -74,8 +74,9 @@ class InfoBox:
                     element.append(Button(entry['id'], entry['args'], size, (0, 0), sprite, sprite_hover,
                                           entry['margin']))
                 elif entry['type'] == 'parameter_button':
-                    name = fonts['ITEM_FONT'].render(entry['name'] + ' ' + entry['values'][entry['current_value_ind']]['label'],
-                                            1, WHITE)
+                    name = fonts['ITEM_FONT'].render(entry['name'] + ' ' +
+                                                     entry['values'][entry['current_value_ind']]['label'],
+                                                     1, WHITE)
                     base_sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
                     sprite = base_sprite.copy()
                     sprite.blit(name, (base_sprite.get_width() // 2 - name.get_width() // 2,
@@ -108,7 +109,8 @@ class InfoBox:
                         entry['quantity'] = 0
                     if 'args' not in entry:
                         entry['args'] = []
-                    element.append(ItemButton(entry['id'], entry['args'], button_size, (0, 0), entry['item'], entry['margin'],
+                    element.append(ItemButton(entry['id'], entry['args'], button_size,
+                                              (0, 0), entry['item'], entry['margin'],
                                               entry['index'], entry['price'], entry['quantity'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:

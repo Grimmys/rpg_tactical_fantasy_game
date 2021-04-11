@@ -1,5 +1,6 @@
-from lxml import etree
 from enum import IntEnum, auto
+
+from lxml import etree
 
 from src.game_entities.character import Character
 from src.constants import *

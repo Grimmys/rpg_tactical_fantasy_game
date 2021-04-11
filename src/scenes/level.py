@@ -1,3 +1,5 @@
+from src.constants import MAX_MAP_WIDTH, MAX_MAP_HEIGHT, MENU_WIDTH, MENU_HEIGHT, ITEM_MENU_WIDTH, FINAL_ACTION, \
+    UNFINAL_ACTION, ORANGE, ITEM_DELETE_MENU_WIDTH, ITEM_INFO_MENU_WIDTH
 from src.game_entities.breakable import Breakable
 from src.game_entities.building import Building
 from src.game_entities.character import Character
@@ -14,7 +16,7 @@ from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
 from src.gui.animation import Animation
-from src.gui.constantSprites import ATTACKABLE_OPACITY, LANDING_OPACITY, INTERACTION_OPACITY
+from src.gui.constantSprites import ATTACKABLE_OPACITY, LANDING_OPACITY, INTERACTION_OPACITY, constant_sprites
 from src.gui.fonts import fonts
 from src.gui.infoBox import InfoBox
 from src.gui.sidebar import Sidebar
@@ -24,9 +26,6 @@ from src.services.menuCreatorManager import create_event_dialog
 from src.services.menus import *
 from src.services.saveStateManager import SaveStateManager
 
-#beiba
-import pygame.mixer
-import os
 
 class LevelStatus(IntEnum):
     INITIALIZATION = auto()
@@ -147,14 +146,11 @@ class Level:
         self.diary_entries = []
         self.turn_items = []
 
-        pg.mixer.init()
-        self.waitsfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
-        self.invsfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
-        self.armsfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
-        self.talksfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
-        self.chestsfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
-        self.goldsfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
-
+        self.wait_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
+        self.inventory_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
+        self.armor_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
+        self.talk_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
+        self.gold_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
     def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
@@ -420,8 +416,6 @@ class Level:
         # Get object inside the chest
         item = chest.open()
 
-        pygame.mixer.Sound.play(self.chestsfx)
-
         if isinstance(item, Gold):
             # If it was some gold, it should be added to the total amount of the player
             actor.gold += item.amount
@@ -554,8 +548,7 @@ class Level:
             self.active_menu = menuCreatorManager.create_trade_menu(self.selected_player, target)
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
-
-            pygame.mixer.Sound.play(self.talksfx)
+            pg.mixer.Sound.play(self.talk_sfx)
 
             entries = target.talk(actor)
             self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
@@ -608,8 +601,8 @@ class Level:
             damages = attacker.attack(target)
             real_damages = target.hp - target.attacked(attacker, damages, kind, target_allies)
             self.diary_entries.append([{'type': 'text',
-                             'text': str(attacker) + " dealt " + str(real_damages) +
-                                     " damage to " + str(target), 'font': fonts['ITEM_DESC_FONT']}])
+                                        'text': str(attacker) + " dealt " + str(real_damages) +
+                                                " damage to " + str(target), 'font': fonts['ITEM_DESC_FONT']}])
             # XP gain for dealt damages
             xp += real_damages // 2
             # If target has less than 0 HP at the end of the attack
@@ -619,7 +612,7 @@ class Level:
                     xp += target.xp_gain
 
                 self.diary_entries.append([{'type': 'text', 'text': str(target) + " died !",
-                                 'font': fonts['ITEM_DESC_FONT']}])
+                                            'font': fonts['ITEM_DESC_FONT']}])
                 # Loot
                 if isinstance(attacker, Player):
                     # Check if foe dropped an item
@@ -627,20 +620,20 @@ class Level:
                     for item in loot:
                         if isinstance(item, Item):
                             self.diary_entries.append([{'type': 'text',
-                                             'text': str(target) + " dropped " +
-                                                     str(item),
-                                             'font': fonts['ITEM_DESC_FONT']}])
+                                                        'text': str(target) + " dropped " +
+                                                                str(item),
+                                                        'font': fonts['ITEM_DESC_FONT']}])
                             if isinstance(item, Gold):
                                 attacker.gold += item.amount
                             elif not attacker.set_item(item):
                                 self.diary_entries.append([{'type': 'text',
-                                                 'text': 'But there is not enough space in inventory to take it !',
-                                                 'font': fonts['ITEM_DESC_FONT']}])
+                                                            'text': 'But there is not enough space in inventory to take it !',
+                                                            'font': fonts['ITEM_DESC_FONT']}])
                 self.remove_entity(target)
             else:
                 self.diary_entries.append([{'type': 'text', 'text': str(target) + " now has " +
-                                                         str(target.hp) + " HP",
-                                 'font': fonts['ITEM_DESC_FONT']}])
+                                                                    str(target.hp) + " HP",
+                                            'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
                 if isinstance(attacker, Character):
                     w = attacker.get_weapon()
@@ -653,22 +646,19 @@ class Level:
             # XP gain
             if isinstance(attacker, Player):
                 self.diary_entries.append([{'type': 'text',
-                                 'text': str(attacker) + " earned " + str(xp) + " XP",
-                                 'font': fonts['ITEM_DESC_FONT']}])
+                                            'text': str(attacker) + " earned " + str(xp) + " XP",
+                                            'font': fonts['ITEM_DESC_FONT']}])
                 if attacker.earn_xp(xp):
                     # Attacker gained a level
                     self.diary_entries.append([{'type': 'text',
-                                     'text': str(attacker) + " gained a level !",
-                                     'font': fonts['ITEM_DESC_FONT']}])
+                                                'text': str(attacker) + " gained a level !",
+                                                'font': fonts['ITEM_DESC_FONT']}])
 
             if target.hp <= 0:
                 # Target is dead, no more attack needed.
                 break
         while len(self.diary_entries) > 10:
             self.diary_entries.pop(0)
-        menuCreatorManager.create_diary_menu(self.diary_entries)
-        # self.active_menu = InfoBox("Fight Summary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
-        #                            close_button=UNFINAL_ACTION)
 
     def distance_between_all(self, ent_1, ents):
         free_tiles_distance = self.get_possible_moves(ent_1.pos, (self.map['width'] * self.map['height']) // (
@@ -744,16 +734,19 @@ class Level:
         elif method_id is MainMenu.SAVE:
             self.background_menus.append((self.active_menu, True))
             self.active_menu = menuCreatorManager.create_save_menu()
+        elif method_id is MainMenu.SUSPEND:
+            # Because player choose to leave game before end, it's obviously a defeat
+            self.game_phase = LevelStatus.ENDED_DEFEAT
+            self.exit_game()
         elif method_id is MainMenu.END_TURN:
             self.active_menu = None
             for player in self.players:
                 player.end_turn()
             self.side_turn = self.side_turn.get_next()
             self.begin_turn()
-        elif method_id is MainMenu.SUSPEND:
-            # Because player choose to leave game before end, it's obviously a defeat
-            self.game_phase = LevelStatus.ENDED_DEFEAT
-            self.exit_game()
+        elif method_id is MainMenu.DIARY:
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = menuCreatorManager.create_diary_menu(self.diary_entries)
         else:
             print("Unknown action in main menu... : " + str(method_id))
 
@@ -771,8 +764,7 @@ class Level:
             self.active_menu = None
         # Item action : Character's inventory is opened
         elif method_id is CharacterMenu.INV:
-            # beiba
-            pygame.mixer.Sound.play(self.invsfx)
+            pg.mixer.Sound.play(self.inventory_sfx)
             self.background_menus.append((self.active_menu, True))
             items_max = self.selected_player.nb_items_max
             items = list(self.selected_player.items)
@@ -781,9 +773,7 @@ class Level:
             self.active_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
         # Equipment action : open the equipment screen
         elif method_id is CharacterMenu.EQUIPMENT:
-
-            # beiba
-            pygame.mixer.Sound.play(self.armsfx)
+            pg.mixer.Sound.play(self.armor_sfx)
 
             self.background_menus.append((self.active_menu, True))
             equipments = list(self.selected_player.equipments)
@@ -794,9 +784,7 @@ class Level:
             self.active_menu = menuCreatorManager.create_status_menu(self.selected_player)
         # Wait action : Given Character's turn is finished
         elif method_id is CharacterMenu.WAIT:
-
-            # beiba
-            pygame.mixer.Sound.play(self.waitsfx)
+            pg.mixer.Sound.play(self.wait_sfx)
 
             self.active_menu = None
             self.selected_item = None
@@ -892,9 +880,6 @@ class Level:
                                 self.selected_player.end_turn()
                                 self.selected_player = None
                                 break
-        elif method_id is CharacterMenu.DIARY:
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_diary_menu(self.diary_entries)
 
     def select_interaction_with(self, entity_kind):
         self.background_menus.append((self.active_menu, False))
@@ -1051,8 +1036,7 @@ class Level:
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
-
-            pg.mixer.Sound.play(self.invsfx)
+            pg.mixer.Sound.play(self.inventory_sfx)
 
             first_player = args[2][0]
             second_player = args[2][1]
@@ -1119,8 +1103,7 @@ class Level:
             self.background_menus.append((self.active_menu, True))
             self.active_menu = menuCreatorManager.create_trade_item_menu(item_button_pos, item, players)
         elif method_id is TradeMenu.SEND_GOLD:
-
-            pg.mixer.Sound.play(self.goldsfx)
+            pg.mixer.Sound.play(self.gold_sfx)
 
             players = args[2][:2]
             sender_id = args[2][2]
@@ -1352,9 +1335,10 @@ class Level:
                             self.watched_ent = ent
                             self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
                             reach = self.watched_ent.reach
-                            self.possible_attacks = self.get_possible_attacks(self.possible_moves,
-                                                                              reach, isinstance(ent, Character)) \
-                                if ent.can_attack() else {}
+                            self.possible_attacks = {}
+                            if ent.can_attack():
+                                self.possible_attacks = self.get_possible_attacks(self.possible_moves, reach,
+                                                                                  isinstance(ent, Character))
                             return
 
     def motion(self, pos):

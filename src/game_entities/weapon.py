@@ -1,11 +1,11 @@
+import random as rd
+
 from lxml import etree
 
 from src.game_entities.equipment import Equipment
 from src.game_entities.destroyable import DamageKind
-
-import random as rd
-
 from src.game_entities.skill import SkillNature
+from src.gui.tools import distance
 
 
 class Weapon(Equipment):
@@ -19,16 +19,21 @@ class Weapon(Equipment):
         self.attack_kind = DamageKind[attack_kind]
         self.effects = possible_effects
         self.strong_against = strong_against
+        self.can_charge = can_charge
 
     def get_formatted_strong_against(self):
         return ", ".join([k.name.lower().capitalize() for k in self.strong_against])
 
-    def hit(self, ent):
+    def hit(self, holder, target):
         multiplier = 1
-        for keyword in ent.keywords:
+        if self.can_charge:
+            distance_traveled = distance(holder.old_pos, holder.pos)
+            if distance_traveled >= 5:
+                multiplier += 0.5 * ((distance_traveled - 2) // 3)
+        for keyword in target.keywords:
             if keyword in self.strong_against:
                 multiplier += 1
-        return multiplier * self.atk
+        return int(multiplier * self.atk)
 
     def used(self):
         self.durability -= 1

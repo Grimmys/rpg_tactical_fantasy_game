@@ -21,7 +21,8 @@ class Foe(Movable):
 
     def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, reach, xp_gain,
                  loot, keywords=None, lvl=1, alterations=None):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, lvl, alterations=alterations)
+        Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move,
+                         strength, attack_kind, strategy, lvl, alterations=alterations)
         self.reach = reach
         self.xp_gain = int(xp_gain * (1.1 ** (lvl - 1)))
         self.potential_loot = loot
