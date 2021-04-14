@@ -39,7 +39,7 @@ class Movable(Destroyable):
 
     @staticmethod
     def init_constant_sprites():
-        selected_sprite = 'imgs/dungeon_crawl/misc/cursor.png'
+        selected_sprite = 'imgs/dungeon_crawl/misc/cursor.bmp'
         Movable.SELECTED_DISPLAY = pg.transform.scale(pg.image.load(selected_sprite).convert_alpha(),
                                                       (TILE_SIZE, TILE_SIZE))
 
@@ -70,10 +70,10 @@ class Movable(Destroyable):
         self.strategy = EntityStrategy[strategy]
         self.skills = skills
 
-        self.walk_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
-        self.skeleton_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
-        self.necrophage_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
-        self.centaur_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
+        #self.walk_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
+        #self.skeleton_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
+        #self.necrophage_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
+        #self.centaur_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
 
     def display(self, screen):
         Destroyable.display(self, screen)
@@ -127,19 +127,6 @@ class Movable(Destroyable):
     def set_move(self, path):
         self.on_move = path
         self.state = EntityState.ON_MOVE
-
-        if self.strategy == EntityStrategy.MANUAL:
-            if self.name == "chrisemon":
-                pg.mixer.Sound.play(self.centaur_sfx)
-            else:
-                pg.mixer.Sound.play(self.walk_sfx)
-        elif self.target is not None:
-            if self.name == "skeleton":
-                pg.mixer.Sound.play(self.skeleton_sfx)
-            elif self.name == "necrophage":
-                pg.mixer.Sound.play(self.necrophage_sfx)
-            elif self.name == "assassin":
-                pg.mixer.Sound.play(self.walk_sfx)
 
     def get_formatted_alterations(self):
         formatted_string = ""

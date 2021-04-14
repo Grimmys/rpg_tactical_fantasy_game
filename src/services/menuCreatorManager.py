@@ -37,7 +37,7 @@ def create_shop_menu(stock, gold):
     entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
-    return InfoBox("Shop - Buying", BuyMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox("Shop - Buying", BuyMenu, "imgs/interface/PopUpMenu.bmp", entries,
                    ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
@@ -64,7 +64,7 @@ def create_inventory_menu(items, gold, for_sell=False):
     title = "Shop - Selling" if for_sell else "Inventory"
     menu_id = SellMenu if for_sell else InventoryMenu
     title_color = ORANGE if for_sell else WHITE
-    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.bmp", entries,
                    ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=title_color)
 
 
@@ -85,7 +85,7 @@ def create_equipment_menu(equipments):
                      'id': EquipmentMenu.INTERAC_EQUIPMENT}
             row.append(entry)
         entries.append(row)
-    return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.bmp", entries,
                    EQUIPMENT_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -140,7 +140,7 @@ def create_trade_menu(first_player, second_player):
     title = "Trade"
     menu_id = TradeMenu
     title_color = WHITE
-    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.bmp", entries,
                    TRADE_MENU_WIDTH, close_button=UNFINAL_ACTION, sep=True, title_color=title_color)
 
 
@@ -205,7 +205,7 @@ def create_status_menu(player):
     for j in range(i, len(entries)):
         entries[j].append({})
 
-    return InfoBox("Status", StatusMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox("Status", StatusMenu, "imgs/interface/PopUpMenu.bmp", entries,
                    STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -287,12 +287,12 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
         for entry in row:
             entry['type'] = 'button'
 
-    return InfoBox("Select an action", CharacterMenu, "imgs/interface/PopUpMenu.png",
+    return InfoBox("Select an action", CharacterMenu, "imgs/interface/PopUpMenu.bmp",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=player.get_rect())
 
 
 def create_diary_menu(entries):
-    return InfoBox("Diary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
+    return InfoBox("Diary", "", "imgs/interface/PopUpMenu.bmp", entries, BATTLE_SUMMARY_WIDTH,
                    close_button=UNFINAL_ACTION)
 
 
@@ -312,7 +312,7 @@ def create_main_menu(initialization_phase, pos):
         for entry in row:
             entry['type'] = 'button'
 
-    return InfoBox("Main Menu", MainMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox("Main Menu", MainMenu, "imgs/interface/PopUpMenu.bmp", entries,
                    ACTION_MENU_WIDTH, el_rect_linked=tile)
 
 
@@ -325,7 +325,7 @@ def create_item_shop_menu(item_button_pos, item):
     item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
                         ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.bmp",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
@@ -338,7 +338,7 @@ def create_item_sell_menu(item_button_pos, item):
     item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
                         ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.bmp",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
@@ -356,7 +356,7 @@ def create_trade_item_menu(item_button_pos, item, players):
     item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
                         ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.bmp",
                    entries,
                    ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
@@ -383,7 +383,7 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
     item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
                         ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
+    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.bmp",
                    entries,
                    ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
 
@@ -430,7 +430,7 @@ def create_item_desc_menu(item):
         for eff in item.effects:
             entries.append(create_item_desc_stat('EFFECT', eff.get_formatted_desc()))
 
-    return InfoBox(item_title, "", "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(item_title, "", "imgs/interface/PopUpMenu.bmp", entries,
                    ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -440,7 +440,7 @@ def create_alteration_info_menu(alteration):
                [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
                  'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
-    return InfoBox(str(alteration), "", "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(str(alteration), "", "imgs/interface/PopUpMenu.bmp", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -448,7 +448,7 @@ def create_skill_info_menu(skill):
     entries = [[{'type': 'text', 'text': skill.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
 
-    return InfoBox(skill.formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(skill.formatted_name, "", "imgs/interface/PopUpMenu.bmp", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
@@ -509,14 +509,14 @@ def create_status_entity_menu(ent):
         entries[i][3] = {'type': 'text', 'text': '> ' + skill.formatted_name}
         i += 1
 
-    return InfoBox(str(ent), StatusMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(str(ent), StatusMenu, "imgs/interface/PopUpMenu.bmp", entries,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
 def create_event_dialog(dialog_el):
     entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
                for s in dialog_el['talks']]
-    return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
+    return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.bmp",
                    entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
@@ -528,7 +528,7 @@ def create_reward_menu(mission):
     for item in mission.items:
         entries.append([{'type': 'text', 'text': 'Earned item : ' + str(item)}])
 
-    return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
+    return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.bmp", entries, REWARD_MENU_WIDTH,
                    close_button=UNFINAL_ACTION)
 
 
@@ -541,7 +541,7 @@ def create_start_menu():
             entry['type'] = 'button'
 
     return InfoBox("In the name of the Five Cats", StartMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
+                   "imgs/interface/PopUpMenu.bmp", entries, START_MENU_WIDTH)
 
 
 def load_parameter_entry(formatted_name, values, current_value, identifier):
@@ -569,7 +569,7 @@ def create_options_menu(params):
                                      OptionsMenu.CHANGE_SCREEN_SIZE)]]
 
     return InfoBox("Options", OptionsMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+                   "imgs/interface/PopUpMenu.bmp", entries, START_MENU_WIDTH, close_button=1)
 
 
 def create_load_menu():
@@ -579,7 +579,7 @@ def create_load_menu():
         entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': LoadMenu.LOAD, 'args': [i]}])
 
     return InfoBox("Load Game", LoadMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+                   "imgs/interface/PopUpMenu.bmp", entries, START_MENU_WIDTH, close_button=1)
 
 
 def create_save_menu():
@@ -589,4 +589,4 @@ def create_save_menu():
         entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
 
     return InfoBox("Save Game", SaveMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+                   "imgs/interface/PopUpMenu.bmp", entries, START_MENU_WIDTH, close_button=1)

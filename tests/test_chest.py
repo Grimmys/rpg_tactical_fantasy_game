@@ -16,9 +16,9 @@ class TestChest(unittest.TestCase):
 
     def test_init_chest(self):
         pos = (0, 0)
-        sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.png'
-        sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.png'
-        item = Item("TestItem", 'imgs/dungeon_crawl/item/potion/yellow_new.png', "This is a desc", 50)
+        sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.bmp'
+        sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.bmp'
+        item = Item("TestItem", 'imgs/dungeon_crawl/item/potion/yellow_new.bmp', "This is a desc", 50)
         potential_items = [(item, 1.0)]
         chest = Chest(pos, sprite_close, sprite_open, potential_items)
         self.assertEqual(pos, chest.pos)

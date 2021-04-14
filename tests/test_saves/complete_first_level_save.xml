@@ -321,10 +321,10 @@
           </position>
           <state>False</state>
           <closed>
-            <sprite>imgs/dungeon_crawl/dungeon/chest_2_closed.png</sprite>
+            <sprite>imgs/dungeon_crawl/dungeon/chest_2_closed.bmp</sprite>
           </closed>
           <opened>
-            <sprite>imgs/dungeon_crawl/dungeon/chest_2_open.png</sprite>
+            <sprite>imgs/dungeon_crawl/dungeon/chest_2_open.bmp</sprite>
           </opened>
           <contains>
             <item>life_potion</item>
@@ -340,7 +340,7 @@
             <y>8</y>
           </position>
           <state>False</state>
-          <sprite>imgs/houses/blue_house.png</sprite>
+          <sprite>imgs/houses/blue_house.bmp</sprite>
           <interaction>
             <talks>
               <talk>Are you the group of adventurers in charge of saving us from this hordes of undeads ?</talk>
@@ -356,7 +356,7 @@
             <y>3</y>
           </position>
           <state>False</state>
-          <sprite>imgs/houses/blue_house_side.png</sprite>
+          <sprite>imgs/houses/blue_house_side.bmp</sprite>
           <uninteractable/>
         </building>
         <building>
@@ -366,7 +366,7 @@
             <y>4</y>
           </position>
           <state>False</state>
-          <sprite>imgs/houses/yellow_house.png</sprite>
+          <sprite>imgs/houses/yellow_house.bmp</sprite>
           <interaction>
             <talks>
               <talk>No ! I won't let undeads like you kill me !</talk>
@@ -383,7 +383,7 @@
             <y>6</y>
           </position>
           <state>False</state>
-          <sprite>imgs/houses/red_house.png</sprite>
+          <sprite>imgs/houses/red_house.bmp</sprite>
           <interaction>
             <talks>
               <talk>I'm sorry, but I can't let you enter in my house...</talk>
@@ -398,7 +398,7 @@
             <y>7</y>
           </position>
           <state>False</state>
-          <sprite>imgs/houses/tavern.png</sprite>
+          <sprite>imgs/houses/tavern.bmp</sprite>
           <uninteractable/>
         </building>
         <building>
@@ -408,7 +408,7 @@
             <y>2</y>
           </position>
           <state>True</state>
-          <sprite>imgs/houses/shop.png</sprite>
+          <sprite>imgs/houses/shop.bmp</sprite>
           <uninteractable/>
           <type>shop</type>
           <items>

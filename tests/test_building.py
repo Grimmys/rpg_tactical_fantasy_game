@@ -17,7 +17,7 @@ class TestBuilding(unittest.TestCase):
     def test_init_building_no_interaction(self):
         name = 'house'
         pos = (3, 2)
-        sprite = 'imgs/houses/blue_house.png'
+        sprite = 'imgs/houses/blue_house.bmp'
         house = Building(name, pos, sprite)
         self.assertEqual(name, house.name)
         self.assertEqual(pos, house.pos)
@@ -26,7 +26,7 @@ class TestBuilding(unittest.TestCase):
     def test_init_building_interactive(self):
         name = 'house'
         pos = (3, 2)
-        sprite = 'imgs/houses/blue_house.png'
+        sprite = 'imgs/houses/blue_house.bmp'
         interaction = {'talks': [random_string(min_len=10, max_len=100), random_string(min_len=10, max_len=100)],
                        'gold': rd.randint(10, 1000),
                        'item': random_item()}

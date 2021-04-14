@@ -17,10 +17,10 @@ class TestWeapon(unittest.TestCase):
 
     def test_init_weapon(self):
         name = 'short_sword'
-        sprite = 'imgs/dungeon_crawl/item/weapon/short_sword_2_old.png'
+        sprite = 'imgs/dungeon_crawl/item/weapon/short_sword_2_old.bmp'
         description = 'A basic little sword, but one that can already prove very useful'
         price = 500
-        equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/short_sword.png']
+        equipped_sprite = ['imgs/dungeon_crawl/player/hand_right/short_sword.bmp']
         durability = 40
         reach = [1]
         power = 4

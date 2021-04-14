@@ -17,7 +17,7 @@ class StartScreen:
         self.menu_screen = self.screen.copy()
 
         # Start screen loop
-        background_image = pg.image.load('imgs/interface/main_menu_background.jpg').convert_alpha()
+        background_image = pg.image.load('imgs/interface/main_menu_background.bmp').convert_alpha()
         self.background = pg.transform.scale(background_image, screen.get_size())
 
         # Creating menu
@@ -127,7 +127,7 @@ class StartScreen:
             name = "Load Game"
             entries = [[{'type': 'text', 'text': "No saved game.", 'font': fonts['MENU_SUB_TITLE_FONT']}]]
             width = self.screen.get_width() // 2
-            self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.bmp",
                                        entries, width, close_button=1)
 
     def load_menu(self):

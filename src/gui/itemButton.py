@@ -2,9 +2,9 @@ from src.constants import *
 from src.gui.fonts import *
 from src.gui.button import Button
 
-FRAME_SPRITE = 'imgs/interface/grey_frame.png'
-FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.png'
-ITEM_SPRITE = 'imgs/interface/item_frame.png'
+FRAME_SPRITE = 'imgs/interface/grey_frame.bmp'
+FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.bmp'
+ITEM_SPRITE = 'imgs/interface/item_frame.bmp'
 
 
 class ItemButton(Button):

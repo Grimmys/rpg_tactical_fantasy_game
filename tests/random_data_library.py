@@ -32,7 +32,7 @@ def random_position():
 
 def random_item_attributes(price):
     return {'name': random_string(),
-            'sample_img': 'imgs/dungeon_crawl/item/potion/yellow_new.png',
+            'sample_img': 'imgs/dungeon_crawl/item/potion/yellow_new.bmp',
             'desc': random_string(min_len=10, max_len=100),
             'cost': price if price else rd.randint(0, 1000)}
 
@@ -104,8 +104,8 @@ def random_shield(price=None, durability=None, parry_rate=None):
 
 def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportion=0.3):
     pos = random_position()
-    sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.png'
-    sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.png'
+    sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.bmp'
+    sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.bmp'
     if item_set:
         potential_items = item_set
     else:
@@ -124,7 +124,7 @@ def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportio
 
 def random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name):
     return {'name': name if name else random_string(), 'pos': random_position(),
-            'sprite': 'imgs/dungeon_crawl/monster/angel.png',
+            'sprite': 'imgs/dungeon_crawl/monster/angel.bmp',
             'hp': rd.randint(min_hp, max_hp), 'defense': rd.randint(0, max_defense), 'res': rd.randint(0, max_res)}
 
 
@@ -220,7 +220,7 @@ def random_entities(entity_kind):
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0, gold=True, item=True):
     name = random_string()
     pos = random_position()
-    sprite = 'imgs/houses/blue_house.png'
+    sprite = 'imgs/houses/blue_house.bmp'
     interaction = {}
     if is_interactive:
         talks_el = [random_string(min_len=10, max_len=100) for _ in range(rd.randint(min_talks, max_talks))]

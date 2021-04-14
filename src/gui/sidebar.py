@@ -9,7 +9,7 @@ from src.game_entities.breakable import Breakable
 from src.constants import *
 
 SHIFT = 2
-SIDEBAR_SPRITE = 'imgs/interface/sidebar.png'
+SIDEBAR_SPRITE = 'imgs/interface/sidebar.bmp'
 
 
 class Sidebar:

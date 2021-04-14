@@ -14,7 +14,7 @@ class TestMovable(unittest.TestCase):
     def test_init_movable(self):
         name = 'movable0'
         pos = (3, 2)
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        sprite = 'imgs/dungeon_crawl/monster/angel.bmp'
         hp = 10
         defense = 4
         res = 3

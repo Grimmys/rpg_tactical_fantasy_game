@@ -19,9 +19,9 @@ Please, don't hesitate about suggesting ideas : it's my first " serious " game p
 
 __Version__ : 1.0.4
 
-![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
-![Inventory menu](/screenshots/inventory_screen.png?raw=True)
-![Status window](/screenshots/status_screen.png?raw=True)
+![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.bmp?raw=True)
+![Inventory menu](/screenshots/inventory_screen.bmp?raw=True)
+![Status window](/screenshots/status_screen.bmp?raw=True)
 
 ## How to start the game
 

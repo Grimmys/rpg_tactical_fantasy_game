@@ -4,7 +4,7 @@
             Bones
         </name>
         <sprite>
-            food/bone.png
+            food/bone.bmp
         </sprite>
         <info>
             The remains of a skeleton... Maybe there is a way to bring it back to life
@@ -21,7 +21,7 @@
             Iron Ring
         </name>
         <sprite>
-            ring/iron.png
+            ring/iron.bmp
         </sprite>
         <info>
             A simple ring, made of iron. Can be enchanted or sold
@@ -38,7 +38,7 @@
             Topaz
         </name>
         <sprite>
-            gem_stone/topaz.png
+            gem_stone/topaz.bmp
         </sprite>
         <info>
             A somewhat precious stone, could be sold for a good price
@@ -57,7 +57,7 @@
                     Monster meat
                 </name>
                 <sprite>
-                    food/chunk.png
+                    food/chunk.bmp
                 </sprite>
                 <info>
                     It smells bad... Can be eaten to recover HP
@@ -87,7 +87,7 @@
                     Life Potion
                 </name>
                 <sprite>
-                    potion/ruby_new.png
+                    potion/ruby_new.bmp
                 </sprite>
                 <info>
                     Use it to recover some HP
@@ -115,7 +115,7 @@
                     Speed Potion
                 </name>
                 <sprite>
-                    potion/orange_new.png
+                    potion/orange_new.bmp
                 </sprite>
                 <info>
                     Use it to temporarily boost move speed
@@ -143,7 +143,7 @@
                     Rabbit Step Potion
                 </name>
                 <sprite>
-                    potion/white_new.png
+                    potion/white_new.bmp
                 </sprite>
                 <info>
                     Use it to temporarily boost move speed, but be stun too
@@ -181,7 +181,7 @@
                     Strength Potion
                 </name>
                 <sprite>
-                    potion/yellow_new.png
+                    potion/yellow_new.bmp
                 </sprite>
                 <info>
                     Use it to temporarily boost strength
@@ -209,7 +209,7 @@
                     Vigor Potion
                 </name>
                 <sprite>
-                    potion/bubbly.png
+                    potion/bubbly.bmp
                 </sprite>
                 <info>
                     Use it to temporarily boost defense and strength
@@ -252,7 +252,7 @@
                     Scroll of Knowledge
                 </name>
                 <sprite>
-                    scroll/scroll-blue.png
+                    scroll/scroll-blue.bmp
                 </sprite>
                 <info>
                     This scroll can gives some XP to the reader
@@ -279,7 +279,7 @@
                     Scroll of Cerberus
                 </name>
                 <sprite>
-                    scroll/scroll-red.png
+                    scroll/scroll-red.bmp
                 </sprite>
                 <info>
                     This scroll contains the secret of Cerberus' strength
@@ -307,7 +307,7 @@
                 Chest Key
             </name>
             <sprite>
-                misc/key.png
+                misc/key.bmp
             </sprite>
             <info>
                 Could be used to open some chest
@@ -325,7 +325,7 @@
                 Door Key
             </name>
             <sprite>
-                misc/key.png
+                misc/key.bmp
             </sprite>
             <info>
                 Could be used to open some door.
@@ -345,7 +345,7 @@
                 Green Book
             </name>
             <sprite>
-                book/dark_green_new.png
+                book/dark_green_new.bmp
             </sprite>
             <info>
                 A beautiful and polished green book...
@@ -368,7 +368,7 @@
                     Pocket Knife
                 </name>
                 <sprite>
-                    weapon/knife.png
+                    weapon/knife.bmp
                 </sprite>
                 <info>
                     A very fast blade, with discretion guaranteed
@@ -392,7 +392,7 @@
                     1
                 </weight>
                 <equipped_sprite>
-                    knife.png
+                    knife.bmp
                 </equipped_sprite>
                 <price>
                     200
@@ -403,7 +403,7 @@
                     Dagger
                 </name>
                 <sprite>
-                    weapon/dagger_new.png
+                    weapon/dagger_new.bmp
                 </sprite>
                 <info>
                     A simple dagger. A small blade, but it's sharp
@@ -427,7 +427,7 @@
                     1
                 </weight>
                 <equipped_sprite>
-                    dagger_slant_2.png
+                    dagger_slant_2.bmp
                 </equipped_sprite>
                 <price>
                     300
@@ -438,7 +438,7 @@
                     Club
                 </name>
                 <sprite>
-                    weapon/club_new.png
+                    weapon/club_new.bmp
                 </sprite>
                 <info>
                     Not a real weapon, but you could hurt someone with. Very frail
@@ -462,7 +462,7 @@
                     2
                 </weight>
                 <equipped_sprite>
-                    club_slant.png
+                    club_slant.bmp
                 </equipped_sprite>
                 <price>
                     300
@@ -478,7 +478,7 @@
                     Short Sword
                 </name>
                 <sprite>
-                    weapon/short_sword_2_old.png
+                    weapon/short_sword_2_old.bmp
                 </sprite>
                 <info>
                     A basic little sword, but one that can already prove very useful
@@ -502,7 +502,7 @@
                     2
                 </weight>
                 <equipped_sprite>
-                    short_sword.png
+                    short_sword.bmp
                 </equipped_sprite>
                 <price>
                     500
@@ -518,7 +518,7 @@
                     Wooden Spear
                 </name>
                 <sprite>
-                    weapon/spear.png
+                    weapon/spear.bmp
                 </sprite>
                 <info>
                     A spear can be really useful to charge the opponent
@@ -542,7 +542,7 @@
                     5
                 </weight>
                 <equipped_sprite>
-                    spear_4.png
+                    spear_4.bmp
                 </equipped_sprite>
                 <price>
                     500
@@ -566,7 +566,7 @@
                     Halberd
                 </name>
                 <sprite>
-                    weapon/halberd_2.png
+                    weapon/halberd_2.bmp
                 </sprite>
                 <info>
                     An halberd can helps to get rid of cavalry
@@ -590,7 +590,7 @@
                     4
                 </weight>
                 <equipped_sprite>
-                    halberd_new.png
+                    halberd_new.bmp
                 </equipped_sprite>
                 <price>
                     600
@@ -611,7 +611,7 @@
                     Pickaxe
                 </name>
                 <sprite>
-                    weapon/pickaxe.png
+                    weapon/pickaxe.bmp
                 </sprite>
                 <info>
                     This doesn't look like a weapon, but still, well handled it could stun someone
@@ -635,7 +635,7 @@
                     3
                 </weight>
                 <equipped_sprite>
-                    pick_axe.png
+                    pick_axe.bmp
                 </equipped_sprite>
                 <price>
                     300
@@ -664,7 +664,7 @@
                     Wooden Bow
                 </name>
                 <sprite>
-                    weapon/ranged/bow_1.png
+                    weapon/ranged/bow_1.bmp
                 </sprite>
                 <info>
                     A simple wooden bow, effective at a short distance
@@ -688,7 +688,7 @@
                     2
                 </weight>
                 <equipped_sprite>
-                    bow_2.png
+                    bow_2.bmp
                 </equipped_sprite>
                 <price>
                     350
@@ -704,7 +704,7 @@
                     Wooden Staff
                 </name>
                 <sprite>
-                    staff/staff_2.png
+                    staff/staff_2.bmp
                 </sprite>
                 <info>
                     A frail staff, usable to make a range attack with weak spells
@@ -728,7 +728,7 @@
                     2
                 </weight>
                 <equipped_sprite>
-                    staff_mage_2.png
+                    staff_mage_2.bmp
                 </equipped_sprite>
                 <price>
                     400
@@ -744,7 +744,7 @@
                     Necromancer Staff
                 </name>
                 <sprite>
-                    weapon/artefact/spwpn_sceptre_of_torment.png
+                    weapon/artefact/spwpn_sceptre_of_torment.bmp
                 </sprite>
                 <info>
                     A really dark staff, aimed to the occultists
@@ -768,7 +768,7 @@
                     5
                 </weight>
                 <equipped_sprite>
-                    staff_skull.png
+                    staff_skull.bmp
                 </equipped_sprite>
                 <price>
                     400
@@ -785,7 +785,7 @@
                 Plumed Helmet
             </name>
             <sprite>
-                armor/headgear/plumed_helmet.png
+                armor/headgear/plumed_helmet.bmp
             </sprite>
             <info>
                 A helmet, with a nice plume
@@ -803,7 +803,7 @@
                 2
             </weight>
             <equipped_sprite>
-                head/helm_plume.png
+                head/helm_plume.bmp
             </equipped_sprite>
             <price>
                 250
@@ -814,7 +814,7 @@
                 Black hood
             </name>
             <sprite>
-                armor/headgear/black_hood.png
+                armor/headgear/black_hood.bmp
             </sprite>
             <info>
                 A discret hood, to watch but not to be watched
@@ -832,7 +832,7 @@
                 1
             </weight>
             <equipped_sprite>
-                head/cap_black_1.png
+                head/cap_black_1.bmp
             </equipped_sprite>
             <price>
                 200
@@ -848,7 +848,7 @@
                 Helmet
             </name>
             <sprite>
-                armor/headgear/helmet_1.png
+                armor/headgear/helmet_1.bmp
             </sprite>
             <info>
                 A very basic helmet
@@ -866,7 +866,7 @@
                 2
             </weight>
             <equipped_sprite>
-                head/iron_2.png
+                head/iron_2.bmp
             </equipped_sprite>
             <price>
                 250
@@ -877,7 +877,7 @@
                 Horned Helmet
             </name>
             <sprite>
-                armor/headgear/helmet_4.png
+                armor/headgear/helmet_4.bmp
             </sprite>
             <info>
                 A basic helmet, but with impressive horns
@@ -895,7 +895,7 @@
                 2
             </weight>
             <equipped_sprite>
-                head/horn_gray.png
+                head/horn_gray.bmp
             </equipped_sprite>
             <price>
                 250
@@ -906,7 +906,7 @@
                 Gold Helmet
             </name>
             <sprite>
-                armor/headgear/helmet_3_old.png
+                armor/headgear/helmet_3_old.bmp
             </sprite>
             <info>
                 A full gold helmet... Seems really nice
@@ -924,7 +924,7 @@
                 4
             </weight>
             <equipped_sprite>
-                head/full_gold.png
+                head/full_gold.bmp
             </equipped_sprite>
         </gold_helmet>
         <chainmail>
@@ -932,7 +932,7 @@
                 Chainmail
             </name>
             <sprite>
-                armor/torso/chain_mail_3.png
+                armor/torso/chain_mail_3.bmp
             </sprite>
             <info>
                 A basic chainmail... Useful to have a good defense and keep an average speed
@@ -950,7 +950,7 @@
                 4
             </weight>
             <equipped_sprite>
-                body/chainmail_3.png
+                body/chainmail_3.bmp
             </equipped_sprite>
             <price>
                 500
@@ -966,7 +966,7 @@
                 Leather Armor
             </name>
             <sprite>
-                armor/torso/leather_armor_2.png
+                armor/torso/leather_armor_2.bmp
             </sprite>
             <info>
                 A basic light armor, useful for beginning an adventure !
@@ -984,8 +984,8 @@
                 2
             </weight>
             <equipped_sprites>
-                <sprite>body/leather_armor_3.png</sprite>
-                <sprite>legs/pants_short_brown.png</sprite>
+                <sprite>body/leather_armor_3.bmp</sprite>
+                <sprite>legs/pants_short_brown.bmp</sprite>
             </equipped_sprites>
             <price>
                 350
@@ -1001,7 +1001,7 @@
                 Scale mail
             </name>
             <sprite>
-                armor/torso/scale_mail_1_new.png
+                armor/torso/scale_mail_1_new.bmp
             </sprite>
             <info>
                 A veritable scale mail. Particularly useful for avoiding arrows
@@ -1019,7 +1019,7 @@
                 4
             </weight>
             <equipped_sprite>
-                body/scalemail.png
+                body/scalemail.bmp
             </equipped_sprite>
             <price>
                 750
@@ -1035,7 +1035,7 @@
                 Gold Armor
             </name>
             <sprite>
-                armor/torso/gold_dragon_armor_new.png
+                armor/torso/gold_dragon_armor_new.bmp
             </sprite>
             <info>
                 An armor inspired from a gold dragon
@@ -1053,7 +1053,7 @@
                 6
             </weight>
             <equipped_sprite>
-                body/armor_mummy.png
+                body/armor_mummy.bmp
             </equipped_sprite>
             <price>
                 3000
@@ -1069,7 +1069,7 @@
                 Spy outfit
             </name>
             <sprite>
-                armor/artefact/urand_thief.png
+                armor/artefact/urand_thief.bmp
             </sprite>
             <info>
                 A very black outfit for someone who needs some discretion
@@ -1087,7 +1087,7 @@
                 1
             </weight>
             <equipped_sprite>
-                body/outfits/spy_outfit.png
+                body/outfits/spy_outfit.bmp
             </equipped_sprite>
             <price>
                 800
@@ -1103,7 +1103,7 @@
                 Barding Magenta
             </name>
             <sprite>
-                armor/bardings/centaur_barding_magenta.png
+                armor/bardings/centaur_barding_magenta.bmp
             </sprite>
             <info>
                 Armor reserved to centaur. Not really efficient, but very elegant
@@ -1121,7 +1121,7 @@
                 3
             </weight>
             <equipped_sprite>
-                barding/centaur_barding_magenta.png
+                barding/centaur_barding_magenta.bmp
             </equipped_sprite>
             <restrictions>
                 <races>
@@ -1134,7 +1134,7 @@
                 Brown Boots
             </name>
             <sprite>
-                armor/feet/boots_1_brown_new.png
+                armor/feet/boots_1_brown_new.bmp
             </sprite>
             <info>
                 Brown boots, most basic boots you can find
@@ -1152,7 +1152,7 @@
                 1
             </weight>
             <equipped_sprite>
-                boots/short_brown_2.png
+                boots/short_brown_2.bmp
             </equipped_sprite>
             <price>
                 250
@@ -1163,7 +1163,7 @@
                 Black Boots
             </name>
             <sprite>
-                armor/feet/boots_1_brown_new.png
+                armor/feet/boots_1_brown_new.bmp
             </sprite>
             <info>
                 Black boots, fashion ones
@@ -1181,7 +1181,7 @@
                 1
             </weight>
             <equipped_sprite>
-                boots/middle_gray.png
+                boots/middle_gray.bmp
             </equipped_sprite>
             <price>
                 250
@@ -1192,7 +1192,7 @@
                 Gold Boots
             </name>
             <sprite>
-                armor/feet/boots_iron_2.png
+                armor/feet/boots_iron_2.bmp
             </sprite>
             <info>
                 Beautiful boots with golden style
@@ -1210,7 +1210,7 @@
                 4
             </weight>
             <equipped_sprite>
-                boots/middle_gold.png
+                boots/middle_gold.bmp
             </equipped_sprite>
         </gold_boots>
         <wooden_shield>
@@ -1218,7 +1218,7 @@
                 Wooden Shield
             </name>
             <sprite>
-                armor/shields/buckler_1_new.png
+                armor/shields/buckler_1_new.bmp
             </sprite>
             <info>
                 A small light shield that could help dodging attacks
@@ -1236,7 +1236,7 @@
                 2
             </weight>
             <equipped_sprite>
-                buckler_round_3.png
+                buckler_round_3.bmp
             </equipped_sprite>
             <price>
                 400

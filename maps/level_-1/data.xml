@@ -151,7 +151,7 @@
     <portals>
         <couple>
             <sprite>
-                dungeon/gateways/portal.png
+                dungeon/gateways/portal.bmp
             </sprite>
             <first>
                 <position>
@@ -182,12 +182,12 @@
         <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>
@@ -216,12 +216,12 @@
                 <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>
@@ -250,12 +250,12 @@
         <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>
@@ -608,7 +608,7 @@
                <y>8</y>
             </position>
             <sprite>
-                wall/stone_brick_9.png
+                wall/stone_brick_9.bmp
             </sprite>
         </breakable>
     </breakables>

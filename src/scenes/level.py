@@ -56,7 +56,7 @@ class Level:
 
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
-        map_image = pg.image.load(self.directory + 'map.png')
+        map_image = pg.image.load(self.directory + 'map.bmp')
         self.map = {
             'img': map_image,
             'width': map_image.get_width(),
@@ -146,11 +146,11 @@ class Level:
         self.diary_entries = []
         self.turn_items = []
 
-        self.wait_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
-        self.inventory_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
-        self.armor_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
-        self.talk_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
-        self.gold_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
+        #self.wait_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'waiting.ogg'))
+        #self.inventory_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
+        #self.armor_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'armor.ogg'))
+        #self.talk_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
+        #self.gold_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
     def save_game(self, slot):
         save_state_manager = SaveStateManager(self)
@@ -428,7 +428,7 @@ class Level:
         entries = [[entry_item],
                    [{'type': 'text', 'text': "Item has been added to your inventory",
                      'font': fonts['ITEM_DESC_FONT']}]]
-        self.active_menu = InfoBox("You found in the chest", "", "imgs/interface/PopUpMenu.png",
+        self.active_menu = InfoBox("You found in the chest", "", "imgs/interface/PopUpMenu.bmp",
                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def open_door(self, door):
@@ -436,7 +436,7 @@ class Level:
 
         entries = [[{'type': 'text', 'text': "Door has been opened.",
                      'font': fonts['ITEM_DESC_FONT']}]]
-        self.active_menu = InfoBox(str(door), "", "imgs/interface/PopUpMenu.png",
+        self.active_menu = InfoBox(str(door), "", "imgs/interface/PopUpMenu.bmp",
                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def ally_to_player(self, character):
@@ -490,7 +490,7 @@ class Level:
                         target.pick_lock_initiated = True
                         entries = [[{'type': 'text', 'text': "Started picking, one more turn to go.",
                                      'font': fonts['ITEM_DESC_FONT']}]]
-                        self.active_menu = InfoBox("Chest", "", "imgs/interface/PopUpMenu.png",
+                        self.active_menu = InfoBox("Chest", "", "imgs/interface/PopUpMenu.bmp",
                                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                     else:
                         # Lock picking is finished, get content
@@ -498,7 +498,7 @@ class Level:
 
             else:
                 self.active_menu = InfoBox("You have no free space in your inventory.", "",
-                                           "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
+                                           "imgs/interface/PopUpMenu.bmp", [], ITEM_MENU_WIDTH,
                                            close_button=UNFINAL_ACTION)
         # Check if player tries to open a door
         elif isinstance(target, Door):
@@ -517,7 +517,7 @@ class Level:
                     target.pick_lock_initiated = True
                     entries = [[{'type': 'text', 'text': "Started picking, one more turn to go.",
                                  'font': fonts['ITEM_DESC_FONT']}]]
-                    self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
+                    self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.bmp",
                                                entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                 else:
                     # Lock picking is finished, get content
@@ -533,12 +533,12 @@ class Level:
                 self.wait_for_dest_tp = True
             else:
                 self.active_menu = InfoBox("There is no free square around the other portal", "",
-                                           "imgs/interface/PopUpMenu.png",
+                                           "imgs/interface/PopUpMenu.bmp",
                                            [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Check if player tries to drink in a fountain
         elif isinstance(target, Fountain):
             entries = target.drink(actor)
-            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.bmp",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
             # No more menu : turn is finished
@@ -548,10 +548,10 @@ class Level:
             self.active_menu = menuCreatorManager.create_trade_menu(self.selected_player, target)
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
-            pg.mixer.Sound.play(self.talk_sfx)
+            #pg.mixer.Sound.play(self.talk_sfx)
 
             entries = target.talk(actor)
-            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.bmp",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
             # No more menu : turn is finished
             self.background_menus = []
@@ -567,7 +567,7 @@ class Level:
                 kind = ShopMenu
 
             entries = target.interact(actor)
-            self.active_menu = InfoBox(str(target), kind, "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox(str(target), kind, "imgs/interface/PopUpMenu.bmp",
                                        entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION, title_color=ORANGE)
 
             # No more menu : turn is finished
@@ -764,7 +764,7 @@ class Level:
             self.active_menu = None
         # Item action : Character's inventory is opened
         elif method_id is CharacterMenu.INV:
-            pg.mixer.Sound.play(self.inventory_sfx)
+            #pg.mixer.Sound.play(self.inventory_sfx)
             self.background_menus.append((self.active_menu, True))
             items_max = self.selected_player.nb_items_max
             items = list(self.selected_player.items)
@@ -773,7 +773,7 @@ class Level:
             self.active_menu = menuCreatorManager.create_inventory_menu(items, self.selected_player.gold)
         # Equipment action : open the equipment screen
         elif method_id is CharacterMenu.EQUIPMENT:
-            pg.mixer.Sound.play(self.armor_sfx)
+            #pg.mixer.Sound.play(self.armor_sfx)
 
             self.background_menus.append((self.active_menu, True))
             equipments = list(self.selected_player.equipments)
@@ -784,7 +784,7 @@ class Level:
             self.active_menu = menuCreatorManager.create_status_menu(self.selected_player)
         # Wait action : Given Character's turn is finished
         elif method_id is CharacterMenu.WAIT:
-            pg.mixer.Sound.play(self.wait_sfx)
+            #pg.mixer.Sound.play(self.wait_sfx)
 
             self.active_menu = None
             self.selected_item = None
@@ -805,7 +805,7 @@ class Level:
 
             if not has_key:
                 self.background_menus.append((self.active_menu, True))
-                self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/interface/PopUpMenu.png", [],
+                self.active_menu = InfoBox("You have no key to open a chest", "", "imgs/interface/PopUpMenu.bmp", [],
                                            ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             else:
                 self.background_menus.append((self.active_menu, False))
@@ -825,7 +825,7 @@ class Level:
 
             if not has_key:
                 self.background_menus.append((self.active_menu, True))
-                self.active_menu = InfoBox("You have no key to open a door", "", "imgs/interface/PopUpMenu.png", [],
+                self.active_menu = InfoBox("You have no key to open a door", "", "imgs/interface/PopUpMenu.bmp", [],
                                            ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
             else:
                 self.select_interaction_with(Door)
@@ -936,7 +936,7 @@ class Level:
 
             remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.',
                                     'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", remove_msg_entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", remove_msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Use an item from the inventory
         elif method_id is ItemMenu.USE_ITEM:
@@ -951,7 +951,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in result_msgs]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Equip an item
         elif method_id is ItemMenu.EQUIP_ITEM:
@@ -974,7 +974,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Unequip an item
         elif method_id is ItemMenu.UNEQUIP_ITEM:
@@ -996,7 +996,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'],
                          'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Buy an item
         elif method_id is ItemMenu.BUY_ITEM:
@@ -1005,7 +1005,7 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Sell an item
         elif method_id is ItemMenu.SELL_ITEM:
@@ -1032,11 +1032,11 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", entries,
                                        ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
-            pg.mixer.Sound.play(self.inventory_sfx)
+            #pg.mixer.Sound.play(self.inventory_sfx)
 
             first_player = args[2][0]
             second_player = args[2][1]
@@ -1062,7 +1062,7 @@ class Level:
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.turn_items.append([self.selected_item, owner, receiver])
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png", msg_entries,
+            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.bmp", msg_entries,
                                        ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
         else:
             print(f"Unknown action in item menu : {method_id}")
@@ -1103,7 +1103,7 @@ class Level:
             self.background_menus.append((self.active_menu, True))
             self.active_menu = menuCreatorManager.create_trade_item_menu(item_button_pos, item, players)
         elif method_id is TradeMenu.SEND_GOLD:
-            pg.mixer.Sound.play(self.gold_sfx)
+            #pg.mixer.Sound.play(self.gold_sfx)
 
             players = args[2][:2]
             sender_id = args[2][2]
@@ -1117,7 +1117,7 @@ class Level:
         if method_id is SaveMenu.SAVE:
             self.save_game(args[2][0])
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.bmp",
                                        [[{'type': 'text', 'text': "Game has been saved",
                                           'font': fonts['ITEM_DESC_FONT']}]],
                                        ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)

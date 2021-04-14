@@ -1,3 +1,5 @@
+from mapPCG import generateMap
+
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
@@ -7,6 +9,7 @@ if __name__ == "__main__":
     import os
 
     from src.constants import *
+    from pygame import mixer
     from src.gui import constantSprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
@@ -14,7 +17,8 @@ if __name__ == "__main__":
     from src.services import loadFromXMLManager as Loader
 
     pg.init()
-
+    difficulty = 0.0
+    generateMap(difficulty)
     # Load fonts
     fonts.init_fonts()
 
@@ -35,8 +39,8 @@ if __name__ == "__main__":
 
     start_screen = StartScreen(screen)
 
-    pg.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
-    pg.mixer.music.play(-1)
+    #mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
+    #mixer.music.play(-1)
 
     quit_game = False
     while not quit_game:

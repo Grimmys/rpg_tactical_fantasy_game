@@ -4,27 +4,27 @@ from src.gui.fonts import fonts
 from src.constants import TILE_SIZE, MAX_MAP_WIDTH, MAX_MAP_HEIGHT, WHITE, BLACK
 
 LANDING_OPACITY = 80
-LANDING_SPRITE = 'imgs/dungeon_crawl/misc/move.png'
+LANDING_SPRITE = 'imgs/dungeon_crawl/misc/move.bmp'
 
 ATTACKABLE_OPACITY = 80
-ATTACKABLE_SPRITE = 'imgs/dungeon_crawl/misc/attackable.png'
+ATTACKABLE_SPRITE = 'imgs/dungeon_crawl/misc/attackable.bmp'
 
 INTERACTION_OPACITY = 500
-INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.png'
+INTERACTION_SPRITE = 'imgs/dungeon_crawl/misc/landing.bmp'
 
-NEW_TURN_SPRITE = 'imgs/interface/new_turn.png'
+NEW_TURN_SPRITE = 'imgs/interface/new_turn.bmp'
 
-CRACKED_SPRITE = 'imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png'
+CRACKED_SPRITE = 'imgs/dungeon_crawl/dungeon/wall/destroyed_wall.bmp'
 
-FRAME_SPRITE = 'imgs/interface/frame.png'
+FRAME_SPRITE = 'imgs/interface/frame.bmp'
 
-LIGHTLY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png'
-MODERATELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png'
-HEAVILY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.png'
-SEVERELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_severely_damaged.png'
-ALMOST_DEAD_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_almost_dead.png'
+LIGHTLY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.bmp'
+MODERATELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.bmp'
+HEAVILY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.bmp'
+SEVERELY_DAMAGED_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_severely_damaged.bmp'
+ALMOST_DEAD_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_almost_dead.bmp'
 
-HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
+HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.bmp'
 
 constant_sprites = {}
 

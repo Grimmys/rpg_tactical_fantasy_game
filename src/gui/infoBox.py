@@ -7,8 +7,8 @@ from src.gui.dynamicButton import DynamicButton
 from src.gui.itemButton import ItemButton
 from src.services.menus import GenericActions
 
-BUTTON_INACTIVE = "imgs/interface/MenuButtonInactiv.png"
-BUTTON_ACTIVE = "imgs/interface/MenuButtonPreLight.png"
+BUTTON_INACTIVE = "imgs/interface/MenuButtonInactiv.bmp"
+BUTTON_ACTIVE = "imgs/interface/MenuButtonPreLight.bmp"
 
 CLOSE_BUTTON_MARGINTOP = 20
 

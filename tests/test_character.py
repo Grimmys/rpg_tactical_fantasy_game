@@ -17,7 +17,7 @@ class TestCharacter(unittest.TestCase):
     def test_init_character(self):
         name = 'character_test'
         pos = (3, 2)
-        sprite = 'imgs/characs/jist.png'
+        sprite = 'imgs/characs/jist.bmp'
         hp = 10
         defense = 4
         res = 3

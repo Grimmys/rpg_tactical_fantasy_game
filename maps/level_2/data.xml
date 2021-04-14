@@ -76,12 +76,12 @@
         <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>
@@ -102,12 +102,12 @@
         <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>
@@ -133,7 +133,7 @@
                 <y>5</y>
             </position>
             <sprite>
-                imgs/dungeon_crawl/dungeon/doors/closed_door.png
+                imgs/dungeon_crawl/dungeon/doors/closed_door.bmp
             </sprite>
         </door>
     </doors>

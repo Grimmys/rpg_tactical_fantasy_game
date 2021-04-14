@@ -89,12 +89,12 @@
         <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>
@@ -255,7 +255,7 @@
                 <x>5</x>
                 <y>6</y>
             </position>
-            <sprite>imgs/houses/blue_house.png</sprite>
+            <sprite>imgs/houses/blue_house.bmp</sprite>
             <interaction>
                 <talks>
                     <talk>
@@ -278,7 +278,7 @@
                 <x>6</x>
                 <y>1</y>
             </position>
-            <sprite>imgs/houses/blue_house_side.png</sprite>
+            <sprite>imgs/houses/blue_house_side.bmp</sprite>
         </building>
         <building>
             <name>
@@ -288,7 +288,7 @@
                 <x>8</x>
                 <y>2</y>
             </position>
-            <sprite>imgs/houses/yellow_house.png</sprite>
+            <sprite>imgs/houses/yellow_house.bmp</sprite>
             <interaction>
                 <talks>
                     <talk>
@@ -314,7 +314,7 @@
                 <x>10</x>
                 <y>4</y>
             </position>
-            <sprite>imgs/houses/red_house.png</sprite>
+            <sprite>imgs/houses/red_house.bmp</sprite>
             <interaction>
                 <talks>
                     <talk>
@@ -334,7 +334,7 @@
                 <x>14</x>
                 <y>5</y>
             </position>
-            <sprite>imgs/houses/tavern.png</sprite>
+            <sprite>imgs/houses/tavern.bmp</sprite>
         </building>
         <building>
             <type>
@@ -347,7 +347,7 @@
                 <x>12</x>
                 <y>0</y>
             </position>
-            <sprite>imgs/houses/shop.png</sprite>
+            <sprite>imgs/houses/shop.bmp</sprite>
             <items>
                 <item>
                     <name>

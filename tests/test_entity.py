@@ -18,7 +18,7 @@ class TestEntity(unittest.TestCase):
     def test_init_entity(self):
         name = 'entity'
         pos = (3, 2)
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        sprite = 'imgs/dungeon_crawl/monster/angel.bmp'
         entity = Entity(name, pos, sprite)
         self.assertEqual(name, entity.name)
         self.assertEqual(pos, entity.pos)
@@ -27,7 +27,7 @@ class TestEntity(unittest.TestCase):
 
     def test_name_format(self):
         pos = random_position()
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        sprite = 'imgs/dungeon_crawl/monster/angel.bmp'
 
         name = 'test'
         entity = Entity(name, pos, sprite)
@@ -47,7 +47,7 @@ class TestEntity(unittest.TestCase):
 
     def test_position(self):
         name = 'test'
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        sprite = 'imgs/dungeon_crawl/monster/angel.bmp'
         pos = random_position()
         entity = Entity(name, pos, sprite)
 

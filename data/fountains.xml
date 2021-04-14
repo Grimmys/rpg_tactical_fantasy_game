@@ -1,10 +1,10 @@
 <fountains>
     <healer>
         <sprite>
-            dungeon/blood_fountain.png
+            dungeon/blood_fountain.bmp
         </sprite>
         <sprite_empty>
-            dungeon/dry_fountain.png
+            dungeon/dry_fountain.bmp
         </sprite_empty>
         <times>
             2

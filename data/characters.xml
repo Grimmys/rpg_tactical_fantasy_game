@@ -9,7 +9,7 @@
         <defense> 2 </defense>
         <resistance> 0 </resistance>
         <hp> 10 </hp>
-        <sprite> characs/jist.png </sprite>
+        <sprite> characs/jist.bmp </sprite>
         <interaction>
             <talk>
                 Hurry up ! Leave the village from the west, and enter the necropolis.
@@ -31,7 +31,7 @@
         <defense> 1 </defense>
         <resistance> 0 </resistance>
         <hp> 20 </hp>
-        <sprite> dungeon_crawl/player/base/human_male.png </sprite>
+        <sprite> dungeon_crawl/player/base/human_male.bmp </sprite>
         <equipment>
             <head>
                 helmet
@@ -65,8 +65,8 @@
         <defense> 1 </defense>
         <resistance> 0 </resistance>
         <hp> 15 </hp>
-        <sprite> dungeon_crawl/player/base/human_female.png </sprite>
-        <complement_sprite> legs/pants_short_brown.png </complement_sprite>
+        <sprite> dungeon_crawl/player/base/human_female.bmp </sprite>
+        <complement_sprite> legs/pants_short_brown.bmp </complement_sprite>
         <equipment>
             <head>
                 plumed_helmet
@@ -97,7 +97,7 @@
         <defense> 2 </defense>
         <resistance> 0 </resistance>
         <hp> 20 </hp>
-        <sprite> dungeon_crawl/player/base/dwarf_male.png </sprite>
+        <sprite> dungeon_crawl/player/base/dwarf_male.bmp </sprite>
        <equipment>
             <head>
                 horned_helmet
@@ -131,7 +131,7 @@
         <defense> 1 </defense>
         <resistance> 0 </resistance>
         <hp> 22 </hp>
-        <sprite> dungeon_crawl/player/base/centaur_brown_male.png </sprite>
+        <sprite> dungeon_crawl/player/base/centaur_brown_male.bmp </sprite>
         <equipment>
             <body>
                 barding_magenta
@@ -156,7 +156,7 @@
         <resistance> 1 </resistance>
         <hp> 14 </hp>
         <level> 3 </level>
-        <sprite> dungeon_crawl/player/base/gnome_male.png </sprite>
+        <sprite> dungeon_crawl/player/base/gnome_male.bmp </sprite>
         <equipment>
             <head>
                 black_hood

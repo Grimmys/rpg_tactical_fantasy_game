@@ -21,7 +21,7 @@ class Destroyable(Entity):
         self.defense = defense
         self.res = res
 
-        self.attack_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
+        #self.attack_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
 
     def display_hp(self, screen):
         if self.hp != self.hp_max:
@@ -44,7 +44,7 @@ class Destroyable(Entity):
             real_damage = damage - self.res
         elif kind is DamageKind.PHYSICAL:
             real_damage = damage - self.defense
-            pg.mixer.Sound.play(self.attack_sfx)
+            #pg.mixer.Sound.play(self.attack_sfx)
         else:
             print('Error : Invalid kind of attack : ' + str(kind))
             raise SystemError

@@ -20,7 +20,7 @@ class Chest(Entity):
         self.opened = False
         self.pick_lock_initiated = False
 
-        self.chest_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
+        #self.chest_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'chest.ogg'))
 
     @staticmethod
     def determine_item(potential_items):
@@ -36,7 +36,7 @@ class Chest(Entity):
         if not self.opened:
             self.sprite = self.sprite_open
             self.opened = True
-            pg.mixer.Sound.play(self.chest_sfx)
+            #pg.mixer.Sound.play(self.chest_sfx)
             return self.item
         return None
 

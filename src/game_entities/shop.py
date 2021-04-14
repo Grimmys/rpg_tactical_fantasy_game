@@ -15,7 +15,7 @@ class Shop(Building):
         self.stock = stock
         self.menu = menuCreatorManager.create_shop_menu(self.stock, 0)
 
-        self.gold_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
+        #self.gold_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
     def get_item_entry(self, item):
         for entry in self.stock:
@@ -48,7 +48,7 @@ class Shop(Building):
     def buy(self, actor, item):
         if actor.gold >= item.price:
             if len(actor.items) < actor.nb_items_max:
-                pg.mixer.Sound.play(self.gold_sfx)
+                #pg.mixer.Sound.play(self.gold_sfx)
 
                 actor.gold -= item.price
                 actor.set_item(copy(item))

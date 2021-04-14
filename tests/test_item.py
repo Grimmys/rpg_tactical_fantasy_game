@@ -14,7 +14,7 @@ class TestItem(unittest.TestCase):
 
     def test_init_item(self):
         name = 'life_potion'
-        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.png'
+        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.bmp'
         description = 'This is a test description'
         item = Item(name, sprite, description)
         self.assertEqual(name, item.name)
@@ -23,7 +23,7 @@ class TestItem(unittest.TestCase):
 
     def test_init_item_with_price(self):
         name = 'life_potion'
-        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.png'
+        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.bmp'
         description = 'This is a test description'
         price = 200
         item = Item(name, sprite, description, price)
@@ -34,7 +34,7 @@ class TestItem(unittest.TestCase):
         self.assertEqual(price // 2, item.resell_price)
 
     def test_name_format(self):
-        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.png'
+        sprite = 'imgs/dungeon_crawl/item/potion/magenta_new.bmp'
         description = 'This is a test description'
 
         name = 'test'

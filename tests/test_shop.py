@@ -17,7 +17,7 @@ class TestShop(unittest.TestCase):
     def test_init_shop(self):
         name = 'tavern'
         pos = (3, 2)
-        sprite = 'imgs/houses/blue_house.png'
+        sprite = 'imgs/houses/blue_house.bmp'
         interaction = None
         items = [{'item': random_item(), 'quantity': rd.randint(1, 10)},
                  {'item': random_item(), 'quantity': rd.randint(1, 10)}]
@@ -31,7 +31,7 @@ class TestShop(unittest.TestCase):
     def test_interact(self):
         name = 'tavern'
         pos = (3, 2)
-        sprite = 'imgs/houses/blue_house.png'
+        sprite = 'imgs/houses/blue_house.bmp'
         interaction = None
         items = [{'item': random_item(), 'quantity': rd.randint(1, 10)},
                  {'item': random_item(), 'quantity': rd.randint(1, 10)}]

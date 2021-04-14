@@ -68,12 +68,12 @@
         <chest>
             <closed>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
+                    imgs/dungeon_crawl/dungeon/chest_2_closed.bmp
                 </sprite>
             </closed>
             <opened>
                 <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
+                    imgs/dungeon_crawl/dungeon/chest_2_open.bmp
                 </sprite>
             </opened>
             <contains>

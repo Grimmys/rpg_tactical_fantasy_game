@@ -1,7 +1,7 @@
 <foes>
     <mutant_bee>
         <sprite>
-            undead/simulacra/simulacrum_bee.png
+            undead/simulacra/simulacrum_bee.bmp
         </sprite>
         <move>
             5
@@ -51,7 +51,7 @@
     </mutant_bee>
     <mutant_ant>
         <sprite>
-            undead/simulacra/simulacrum_ant.png
+            undead/simulacra/simulacrum_ant.bmp
         </sprite>
         <move>
             4
@@ -98,7 +98,7 @@
     </mutant_ant>
     <mutant_lizard>
         <sprite>
-            undead/simulacra/simulacrum_lizard.png
+            undead/simulacra/simulacrum_lizard.bmp
         </sprite>
         <move>
             6
@@ -145,7 +145,7 @@
     </mutant_lizard>
     <snake>
         <sprite>
-            animals/adder.png
+            animals/adder.bmp
         </sprite>
         <move>
             2
@@ -191,7 +191,7 @@
     </snake>
     <skeleton>
         <sprite>
-            undead/skeletons/skeleton_humanoid_small_old.png
+            undead/skeletons/skeleton_humanoid_small_old.bmp
         </sprite>
         <move>
             3
@@ -253,7 +253,7 @@
     </skeleton>
     <simple_statue>
         <sprite>
-            statues/statue_base_old.png
+            statues/statue_base_old.bmp
         </sprite>
         <move>
             0
@@ -296,7 +296,7 @@
     </simple_statue>
     <necrophage>
         <sprite>
-            undead/necrophage_new.png
+            undead/necrophage_new.bmp
         </sprite>
         <move>
             2
@@ -358,7 +358,7 @@
     </necrophage>
     <fire_eye>
         <sprite>
-            eyes/eye_of_devastation_old.png
+            eyes/eye_of_devastation_old.bmp
         </sprite>
         <move>
             5
@@ -401,7 +401,7 @@
     </fire_eye>
     <cultist>
         <sprite>
-            thugs/cultist.png
+            thugs/cultist.bmp
         </sprite>
         <move>
             3
@@ -457,7 +457,7 @@
     </cultist>
     <mutanter_cultist>
         <sprite>
-            thugs/mutanter_cultist.png
+            thugs/mutanter_cultist.bmp
         </sprite>
         <move>
             3
@@ -509,7 +509,7 @@
     </mutanter_cultist>
     <assassin>
         <sprite>
-            thugs/basic_assassin.png
+            thugs/basic_assassin.bmp
         </sprite>
         <move>
             4
@@ -566,7 +566,7 @@
     </assassin>
     <skeleton_cobra>
         <sprite>
-            undead/skeletons/skeleton_snake.png
+            undead/skeletons/skeleton_snake.bmp
         </sprite>
         <move>
             4
@@ -623,7 +623,7 @@
     </skeleton_cobra>
     <lich_boss>
         <sprite>
-            undead/ancient_lich_new.png
+            undead/ancient_lich_new.bmp
         </sprite>
         <move>
             2

@@ -14,28 +14,28 @@ class Building(Entity):
         self.sprite_name = sprite
         self.interaction = interaction
 
-        self.door_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'door.ogg'))
-        self.gold_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
-        self.talk_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
-        self.inventory_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
+        #self.door_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'door.ogg'))
+        #self.gold_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
+        #self.talk_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
+        #self.inventory_sfx = #pg.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
 
     def interact(self, actor):
         entries = []
 
         if not self.interaction:
-            pg.mixer.Sound.play(self.door_sfx)
+            ##pg.mixer.Sound.play(self.door_sfx)
             entries.append([{'type': 'text', 'text': 'This house seems closed...', 'font': fonts['ITEM_DESC_FONT']}])
         else:
             for talk in self.interaction['talks']:
-                pg.mixer.Sound.play(self.talk_sfx)
+                ##pg.mixer.Sound.play(self.talk_sfx)
                 entries.append([{'type': 'text', 'text': talk, 'font': fonts['ITEM_DESC_FONT']}])
             if self.interaction['gold'] > 0:
-                pg.mixer.Sound.play(self.gold_sfx)
+                ##pg.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction['gold']
                 earn_text = '[You received ' + str(self.interaction['gold']) + ' gold]'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'], 'color': GREEN}])
             if self.interaction['item'] is not None:
-                pg.mixer.Sound.play(self.inventory_sfx)
+                ##pg.mixer.Sound.play(self.inventory_sfx)
                 actor.set_item(self.interaction['item'])
                 earn_text = '[You received ' + str(self.interaction['item']) + ']'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'], 'color': GREEN}])
