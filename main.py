@@ -1,4 +1,4 @@
-from mapPCG import generateMap
+from mapPCG import generateMaps
 
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     pg.init()
     difficulty = 0.0
-    generateMap(difficulty)
+    generateMaps(difficulty)
     # Load fonts
     fonts.init_fonts()
 
