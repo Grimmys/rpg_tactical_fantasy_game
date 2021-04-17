@@ -77,3 +77,6 @@ FINAL_ACTION = 2
 
 # Number of save slots
 SAVE_SLOTS = 3
+
+# Number of diffculty levels
+DIFFICULTY = 0

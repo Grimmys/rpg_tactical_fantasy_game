@@ -9,6 +9,9 @@ saves/*.xml
 # For those who use PyCharm
 .idea/
 
+# For those using VS Code
+.vscode/
+
 # Environments
 .env
 .venv

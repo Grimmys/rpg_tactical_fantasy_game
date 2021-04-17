@@ -25,6 +25,8 @@ class OptionsMenu(Enum):
     CHANGE_MOVE_SPEED = auto()
     #   - Modify screen size
     CHANGE_SCREEN_SIZE = auto()
+    #   - Modify difficulty
+    CHANGE_DIFFICULTY = auto()
 
 
 # > Load menu

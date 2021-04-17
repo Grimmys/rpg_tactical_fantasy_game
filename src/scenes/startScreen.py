@@ -137,7 +137,8 @@ class StartScreen:
     def options_menu(self):
         self.background_menus.append([self.active_menu, False])
         self.active_menu = menuCreatorManager.create_options_menu({'move_speed': int(self.read_options_file('move_speed')),
-                                                                   'screen_size': int(self.read_options_file('screen_size'))})
+                                                                   'screen_size': int(self.read_options_file('screen_size')), 
+                                                                   'difficulty': int(self.read_options_file('difficulty'))})
 
     def exit_game(self):
         self.exit = True

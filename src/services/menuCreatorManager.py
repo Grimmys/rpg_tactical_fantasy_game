@@ -566,7 +566,12 @@ def create_options_menu(params):
                                      [{'label': 'Window', 'value': SCREEN_SIZE // 2},
                                       {'label': 'Full', 'value': SCREEN_SIZE}],
                                      params['screen_size'],
-                                     OptionsMenu.CHANGE_SCREEN_SIZE)]]
+                                     OptionsMenu.CHANGE_SCREEN_SIZE)], 
+               [load_parameter_entry("Difficluty : ", 
+                                     [{'label': 'Easy', 'value': DIFFICULTY}, 
+                                     {'label': 'Normal', 'value': DIFFICULTY + 1}],
+                                     params['difficulty'],
+                                     OptionsMenu.CHANGE_DIFFICULTY)]]
 
     return InfoBox("Options", OptionsMenu,
                    "imgs/interface/PopUpMenu.bmp", entries, START_MENU_WIDTH, close_button=1)
