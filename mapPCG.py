@@ -11,17 +11,11 @@ FLOOR_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/floor/"
 LEVEL_DIR = CUR_DIR+"/maps/"
 WALL_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/wall/"
 TREE_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/trees/"
+EFFECT_DIR = CUR_DIR+"/imgs/dungeon_crawl/effect/"
+STATUE_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/statues/"
 CHARAC_SHEET = CUR_DIR+"/data/characters.xml"
 FOES_SHEET = CUR_DIR+"/data/foes.xml"
-THEMES = {0: ["autumn", "forest", "field"]}
-
-#Splits file basename to text and numerical
-#	path:	Path string to split
-def basename_num_split(path):
-	path = path.split("/")[-1]
-	for index, letter in enumerate(path, 0):
-		if letter.isdigit():
-			return [path[:index],path[index:]]
+THEMES = {0: ["autumn", "forest", "field"], 1: ["city", "village", "castle"]}
 
 #Combines two images into one
 #	front:	Front layer image
@@ -34,8 +28,8 @@ def overlay2Images(front, back):
 	return image.convert("RGB")
 
 #Check if tile is present in texture set
-#	texts:	texture set
 #	tile:	texture tile to check
+#	texts:	texture set
 #returns: if tile is present in texture set
 def isinTextures(texts, tile):
 	return any(elem == tile for elem in texts)
@@ -100,6 +94,7 @@ def placeMudpatches(levelMap, grassTexts, textures, nPatches, width, height):
 #Generates grass floor according to dimensions
 #	width,height:	Dimensions of level
 #	chosen_cat:		Category of grass
+#returns: floor image, grass textures, mud textures
 def placeGrassFloor(width, height, chosen_cat):
 	grass_species = []
 	mud_tiles = {"northeast": [], "northwest": [], "southeast": [], "southwest": [], "north" : [], "west": [], "east": [], "south": [], "full": []}
@@ -124,26 +119,78 @@ def placeGrassFloor(width, height, chosen_cat):
 			levelMap[x].append(grass_species[random.randint(0, cat_len-1)])
 	return levelMap, grass_species, mud_tiles 
 
+#Generates floor according to dimensions
+#	width,height:	Dimensions of level
+#	category:		Category of floor
+#returns floor image, image textures
+def placeFloor(category, width, height):
+	deprecated = "old"
+	levelMap = [[] for i in range(width)]
+	images = []
+	floorFiles = glob.glob(FLOOR_DIR + "*.bmp")
+	for floor in floorFiles:
+		basename = floor.split("/")[-1]
+		if category in basename and deprecated not in basename:
+			images.append(Image.open(floor).resize((TILE_SIZE,TILE_SIZE)).copy())
+	cat_len = len(images)
+	for y in range(height):
+		for x in range(width):
+			levelMap[x].append(images[random.randint(0, cat_len-1)])
+	return levelMap, images
+
+#Places line of images on top of floor
+#	levelMap:
+#	lineLength:
+#	axis:
+#	category:
+#	dirPath:
+#	obstacles:
+#	width,height:	Dimensions of level
+def placeLine(levelMap, lineLength, axis, category, dirPath, obstacles, width, height):
+	if axis > 1:
+		return []
+	items = []
+	images = glob.glob(dirPath + "*.bmp")
+	for image in images:
+		if category in image.split("/")[-1]:
+			items.append(Image.open(image).resize((TILE_SIZE,TILE_SIZE)).copy())
+	cat_len = len(items)
+	while True:
+		x_loc = random.randint(0, width-1)
+		y_loc = random.randint(0, height-1)
+		if axis == 0:
+			if x_loc + lineLength >= width:
+				continue
+			#check if x_loc:x_loc+lineLength is all free
+			line = [(x, y_loc) for x in range(x_loc, x_loc+lineLength)]
+		else:
+			if y_loc + lineLength >= height:
+				continue
+			line = [(x_loc, y) for y in range(y_loc, y_loc+lineLength)]
+		if all([elem not in obstacles for elem in line]):
+			obstacles.extend(line)
+			for dim in line:
+				levelMap[dim[0]][dim[1]] = overlay2Images(items[random.randint(0, cat_len-1)], levelMap[dim[0]][dim[1]])
+			break
+
 #Add walls to levelmap image
 #	levelMap:		2d image array of grass floor
+#	obstacles:		List of location tuples where obstacles reside
+#	category:		Category of wall
 #	width,height:	Dimensions of level
-def placeWalls(levelMap, width, height):#categories not yet correct
+def placeWalls(levelMap, obstacles, category, width, height):#categories not yet correct
 	#first row, last row, first column, last column
-	walls = {}
-	category = ""
+	walls = []
 	wallImages = glob.glob(WALL_DIR + "*.bmp")
 	for wall in wallImages:
-		temp = wall.split("/")[-1].split("_")[0]
-		if temp != category:
-			category = temp
-			walls[category] = [Image.open(wall).resize((TILE_SIZE,TILE_SIZE)).copy()]
-		else:
-			walls[category].append(Image.open(wall).resize((TILE_SIZE,TILE_SIZE)).copy())
-	chosen_wall = random.choice(list(walls.keys()))
+		if category in wall.split("/")[-1]:
+			walls.append(Image.open(wall).resize((TILE_SIZE,TILE_SIZE)).copy())
+	cat_len = len(walls)
 	for y in range(height):
 		for x in range(width):
 			if x == 0 or y == 0 or x == width-1 or y == height-1:
-				levelMap[x][y] = walls[chosen_wall][random.randint(0, len(walls[chosen_wall])-1)]
+				levelMap[x][y] = walls[random.randint(0, cat_len-1)]
+				obstacles.append((x,y))
 
 def placeMisc(miscDir):
 	return
@@ -224,7 +271,7 @@ def writeLevel(imageTiles, levelPath):
 #creates XML file to read level image
 #	difficulty:	Normalized difficulty to base PCG on
 #	levelMap:	2d image array of grass floor
-#	obstacles:	List of location tuples where obstalces reside
+#	obstacles:	List of location tuples where obstacles reside
 #	dims:		Dimensions of level
 #	filePath:	Path to write XML file to
 def writeXML(difficulty, obstacles, levelMap, dims, filePath):
@@ -282,20 +329,26 @@ def writeXML(difficulty, obstacles, levelMap, dims, filePath):
 #coordinates level/map generation according to parameters
 #	difficulty: 	normalized difficulty to base PCG on
 def generateMaps(difficulty):
-	width = 20
+	width = 22
 	height = 14
 	for level in range(1):
-		theme = random.choice(THEMES[level])
-		obstacles = []#[(x,height-2) for x in range(width)]+[(x,height-1) for x in range(width)]#buffer for GUI overlay
+		theme = "castle"#random.choice(THEMES[level])
+		obstacles = []
 		if theme == "autumn":
 			image, grassTexts, mudTexts = placeGrassFloor(width, height, "grass0")
 			obstacles.extend(placeRandom(image, 18, grassTexts, "tree_", TREE_DIR, width, height))#amount of trees based on difficulty
 		elif theme == "forest":
 			image, grassTexts, mudTexts = placeGrassFloor(width, height, "grass_flowers")
 			obstacles.extend(placeRandom(image, 18, grassTexts, "mangrove_", TREE_DIR, width, height))#amount of trees based on difficulty
+			placeRandom(image, 18, grassTexts, "cloud_spectral_", EFFECT_DIR, width, height)
 		elif theme == "field":
 			image, grassTexts, mudTexts = placeGrassFloor(width, height, "grassfield")
 			placeMudpatches(image, grassTexts, mudTexts, 20, width, height)
+		if theme == "castle":
+			image, floorTexts = placeFloor("pedestal_full", width, height)
+			placeWalls(image, obstacles, "stone_gray", width, height)
+			placeLine(image, 10, 1, "statue_dragon", STATUE_DIR, obstacles, width, height)
+			placeLine(image, 10, 0, "statue_dragon", STATUE_DIR, obstacles, width, height)
 		writeLevel(image, LEVEL_DIR+"level_"+str(level)+"/map.bmp")
 		writeXML(difficulty, obstacles, image, (width, height), LEVEL_DIR+"level_"+str(level)+"/data.xml")
 	#placeWalls(image, width, height)
