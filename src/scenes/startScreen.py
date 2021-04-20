@@ -138,7 +138,7 @@ class StartScreen:
         self.background_menus.append([self.active_menu, False])
         self.active_menu = menuCreatorManager.create_options_menu({'move_speed': int(self.read_options_file('move_speed')),
                                                                    'screen_size': int(self.read_options_file('screen_size')), 
-                                                                   'difficulty': int(self.read_options_file('difficulty'))})
+                                                                   'difficulty': float(self.read_options_file('difficulty'))})
 
     def exit_game(self):
         self.exit = True
@@ -172,6 +172,9 @@ class StartScreen:
         elif method_id is OptionsMenu.CHANGE_SCREEN_SIZE:
             StartScreen.screen_size = args[2][0]
             StartScreen.modify_options_file("screen_size", args[2][0])
+        elif method_id is OptionsMenu.CHANGE_DIFFICULTY:
+            # TODO: Actually modify the difficulty level
+            StartScreen.modify_options_file("difficulty", args[2][0]) 
         else:
             print(f"Unknown action : {method_id}")
 
