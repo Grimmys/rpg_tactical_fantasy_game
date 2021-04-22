@@ -1,5 +1,3 @@
-from mapPCG import generateMaps
-
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
@@ -17,8 +15,6 @@ if __name__ == "__main__":
     from src.services import loadFromXMLManager as Loader
 
     pg.init()
-    difficulty = 0.0
-    generateMaps(difficulty)
     # Load fonts
     fonts.init_fonts()
 
@@ -41,7 +37,6 @@ if __name__ == "__main__":
 
     #mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
     #mixer.music.play(-1)
-
     quit_game = False
     while not quit_game:
         for e in pg.event.get():

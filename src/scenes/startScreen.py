@@ -1,5 +1,5 @@
 from lxml import etree
-
+from mapPCG import generateMaps
 from src.services import menuCreatorManager
 from src.constants import *
 from src.gui.fonts import fonts
@@ -32,7 +32,7 @@ class StartScreen:
 
         # Load current saved parameters
         StartScreen.load_options()
-
+        generateMaps()
         self.exit = False
 
     @staticmethod
@@ -188,6 +188,8 @@ class StartScreen:
         # Close menu : Active menu is closed
         if method_id is GenericActions.CLOSE:
             self.active_menu = self.background_menus.pop()[0] if self.background_menus else None
+            if menu_type is OptionsMenu:
+                generateMaps()
             return
 
         if menu_type is StartMenu:

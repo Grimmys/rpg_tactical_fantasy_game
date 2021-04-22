@@ -20,7 +20,7 @@ HOUSE_DIR = CUR_DIR+"/imgs/houses/"
 WATER_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/water/"
 DUNGEON_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/"
 MONSTER_DIR = CUR_DIR+"/imgs/dungeon_crawl/monster/"
-N_LEVELS = {0.0: 1, 2.5: 2, 5.0: 3, 7.5: 4}
+N_LEVELS = {0.0: 1, 0.25: 2, 0.5: 3, 0.75: 4}
 THEMES = {0: ["autumn", "forest", "field"], 1: ["city", "village", "graveyard"], 2: ["cave", "temple", "beach"], 3: ["volcano", "hell", "frozen_lake"]}
 
 #Combines two images into one
@@ -156,7 +156,6 @@ def placeFloor(category, dirPath, width, height):
 #	placeDims:		If present, attempt to place line here
 def placeLine(levelMap, lineLength, axis, category, dirPath, obstacles, width, height, placeDims=(-1,-1), walkable=False):
 	items = []
-	print(dirPath, category)
 	images = glob.glob(dirPath + "*.bmp")
 	for image in images:
 		if category in image.split("/")[-1]:
@@ -274,6 +273,15 @@ def placeResized(levelMap, dirPath, category, size, obstacles, width, height, wa
 	if not walkable:
 		obstacles.extend(locs)
 
+#Parses normalized difficulty from options.xml file
+#returns: float difficulty
+def getDifficulty():
+	tree = ET.parse(CUR_DIR+'/saves/options.xml').getroot()
+	try:
+		return float(tree.findall("difficulty")[0].text)
+	except:
+		print("No difficulty found in the options.xml file!")
+
 #Get area where protagonists can be placed on the map
 #	obstacles:		List of location tuples where obstalces reside
 #	nTiles:			Amount of tiles to place
@@ -377,17 +385,27 @@ def writeXML(difficulty, obstacles, levelMap, dims, filePath):
 	with open(filePath, "wb") as outfile:
 		outfile.write(f.getbuffer())
 
+#delete previous levels
+def deleteLevels():
+	for root, dirnames, filenames in os.walk(CUR_DIR+"/maps/"):
+		if filenames:
+			for file in filenames:
+				os.remove(root+"/"+file)
+		
 #coordinates level/map generation according to parameters
-#	difficulty: 	normalized difficulty to base PCG on
-def generateMaps(difficulty):
+def generateMaps():
 	width = 22
 	height = 14
 	nLevels = 0
+	deleteLevels()
+	difficulty = getDifficulty()
+	#delete previous levels
+
 	for diff in N_LEVELS.keys():
 		if difficulty >= diff:
 			nLevels = N_LEVELS[diff]
 	for level in range(nLevels):
-		theme = "frozen_lake"#random.choice(THEMES[level])
+		theme = random.choice(THEMES[level])
 		obstacles = []
 		if theme == "autumn":
 			image, grassTexts, _ = placeGrassFloor(width, height, "grass0")
