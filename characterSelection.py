@@ -6,6 +6,15 @@ CUR_DIR = os.getcwd()
 CHARAC_SHEET = CUR_DIR+"/data/characters.xml"
 FOES_SHEET = CUR_DIR+"/data/foes.xml"
 
+#Parses normalized difficulty from options.xml file
+#returns: float difficulty
+def getDifficulty():
+	tree = ET.parse(CUR_DIR+'/saves/options.xml').getroot()
+	try:
+		return float(tree.findall("difficulty")[0].text)
+	except:
+		print("No difficulty found in the options.xml file!")
+
 #Get list of available characters from XML sheet (only fetches names, not stats yet)
 #returns: list of character names
 def getCharacters(path):
