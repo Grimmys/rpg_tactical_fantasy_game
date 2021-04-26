@@ -23,8 +23,9 @@ HOUSE_DIR = CUR_DIR+"/imgs/houses/"
 WATER_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/water/"
 DUNGEON_DIR = CUR_DIR+"/imgs/dungeon_crawl/dungeon/"
 MONSTER_DIR = CUR_DIR+"/imgs/dungeon_crawl/monster/"
+MISC_DIR = CUR_DIR+"/imgs/dungeon_crawl/misc/"
 N_LEVELS = {0.0: 1, 0.25: 2, 0.5: 3, 0.75: 4}
-THEMES = {0: ["autumn", "forest", "field"], 1: ["city", "village", "graveyard"], 2: ["cave", "temple", "beach"], 3: ["volcano", "hell", "frozen_lake"]}
+THEMES = {0: ["frozen_lake", "beach", "field"], 1: ["hell", "forest", "autumn"], 2: ["cave", "temple", "city"], 3: ["volcano", "village", "graveyard"]}
 
 #Combines two images into one
 #	front:	Front layer image
@@ -219,7 +220,7 @@ def placeShape(levelMap, size, shape, category, dirPath, obstacles, width, heigh
 				placeLine(levelMap, 1, 1, category, dirPath, obstacles, width, height, placeDims=loc, walkable=walkable)
 			break
 		elif shape == 'block':#block
-			space = [[(i,j) for i in range(x,x+size-1)] for j in range(y,y+size-1)]
+			space = [(i,j) for i in range(x,x+size) for j in range(y,y+size)]
 			if x+size >= width or y+size >= height or not all([elem not in obstacles for elem in space]):
 				continue
 			for i in range(size):
@@ -402,47 +403,51 @@ def generateMaps():
 	nLevels = 0
 	deleteLevels()
 	difficulty = getDifficulty()
-	#delete previous levels
+	#["volcano", "village", "graveyard"]
 
 	for diff in N_LEVELS.keys():
 		if difficulty >= diff:
 			nLevels = N_LEVELS[diff]
-	for level in range(nLevels):
-		theme = random.choice(THEMES[level])
+	for level in range(1):
+		theme = 'graveyard'#random.choice(THEMES[level])
 		obstacles = []
 		if theme == "autumn":
 			image, grassTexts, _ = placeGrassFloor(width, height, "grass0")
-			placeRandom(image, 18, obstacles, "tree_", TREE_DIR, width, height)#amount of trees based on difficulty
+			placeRandom(image, 30, obstacles, "gold_sparkles", EFFECT_DIR, width, height, walkable=True)#amount of trees based on difficulty
+			placeRandom(image, 30, obstacles, "mold_glowing", MISC_DIR, width, height, walkable=True)#amount of trees based on difficulty
+			placeRandom(image, 15, obstacles, "tree_", TREE_DIR, width, height)#amount of trees based on difficulty
 		elif theme == "forest":
 			image, grassTexts, mudTexts = placeGrassFloor(width, height, "grass_flowers")
-			placeRandom(image, 18, obstacles, "mangrove_", TREE_DIR, width, height)#amount of trees based on difficulty
-			placeRandom(image, 18, obstacles, "cloud_spectral_", EFFECT_DIR, width, height)
+			placeRandom(image, 15, obstacles, "mangrove_", TREE_DIR, width, height)#amount of trees based on difficulty
+			placeRandom(image, 20, obstacles, "cloud_spectral_", EFFECT_DIR, width, height, walkable=True)
 		elif theme == "field":
 			image, grassTexts, mudTexts = placeGrassFloor(width, height, "grassfield")
 			placeMudpatches(image, grassTexts, mudTexts, 20, width, height)
 		elif theme == "graveyard":
 			image = placeFloor("floor_vines", FLOOR_DIR, width, height)
-			for _ in range(8):
-				placeLine(image, 10, 0, "altar_base", ALTAR_DIR, obstacles, width, height)
+			for i in range(9): 
+				placeLine(image, 5, 0, "altar_base", ALTAR_DIR, obstacles, width, height)
 		elif theme == "city":
 			image = placeFloor("pedestal_full", FLOOR_DIR, width, height)
-			for i in range(4):
+			placeRandom(image, 4, obstacles, "church", HOUSE_DIR, width, height)	
+			for i in range(2, 4):
 				placeLine(image, i, 0, "_house", HOUSE_DIR, obstacles, width, height)			
 				placeShape(image, i, "block", "_house", HOUSE_DIR, obstacles, width, height)
-				placeLine(image, 1, 0, "church", HOUSE_DIR, obstacles, width, height)	
+				placeResized(image, HOUSE_DIR, "_side", 2, obstacles, width, height)
 				placeShape(image, i, "block", "floor_sand_rock", FLOOR_DIR, obstacles, width, height, walkable=True)
 		elif theme == "village":
 			image = placeFloor("dirt_", FLOOR_DIR, width, height)
 			placeLine(image, width, 0, "fence_south.bmp", HOUSE_DIR, obstacles, width, height, placeDims=(0,0))
 			placeLine(image, width, 0, "fence_south.bmp", HOUSE_DIR, obstacles, width, height, placeDims=(0,height-1))
-			for _ in range(4):
-				placeShape(image, 4, "diagonal", "_house", HOUSE_DIR, obstacles, width, height)
-				placeLine(image, 10, 0, "_house", HOUSE_DIR, obstacles, width, height)	
+			for _ in range(5): 
+				placeShape(image, 3, "diagonal", "_house", HOUSE_DIR, obstacles, width, height)
+				placeLine(image, 6, 0, "_house", HOUSE_DIR, obstacles, width, height)	
 		elif theme == "cave":
 			image = placeFloor("cobble", FLOOR_DIR, width, height)
-			placeResized(image, DUNGEON_DIR, "boulder", 2, obstacles, width, height)
+			for _ in range(3):
+				placeResized(image, DUNGEON_DIR, "boulder", 2, obstacles, width, height)
 			placeRandom(image, 10, obstacles, "boulder", DUNGEON_DIR, width, height)
-			placeRandom(image, 10, obstacles, "rock", EFFECT_DIR, width, height)
+			placeRandom(image, 8, obstacles, "rock", EFFECT_DIR, width, height)
 			placeRandom(image, 10, obstacles, "stone_0", EFFECT_DIR, width, height, walkable=True)
 			placeRandom(image, 3, obstacles, "eye_filled_portal", EFFECT_DIR, width, height, walkable=True)
 			placeRandom(image, 2, obstacles, "tomahawk", EFFECT_DIR, width, height, walkable=True)
@@ -451,31 +456,31 @@ def generateMaps():
 			placeLine(image, height, 1, "crumbled_column_1", STATUE_DIR, obstacles, width, height, placeDims=(0,0))
 			placeLine(image, height, 1, "crumbled_column_1", STATUE_DIR, obstacles, width, height, placeDims=(width-1,0))
 			placeLine(image, width-2, 0, "crumbled_column_1", STATUE_DIR, obstacles, width, height, placeDims=(1,0))
-			for i in range(5):
-				placeShape(image, i, "diagonal", "statue_angel", STATUE_DIR, obstacles, width, height)
-				placeLine(image, i, "L", "shining_one", ALTAR_DIR, obstacles, width, height)
+			placeRandom(image, 10, obstacles, "crumbled_column_6", STATUE_DIR, width, height)
+			for i in range(4):
+				placeShape(image, i, "diagonal", "shining_one", ALTAR_DIR, obstacles, width, height)
+				placeShape(image, i, "block", "shining_one", ALTAR_DIR, obstacles, width, height)
 		elif theme == "beach":
 			image = placeFloor("floor_sand_stone", FLOOR_DIR, width, height)
 			placeLine(image, width, 0, "shoals_shallow_water_6.bmp", WATER_DIR, obstacles, width, height, placeDims=(0,0))
 			placeLine(image, width, 0, "shoals_shallow_water_6.bmp", WATER_DIR, obstacles, width, height, placeDims=(0,1))
 			placeLine(image, width, 0, "shallow_water_wave_north_new.bmp", WATER_DIR, obstacles, width, height, placeDims=(0,2), walkable=True)
-			placeRandom(image, 4, obstacles, "turtle", MONSTER_DIR+"animals/", width, height)
-			placeRandom(image, 5, obstacles, "rock", EFFECT_DIR, width, height)
+			placeRandom(image, 4, obstacles, "turtle", MONSTER_DIR+"animals/", width, height, walkable=True)
 		elif theme == "volcano":
 			image = placeFloor("pebble_red", WALL_DIR, width, height)
-			for i in range(6):
+			placeRandom(image, 5, obstacles, "lava_", FLOOR_DIR, width, height)
+			for i in range(5): 
 				placeShape(image, i, "block", "lava_", FLOOR_DIR, obstacles, width, height)
-				placeShape(image, i, "L", "lava_", FLOOR_DIR, obstacles, width, height)
+				placeShape(image, i, "diagonal", "lava_", FLOOR_DIR, obstacles, width, height)
 		elif theme == "hell":
 			image = placeFloor("hell", WALL_DIR, width, height)
 			placeLine(image, height, 1, "wraith", STATUE_DIR, obstacles, width, height, placeDims=(0,0))
 			placeLine(image, height, 1, "wraith", STATUE_DIR, obstacles, width, height, placeDims=(width-1,0))
 			placeLine(image, width-2, 0, "wraith", STATUE_DIR, obstacles, width, height, placeDims=(1,0))
 			placeRandom(image, 5, obstacles, "torch", WALL_DIR+"torches/", width, height)
-			placeRandom(image, 10, obstacles, "cloud_fire", EFFECT_DIR, width, height, walkable=True)
+			placeRandom(image, 5, obstacles, "cloud_fire", EFFECT_DIR, width, height)
 			placeRandom(image, 5, obstacles, "banner", WALL_DIR+"banners/", width, height)
 		elif theme == "frozen_lake":
 			image = placeFloor("frozen", FLOOR_DIR, width, height)
-			placeLine(image, 10, 1, "block_of_ice", MONSTER_DIR+"statues/", obstacles, width, height)
 		writeLevel(image, LEVEL_DIR+"level_"+str(level)+"/map.bmp")
 		writeXML(difficulty, obstacles, image, (width, height), level)
