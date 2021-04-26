@@ -656,6 +656,13 @@ def load_player(el, from_save):
     return p
 
 
+def load_placementArea(data):
+    locs = []
+    for pos in data.findall('placementArea/position'):
+        locs.append((int(pos.find('x').text), int(pos.find('y').text)))
+    return locs
+
+
 def load_players(data):
     players = []
     for player_el in data.findall('players/player'):

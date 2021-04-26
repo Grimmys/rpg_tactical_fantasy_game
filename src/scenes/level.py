@@ -316,8 +316,18 @@ class Level:
         for tile in self.possible_placements:
             blit_alpha(win, constant_sprites['landing'], tile, LANDING_OPACITY)
 
+
+    def getMeanDistToFoes(self):
+        distList = []
+        nFoes = len(self.entities['foes'])
+        area = self.map['x']*self.map['y']
+        for player in self.entities['players']:
+            distList.append(sum(list(self.distance_between_all(player, self.entities['foes']).values()))/nFoes)
+        return sum(distList)/len(distList)
+
     def start_game(self):
         self.active_menu = None
+        print(self.getMeanDistToFoes())
         self.game_phase = LevelStatus.IN_PROGRESS
         self.new_turn()
         if 'after_init' in self.events:

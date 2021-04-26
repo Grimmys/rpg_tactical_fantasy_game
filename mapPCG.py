@@ -4,6 +4,9 @@ from PIL import Image
 import random
 import xml.etree.ElementTree as ET
 from io import BytesIO
+from src.scenes.level import Level
+from src.services import loadFromXMLManager as Loader
+from src.game_entities.entity import Entity
 
 TILE_SIZE = 48
 CUR_DIR = os.getcwd()
@@ -306,6 +309,7 @@ def getFreeArea(obstacles, nTiles, width, height):
 			area.extend([(x_loc,y_loc), (x_loc,y_loc+1)])
 			x_loc = x_loc+1
 			if count >= areaSize:
+				obstacles.extend(area)
 				return area
 	return []
 
@@ -333,9 +337,10 @@ def writeLevel(imageTiles, levelPath):
 #	obstacles:	List of location tuples where obstacles reside
 #	dims:		Dimensions of level
 #	filePath:	Path to write XML file to
-def writeXML(difficulty, obstacles, levelMap, dims, filePath):
+def writeXML(difficulty, obstacles, levelMap, dims, level):
 	nAllies = 3
 	nFoes = 1
+	filePath = LEVEL_DIR+"level_"+str(level)+"/data.xml"
 	document = ET.Element('level')
 	characters = getCharacters(CHARAC_SHEET)
 	foeCharacs = getCharacters(FOES_SHEET)
@@ -359,13 +364,14 @@ def writeXML(difficulty, obstacles, levelMap, dims, filePath):
 		ET.SubElement(position, 'y').text = str(foePos[1])
 		ET.SubElement(foe, 'level').text = '1'
 	bef_init = ET.SubElement(events, 'before_init')
-	for _ in range(nAllies):
-		player = ET.SubElement(bef_init, 'new_player')
-		ET.SubElement(player, 'name').text = characters.pop()
-		position = ET.SubElement(player, 'position')
-		pos = pArea.pop()
-		ET.SubElement(position, 'x').text = str(pos[0])
-		ET.SubElement(position, 'y').text = str(pos[1])
+	if level == 0:
+		for i in range(nAllies):
+			player = ET.SubElement(bef_init, 'new_player')
+			ET.SubElement(player, 'name').text = characters.pop()
+			position = ET.SubElement(player, 'position')
+			pos = pArea[i]
+			ET.SubElement(position, 'x').text = str(pos[0])
+			ET.SubElement(position, 'y').text = str(pos[1])
 
 	obstclElem = ET.SubElement(document, 'obstacles')
 	for obs in obstacles:
@@ -375,11 +381,8 @@ def writeXML(difficulty, obstacles, levelMap, dims, filePath):
 	#missions
 	missions = ET.SubElement(document, 'missions')
 	main = ET.SubElement(missions, 'main')
-	ET.SubElement(main, 'type').text = "POSITION"
-	ET.SubElement(main, 'description').text = "Leave the village"
-	position = ET.SubElement(main, 'position')
-	ET.SubElement(position, 'x').text = str(0)
-	ET.SubElement(position, 'y').text = str(0)
+	ET.SubElement(main, 'type').text = "KILL_EVERYBODY"
+	ET.SubElement(main, 'description').text = "Kill all enemies"
 	f = BytesIO()
 	et.write(f, encoding='utf-8', xml_declaration=True) 
 	with open(filePath, "wb") as outfile:
@@ -475,4 +478,4 @@ def generateMaps():
 			image = placeFloor("frozen", FLOOR_DIR, width, height)
 			placeLine(image, 10, 1, "block_of_ice", MONSTER_DIR+"statues/", obstacles, width, height)
 		writeLevel(image, LEVEL_DIR+"level_"+str(level)+"/map.bmp")
-		writeXML(difficulty, obstacles, image, (width, height), LEVEL_DIR+"level_"+str(level)+"/data.xml")
+		writeXML(difficulty, obstacles, image, (width, height), level)
