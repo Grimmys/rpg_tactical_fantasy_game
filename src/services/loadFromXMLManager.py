@@ -66,6 +66,12 @@ def load_classes():
 def load_stat_up(el, stat_name):
     return [int(val) for val in el.find('stats_up/' + stat_name).text.strip().split(',')]
 
+def get_difficulty():
+    tree = etree.parse('saves/options.xml').getroot()
+    try:
+        return float(tree.findall("difficulty")[0].text)
+    except:
+        print("No difficulty found in the options.xml file!")
 
 def load_stats_up(el):
     return {
@@ -198,20 +204,20 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
 
 def load_ally(ally, from_save, gap_x, gap_y):
     name = ally.find('name').text.strip()
+    print("LOADING ", name)
     infos = etree.parse('data/characters.xml').find(name)
-
     entity_attributes = load_artificial_entity(ally, infos, from_save, gap_x, gap_y)
 
     # Static data character
     race = infos.find('race').text.strip()
     classes = [infos.find('class').text.strip()]
-    interaction_el = infos.find('interaction')
+    #interaction_el = infos.find('interaction')
     dialog = []
-    for talk in interaction_el.findall('talk'):
-        dialog.append(talk.text.strip())
+    #for talk in interaction_el.findall('talk'):
+        #dialog.append(talk.text.strip())
     interaction = {
-        'dialog': dialog,
-        'join_team': interaction_el.find('join_team') is not None
+        'dialog': "Hi there!",
+        'join_team': False
     }
 
     # Dynamic data character
@@ -221,12 +227,11 @@ def load_ally(ally, from_save, gap_x, gap_y):
     gold = int(dynamic_data.find('gold').text.strip())
 
     equipments = []
-    for eq in dynamic_data.findall('equipment/*'):
-        if from_save:
-            eq_loaded = load_item(eq)
-        else:
-            eq_loaded = parse_item_file(eq.text.strip)
-        equipments.append(eq_loaded)
+    equipment = infos.find('equipment')
+    if equipment is not None:
+        for eq in equipment.findall("*"):
+            eq_loaded = load_item(eq) if from_save else parse_item_file(eq.text.strip())
+            equipments.append(eq_loaded)
 
     if from_save:
         skills = [(load_skill(skill.text.strip())
@@ -244,10 +249,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
     inventory = infos.find('inventory')
     if inventory is not None:
         for it in inventory.findall('item'):
-            if from_save:
-                item_loaded = load_item(it)
-            else:
-                item_loaded = parse_item_file(it.text.strip())
+            item_loaded = load_item(it) if from_save else parse_item_file(it.text.strip())
             loaded_ally.set_item(item_loaded)
 
     if from_save:
@@ -663,7 +665,7 @@ def load_placementArea(data):
     return locs
 
 
-def load_players(data):
+def load_players(data, experiment=False):
     players = []
     for player_el in data.findall('players/player'):
         players.append(load_player(player_el, True))
@@ -703,7 +705,7 @@ def load_weapon_effect(eff):
 
 def load_item(data):
     name = data.find("name").text.strip()
-
+    print("LOADING EQUIPMENT: ", name)
     # Retrieve static data
     item = parse_item_file(name)
     item.resell_price = int(data.find('value').text.strip())

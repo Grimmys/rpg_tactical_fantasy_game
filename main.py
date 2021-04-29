@@ -13,11 +13,19 @@ if __name__ == "__main__":
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
     from src.scenes.startScreen import StartScreen
+    from src.scenes.level import LevelStatus
     from src.services import loadFromXMLManager as Loader
     pg.init()
     experiment = False
-    if sys.argv[0] == '-experiment':
-        experiment = True
+    if len(sys.argv) > 2:
+        if sys.argv[1] == '-experiment':
+            experiment = True
+            iterations = 0
+            try:
+                iterations = int(sys.argv[2])
+            except:
+                print("Input the amount of iterations as a parameter after -experiment!")
+                exit()
     # Load fonts
     fonts.init_fonts()
 
@@ -35,7 +43,6 @@ if __name__ == "__main__":
 
     clock = pg.time.Clock()
 
-
     #mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
     #mixer.music.play(-1)
     iterations = 2
@@ -45,12 +52,35 @@ if __name__ == "__main__":
             for difficulty in N_LEVELS.keys():
                 if diff >= difficulty:
                     nLevels = N_LEVELS[difficulty]
-            for _ in range(iterations):
-                start_screen = StartScreen(screen, nLevels)
-                start_screen.modify_options_file('difficuty', diff)
+            for it in range(iterations):
+                print("GAME diff:",diff, " iteration:",it)
+                start_screen = StartScreen(screen, nLevels, experimentGame=experiment)
+                start_screen.modify_options_file('difficulty', diff)
                 start_screen.new_game()
                 #look in level.py for AI bot functions
+                quit_game = False
+                while not quit_game:
+                    for e in pg.event.get():
+                        if e.type == pg.QUIT:
+                            quit_game = True
+                        elif e.type == pg.MOUSEMOTION:
+                            start_screen.motion(e.pos)
+                        elif e.type == pg.MOUSEBUTTONUP:
+                            if e.button == 1 or e.button == 3:
+                                quit_game = start_screen.click(e.button, e.pos)
+                        elif e.type == pg.MOUSEBUTTONDOWN:
+                            if e.button == 1 or e.button == 3:
+                                start_screen.button_down(e.button, e.pos)
+                    start_screen.update_state()
+                    if start_screen.level.game_phase == LevelStatus.ENDED_VICTORY or start_screen.level.game_phase == LevelStatus.ENDED_DEFEAT:
+                        quit_game = True
+                        print(start_screen.level.game_phase)
     else:
+        diff = Loader.get_difficulty()
+        for difficulty in N_LEVELS.keys():
+                if diff >= difficulty:
+                    nLevels = N_LEVELS[difficulty]
+        start_screen = StartScreen(screen, nLevels)
         quit_game = False
         while not quit_game:
             for e in pg.event.get():

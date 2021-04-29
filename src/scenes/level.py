@@ -46,14 +46,14 @@ class EntityTurn(IntEnum):
 
 class Level:
 
-    def __init__(self, directory, nb_level, status=LevelStatus.INITIALIZATION, turn=0, data=None, players=None):
+    def __init__(self, directory, nb_level, status=LevelStatus.INITIALIZATION, turn=0, data=None, players=None, experimentGame=False):
         if players is None:
             players = []
 
         # Store directory path if player wants to save and exit game
         self.directory = directory
         self.nb_level = nb_level
-
+        self.experiment = experimentGame
         # Reading of the XML file
         tree = etree.parse(directory + "data.xml").getroot()
         map_image = pg.image.load(self.directory + 'map.bmp')
@@ -79,7 +79,7 @@ class Level:
         self.background_menus = []
         self.players = players
         self.entities = {'players': self.players}
-        # List for players who are now longer in the level
+        # List for players who are no longer in the level
         if data is None:
             # Game is new
             from_save = False
@@ -112,6 +112,7 @@ class Level:
             gap_x, gap_y = (0, 0)
             self.players = Loader.load_players(data_tree)
             self.passed_players = Loader.load_escaped_players(data_tree)
+
 
         # Load missions
         self.missions, self.main_mission = Loader.load_missions(tree, self.players, self.map['x'], self.map['y'])
@@ -211,7 +212,12 @@ class Level:
         if self.main_mission.ended:
             self.victory = True
 
-        if not self.players:
+        if not self.players and not self.experiment:
+            if not self.main_mission.succeeded_chars:
+                self.defeat = True
+            else:
+                self.victory = True
+        elif self.experiment and not self.entities["allies"]:
             if not self.main_mission.succeeded_chars:
                 self.defeat = True
             else:

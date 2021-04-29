@@ -338,7 +338,7 @@ def writeLevel(imageTiles, levelPath):
 #	obstacles:	List of location tuples where obstacles reside
 #	dims:		Dimensions of level
 #	filePath:	Path to write XML file to
-def writeXML(difficulty, obstacles, levelMap, dims, level):
+def writeXML(difficulty, obstacles, levelMap, dims, level, experiment=False):
 	nAllies = 3
 	nFoes = 1
 	filePath = LEVEL_DIR+"level_"+str(level)+"/data.xml"
@@ -365,11 +365,20 @@ def writeXML(difficulty, obstacles, levelMap, dims, level):
 		ET.SubElement(position, 'y').text = str(foePos[1])
 		ET.SubElement(foe, 'level').text = '1'
 	bef_init = ET.SubElement(events, 'before_init')
-	if level == 0:
+	if level == 0 and not experiment:
 		for i in range(nAllies):
 			player = ET.SubElement(bef_init, 'new_player')
 			ET.SubElement(player, 'name').text = characters.pop()
 			position = ET.SubElement(player, 'position')
+			pos = pArea[i]
+			ET.SubElement(position, 'x').text = str(pos[0])
+			ET.SubElement(position, 'y').text = str(pos[1])
+	elif level == 0:
+		allies = ET.SubElement(document, 'allies')
+		for i in range(nAllies):
+			ally = ET.SubElement(allies, 'ally')
+			ET.SubElement(ally, 'name').text = characters[i]
+			position = ET.SubElement(ally, 'position')
 			pos = pArea[i]
 			ET.SubElement(position, 'x').text = str(pos[0])
 			ET.SubElement(position, 'y').text = str(pos[1])
@@ -397,19 +406,18 @@ def deleteLevels():
 				os.remove(root+"/"+file)
 		
 #coordinates level/map generation according to parameters
-def generateMaps():
+def generateMaps(experimentGame):
 	width = 22
 	height = 14
 	nLevels = 0
 	deleteLevels()
 	difficulty = getDifficulty()
-	#["volcano", "village", "graveyard"]
 
 	for diff in N_LEVELS.keys():
 		if difficulty >= diff:
 			nLevels = N_LEVELS[diff]
-	for level in range(1):
-		theme = 'graveyard'#random.choice(THEMES[level])
+	for level in range(nLevels):
+		theme = random.choice(THEMES[level])
 		obstacles = []
 		if theme == "autumn":
 			image, grassTexts, _ = placeGrassFloor(width, height, "grass0")
@@ -483,4 +491,4 @@ def generateMaps():
 		elif theme == "frozen_lake":
 			image = placeFloor("frozen", FLOOR_DIR, width, height)
 		writeLevel(image, LEVEL_DIR+"level_"+str(level)+"/map.bmp")
-		writeXML(difficulty, obstacles, image, (width, height), level)
+		writeXML(difficulty, obstacles, image, (width, height), level, experimentGame)

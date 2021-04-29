@@ -19,7 +19,7 @@
             </talk>
         </interaction>
         <gold> 100 </gold>
-        <strategy> STATIC </strategy>
+        <strategy> ACTIVE </strategy>
         <attack_kind> PHYSICAL </attack_kind>
     </jist>
     <raimund>
@@ -55,6 +55,7 @@
                 </item>
         </inventory>
         <gold> 250 </gold>
+        <strategy> ACTIVE </strategy>
     </raimund>
     <braern>
         <name> braern </name>
@@ -87,6 +88,7 @@
                 </item>
         </inventory>
         <gold> 250 </gold>
+        <strategy> ACTIVE </strategy>
     </braern>
     <thokdrum>
         <name> thokdrum </name>
@@ -121,6 +123,7 @@
             </item>
         </inventory>
         <gold> 250 </gold>
+        <strategy> ACTIVE </strategy>
     </thokdrum>
     <chrisemon>
         <name> chrisemon </name>
@@ -146,6 +149,7 @@
             </item>
         </inventory>
         <gold> 400 </gold>
+        <strategy> ACTIVE </strategy>
     </chrisemon>
     <doran>
         <name> doran </name>
@@ -180,6 +184,7 @@
                 </item>
         </inventory>
         <gold> 100 </gold>
+        <strategy> ACTIVE </strategy>
         <interaction>
             <talk>
                 Thank you for rescuing me!

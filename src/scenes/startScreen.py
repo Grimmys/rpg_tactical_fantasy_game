@@ -8,11 +8,12 @@ from src.gui.infoBox import InfoBox
 from src.game_entities.movable import Movable
 from src.services.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
 
+N_LEVELS = {0.0: 1, 0.25: 2, 0.5: 3, 0.75: 4}
 
 class StartScreen:
     screen_size = SCREEN_SIZE
 
-    def __init__(self, screen, nLevels):
+    def __init__(self, screen, nLevels, experimentGame=False):
         self.screen = screen
         self.menu_screen = self.screen.copy()
 
@@ -23,16 +24,16 @@ class StartScreen:
         # Creating menu
         self.active_menu = menuCreatorManager.create_start_menu()
         self.background_menus = []
-
+        self.experiment = experimentGame
         # Memorize if a game is currently being performed
         self.level = None
 
-        self.levels = range(nLevels)
+        self.levels = list(range(nLevels))
         self.level_id = None
 
         # Load current saved parameters
         StartScreen.load_options()
-        generateMaps()
+        generateMaps(self.experiment)
         self.exit = False
 
     @staticmethod
@@ -53,6 +54,7 @@ class StartScreen:
         el = tree.find(".//" + el_to_edit)
         el.text = str(new_value)
         tree.write("saves/options.xml")
+
 
     def display(self):
         if self.level:
@@ -84,26 +86,25 @@ class StartScreen:
                     player.healed(player.hp_max)
                     # Reset player's state
                     player.new_turn()
-                self.play(StartScreen.load_level(self.level_id, team))
+                self.play(StartScreen.load_level(self.level_id, team, self.experiment))
             elif status is LevelStatus.ENDED_VICTORY or status is LevelStatus.ENDED_DEFEAT:
                 # TODO: Game win dialog?
-                if LevelStatus.ENDED_DEFEAT:
-                    print("Game ended in defeat...")
+                if status == LevelStatus.ENDED_DEFEAT:
+                    print("Game ended in Defeat...")
                 else:
                     print("Game ended in Victory!")
                 self.screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
 
-    @staticmethod
-    def load_level(level, team=None):
+    def load_level(level, team=None, experiment=False):
         if team is None:
             team = []
-        return Level('maps/level_' + str(level) + '/', level, players=team)
+        return Level('maps/level_' + str(level) + '/', level, players=team, experimentGame=experiment)
 
     def new_game(self):
         # Init the first level
         self.level_id = 0
-        self.play(StartScreen.load_level(self.level_id))
+        self.play(StartScreen.load_level(self.level_id, experiment=self.experiment))
 
     def load_game(self, game_id):
         try:
@@ -169,7 +170,7 @@ class StartScreen:
             print(f"Unknown action: {method_id}")
 
     @staticmethod
-    def options_menu_action(method_id, args):
+    def options_menu_action(method_id, args, experiment=False):
         # Execute action
         if method_id is OptionsMenu.CHANGE_MOVE_SPEED:
             Movable.move_speed = args[2][0]
@@ -179,7 +180,12 @@ class StartScreen:
             StartScreen.modify_options_file("screen_size", args[2][0])
         elif method_id is OptionsMenu.CHANGE_DIFFICULTY:
             # TODO: Actually modify the difficulty level
-            StartScreen.modify_options_file("difficulty", args[2][0]) 
+            StartScreen.modify_options_file("difficulty", args[2][0])
+            for difficulty in N_LEVELS.keys():
+                if args[2][0] >= difficulty:
+                    nLevels = N_LEVELS[difficulty] 
+            StartScreen.levels = list(range(nLevels))
+            generateMaps(experiment)
         else:
             print(f"Unknown action : {method_id}")
 
@@ -193,14 +199,12 @@ class StartScreen:
         # Close menu : Active menu is closed
         if method_id is GenericActions.CLOSE:
             self.active_menu = self.background_menus.pop()[0] if self.background_menus else None
-            if menu_type is OptionsMenu:
-                generateMaps()
             return
 
         if menu_type is StartMenu:
             self.main_menu_action(method_id, args)
         elif menu_type is OptionsMenu:
-            StartScreen.options_menu_action(method_id, args)
+            StartScreen.options_menu_action(method_id, args, self.experiment)
         elif menu_type is LoadMenu:
             self.load_menu_action(method_id, args)
         else:
