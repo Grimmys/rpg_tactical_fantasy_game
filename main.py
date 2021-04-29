@@ -1,3 +1,5 @@
+N_LEVELS = {0.0: 1, 0.25: 2, 0.5: 3, 0.75: 4}
+
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
@@ -33,14 +35,21 @@ if __name__ == "__main__":
 
     clock = pg.time.Clock()
 
-    start_screen = StartScreen(screen)
 
     #mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
     #mixer.music.play(-1)
+    iterations = 2
+    nLevels = 0
     if experiment:
         for diff in [x*0.1 for x in range(1,11)]:
-            start_screen.modify_options_file('difficuty', diff)
-            start_screen.new_game()
+            for difficulty in N_LEVELS.keys():
+                if diff >= difficulty:
+                    nLevels = N_LEVELS[difficulty]
+            for _ in range(iterations):
+                start_screen = StartScreen(screen, nLevels)
+                start_screen.modify_options_file('difficuty', diff)
+                start_screen.new_game()
+                #look in level.py for AI bot functions
     else:
         quit_game = False
         while not quit_game:

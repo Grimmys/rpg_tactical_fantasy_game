@@ -12,7 +12,7 @@ from src.services.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
 class StartScreen:
     screen_size = SCREEN_SIZE
 
-    def __init__(self, screen):
+    def __init__(self, screen, nLevels):
         self.screen = screen
         self.menu_screen = self.screen.copy()
 
@@ -27,7 +27,7 @@ class StartScreen:
         # Memorize if a game is currently being performed
         self.level = None
 
-        self.levels = [0, 1, 2, 3]
+        self.levels = range(nLevels)
         self.level_id = None
 
         # Load current saved parameters
@@ -76,6 +76,7 @@ class StartScreen:
         if self.level:
             status = self.level.update_state()
             if status is LevelStatus.ENDED_VICTORY and (self.level_id + 1) in self.levels:
+                print("Level ", str(self.level_id)," WON!")
                 self.level_id += 1
                 team = self.level.passed_players + self.level.players
                 for player in team:
@@ -86,6 +87,10 @@ class StartScreen:
                 self.play(StartScreen.load_level(self.level_id, team))
             elif status is LevelStatus.ENDED_VICTORY or status is LevelStatus.ENDED_DEFEAT:
                 # TODO: Game win dialog?
+                if LevelStatus.ENDED_DEFEAT:
+                    print("Game ended in defeat...")
+                else:
+                    print("Game ended in Victory!")
                 self.screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
 
