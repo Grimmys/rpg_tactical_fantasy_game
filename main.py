@@ -17,6 +17,7 @@ if __name__ == "__main__":
     from src.services import loadFromXMLManager as Loader
     pg.init()
     experiment = False
+    monitor = False
     if len(sys.argv) > 2:
         if sys.argv[1] == '-experiment':
             experiment = True
@@ -26,6 +27,9 @@ if __name__ == "__main__":
             except:
                 print("Input the amount of iterations as a parameter after -experiment!")
                 exit()
+            if len(sys.argv) > 3:
+                if sys.argv[3] == '-monitor':
+                    monitor = True
     # Load fonts
     fonts.init_fonts()
 
@@ -45,7 +49,6 @@ if __name__ == "__main__":
 
     #mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
     #mixer.music.play(-1)
-    iterations = 2
     nLevels = 0
     if experiment:
         for diff in [x*0.1 for x in range(1,11)]:
@@ -72,6 +75,11 @@ if __name__ == "__main__":
                             if e.button == 1 or e.button == 3:
                                 start_screen.button_down(e.button, e.pos)
                     start_screen.update_state()
+                    if monitor:
+                        start_screen.display()
+                        show_fps(screen, clock, fonts.fonts['FPS_FONT'])
+                        pg.display.update()
+                        clock.tick(60)
                     if start_screen.level.game_phase == LevelStatus.ENDED_VICTORY or start_screen.level.game_phase == LevelStatus.ENDED_DEFEAT:
                         quit_game = True
                         print(start_screen.level.game_phase)
