@@ -1,0 +1,22 @@
+<fountains>
+    <healer>
+        <sprite>
+            dungeon/blood_fountain.bmp
+        </sprite>
+        <sprite_empty>
+            dungeon/dry_fountain.bmp
+        </sprite_empty>
+        <times>
+            2
+        </times>
+        <effect>
+            heal
+        </effect>
+        <duration>
+            0
+        </duration>
+        <power>
+            10
+        </power>
+    </healer>
+</fountains>

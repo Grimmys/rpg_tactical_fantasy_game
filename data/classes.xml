@@ -1,0 +1,91 @@
+<classes>
+    <innkeeper>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3
+            </hp>
+            <strength>
+                0, 0, 1
+            </strength>
+            <defense>
+                0, 1, 1
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
+    </innkeeper>
+    <warrior>
+        <constitution>
+            5
+        </constitution>
+        <stats_up>
+            <hp>
+                1, 1, 2, 2, 2, 3, 4
+            </hp>
+            <strength>
+                0, 1, 1, 2
+            </strength>
+            <defense>
+                0, 1, 1, 2, 2, 3
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
+    </warrior>
+    <ranger>
+        <constitution>
+            2
+        </constitution>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3, 3, 4
+            </hp>
+            <strength>
+                0, 1, 1
+            </strength>
+            <defense>
+                0, 1, 1, 2
+            </defense>
+            <resistance>
+                0, 1
+            </resistance>
+        </stats_up>
+        <skills>
+            <skill>
+                <name>
+                    covered
+                </name>
+            </skill>
+        </skills>
+    </ranger>
+    <spy>
+        <stats_up>
+            <hp>
+                1, 2, 2, 2, 3, 4
+            </hp>
+            <strength>
+                0, 1
+            </strength>
+            <defense>
+                0, 1, 1, 2, 2
+            </defense>
+            <resistance>
+                0, 1, 2
+            </resistance>
+        </stats_up>
+        <skills>
+          <skill>
+              <name>
+                  lock_picking
+              </name>
+          </skill>
+            <skill>
+              <name>
+                  double_attack
+              </name>
+          </skill>
+        </skills>
+    </spy>
+</classes>

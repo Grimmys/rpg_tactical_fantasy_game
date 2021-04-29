@@ -1,0 +1,34 @@
+<skills>
+    <lock_picking>
+        <name>Lock Picking</name>
+        <type>ACTIVE</type>
+        <info>
+            Ability to open some doors and chests. A door (or a chest) needs two turns of picking to be open
+        </info>
+    </lock_picking>
+    <double_attack>
+        <name>Double Attack</name>
+        <type>MULTIPLE_ATTACKS</type>
+        <info>
+            When attacking, this character will deal damage twice
+        </info>
+    </double_attack>
+    <covered>
+        <name>Ally Protection</name>
+        <type>ALLY_BOOST</type>
+        <stats>defense, resistance</stats>
+        <power>1</power>
+        <info>
+            If an ally is adjacent to the unit, during combat defense and resistance are increased by 1
+        </info>
+    </covered>
+    <brutal_hitter>
+        <name>Brutal Hitter</name>
+        <type>ALTERATION_CHANCE_BOOST</type>
+        <alteration>stun</alteration>
+        <power>5</power>
+        <info>
+            Probability to stun an enemy when using a weapon able to do it is increased by 5%
+        </info>
+    </brutal_hitter>
+</skills>

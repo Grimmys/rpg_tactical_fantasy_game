@@ -1,0 +1,46 @@
+<alterations>
+    <speed_up>
+        <info>
+            The move cap is increased by {val}
+        </info>
+        <effects>
+            speed_up
+        </effects>
+        <abbreviated_name>
+            Spd.Up
+        </abbreviated_name>
+    </speed_up>
+    <strength_up>
+        <info>
+            The strength is increased by {val}
+        </info>
+        <effects>
+            strength_up
+        </effects>
+        <abbreviated_name>
+            Str.Up
+        </abbreviated_name>
+    </strength_up>
+    <defense_up>
+        <info>
+            The defense is increased by {val}
+        </info>
+        <effects>
+            defense_up
+        </effects>
+        <abbreviated_name>
+            Def.Up
+        </abbreviated_name>
+    </defense_up>
+    <stun>
+       <info>
+           Unit can't attack
+       </info>
+        <effects>
+            no_attack
+        </effects>
+        <abbreviated_name>
+            Stn
+        </abbreviated_name>
+    </stun>
+</alterations>
