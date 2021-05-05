@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
+
 def show_fps(win, inner_clock, font):
     fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
     win.blit(fps_text, (2, 2))
-
 
 if __name__ == "__main__":
     import os
