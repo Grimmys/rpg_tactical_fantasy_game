@@ -29,7 +29,7 @@ If you are using 64-bit Windows you can head over to the [releases page](https:/
 
 If you would rather run directly from the source \(or want to develop the game\), make sure to have [Python](https://python.org) installed and run `python -m pip install -r requirements` in the repository folder.
 
-Then you can run `python main.py` or "./main.py" in linux operation system to start the game.
+Then you can run `python main.py` or "./main.py" (only for for Python 3) in linux operation system to start the game.
 
 ## Keys
 
