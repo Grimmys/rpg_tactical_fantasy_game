@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8
-          pip install pylint
+          pip install pylint pylint-exit
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
@@ -34,7 +34,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Lint with Pylint
         run: |
-          pylint main.py src
+          pylint main.py src || pylint-exit $?
   test:
     name: Running tests
     runs-on: ubuntu-latest
