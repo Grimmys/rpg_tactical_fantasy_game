@@ -627,7 +627,8 @@ class Level:
                                 attacker.gold += item.amount
                             elif not attacker.set_item(item):
                                 self.diary_entries.append([{'type': 'text',
-                                                            'text': 'But there is not enough space in inventory to take it !',
+                                                            'text': 'But there is not enough space in inventory to '
+                                                                    'take it !', 
                                                             'font': fonts['ITEM_DESC_FONT']}])
                 self.remove_entity(target)
             else:
