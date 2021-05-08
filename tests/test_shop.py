@@ -1,6 +1,7 @@
 import unittest
 
 import random as rd
+from unittest import skip
 
 from src.game_entities.shop import Shop
 from tests.random_data_library import random_item, random_character_entity
@@ -37,16 +38,18 @@ class TestShop(unittest.TestCase):
                  {'item': random_item(), 'quantity': rd.randint(1, 10)}]
         shop = Shop(name, pos, sprite, interaction, items)
         actor = random_character_entity()
-        entries = shop.interact(actor)
-        print(entries)
+        shop.interact(actor)
         # No assert for the moment
 
+    @skip
     def test_buy_item(self):
         pass
 
+    @skip
     def test_buy_all_items(self):
         pass
 
+    @skip
     def test_sell_item(self):
         pass
 

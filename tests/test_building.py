@@ -19,6 +19,7 @@ class TestBuilding(unittest.TestCase):
         pos = (3, 2)
         sprite = 'imgs/houses/blue_house.png'
         house = Building(name, pos, sprite)
+
         self.assertEqual(name, house.name)
         self.assertEqual(pos, house.pos)
         self.assertEqual('House', str(house))
@@ -31,6 +32,7 @@ class TestBuilding(unittest.TestCase):
                        'gold': rd.randint(10, 1000),
                        'item': random_item()}
         house = Building(name, pos, sprite, interaction)
+
         self.assertEqual(name, house.name)
         self.assertEqual(pos, house.pos)
         self.assertEqual(interaction, house.interaction)
@@ -41,8 +43,8 @@ class TestBuilding(unittest.TestCase):
         actor = random_character_entity()
         actor_gold_before = actor.gold
         actor_items_before = actor.items.copy()
-        entries = house.interact(actor)
-        print(entries)
+        house.interact(actor)
+
         self.assertEqual(actor_gold_before, actor.gold)
         self.assertEqual(actor_items_before, actor.items)
 
@@ -52,8 +54,8 @@ class TestBuilding(unittest.TestCase):
         actor = random_character_entity()
         actor_gold_before = actor.gold
         actor_items_before = actor.items.copy()
-        entries = house.interact(actor)
-        print(entries)
+        house.interact(actor)
+
         self.assertEqual(actor_gold_before + interaction['gold'], actor.gold)
         self.assertEqual(actor_items_before, actor.items)
 
@@ -63,8 +65,8 @@ class TestBuilding(unittest.TestCase):
         actor = random_character_entity()
         actor_gold_before = actor.gold
         actor_items_before = actor.items.copy()
-        entries = house.interact(actor)
-        print(entries)
+        house.interact(actor)
+
         self.assertEqual(actor_gold_before, actor.gold)
         self.assertEqual(actor_items_before + [interaction['item']], actor.items)
 
@@ -74,8 +76,8 @@ class TestBuilding(unittest.TestCase):
         actor = random_character_entity()
         actor_gold_before = actor.gold
         actor_items_before = actor.items.copy()
-        entries = house.interact(actor)
-        print(entries)
+        house.interact(actor)
+
         self.assertEqual(actor_gold_before + interaction['gold'], actor.gold)
         self.assertEqual(actor_items_before + [interaction['item']], actor.items)
 
@@ -84,23 +86,20 @@ class TestBuilding(unittest.TestCase):
         actor = random_character_entity()
         actor_gold_before = actor.gold
         actor_items_before = actor.items.copy()
-        entries = house.interact(actor)
-        print(entries)
+        house.interact(actor)
+
         self.assertEqual(actor_gold_before, actor.gold)
         self.assertEqual(actor_items_before, actor.items)
 
     def test_interact_multiple_times(self):
         house = random_building()
         actor = random_character_entity()
-        entries = house.interact(actor)
-        print("-- FIRST VISIT --")
-        print(entries)
+        house.interact(actor)
 
         actor_gold_before = actor.gold
         actor_items_before = actor.items.copy()
-        entries = house.interact(actor)
-        print("-- SECOND VISIT --")
-        print(entries)
+        house.interact(actor)
+
         self.assertEqual(actor_gold_before, actor.gold)
         self.assertEqual(actor_items_before, actor.items)
 
