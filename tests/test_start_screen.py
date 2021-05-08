@@ -6,7 +6,7 @@ import pygame as pg
 from pygame.rect import Rect
 from random import randrange
 
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
 from src.scenes.startScreen import StartScreen
 import src.gui.fonts as font
 from src.scenes.level import Level
@@ -18,7 +18,6 @@ LOAD_GAME_BUTTON_POS = (210, 289)
 LOAD_FIRST_SLOT_BUTTON_POS = (210, 228)
 OPTIONS_BUTTON_POS = (210, 329)
 EXIT_GAME_BUTTON_POS = (210, 369)
-BUTTON_SIZE = (150, 30)
 
 LEFT_BUTTON = 1
 MIDDLE_BUTTON = 2
