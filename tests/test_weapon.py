@@ -116,11 +116,11 @@ class TestWeapon(unittest.TestCase):
         self.assertEqual(player.strength + spear.atk, player.attack(attacked_ent))
 
         # Charge
-        player.pos = (player.old_pos[0] + 5 * TILE_SIZE, player.old_pos[1])
+        player.position = (player.old_position[0] + 5 * TILE_SIZE, player.old_position[1])
         self.assertEqual(player.strength + int(spear.atk * 1.5), player.attack(attacked_ent))
 
         # Stronger charge
-        player.pos = (player.old_pos[0] + 8 * TILE_SIZE, player.old_pos[1])
+        player.position = (player.old_position[0] + 8 * TILE_SIZE, player.old_position[1])
         self.assertEqual(player.strength + int(spear.atk * 2), player.attack(attacked_ent))
 
     def test_no_charge_bonus_for_weapon_with_no_charge(self):
@@ -132,7 +132,7 @@ class TestWeapon(unittest.TestCase):
         player.equip(weapon)
 
         # No charge bonus even if there is a " charge "
-        player.pos = (player.old_pos[0] + 5 * TILE_SIZE, player.old_pos[1])
+        player.position = (player.old_position[0] + 5 * TILE_SIZE, player.old_position[1])
         self.assertEqual(player.strength + weapon.atk, player.attack(attacked_ent))
 
 

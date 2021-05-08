@@ -62,7 +62,7 @@ class TestLevel(unittest.TestCase):
         braern = None
         thokdrum = None
         for player in players:
-            pos = (player.pos[0] // TILE_SIZE, player.pos[1] // TILE_SIZE)
+            pos = (player.position[0] // TILE_SIZE, player.position[1] // TILE_SIZE)
             if pos == (17, 10):
                 raimund = player
             elif pos == (16, 9):
@@ -73,7 +73,7 @@ class TestLevel(unittest.TestCase):
         specific_skeleton = None
         specific_necrophage = None
         for f in foes:
-            pos = (f.pos[0] // TILE_SIZE, f.pos[1] // TILE_SIZE)
+            pos = (f.position[0] // TILE_SIZE, f.position[1] // TILE_SIZE)
             if pos == (12, 8):
                 specific_skeleton = f
             if pos == (13, 5):

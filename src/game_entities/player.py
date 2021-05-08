@@ -17,12 +17,13 @@ class PlayerState(IntEnum):
 
 
 class Player(Character):
-    def __init__(self, name, sprite, hp, defense, res, strength, classes, equipments, race, gold, lvl,
-                 skills, alterations, compl_sprite=None):
+    def __init__(self, name, sprite, hp, defense, res, strength, classes, equipments, race, gold,
+                 lvl, skills, alterations, compl_sprite=None):
         Character.__init__(self, name, (), sprite, hp, defense, res, strength,
-                           classes, equipments, 'MANUAL', lvl, skills, alterations, race, gold, compl_sprite)
+                           classes, equipments, 'MANUAL', lvl, skills, alterations,
+                           race, gold, compl_sprite)
         self.state = PlayerState.WAITING_SELECTION
-        self.old_pos = ()
+        self.old_position = ()
         self._selected = False
 
         # Sprite displayed when player cannot be selected
@@ -37,14 +38,14 @@ class Player(Character):
         # Memorize the current action performed by the player, it must be a value of CharacterMenu
         self.current_action = None
 
-    def set_initial_pos(self, pos):
-        self.pos = pos
-        self.old_pos = pos
+    def set_initial_pos(self, position):
+        self.position = position
+        self.old_position = position
 
     def display(self, screen):
         Character.display(self, screen)
         if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
-            screen.blit(Player.SELECTED_DISPLAY, self.pos)
+            screen.blit(Player.SELECTED_DISPLAY, self.position)
 
     @staticmethod
     def trade_gold(sender, receiver, amount):
@@ -65,7 +66,7 @@ class Player(Character):
     def set_move(self, pos):
         Character.set_move(self, pos)
         self.state = PlayerState.ON_MOVE
-        self.old_pos = self.pos
+        self.old_position = self.position
 
     def move(self):
         if self.state is PlayerState.ON_MOVE:
@@ -78,7 +79,7 @@ class Player(Character):
     def cancel_move(self):
         if self.state is not PlayerState.WAITING_POST_ACTION_UNCANCELLABLE:
             self.state = PlayerState.WAITING_SELECTION
-            self.pos = self.old_pos
+            self.position = self.old_position
             return True
         return False
 
@@ -121,8 +122,8 @@ class Player(Character):
         Character.new_turn(self)
         self.state = PlayerState.WAITING_SELECTION
         self.sprite = self.normal_sprite
-        for eq in self.equipments:
-            eq.unset_grey()
+        for equipment in self.equipments:
+            equipment.unset_grey()
 
     def turn_is_finished(self):
         return self.state == PlayerState.FINISHED

@@ -13,7 +13,7 @@ class Breakable(Destroyable):
 
     def display(self, screen):
         Destroyable.display(self, screen)
-        screen.blit(constant_sprites['cracked'], self.pos)
+        screen.blit(constant_sprites['cracked'], self.position)
 
     def save(self, tree_name):
         tree = Destroyable.save(self, tree_name)

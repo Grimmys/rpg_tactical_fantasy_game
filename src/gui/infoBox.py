@@ -1,6 +1,9 @@
+import pygame
+
+from src.constants import WHITE, BUTTON_SIZE, ITEM_BUTTON_SIZE, TRADE_ITEM_BUTTON_SIZE, MARGIN_BOX, MARGIN_TOP, \
+    CLOSE_BUTTON_SIZE, MAX_MAP_HEIGHT, MAX_MAP_WIDTH
 from src.gui.boxElement import BoxElement
-from src.gui.fonts import *
-from src.constants import *
+from src.gui.fonts import fonts
 from src.gui.textElement import TextElement
 from src.gui.button import Button
 from src.gui.dynamicButton import DynamicButton
@@ -39,7 +42,7 @@ class InfoBox:
             self.determine_elements_pos()
         self.buttons = self.find_buttons()
 
-        self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), self.size)
+        self.sprite = pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), self.size)
 
     def init_elements(self, entries, width):
         elements = []
@@ -51,7 +54,7 @@ class InfoBox:
 
                 if 'type' not in entry:
                     # It is an empty element
-                    element.append(BoxElement((0, 0), pg.Surface((0, 0)), entry['margin']))
+                    element.append(BoxElement((0, 0), pygame.Surface((0, 0)), entry['margin']))
                 elif entry['type'] == 'button':
                     if 'size' not in entry:
                         size = BUTTON_SIZE
@@ -62,10 +65,10 @@ class InfoBox:
                     else:
                         font = entry['font']
                     name = font.render(entry['name'], 1, WHITE)
-                    sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), size)
+                    sprite = pygame.transform.scale(pygame.image.load(BUTTON_INACTIVE).convert_alpha(), size)
                     sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
                                        sprite.get_height() // 2 - name.get_height() // 2))
-                    sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), size)
+                    sprite_hover = pygame.transform.scale(pygame.image.load(BUTTON_ACTIVE).convert_alpha(), size)
                     sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
                                              sprite_hover.get_height() // 2 - name.get_height() // 2))
                     if 'args' not in entry:
@@ -77,24 +80,30 @@ class InfoBox:
                     name = fonts['ITEM_FONT'].render(entry['name'] + ' ' +
                                                      entry['values'][entry['current_value_ind']]['label'],
                                                      1, WHITE)
-                    base_sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), BUTTON_SIZE)
+                    raw_inactive_button = pygame.image.load(BUTTON_INACTIVE).convert_alpha()
+                    base_sprite = pygame.transform.scale(raw_inactive_button, BUTTON_SIZE)
                     sprite = base_sprite.copy()
                     sprite.blit(name, (base_sprite.get_width() // 2 - name.get_width() // 2,
                                        base_sprite.get_height() // 2 - name.get_height() // 2))
-                    base_sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), BUTTON_SIZE)
+                    raw_active_button = pygame.image.load(BUTTON_ACTIVE).convert_alpha()
+                    base_sprite_hover = pygame.transform.scale(raw_active_button, BUTTON_SIZE)
                     sprite_hover = base_sprite_hover.copy()
-                    sprite_hover.blit(name, (base_sprite_hover.get_width() // 2 - name.get_width() // 2,
-                                             base_sprite_hover.get_height() // 2 - name.get_height() // 2))
-                    element.append(DynamicButton(entry['id'], [], BUTTON_SIZE, (0, 0), sprite, sprite_hover,
-                                                 entry['margin'], entry['values'], entry['current_value_ind'],
+                    sprite_hover.blit(name,
+                                      (base_sprite_hover.get_width() // 2
+                                       - name.get_width() // 2,
+                                       base_sprite_hover.get_height() // 2
+                                       - name.get_height() // 2))
+                    element.append(DynamicButton(entry['id'], [], BUTTON_SIZE, (0, 0),
+                                                 sprite, sprite_hover, entry['margin'],
+                                                 entry['values'], entry['current_value_ind'],
                                                  entry['name'], base_sprite, base_sprite_hover))
                 elif entry['type'] == 'text_button':
                     name = fonts['ITEM_FONT'].render(entry['name'], 1, entry['color'])
                     name_hover = fonts['ITEM_FONT'].render(entry['name'], 1, entry['color_hover'])
                     if 'obj' not in entry:
                         entry['obj'] = None
-                    element.append(Button(entry['id'], [], name.get_size(), (0, 0), name, name_hover, entry['margin'],
-                                          entry['obj']))
+                    element.append(Button(entry['id'], [], name.get_size(), (0, 0), name,
+                                          name_hover, entry['margin'], entry['obj']))
 
                 elif entry['type'] == 'item_button':
                     button_size = entry['size'] if 'size' in entry else ITEM_BUTTON_SIZE
@@ -111,7 +120,8 @@ class InfoBox:
                         entry['args'] = []
                     element.append(ItemButton(entry['id'], entry['args'], button_size,
                                               (0, 0), entry['item'], entry['margin'],
-                                              entry['index'], entry['price'], entry['quantity'], disabled))
+                                              entry['index'], entry['price'],
+                                              entry['quantity'], disabled))
                 elif entry['type'] == 'text':
                     if 'font' not in entry:
                         entry['font'] = fonts['ITEM_FONT']
@@ -120,8 +130,8 @@ class InfoBox:
                     element.append(TextElement(entry['text'], width, (0, 0), entry['font'],
                                                entry['margin'], entry['color']))
             elements.append(element)
-        title = TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'], (len(entries), 0, 20, 0),
-                            self.title_color)
+        title = TextElement(self.name, width, (0, 0), fonts['MENU_TITLE_FONT'],
+                            (len(entries), 0, 20, 0), self.title_color)
         self.sep['posY'] += title.get_height()
         elements.insert(0, [title])
         return elements
@@ -146,15 +156,18 @@ class InfoBox:
 
             # Button sprites
             name = fonts['ITEM_FONT'].render("Close", 1, WHITE)
-            sprite = pg.transform.scale(pg.image.load(BUTTON_INACTIVE).convert_alpha(), CLOSE_BUTTON_SIZE)
+            raw_inactive_button = pygame.image.load(BUTTON_INACTIVE).convert_alpha()
+            sprite = pygame.transform.scale(raw_inactive_button, CLOSE_BUTTON_SIZE)
             sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
                                sprite.get_height() // 2 - name.get_height() // 2))
-            sprite_hover = pg.transform.scale(pg.image.load(BUTTON_ACTIVE).convert_alpha(), CLOSE_BUTTON_SIZE)
+            raw_active_button = pygame.image.load(BUTTON_ACTIVE).convert_alpha()
+            sprite_hover = pygame.transform.scale(raw_active_button, CLOSE_BUTTON_SIZE)
             sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
                                      sprite_hover.get_height() // 2 - name.get_height() // 2))
 
             self.elements.append([close_button_height,
-                                  Button(GenericActions.CLOSE, [close_button], CLOSE_BUTTON_SIZE, (0, 0), sprite,
+                                  Button(GenericActions.CLOSE, [close_button],
+                                         CLOSE_BUTTON_SIZE, (0, 0), sprite,
                                          sprite_hover, (CLOSE_BUTTON_MARGINTOP, 0, 0, 0))])
         return height
 
@@ -182,7 +195,7 @@ class InfoBox:
     def determine_elements_pos(self):
         y = self.pos[1] + MARGIN_BOX
         # Memorize mouse position in case it is over a button
-        mouse_pos = pg.mouse.get_pos()
+        mouse_pos = pygame.mouse.get_pos()
         # A row begins by a value identifying its height, followed by its elements
         for row in self.elements:
             nb_elements = len(row) - 1
@@ -199,7 +212,7 @@ class InfoBox:
     def update_content(self, entries):
         self.elements = self.init_elements(entries, self.size[0])
         self.size = (self.size[0], self.determine_height(self.close_button))
-        self.sprite = pg.transform.scale(self.sprite, self.size)
+        self.sprite = pygame.transform.scale(self.sprite, self.size)
         self.pos = []
         self.buttons = self.find_buttons()
 
@@ -217,8 +230,8 @@ class InfoBox:
                 el.display(win)
 
         if self.sep['display']:
-            pg.draw.line(win, WHITE, (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['posY']),
-                                     (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['height']), 2)
+            pygame.draw.line(win, WHITE, (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['posY']),
+                             (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['height']), 2)
 
     def motion(self, pos):
         for button in self.buttons:

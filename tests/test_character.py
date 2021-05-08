@@ -92,14 +92,14 @@ class TestCharacter(unittest.TestCase):
         # Physical attack
         damage = character_test.defense + 5
         character_test.attacked(random_foe_entity(), damage, DamageKind.PHYSICAL, [])
-        self.assertEqual(character_test.hp_max - 3, character_test.hp)
+        self.assertEqual(character_test.hp_max - 3, character_test.hit_points)
 
         character_test.healed()
 
         # Mental attack
         damage = character_test.res + 5
         character_test.attacked(random_foe_entity(), damage, DamageKind.SPIRITUAL, [])
-        self.assertEqual(character_test.hp_max - 2, character_test.hp)
+        self.assertEqual(character_test.hp_max - 2, character_test.hit_points)
 
     def test_attack_with_weapon(self):
         weapon = random_weapon(strong_against=[])

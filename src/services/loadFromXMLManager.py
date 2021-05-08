@@ -41,7 +41,8 @@ def load_races():
         cons = race_el.find('constitution')
         race['constitution'] = int(cons.text.strip()) if cons is not None else 0
         race['move'] = int(race_el.find('move').text.strip())
-        race['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
+        race['skills'] = [(load_skill(skill.text.strip()) if skill not in skills_infos
+                           else skills_infos[skill])
                           for skill in race_el.findall('skills/skill/name')]
         races[race_el.tag] = race
     return races
@@ -51,15 +52,16 @@ def load_classes():
     classes = {}
     classes_file = etree.parse(CLASSES_PATH).getroot()
     for cl_el in classes_file.findall('*'):
-        cl = {}
+        cls = {}
         cons = cl_el.find('constitution')
-        cl['constitution'] = int(cons.text.strip()) if cons is not None else 0
+        cls['constitution'] = int(cons.text.strip()) if cons is not None else 0
         move = cl_el.find('move')
-        cl['move'] = int(move.text.strip()) if move is not None else 0
-        cl['stats_up'] = load_stats_up(cl_el)
-        cl['skills'] = [(load_skill(skill.text.strip()) if not skill in skills_infos else skills_infos[skill])
+        cls['move'] = int(move.text.strip()) if move is not None else 0
+        cls['stats_up'] = load_stats_up(cl_el)
+        cls['skills'] = [(load_skill(skill.text.strip()) if skill not in skills_infos
+                          else skills_infos[skill])
                         for skill in cl_el.findall('skills/skill/name')]
-        classes[cl_el.tag] = cl
+        classes[cl_el.tag] = cls
     return classes
 
 
@@ -98,7 +100,8 @@ def load_skill(name):
         if alterations_el is not None:
             alterations = [alt for alt in alterations_el.text.replace(' ', '').split(',')]
 
-        skills_infos[name] = Skill(name, formatted_name, nature, desc, power, stats, alterations)
+        skills_infos[name] = Skill(name, formatted_name, nature, desc,
+                                   power, stats, alterations)
     return skills_infos[name]
 
 
@@ -115,23 +118,31 @@ def load_alteration(alteration_el):
 def load_placements(positions, gap_x, gap_y):
     placements = []
     for coords in positions:
-        x = int(coords.find('x').text) * TILE_SIZE + gap_x
-        y = int(coords.find('y').text) * TILE_SIZE + gap_y
-        pos = (x, y)
+        x_coordinate = int(coords.find('x').text) * TILE_SIZE + gap_x
+        y_coordinate = int(coords.find('y').text) * TILE_SIZE + gap_y
+        pos = (x_coordinate, y_coordinate)
         placements.append(pos)
     return placements
 
 
 def load_all_entities(data, from_save, gap_x, gap_y):
     return {
-        'allies': load_entities('character', data.findall('allies/ally'), from_save, gap_x, gap_y),
-        'foes': load_entities('foe', data.findall('foes/foe'), from_save, gap_x, gap_y),
-        'breakables': load_entities('breakable', data.findall('breakables/breakable'), from_save, gap_x, gap_y),
-        'chests': load_entities('chest', data.findall('chests/chest'), from_save, gap_x, gap_y),
-        'doors': load_entities('door', data.findall('doors/door'), from_save, gap_x, gap_y),
-        'buildings': load_entities('building', data.findall('buildings/building'), from_save, gap_x, gap_y),
-        'fountains': load_entities('fountain', data.findall('fountains/fountain'), from_save, gap_x, gap_y),
-        'portals': load_entities('portal', data.findall('portals/couple'), from_save, gap_x, gap_y)
+        'allies': load_entities('character', data.findall('allies/ally'),
+                                from_save, gap_x, gap_y),
+        'foes': load_entities('foe', data.findall('foes/foe'),
+                              from_save, gap_x, gap_y),
+        'breakables': load_entities('breakable', data.findall('breakables/breakable'),
+                                    from_save, gap_x, gap_y),
+        'chests': load_entities('chest', data.findall('chests/chest'),
+                                from_save, gap_x, gap_y),
+        'doors': load_entities('door', data.findall('doors/door'),
+                               from_save, gap_x, gap_y),
+        'buildings': load_entities('building', data.findall('buildings/building'),
+                                   from_save, gap_x, gap_y),
+        'fountains': load_entities('fountain', data.findall('fountains/fountain'),
+                                   from_save, gap_x, gap_y),
+        'portals': load_entities('portal', data.findall('portals/couple'),
+                                 from_save, gap_x, gap_y)
     }
 
 
@@ -192,15 +203,16 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     for alteration in dynamic_data.findall('alterations/alteration'):
         alterations.append(load_alteration(alteration))
 
-    return {'name': name, 'sprite': sprite, 'strategy': strategy, 'position': pos, 'level': lvl,
-            'hp': hp, 'strength': strength, 'defense': defense, 'resistance': res, 'alterations': alterations}
+    return {'name': name, 'sprite': sprite, 'strategy': strategy, 'position': pos,
+            'level': lvl, 'hp': hp, 'strength': strength, 'defense': defense,
+            'resistance': res, 'alterations': alterations}
 
 
 def load_ally(ally, from_save, gap_x, gap_y):
     name = ally.find('name').text.strip()
     infos = etree.parse('data/characters.xml').find(name)
 
-    entity_attributes = load_artificial_entity(ally, infos, from_save, gap_x, gap_y)
+    attributes = load_artificial_entity(ally, infos, from_save, gap_x, gap_y)
 
     # Static data character
     race = infos.find('race').text.strip()
@@ -235,30 +247,30 @@ def load_ally(ally, from_save, gap_x, gap_y):
     else:
         skills = Character.classes_data[classes[0]]['skills'] + Character.races_data[race]['skills']
 
-    loaded_ally = Character(entity_attributes['name'], entity_attributes['position'], entity_attributes['sprite'],
-                            entity_attributes['hp'], entity_attributes['defense'], entity_attributes['resistance'],
-                            entity_attributes['strength'], classes, equipments, entity_attributes['strategy'],
-                            entity_attributes['level'], skills, entity_attributes['alterations'], race, gold,
+    loaded_ally = Character(attributes['name'], attributes['position'], attributes['sprite'],
+                            attributes['hp'], attributes['defense'], attributes['resistance'],
+                            attributes['strength'], classes, equipments, attributes['strategy'],
+                            attributes['level'], skills, attributes['alterations'], race, gold,
                             interaction)
 
     inventory = infos.find('inventory')
     if inventory is not None:
-        for it in inventory.findall('item'):
+        for item in inventory.findall('item'):
             if from_save:
-                item_loaded = load_item(it)
+                item_loaded = load_item(item)
             else:
-                item_loaded = parse_item_file(it.text.strip())
+                item_loaded = parse_item_file(item.text.strip())
             loaded_ally.set_item(item_loaded)
 
     if from_save:
         current_hp = int(ally.find('current_hp').text.strip())
-        loaded_ally.hp = current_hp
+        loaded_ally.hit_points = current_hp
 
-        xp = int(ally.find('exp').text.strip())
-        loaded_ally.earn_xp(xp)
+        experience = int(ally.find('exp').text.strip())
+        loaded_ally.earn_xp(experience)
     else:
         # Up stats according to current lvl
-        loaded_ally.stats_up(entity_attributes['level'] - 1)
+        loaded_ally.stats_up(attributes['level'] - 1)
         # Restore hp due to lvl up
         loaded_ally.healed()
 
@@ -272,21 +284,25 @@ def load_foe(foe, from_save, gap_x, gap_y):
         # Load grow rates of this kind of foe in the class
         Foe.grow_rates[name] = load_stats_up(foes_infos[name])
 
-    entity_attributes = load_artificial_entity(foe, foes_infos[name], from_save, gap_x, gap_y, 'dungeon_crawl/monster/')
+    attributes = load_artificial_entity(foe, foes_infos[name], from_save,
+                                               gap_x, gap_y, 'dungeon_crawl/monster/')
 
     # Static data foe
     xp_gain = int(foes_infos[name].find('xp_gain').text.strip())
     foe_range = foes_infos[name].find('reach')
-    reach = [int(reach) for reach in foe_range.text.strip().split(',')] if foe_range is not None else [1]
+    reach = [int(reach) for reach in foe_range.text.strip().split(',')] \
+        if foe_range is not None else [1]
     attack_kind = foes_infos[name].find('attack_kind').text.strip()
     loot = [(parse_item_file(it.find('name').text.strip()), float(it.find('probability').text))
             for it in foes_infos[name].findall('loot/item')]
     gold_looted = foes_infos[name].find('loot/gold')
     if gold_looted is not None:
-        loot.append((Gold(int(gold_looted.find('amount').text)), float(gold_looted.find('probability').text)))
+        loot.append((Gold(int(gold_looted.find('amount').text)),
+                     float(gold_looted.find('probability').text)))
     keywords_el = foes_infos[name].find('keywords')
     keywords = [Keyword[keyword.upper()] for keyword in
-                keywords_el.text.strip().split(',')] if keywords_el is not None else []
+                keywords_el.text.strip().split(',')] \
+        if keywords_el is not None else []
 
     # Dynamic data foe
     if from_save:
@@ -295,9 +311,11 @@ def load_foe(foe, from_save, gap_x, gap_y):
                 for it in foe.findall('loot/item')]
         gold_looted = foe.find('loot/gold')
         if gold_looted is not None:
-            loot.append((Gold(int(gold_looted.find('amount').text)), float(gold_looted.find('probability').text)))
+            loot.append((Gold(int(gold_looted.find('amount').text)),
+                         float(gold_looted.find('probability').text)))
     else:
-        dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0) for it in foe.findall('loot/item')]
+        dynamic_loot = [(parse_item_file(it.find('name').text.strip()), 1.0)
+                        for it in foe.findall('loot/item')]
         loot.extend(dynamic_loot)
         gold_looted = foe.find('loot/gold')
         if gold_looted is not None:
@@ -305,21 +323,21 @@ def load_foe(foe, from_save, gap_x, gap_y):
 
     move = int(foes_infos[name].find('move').text.strip())
 
-    loaded_foe = Foe(entity_attributes['name'], entity_attributes['position'], entity_attributes['sprite'],
-                     entity_attributes['hp'], entity_attributes['defense'], entity_attributes['resistance'],
-                     move, entity_attributes['strength'], attack_kind, entity_attributes['strategy'], reach, xp_gain,
-                     loot,
-                     keywords, entity_attributes['level'], entity_attributes['alterations'])
+    loaded_foe = Foe(attributes['name'], attributes['position'],
+                     attributes['sprite'], attributes['hp'], attributes['defense'],
+                     attributes['resistance'], move, attributes['strength'], attack_kind,
+                     attributes['strategy'], reach, xp_gain, loot, keywords,
+                     attributes['level'], attributes['alterations'])
 
     if from_save:
         current_hp = int(foe.find('current_hp').text.strip())
-        loaded_foe.hp = current_hp
+        loaded_foe.hit_points = current_hp
 
         xp = int(foe.find('exp').text.strip())
         loaded_foe.earn_xp(xp)
     else:
         # Up stats according to current lvl
-        loaded_foe.stats_up(entity_attributes['level'] - 1)
+        loaded_foe.stats_up(attributes['level'] - 1)
         # Restore hp due to lvl up
         loaded_foe.healed()
 
@@ -366,9 +384,9 @@ def load_chest(chest, from_save, gap_x, gap_y):
 
 def load_door(door, from_save, gap_x, gap_y):
     # Static data
-    x = int(door.find('position/x').text) * TILE_SIZE + gap_x
-    y = int(door.find('position/y').text) * TILE_SIZE + gap_y
-    pos = (x, y)
+    x_coordinate = int(door.find('position/x').text) * TILE_SIZE + gap_x
+    y_coordinate = int(door.find('position/y').text) * TILE_SIZE + gap_y
+    pos = (x_coordinate, y_coordinate)
     sprite = door.find('sprite').text.strip()
 
     # Dynamic data
@@ -383,9 +401,9 @@ def load_door(door, from_save, gap_x, gap_y):
 def load_building(building, from_save, gap_x, gap_y):
     # Static data
     name = building.find('name').text.strip()
-    x = int(building.find('position/x').text) * TILE_SIZE + gap_x
-    y = int(building.find('position/y').text) * TILE_SIZE + gap_y
-    pos = (x, y)
+    x_coordinate = int(building.find('position/x').text) * TILE_SIZE + gap_x
+    y_coordinate = int(building.find('position/y').text) * TILE_SIZE + gap_y
+    pos = (x_coordinate, y_coordinate)
     sprite = building.find('sprite').text.strip()
     interaction = building.find('interaction')
     interaction_el = {}
@@ -483,7 +501,8 @@ def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
     turn_limit = mission_xml.find('turns')
     if turn_limit is not None:
         turn_limit = int(turn_limit.text.strip())
-    return Mission(is_main, nature, positions, desc, min_players, turn_limit, gold_reward, items_reward)
+    return Mission(is_main, nature, positions, desc, min_players,
+                   turn_limit, gold_reward, items_reward)
 
 
 def load_missions(tree, players, gap_x, gap_y):
@@ -575,7 +594,8 @@ def load_events(events_el, gap_x, gap_y):
                 title_el = dialog_el.find('title')
                 events[event.tag]['dialogs'].append({
                     'title': title_el.text.strip() if title_el is not None else '',
-                    'talks': [talk.text.strip() for talk in dialog_el.find('talks').findall('talk')]
+                    'talks': [talk.text.strip()
+                              for talk in dialog_el.find('talks').findall('talk')]
                 })
         new_players_els = event.findall('new_player')
         if new_players_els:
@@ -588,31 +608,31 @@ def load_events(events_el, gap_x, gap_y):
     return events
 
 
-def load_player(el, from_save):
-    name = el.find("name").text.strip()
-    level = el.find('level')
+def load_player(element, from_save):
+    name = element.find("name").text.strip()
+    level = element.find('level')
     if level is None:
         # If level is not specified, default value is 1
         level = 1
     else:
         level = int(level.text.strip())
-    p_class = el.find("class").text.strip()
-    race = el.find("race").text.strip()
-    gold = int(el.find("gold").text.strip())
-    exp = int(el.find("exp").text.strip()) if from_save else 0
-    hp = int(el.find("hp").text.strip())
-    strength = int(el.find("strength").text.strip())
-    defense = int(el.find("defense").text.strip())
-    res = int(el.find("resistance").text.strip())
-    current_hp = int(el.find("current_hp").text.strip()) if from_save else hp
+    p_class = element.find("class").text.strip()
+    race = element.find("race").text.strip()
+    gold = int(element.find("gold").text.strip())
+    exp = int(element.find("exp").text.strip()) if from_save else 0
+    hit_points = int(element.find("hp").text.strip())
+    strength = int(element.find("strength").text.strip())
+    defense = int(element.find("defense").text.strip())
+    res = int(element.find("resistance").text.strip())
+    current_hp = int(element.find("current_hp").text.strip()) if from_save else hit_points
     inv = []
-    for it in el.findall("inventory/item"):
-        item_loaded = load_item(it) if from_save else parse_item_file(it.text.strip())
+    for item in element.findall("inventory/item"):
+        item_loaded = load_item(item) if from_save else parse_item_file(item.text.strip())
         inv.append(item_loaded)
 
     equipments = []
-    for eq in el.findall("equipment/*"):
-        eq_loaded = load_item(eq) if from_save else parse_item_file(eq.text.strip())
+    for equipment in element.findall("equipment/*"):
+        eq_loaded = load_item(equipment) if from_save else parse_item_file(equipment.text.strip())
         equipments.append(eq_loaded)
 
     alterations = []
@@ -620,14 +640,14 @@ def load_player(el, from_save):
         skills = [(load_skill(skill.text.strip())
                    if skill.text.strip() not in skills_infos
                    else skills_infos[skill.text.strip()])
-                  for skill in el.findall('skills/skill/name')]
-        for alteration in el.findall('alterations/alteration'):
+                  for skill in element.findall('skills/skill/name')]
+        for alteration in element.findall('alterations/alteration'):
             alterations.append(load_alteration(alteration))
         tree = etree.parse("data/characters.xml").getroot()
         player_t = tree.xpath(name)[0]
     else:
         skills = Character.classes_data[p_class]['skills'] + Character.races_data[race]['skills']
-        player_t = el
+        player_t = element
 
     # -- Reading of the XML file for default character's values (i.e. sprites)
     sprite = 'imgs/' + player_t.find('sprite').text.strip()
@@ -635,25 +655,25 @@ def load_player(el, from_save):
     if compl_sprite is not None:
         compl_sprite = 'imgs/' + compl_sprite.text.strip()
 
-    p = Player(name, sprite, hp, defense, res, strength, [p_class], equipments, race, gold, level,
-               skills, alterations, compl_sprite=compl_sprite)
-    p.earn_xp(exp)
-    p.items = inv
-    p.hp = current_hp
+    player = Player(name, sprite, hit_points, defense, res, strength, [p_class], equipments, race, gold, level,
+                    skills, alterations, compl_sprite=compl_sprite)
+    player.earn_xp(exp)
+    player.items = inv
+    player.hit_points = current_hp
     if from_save:
-        pos = (int(el.find("position/x").text.strip()) * TILE_SIZE,
-               int(el.find("position/y").text.strip()) * TILE_SIZE)
-        p.pos = pos
-        state = el.find("turnFinished").text.strip()
+        position = (int(element.find("position/x").text.strip()) * TILE_SIZE,
+                    int(element.find("position/y").text.strip()) * TILE_SIZE)
+        player.position = position
+        state = element.find("turnFinished").text.strip()
         if state == "True":
-            p.end_turn()
+            player.end_turn()
     else:
         # Up stats according to current lvl
-        p.stats_up(level - 1)
+        player.stats_up(level - 1)
         # Restore hp due to lvl up
-        p.healed()
+        player.healed()
 
-    return p
+    return player
 
 
 def load_players(data):
@@ -755,7 +775,8 @@ def parse_item_file(name):
         equipped_sprite = ['imgs/dungeon_crawl/player/hand_left/' + it_tree_root.find(
             'equipped_sprite').text.strip()]
         restrictions = load_restrictions(it_tree_root.find('restrictions'))
-        item = Shield(name, sprite, info, price, equipped_sprite, defense, weight, parry, fragility, restrictions)
+        item = Shield(name, sprite, info, price, equipped_sprite,
+                      defense, weight, parry, fragility, restrictions)
     elif category == 'weapon':
         power = int(it_tree_root.find('power').text.strip())
         attack_kind = it_tree_root.find('kind').text.strip()
@@ -774,8 +795,9 @@ def parse_item_file(name):
         strong_against = [Keyword[keyword.upper()] for keyword in
                           keywords_el.text.strip().split(',')] if keywords_el is not None else []
 
-        item = Weapon(name, sprite, info, price, equipped_sprite, power, attack_kind, weight, fragility,
-                      w_range, restrictions, possible_effects, strong_against)
+        item = Weapon(name, sprite, info, price, equipped_sprite, power,
+                      attack_kind, weight, fragility, w_range, restrictions,
+                      possible_effects, strong_against)
     elif category == 'key':
         for_chest = it_tree_root.find('open_chest') is not None
         for_door = it_tree_root.find('open_door') is not None

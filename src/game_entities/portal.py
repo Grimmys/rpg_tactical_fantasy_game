@@ -7,6 +7,6 @@ class Portal(Entity):
         self.linked_to = None
 
     @staticmethod
-    def link_portals(p1, p2):
-        p1.linked_to = p2
-        p2.linked_to = p1
+    def link_portals(first_portal, second_portal):
+        first_portal.linked_to = second_portal
+        second_portal.linked_to = first_portal

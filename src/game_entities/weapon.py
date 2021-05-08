@@ -9,8 +9,9 @@ from src.gui.tools import distance
 
 
 class Weapon(Equipment):
-    def __init__(self, name, sprite, description, price, equipped_sprite, atk, attack_kind, weight,
-                 durability, reach, restrictions, possible_effects, strong_against, can_charge=False):
+    def __init__(self, name, sprite, description, price, equipped_sprite, atk, attack_kind,
+                 weight, durability, reach, restrictions, possible_effects,
+                 strong_against, can_charge=False):
         Equipment.__init__(self, name, sprite, description, price, equipped_sprite, 'right_hand',
                            0, 0, atk, weight, restrictions)
         self.durability_max = durability
@@ -27,7 +28,7 @@ class Weapon(Equipment):
     def hit(self, holder, target):
         multiplier = 1
         if self.can_charge:
-            distance_traveled = distance(holder.old_pos, holder.pos)
+            distance_traveled = distance(holder.old_position, holder.position)
             if distance_traveled >= 5:
                 multiplier += 0.5 * ((distance_traveled - 2) // 3)
         for keyword in target.keywords:

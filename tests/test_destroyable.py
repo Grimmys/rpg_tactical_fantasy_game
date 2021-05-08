@@ -23,10 +23,10 @@ class TestDestroyable(unittest.TestCase):
         res = 3
         destroyable = Destroyable(name, pos, sprite, hp, defense, res)
         self.assertEqual(name, destroyable.name)
-        self.assertEqual(pos, destroyable.pos)
+        self.assertEqual(pos, destroyable.position)
         self.assertEqual('Destroyable', str(destroyable))
         self.assertEqual(hp, destroyable.hp_max)
-        self.assertEqual(hp, destroyable.hp)
+        self.assertEqual(hp, destroyable.hit_points)
         self.assertEqual(defense, destroyable.defense)
         self.assertEqual(res, destroyable.res)
         self.assertTrue(destroyable.is_on_pos(pos))
@@ -37,11 +37,11 @@ class TestDestroyable(unittest.TestCase):
         kind = DamageKind.PHYSICAL
         allies = []
 
-        damage = rd.randint(0, destroyable.hp + destroyable.defense - 1)
+        damage = rd.randint(0, destroyable.hit_points + destroyable.defense - 1)
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
-        self.assertEqual(returned_hp, destroyable.hp)
-        self.assertTrue(destroyable.hp > 0)
+        self.assertEqual(returned_hp, destroyable.hit_points)
+        self.assertTrue(destroyable.hit_points > 0)
 
     def test_letal_damage(self):
         destroyable = random_destroyable_entity()
@@ -49,11 +49,11 @@ class TestDestroyable(unittest.TestCase):
         kind = DamageKind.PHYSICAL
         allies = []
 
-        damage = destroyable.hp + destroyable.defense
+        damage = destroyable.hit_points + destroyable.defense
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
-        self.assertEqual(returned_hp, destroyable.hp)
-        self.assertEqual(destroyable.hp, 0)
+        self.assertEqual(returned_hp, destroyable.hit_points)
+        self.assertEqual(destroyable.hit_points, 0)
 
     def test_more_than_letal_damage(self):
         destroyable = random_destroyable_entity()
@@ -61,11 +61,11 @@ class TestDestroyable(unittest.TestCase):
         kind = DamageKind.PHYSICAL
         allies = []
 
-        damage = destroyable.hp + destroyable.defense + rd.randint(1, 20)
+        damage = destroyable.hit_points + destroyable.defense + rd.randint(1, 20)
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
-        self.assertEqual(returned_hp, destroyable.hp)
-        self.assertEqual(destroyable.hp, 0)
+        self.assertEqual(returned_hp, destroyable.hit_points)
+        self.assertEqual(destroyable.hit_points, 0)
 
     def test_negative_damage(self):
         destroyable = random_destroyable_entity()
@@ -76,8 +76,8 @@ class TestDestroyable(unittest.TestCase):
         damage = rd.randint(-10, -1)
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
-        self.assertEqual(returned_hp, destroyable.hp)
-        self.assertEqual(destroyable.hp, destroyable.hp_max)
+        self.assertEqual(returned_hp, destroyable.hit_points)
+        self.assertEqual(destroyable.hit_points, destroyable.hp_max)
 
     def test_physical_and_spiritual_damage(self):
         destroyable = random_destroyable_entity(min_hp=30, max_defense=10, max_res=10)
@@ -88,33 +88,33 @@ class TestDestroyable(unittest.TestCase):
         damage = rd.randint(10, 15)
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
-        self.assertEqual(returned_hp, destroyable.hp)
-        self.assertEqual(destroyable.hp_max, destroyable.hp + damage - destroyable.defense)
+        self.assertEqual(returned_hp, destroyable.hit_points)
+        self.assertEqual(destroyable.hp_max, destroyable.hit_points + damage - destroyable.defense)
 
         # Destroyable entity is healed before next attack for simplify test
-        destroyable.hp = destroyable.hp_max
+        destroyable.hit_points = destroyable.hp_max
         kind = DamageKind.SPIRITUAL
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
-        self.assertEqual(returned_hp, destroyable.hp)
-        self.assertEqual(destroyable.hp_max, destroyable.hp + damage - destroyable.res)
+        self.assertEqual(returned_hp, destroyable.hit_points)
+        self.assertEqual(destroyable.hp_max, destroyable.hit_points + damage - destroyable.res)
 
     def test_full_heal(self):
         destroyable = random_destroyable_entity(min_hp=30)
         hp_max_init = destroyable.hp_max
 
         damage = rd.randint(2, 20)
-        destroyable.hp -= damage
+        destroyable.hit_points -= damage
         recovered_hp = destroyable.healed()
         self.assertEqual(recovered_hp, damage)
-        self.assertEqual(destroyable.hp_max, destroyable.hp)
+        self.assertEqual(destroyable.hp_max, destroyable.hit_points)
         self.assertEqual(hp_max_init, destroyable.hp_max)
 
         damage = rd.randint(2, 20)
-        destroyable.hp -= damage
+        destroyable.hit_points -= damage
         recovered_hp = destroyable.healed(damage)
         self.assertEqual(recovered_hp, damage)
-        self.assertEqual(destroyable.hp_max, destroyable.hp)
+        self.assertEqual(destroyable.hp_max, destroyable.hit_points)
         self.assertEqual(hp_max_init, destroyable.hp_max)
 
     def test_partial_heal(self):
@@ -123,10 +123,10 @@ class TestDestroyable(unittest.TestCase):
 
         damage = rd.randint(11, 20)
         heal = rd.randint(1, 10)
-        destroyable.hp -= damage
+        destroyable.hit_points -= damage
         recovered_hp = destroyable.healed(heal)
         self.assertEqual(recovered_hp, heal)
-        self.assertEqual(destroyable.hp_max - damage + heal, destroyable.hp)
+        self.assertEqual(destroyable.hp_max - damage + heal, destroyable.hit_points)
         self.assertEqual(hp_max_init, destroyable.hp_max)
 
     def test_more_than_possible_heal(self):
@@ -134,10 +134,10 @@ class TestDestroyable(unittest.TestCase):
         hp_max_init = destroyable.hp_max
 
         damage = rd.randint(11, 20)
-        destroyable.hp -= damage
+        destroyable.hit_points -= damage
         recovered_hp = destroyable.healed(damage + 30)
         self.assertEqual(recovered_hp, damage)
-        self.assertEqual(destroyable.hp_max, destroyable.hp)
+        self.assertEqual(destroyable.hp_max, destroyable.hit_points)
         self.assertEqual(hp_max_init, destroyable.hp_max)
 
 

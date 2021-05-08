@@ -1,7 +1,7 @@
 import math
+import random
 
 from lxml import etree
-import random as rd
 
 from src.game_entities.key import Key
 from src.game_entities.shield import Shield
@@ -23,7 +23,8 @@ class Character(Movable):
     def __init__(self, name, pos, sprite, hp, defense, res, strength, classes, equipments,
                  strategy, lvl, skills, alterations, race, gold, interaction, compl_sprite=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res,
-                         Character.races_data[race]['move'] + Character.classes_data[classes[0]]['move'],
+                         Character.races_data[race]['move'] +
+                         Character.classes_data[classes[0]]['move'],
                          strength, 'PHYSICAL', strategy, lvl, skills, alterations, compl_sprite)
         self.equipments = equipments
         self.classes = classes
@@ -38,15 +39,15 @@ class Character(Movable):
     def talk(self, actor):
         self.join_team = self.interaction['join_team']
         entries = []
-        for s in self.interaction['dialog']:
-            entry = [{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
+        for line in self.interaction['dialog']:
+            entry = [{'type': 'text', 'text': line, 'font': fonts['ITEM_DESC_FONT']}]
             entries.append(entry)
         return entries
 
     def display(self, screen):
         Movable.display(self, screen)
-        for eq in self.equipments:
-            eq.display(screen, self.pos, True)
+        for equipment in self.equipments:
+            equipment.display(screen, self.position, True)
 
     def lvl_up(self):
         Movable.lvl_up(self)
@@ -56,7 +57,7 @@ class Character(Movable):
     def parried(self):
         for eq in self.equipments:
             if isinstance(eq, Shield):
-                parried = rd.randint(0, 100) < eq.parry
+                parried = random.randint(0, 100) < eq.parry
                 if parried:
                     if eq.used() <= 0:
                         self.remove_equipment(eq)
@@ -81,26 +82,26 @@ class Character(Movable):
         return damages
 
     def stats_up(self, nb_lvl=1):
-        for i in range(nb_lvl):
-            hp_increased = rd.choice(Character.classes_data[self.classes[0]]['stats_up']['hp'])
-            self.defense += rd.choice(Character.classes_data[self.classes[0]]['stats_up']['def'])
-            self.res += rd.choice(Character.classes_data[self.classes[0]]['stats_up']['res'])
-            self.strength += rd.choice(Character.classes_data[self.classes[0]]['stats_up']['str'])
+        for _ in range(nb_lvl):
+            hp_increased = random.choice(Character.classes_data[self.classes[0]]['stats_up']['hp'])
+            self.defense += random.choice(Character.classes_data[self.classes[0]]['stats_up']['def'])
+            self.res += random.choice(Character.classes_data[self.classes[0]]['stats_up']['res'])
+            self.strength += random.choice(Character.classes_data[self.classes[0]]['stats_up']['str'])
             self.hp_max += hp_increased
-            self.hp += hp_increased
+            self.hit_points += hp_increased
 
     def get_weapon(self):
-        for eq in self.equipments:
-            if eq.body_part == 'right_hand':
-                return eq
+        for equipment in self.equipments:
+            if equipment.body_part == 'right_hand':
+                return equipment
         return None
 
     @property
     def reach(self):
         reach = self.reach_
-        w = self.get_weapon()
-        if w is not None:
-            reach = w.reach
+        weapon = self.get_weapon()
+        if weapon is not None:
+            reach = weapon.reach
         return reach
 
     @property
@@ -116,13 +117,13 @@ class Character(Movable):
             return False
         return self.equipments[index]
 
-    def has_equipment(self, eq):
-        return eq in self.equipments
+    def has_equipment(self, equipment):
+        return equipment in self.equipments
 
     def get_formatted_classes(self):
         formatted_string = ""
-        for cl in self.classes:
-            formatted_string += cl.capitalize() + ", "
+        for cls in self.classes:
+            formatted_string += cls.capitalize() + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
@@ -133,34 +134,35 @@ class Character(Movable):
     def get_formatted_reach(self):
         return ', '.join([str(reach) for reach in self.reach])
 
-    def equip(self, eq):
+    def equip(self, equipment):
         # Verify if player could wear this equipment
         allowed = True
-        if self.race == 'centaur' and not (isinstance(eq, Weapon) or isinstance(eq, Shield)):
+        if self.race == 'centaur' and not (isinstance(equipment, Weapon) or isinstance(equipment, Shield)):
             allowed = False
-        if eq.restrictions != {}:
+        if equipment.restrictions != {}:
             allowed = False
-            if 'classes' in eq.restrictions and (self.race != 'centaur' or isinstance(eq, Weapon) or isinstance(eq, Shield)):
-                for cl in eq.restrictions['classes']:
-                    if cl in self.classes:
+            if 'classes' in equipment.restrictions and \
+                    (self.race != 'centaur' or isinstance(equipment, Weapon) or isinstance(equipment, Shield)):
+                for cls in equipment.restrictions['classes']:
+                    if cls in self.classes:
                         allowed = True
                         break
-            if 'races' in eq.restrictions:
-                for race in eq.restrictions['races']:
+            if 'races' in equipment.restrictions:
+                for race in equipment.restrictions['races']:
                     if race == self.race:
                         allowed = True
                         break
 
         if allowed:
-            self.remove_item(eq)
+            self.remove_item(equipment)
             # Value to know if there was an equipped item at the slot taken by eq
             replacement = 0
             for equip in self.equipments:
-                if eq.body_part == equip.body_part:
+                if equipment.body_part == equip.body_part:
                     self.remove_equipment(equip)
                     self.set_item(equip)
                     replacement = 1
-            self.equipments.append(eq)
+            self.equipments.append(equipment)
             return replacement
         return -1
 
@@ -173,13 +175,13 @@ class Character(Movable):
 
     def remove_equipment(self, eq):
         for index, equip in enumerate(self.equipments):
-            if equip.id == eq.id:
+            if equip.identifier == eq.identifier:
                 return self.equipments.pop(index)
 
     def get_stat_change(self, stat):
         malus = 0
         if stat == 'speed':
-            # Check if character as a malus to his movement due to equipment total weight exceeding constitution
+            # Check if character as a malus due to equipment weight exceeding constitution
             total_weight = sum([eq.weight for eq in self.equipments])
             diff = total_weight - self.constitution
             malus = 0 if diff < 0 else - math.ceil(diff / 2)
@@ -187,13 +189,13 @@ class Character(Movable):
 
     def remove_chest_key(self):
         best_candidate = None
-        for it in self.items:
-            if isinstance(it, Key) and it.for_chest:
+        for item in self.items:
+            if isinstance(item, Key) and item.for_chest:
                 if not best_candidate:
-                    best_candidate = it
-                elif not it.for_door:
+                    best_candidate = item
+                elif not item.for_door:
                     # If a key could be used to open a chest but not a door, it's better to use it
-                    best_candidate = it
+                    best_candidate = item
         self.items.remove(best_candidate)
 
     def remove_door_key(self):

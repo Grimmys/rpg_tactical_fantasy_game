@@ -1,12 +1,13 @@
+from src.constants import ANIMATION_SPEED, WHITE
 from src.gui.fonts import fonts
-from src.constants import *
 from src.gui.button import Button
 
 
 class DynamicButton(Button):
-    def __init__(self, method_id, args, size, pos, sprite, sprite_hover, margin, values, current_value,
-                 base_title, base_sprite, base_sprite_hover, linked_object=None):
-        Button.__init__(self, method_id, args, size, pos, sprite, sprite_hover, margin, linked_object)
+    def __init__(self, method_id, args, size, pos, sprite, sprite_hover, margin, values,
+                 current_value, base_title, base_sprite, base_sprite_hover, linked_object=None):
+        Button.__init__(self, method_id, args, size, pos, sprite, sprite_hover,
+                        margin, linked_object)
         self.values = values
         self.current_value_ind = current_value
         self.base_title = base_title
@@ -15,7 +16,8 @@ class DynamicButton(Button):
         self.args.append(ANIMATION_SPEED)
 
     def update_sprite(self):
-        name = fonts['ITEM_FONT'].render(self.base_title + ' ' + self.values[self.current_value_ind]['label'], 1, WHITE)
+        name = fonts['ITEM_FONT'].render(self.base_title + ' ' +
+                                         self.values[self.current_value_ind]['label'], 1, WHITE)
 
         tmp_sprite = self.base_sprite.copy()
         tmp_sprite.blit(name, (tmp_sprite.get_width() // 2 - name.get_width() // 2,

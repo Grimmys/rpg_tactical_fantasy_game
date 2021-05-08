@@ -21,7 +21,7 @@ class TestEntity(unittest.TestCase):
         sprite = 'imgs/dungeon_crawl/monster/angel.png'
         entity = Entity(name, pos, sprite)
         self.assertEqual(name, entity.name)
-        self.assertEqual(pos, entity.pos)
+        self.assertEqual(pos, entity.position)
         self.assertEqual('Entity', str(entity))
         self.assertTrue(entity.is_on_pos(pos))
 

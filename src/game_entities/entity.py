@@ -1,28 +1,28 @@
 import re
 
-import pygame as pg
+import pygame
 from lxml import etree
 
 from src.constants import TILE_SIZE
 
 
 class Entity:
-    def __init__(self, name, pos, sprite):
+    def __init__(self, name, position, sprite):
         self.name = name
-        self.pos = pos
-        self.sprite = sprite if isinstance(sprite, pg.Surface) \
-            else pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        self.position = position
+        self.sprite = sprite if isinstance(sprite, pygame.Surface) \
+            else pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
 
     def display(self, screen):
-        screen.blit(self.sprite, self.pos)
+        screen.blit(self.sprite, self.position)
 
     def get_rect(self):
-        return self.sprite.get_rect(topleft=self.pos)
+        return self.sprite.get_rect(topleft=self.position)
 
     def __str__(self):
-        s = self.name.replace('_', ' ').title()
-        s = re.sub(r'[0-9]+', '', s)  # Remove numbers like the id
-        return s.strip()
+        string_entity = self.name.replace('_', ' ').title()
+        string_entity = re.sub(r'[0-9]+', '', string_entity)  # Remove numbers like the id
+        return string_entity.strip()
 
     def is_on_pos(self, pos):
         return self.get_rect().collidepoint(pos)
@@ -36,10 +36,10 @@ class Entity:
         name.text = self.name
 
         # Save position
-        pos = etree.SubElement(tree, 'position')
-        x = etree.SubElement(pos, 'x')
-        x.text = str(self.pos[0] // TILE_SIZE)
-        y = etree.SubElement(pos, 'y')
-        y.text = str(self.pos[1] // TILE_SIZE)
+        position = etree.SubElement(tree, 'position')
+        x_coordinate = etree.SubElement(position, 'x')
+        x_coordinate.text = str(self.position[0] // TILE_SIZE)
+        y_coordinate = etree.SubElement(position, 'y')
+        y_coordinate.text = str(self.position[1] // TILE_SIZE)
 
         return tree

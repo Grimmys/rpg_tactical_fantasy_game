@@ -11,7 +11,8 @@ class Fountain(Entity):
         Entity.__init__(self, name, pos, sprite)
         self.effect = effect
         self.times = times
-        self.sprite_empty = pg.transform.scale(pg.image.load(sprite_empty).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        self.sprite_empty = pg.transform.scale(pg.image.load(sprite_empty).convert_alpha(),
+                                               (TILE_SIZE, TILE_SIZE))
 
     def drink(self, ent):
         entries = []
@@ -25,7 +26,8 @@ class Fountain(Entity):
             entries.append([{'type': 'text', 'text': str(self.times) + " remaining uses.",
                              'font': fonts['ITEM_DESC_FONT']}])
         else:
-            entries.append([{'type': 'text', 'text': 'The fountain is empty...', 'font': fonts['ITEM_DESC_FONT']}])
+            entries.append([{'type': 'text', 'text': 'The fountain is empty...',
+                             'font': fonts['ITEM_DESC_FONT']}])
         return entries
 
     def set_times(self, times):

@@ -24,7 +24,7 @@ class TestShop(unittest.TestCase):
                  {'item': random_item(), 'quantity': rd.randint(1, 10)}]
         shop = Shop(name, pos, sprite, interaction, items)
         self.assertEqual(name, shop.name)
-        self.assertEqual(pos, shop.pos)
+        self.assertEqual(pos, shop.position)
         self.assertEqual('Tavern', str(shop))
         self.assertTrue(items[0] in shop.stock)
         self.assertTrue(items[1] in shop.stock)

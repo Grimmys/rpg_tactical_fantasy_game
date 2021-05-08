@@ -1,3 +1,13 @@
+import pygame
+
+from src.constants import TILE_SIZE, ITEM_MENU_WIDTH, UNFINAL_ACTION, \
+    ORANGE, WHITE, ITEM_BUTTON_SIZE_EQ, \
+    EQUIPMENT_MENU_WIDTH, TRADE_MENU_WIDTH, GREEN, YELLOW, RED, \
+    DARK_GREEN, GOLD, TURQUOISE, STATUS_MENU_WIDTH, \
+    ACTION_MENU_WIDTH, BATTLE_SUMMARY_WIDTH, ITEM_BUTTON_SIZE, \
+    ITEM_INFO_MENU_WIDTH, STATUS_INFO_MENU_WIDTH, \
+    FOE_STATUS_MENU_WIDTH, DIALOG_WIDTH, REWARD_MENU_WIDTH, \
+    START_MENU_WIDTH, ANIMATION_SPEED, SCREEN_SIZE, SAVE_SLOTS
 from src.game_entities.chest import Chest
 from src.game_entities.character import Character
 from src.game_entities.consumable import Consumable
@@ -5,15 +15,16 @@ from src.game_entities.door import Door
 from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe
 from src.game_entities.fountain import Fountain
+from src.gui.fonts import fonts
 from src.gui.infoBox import InfoBox
-from src.services.menus import *
 from src.game_entities.mission import MissionType
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
 from src.game_entities.weapon import Weapon
-from src.gui.fonts import *
-from src.constants import *
+from src.services.menus import BuyMenu, SellMenu, InventoryMenu, EquipmentMenu, \
+    TradeMenu, StatusMenu, CharacterMenu, MainMenu, ItemMenu, StartMenu, \
+    OptionsMenu, SaveMenu, LoadMenu
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
@@ -22,9 +33,9 @@ MAP_HEIGHT = TILE_SIZE * 10
 def create_shop_menu(stock, gold):
     entries = []
     row = []
-    for i, it in enumerate(stock):
-        entry = {'type': 'item_button', 'item': it['item'], 'price': it['item'].price, 'quantity': it['quantity'],
-                 'index': i, 'id': BuyMenu.INTERAC_BUY}
+    for i, item in enumerate(stock):
+        entry = {'type': 'item_button', 'item': item['item'], 'price': item['item'].price,
+                 'quantity': item['quantity'], 'index': i, 'id': BuyMenu.INTERAC_BUY}
         row.append(entry)
         if len(row) == 2:
             entries.append(row)
@@ -81,8 +92,8 @@ def create_equipment_menu(equipments):
                     equipment = eq
                     index = i
                     break
-            entry = {'type': 'item_button', 'item': equipment, 'index': index, 'size': ITEM_BUTTON_SIZE_EQ,
-                     'id': EquipmentMenu.INTERAC_EQUIPMENT}
+            entry = {'type': 'item_button', 'item': equipment,
+                     'index': index, 'size': ITEM_BUTTON_SIZE_EQ, 'id': EquipmentMenu.INTERAC_EQUIPMENT}
             row.append(entry)
         entries.append(row)
     return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
@@ -108,25 +119,32 @@ def create_trade_menu(first_player, second_player):
         row = []
         for owner_i, items in enumerate([items_first, items_second]):
             for j in range(2):
-                entry = {'type': 'item_button', 'item': items[i * 2 + j], 'index': i, 'subtype': 'trade',
-                         'id': method_id, 'args': [first_player, second_player, owner_i]}
+                entry = {'type': 'item_button', 'item': items[i * 2 + j],
+                         'index': i, 'subtype': 'trade', 'id': method_id,
+                         'args': [first_player, second_player, owner_i]}
                 row.append(entry)
         entries.append(row)
 
     # Buttons to trade gold
     method_id = TradeMenu.SEND_GOLD
     entry = [
-        {'type': 'button', 'name': '50G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+        {'type': 'button', 'name': '50G ->', 'size': (90, 30),
+         'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
          'id': method_id, 'args': [first_player, second_player, 0, 50]},
-        {'type': 'button', 'name': '200G ->', 'size': (90, 30), 'margin': (30, 0, 0, 0),
-         'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 0, 200]},
-        {'type': 'button', 'name': 'All ->', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+        {'type': 'button', 'name': '200G ->', 'size': (90, 30),
+         'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+         'id': method_id, 'args': [first_player, second_player, 0, 200]},
+        {'type': 'button', 'name': 'All ->', 'size': (90, 30),
+         'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
          'id': method_id, 'args': [first_player, second_player, 0, first_player.gold]},
-        {'type': 'button', 'name': '<- 50G', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+        {'type': 'button', 'name': '<- 50G', 'size': (90, 30),
+         'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
          'id': method_id, 'args': [first_player, second_player, 1, 50]},
-        {'type': 'button', 'name': '<- 200G', 'size': (90, 30), 'margin': (30, 0, 0, 0),
-         'font': fonts['ITEM_DESC_FONT'], 'id': method_id, 'args': [first_player, second_player, 1, 200]},
-        {'type': 'button', 'name': '<- All', 'size': (90, 30), 'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+        {'type': 'button', 'name': '<- 200G', 'size': (90, 30),
+         'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
+         'id': method_id, 'args': [first_player, second_player, 1, 200]},
+        {'type': 'button', 'name': '<- All', 'size': (90, 30),
+         'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
          'id': method_id, 'args': [first_player, second_player, 1, second_player.gold]}]
     entries.append(entry)
 
@@ -169,12 +187,12 @@ def create_status_menu(player):
                [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': fonts['ITALIC_ITEM_FONT']},
                 {'type': 'text', 'text': str(player.lvl)}],
                [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': str(player.xp) + ' / ' + str(player.xp_next_lvl)}],
-               [{'type': 'text', 'color': DARK_GREEN, 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'],
-                 'margin': (10, 0, 10, 0)}],
+                {'type': 'text', 'text': f'{player.experience} / {player.experience_to_lvl_up}'}],
+               [{'type': 'text', 'color': DARK_GREEN, 'text': 'STATS',
+                 'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
                [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
-                {'type': 'text', 'text': str(player.hp) + ' / ' + str(player.hp_max),
-                 'color': determine_hp_color(player.hp, player.hp_max)}],
+                {'type': 'text', 'text': f'{player.hit_points} / {player.hp_max}',
+                 'color': determine_hp_color(player.hit_points, player.hp_max)}],
                [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
                 {'type': 'text', 'text': str(player.max_moves) + player.get_formatted_stat_change('speed')}],
                [{'type': 'text', 'color': WHITE, 'text': 'CONSTITUTION :'},
@@ -224,15 +242,15 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
     pick_lock_option = False
     door_option = False
 
-    case_pos = (player.pos[0], player.pos[1] - TILE_SIZE)
+    case_pos = (player.position[0], player.position[1] - TILE_SIZE)
     if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
         for building in buildings:
-            if building.pos == case_pos:
+            if building.position == case_pos:
                 entries.insert(0, [{'name': 'Visit', 'id': CharacterMenu.VISIT}])
                 break
 
     for ent in interact_entities:
-        if abs(ent.pos[0] - player.pos[0]) + abs(ent.pos[1] - player.pos[1]) == TILE_SIZE:
+        if abs(ent.position[0] - player.position[0]) + abs(ent.position[1] - player.position[1]) == TILE_SIZE:
             if isinstance(ent, Player):
                 if not trade_option:
                     entries.insert(0, [{'name': 'Trade', 'id': CharacterMenu.TRADE}])
@@ -267,7 +285,7 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
     # Check if player is on mission position
     for mission in missions:
         if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
-            if mission.pos_is_valid(player.pos):
+            if mission.pos_is_valid(player.position):
                 entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
 
     # Check if player could attack something, according to weapon range
@@ -276,7 +294,8 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
         end = False
         for foe in foes:
             for reach in w_range:
-                if abs(foe.pos[0] - player.pos[0]) + abs(foe.pos[1] - player.pos[1]) == TILE_SIZE * reach:
+                if abs(foe.position[0] - player.position[0]) + abs(
+                        foe.position[1] - player.position[1]) == TILE_SIZE * reach:
                     entries.insert(0, [{'name': 'Attack', 'id': CharacterMenu.ATTACK}])
                     end = True
                     break
@@ -298,7 +317,7 @@ def create_diary_menu(entries):
 
 def create_main_menu(initialization_phase, pos):
     # Transform pos tuple into rect
-    tile = pg.Rect(pos[0], pos[1], 1, 1)
+    tile = pygame.Rect(pos[0], pos[1], 1, 1)
     entries = [[{'name': 'Save', 'id': MainMenu.SAVE}],
                [{'name': 'Suspend', 'id': MainMenu.SUSPEND}]]
 
@@ -322,8 +341,8 @@ def create_item_shop_menu(item_button_pos, item):
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
     formatted_item_name = str(item)
-    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                        ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                            ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
@@ -335,8 +354,8 @@ def create_item_sell_menu(item_button_pos, item):
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
     formatted_item_name = str(item)
-    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                        ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                            ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
                    entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
@@ -353,8 +372,8 @@ def create_trade_item_menu(item_button_pos, item, players):
         for entry in row:
             entry['type'] = 'button'
 
-    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                        ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                            ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
                    entries,
@@ -380,8 +399,8 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
         for entry in row:
             entry['type'] = 'button'
 
-    item_rect = pg.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                        ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
+                            ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
                    entries,
@@ -410,8 +429,8 @@ def create_item_desc_menu(item):
         if isinstance(item, Weapon):
             # Compute reach
             reach_txt = ""
-            for nb in item.reach:
-                reach_txt += str(nb) + ', '
+            for distance in item.reach:
+                reach_txt += str(distance) + ', '
             reach_txt = reach_txt[:len(reach_txt) - 2]
             entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
             entries.append(create_item_desc_stat('REACH', reach_txt))
@@ -424,7 +443,8 @@ def create_item_desc_menu(item):
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
         if isinstance(item, Weapon) or isinstance(item, Shield):
-            entries.append(create_item_desc_stat('DURABILITY', str(item.durability) + ' / ' + str(item.durability_max)))
+            entries.append(create_item_desc_stat('DURABILITY',
+                                                 f'{item.durability} / {item.durability_max}'))
         entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
     elif isinstance(item, Consumable):
         for eff in item.effects:
@@ -436,16 +456,18 @@ def create_item_desc_menu(item):
 
 def create_alteration_info_menu(alteration):
     turns_left = alteration.get_turns_left()
-    entries = [[{'type': 'text', 'text': alteration.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
-               [{'type': 'text', 'text': 'Turns left : ' + str(turns_left), 'font': fonts['ITEM_DESC_FONT'],
-                 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
+    entries = [[{'type': 'text', 'text': alteration.desc,
+                 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
+               [{'type': 'text', 'text': f'Turns left : {turns_left}',
+                 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
     return InfoBox(str(alteration), "", "imgs/interface/PopUpMenu.png", entries,
                    STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
 def create_skill_info_menu(skill):
-    entries = [[{'type': 'text', 'text': skill.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
+    entries = [[{'type': 'text', 'text': skill.desc,
+                 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
 
     return InfoBox(skill.formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
@@ -454,27 +476,32 @@ def create_skill_info_menu(skill):
 
 def create_status_entity_menu(ent):
     keywords_display = ent.get_formatted_keywords() if isinstance(ent, Foe) else ''
-    entries = [[{'type': 'text', 'text': keywords_display, 'font': fonts['ITALIC_ITEM_FONT']}],
-               [{'type': 'text', 'text': 'LEVEL : ' + str(ent.lvl), 'font': fonts['ITEM_DESC_FONT']}],
-               [{'type': 'text', 'text': 'ATTACK', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
-                 'margin': (20, 0, 20, 0)}, {}, {}, {'type': 'text', 'text': 'LOOT',
-                                                     'font': fonts['MENU_SUB_TITLE_FONT'],
-                                                     'color': DARK_GREEN,
-                                                     'margin': (20, 0, 20, 0)} if isinstance(ent, Foe) else {}, {}],
+    entries = [[{'type': 'text', 'text': keywords_display,
+                 'font': fonts['ITALIC_ITEM_FONT']}],
+               [{'type': 'text', 'text': f'LEVEL : {ent.lvl}', 'font': fonts['ITEM_DESC_FONT']}],
+               [{'type': 'text', 'text': 'ATTACK',
+                 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
+                 'margin': (20, 0, 20, 0)}, {}, {},
+                {'type': 'text', 'text': 'LOOT',
+                 'font': fonts['MENU_SUB_TITLE_FONT'],
+                 'color': DARK_GREEN,
+                 'margin': (20, 0, 20, 0)}
+                if isinstance(ent, Foe) else {}, {}],
                [{'type': 'text', 'text': 'TYPE :'},
                 {'type': 'text', 'text': str(ent.attack_kind.value)}, {}, {}, {}],
                [{'type': 'text', 'text': 'REACH :'},
                 {'type': 'text', 'text': ent.get_formatted_reach()}, {}, {}, {}],
                [{}, {}, {}, {}, {}],
                [{}, {}, {}, {}, {}],
-               [{'type': 'text', 'text': 'STATS', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
+               [{'type': 'text', 'text': 'STATS',
+                 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (10, 0, 10, 0)}, {}, {}, {'type': 'text', 'text': 'SKILLS',
                                                      'font': fonts['MENU_SUB_TITLE_FONT'],
                                                      'color': DARK_GREEN,
                                                      'margin': (10, 0, 10, 0)}, {}],
                [{'type': 'text', 'text': 'HP :'},
-                {'type': 'text', 'text': str(ent.hp) + ' / ' + str(ent.hp_max),
-                 'color': determine_hp_color(ent.hp, ent.hp_max)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.hit_points) + ' / ' + str(ent.hp_max),
+                 'color': determine_hp_color(ent.hit_points, ent.hp_max)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MOVE :'},
                 {'type': 'text', 'text': str(ent.max_moves)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ATTACK :'},
@@ -483,7 +510,8 @@ def create_status_entity_menu(ent):
                 {'type': 'text', 'text': str(ent.defense)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MAGICAL RES :'},
                 {'type': 'text', 'text': str(ent.res)}, {}, {}, {}],
-               [{'type': 'text', 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
+               [{'type': 'text', 'text': 'ALTERATIONS',
+                 'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (10, 0, 10, 0)}]]
 
     alts = ent.alterations
@@ -500,7 +528,7 @@ def create_status_entity_menu(ent):
         for (item, probability) in loot:
             name = str(item)
             entries[i][3] = {'type': 'text', 'text': name}
-            entries[i][4] = {'type': 'text', 'text': ' (' + str(probability * 100) + '%)'}
+            entries[i][4] = {'type': 'text', 'text': f' ({probability * 100} %)'}
             i += 1
 
     # Display skills
@@ -514,27 +542,30 @@ def create_status_entity_menu(ent):
 
 
 def create_event_dialog(dialog_el):
-    entries = [[{'type': 'text', 'text': s, 'font': fonts['ITEM_DESC_FONT']}]
-               for s in dialog_el['talks']]
+    entries = [[{'type': 'text', 'text': talk, 'font': fonts['ITEM_DESC_FONT']}]
+               for talk in dialog_el['talks']]
     return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
                    entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
 def create_reward_menu(mission):
     entries = [
-        [{'type': 'text', 'text': 'Congratulations ! Objective has been completed !', 'font': fonts['ITEM_DESC_FONT']}]]
+        [{'type': 'text', 'text': 'Congratulations ! Objective has been completed !',
+          'font': fonts['ITEM_DESC_FONT']}]]
     if mission.gold:
-        entries.append([{'type': 'text', 'text': 'Earned gold : ' + str(mission.gold) + ' (all characters)'}])
+        entries.append([{'type': 'text', 'text': f'Earned gold : {mission.gold} (all characters)'}])
     for item in mission.items:
-        entries.append([{'type': 'text', 'text': 'Earned item : ' + str(item)}])
+        entries.append([{'type': 'text', 'text': f'Earned item : {item}'}])
 
     return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
                    close_button=UNFINAL_ACTION)
 
 
 def create_start_menu():
-    entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}], [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
-               [{'name': 'Options', 'id': StartMenu.OPTIONS}], [{'name': 'Exit game', 'id': StartMenu.EXIT}]]
+    entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}],
+               [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
+               [{'name': 'Options', 'id': StartMenu.OPTIONS}],
+               [{'name': 'Exit game', 'id': StartMenu.EXIT}]]
 
     for row in entries:
         for entry in row:
@@ -545,8 +576,8 @@ def create_start_menu():
 
 
 def load_parameter_entry(formatted_name, values, current_value, identifier):
-    entry = {'type': 'parameter_button', 'name': formatted_name, 'values': values, 'id': identifier,
-             'current_value_ind': 0}
+    entry = {'type': 'parameter_button', 'name': formatted_name, 'values': values,
+             'id': identifier, 'current_value_ind': 0}
 
     for i in range(len(entry['values'])):
         if entry['values'][i]['value'] == current_value:
@@ -576,7 +607,8 @@ def create_load_menu():
     entries = []
 
     for i in range(SAVE_SLOTS):
-        entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': LoadMenu.LOAD, 'args': [i]}])
+        entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1),
+                         'id': LoadMenu.LOAD, 'args': [i]}])
 
     return InfoBox("Load Game", LoadMenu,
                    "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)

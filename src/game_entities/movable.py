@@ -56,8 +56,8 @@ class Movable(Destroyable):
         self.strength = strength
         self.alterations = alterations
         self.lvl = lvl
-        self.xp = 0
-        self.xp_next_lvl = self.determine_xp_goal()
+        self.experience = 0
+        self.experience_to_lvl_up = self.determine_xp_goal()
         self.items = []
         self.nb_items_max = NB_ITEMS_MAX
         self.state = EntityState.HAVE_TO_ACT
@@ -78,7 +78,7 @@ class Movable(Destroyable):
     def display(self, screen):
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
-            screen.blit(Movable.SELECTED_DISPLAY, self.pos)
+            screen.blit(Movable.SELECTED_DISPLAY, self.position)
 
     @property
     def attack_kind(self):
@@ -86,7 +86,7 @@ class Movable(Destroyable):
 
     def attacked(self, ent, damage, kind, allies):
         # Compute distance of all allies
-        allies_dist = [(ally, (abs(self.pos[0] - ally.pos[0]) + abs(self.pos[1] - ally.pos[1])) // TILE_SIZE)
+        allies_dist = [(ally, (abs(self.position[0] - ally.position[0]) + abs(self.position[1] - ally.position[1])) // TILE_SIZE)
                        for ally in allies]
 
         # Check if stats are modified by some alterations
@@ -110,7 +110,7 @@ class Movable(Destroyable):
         self.defense -= temp_def_change
         self.res -= temp_res_change
 
-        return self.hp
+        return self.hit_points
 
     def end_turn(self):
         self.state = EntityState.FINISHED
@@ -172,14 +172,14 @@ class Movable(Destroyable):
         change = self.get_stat_change(stat)
         if change > 0:
             return ' (+' + str(change) + ')'
-        elif change < 0:
+        if change < 0:
             return ' (' + str(change) + ')'
         return ''
 
     # The return value is a boolean indicating if the target gained a level
     def earn_xp(self, xp):
-        self.xp += xp
-        if self.xp >= self.xp_next_lvl:
+        self.experience += xp
+        if self.experience >= self.experience_to_lvl_up:
             self.lvl_up()
             return True
         return False
@@ -189,8 +189,8 @@ class Movable(Destroyable):
 
     def lvl_up(self):
         self.lvl += 1
-        self.xp -= self.xp_next_lvl
-        self.xp_next_lvl = self.determine_xp_goal()
+        self.experience -= self.experience_to_lvl_up
+        self.experience_to_lvl_up = self.determine_xp_goal()
 
     def get_item(self, index):
         return self.items[index] if 0 <= index < len(self.items) else False
@@ -204,9 +204,9 @@ class Movable(Destroyable):
             return True
         return False
 
-    def remove_item(self, item):
-        for index, it in enumerate(self.items):
-            if it.id == item.id:
+    def remove_item(self, item_to_remove):
+        for index, item in enumerate(self.items):
+            if item.identifier == item_to_remove.identifier:
                 return self.items.pop(index)
         return -1
 
@@ -216,7 +216,7 @@ class Movable(Destroyable):
     def move(self):
         self.timer -= Movable.move_speed
         if self.timer <= 0:
-            self.pos = self.on_move.pop(0)
+            self.position = self.on_move.pop(0)
             self.timer = TIMER
         if not self.on_move:
             self.state = EntityState.HAVE_TO_ATTACK
@@ -243,38 +243,41 @@ class Movable(Destroyable):
 
     def determine_attack(self, targets):
         temporary_attack = None
-        for r in self.reach:
+        for distance in self.reach:
             for target in targets:
-                if abs(self.pos[0] - target.pos[0]) + abs(self.pos[1] - target.pos[1]) == TILE_SIZE * r:
+                if abs(self.position[0] - target.position[0]) + \
+                        abs(self.position[1] - target.position[1]) == TILE_SIZE * distance:
                     if self.target and target == self.target:
-                        return target.pos
-                    temporary_attack = target.pos
+                        return target.position
+                    temporary_attack = target.position
         return temporary_attack
 
     def determine_move(self, possible_moves, targets):
         self.target = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target, dist in targets.items():
-                for r in self.reach:
+                for distance in self.reach:
                     for move in possible_moves:
                         # Try to find move next to one target
-                        if abs(move[0] - target.pos[0]) + abs(move[1] - target.pos[1]) == TILE_SIZE * r:
+                        if abs(move[0] - target.position[0]) + \
+                                abs(move[1] - target.position[1]) == TILE_SIZE * distance:
                             self.target = target
                             return move
         elif self.strategy is EntityStrategy.ACTIVE:
             # Targets the nearest opponent
             self.target = min(targets.keys(), key=(lambda k: targets[k]))
-            best_move = possible_moves[self.pos]
+            best_move = possible_moves[self.position]
             min_dist = INITIAL_MAX
-            for r in self.reach:
+            for distance in self.reach:
                 for move in possible_moves:
                     # Search for the nearest move to target
-                    dist = abs(move[0] - self.target.pos[0]) + abs(move[1] - self.target.pos[1]) - (TILE_SIZE * r)
+                    dist = abs(move[0] - self.target.position[0]) + \
+                           abs(move[1] - self.target.position[1]) - (TILE_SIZE * distance)
                     if 0 <= dist < min_dist:
                         best_move = move
                         min_dist = dist
             return best_move
-        return self.pos
+        return self.position
 
     # Should return damage dealt
     def attack(self, ent):
@@ -294,8 +297,8 @@ class Movable(Destroyable):
         level.text = str(self.lvl)
 
         # Save exp
-        exp = etree.SubElement(tree, 'exp')
-        exp.text = str(self.xp)
+        experience = etree.SubElement(tree, 'exp')
+        experience.text = str(self.experience)
 
         # Save strategy
         strategy = etree.SubElement(tree, 'strategy')
@@ -314,8 +317,8 @@ class Movable(Destroyable):
             alterations.append(alteration.save('alteration'))
 
         # Save stats
-        hp_m = etree.SubElement(tree, 'hp')
-        hp_m.text = str(self.hp_max)
+        hit_points_max = etree.SubElement(tree, 'hp')
+        hit_points_max.text = str(self.hp_max)
         atk = etree.SubElement(tree, 'strength')
         atk.text = str(self.strength)
         defense = etree.SubElement(tree, 'defense')

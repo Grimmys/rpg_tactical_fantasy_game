@@ -21,7 +21,7 @@ class TestBuilding(unittest.TestCase):
         house = Building(name, pos, sprite)
 
         self.assertEqual(name, house.name)
-        self.assertEqual(pos, house.pos)
+        self.assertEqual(pos, house.position)
         self.assertEqual('House', str(house))
 
     def test_init_building_interactive(self):
@@ -34,7 +34,7 @@ class TestBuilding(unittest.TestCase):
         house = Building(name, pos, sprite, interaction)
 
         self.assertEqual(name, house.name)
-        self.assertEqual(pos, house.pos)
+        self.assertEqual(pos, house.position)
         self.assertEqual(interaction, house.interaction)
         self.assertEqual('House', str(house))
 

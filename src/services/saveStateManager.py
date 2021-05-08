@@ -8,7 +8,7 @@ class SaveStateManager:
         self.tree = etree.Element('save')
 
     def save_game(self, file_id):
-        save_file = open(f"saves/save_{file_id}.xml", "w+")
+        save_file = open(f'saves/save_{file_id}.xml', 'w+')
 
         level = self.save_level()
         self.tree.append(level)
@@ -43,15 +43,24 @@ class SaveStateManager:
     def save_entities(self):
         entities = etree.Element('entities')
 
-        entities.append(self.save_collection('allies', 'ally', self.level.entities['allies']))
-        entities.append(self.save_collection('foes', 'foe', self.level.entities['foes']))
-        entities.append(self.save_collection('breakables', 'breakable', self.level.entities['breakables']))
-        entities.append(self.save_collection('chests', 'chest', self.level.entities['chests']))
-        entities.append(self.save_collection('fountains', 'fountain', self.level.entities['fountains']))
-        entities.append(self.save_collection('buildings', 'building', self.level.entities['buildings']))
-        entities.append(self.save_collection('doors', 'door', self.level.entities['doors']))
-        entities.append(self.save_collection('players', 'player', self.level.players))
-        entities.append(self.save_collection('escaped_players', 'player', self.level.passed_players))
+        entities.append(self.save_collection('allies', 'ally',
+                                             self.level.entities['allies']))
+        entities.append(self.save_collection('foes', 'foe',
+                                             self.level.entities['foes']))
+        entities.append(self.save_collection('breakables', 'breakable',
+                                             self.level.entities['breakables']))
+        entities.append(self.save_collection('chests', 'chest',
+                                             self.level.entities['chests']))
+        entities.append(self.save_collection('fountains', 'fountain',
+                                             self.level.entities['fountains']))
+        entities.append(self.save_collection('buildings', 'building',
+                                             self.level.entities['buildings']))
+        entities.append(self.save_collection('doors', 'door',
+                                             self.level.entities['doors']))
+        entities.append(self.save_collection('players', 'player',
+                                             self.level.players))
+        entities.append(self.save_collection('escaped_players', 'player',
+                                             self.level.passed_players))
 
         return entities
 

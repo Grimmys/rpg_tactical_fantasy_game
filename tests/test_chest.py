@@ -21,7 +21,7 @@ class TestChest(unittest.TestCase):
         item = Item("TestItem", 'imgs/dungeon_crawl/item/potion/yellow_new.png', "This is a desc", 50)
         potential_items = [(item, 1.0)]
         chest = Chest(pos, sprite_close, sprite_open, potential_items)
-        self.assertEqual(pos, chest.pos)
+        self.assertEqual(pos, chest.position)
         self.assertEqual(sprite_close, chest.sprite_close_link)
         self.assertEqual(sprite_open, chest.sprite_open_link)
         self.assertEqual(chest.item, item)

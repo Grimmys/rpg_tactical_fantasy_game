@@ -10,8 +10,8 @@ from src.services.menus import ShopMenu
 
 
 class Shop(Building):
-    def __init__(self, name, pos, sprite, interaction, stock):
-        Building.__init__(self, name, pos, sprite, interaction)
+    def __init__(self, name, position, sprite, interaction, stock):
+        Building.__init__(self, name, position, sprite, interaction)
         self.stock = stock
         self.menu = menuCreatorManager.create_shop_menu(self.stock, 0)
 

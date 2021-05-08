@@ -94,7 +94,7 @@ class Level:
                 if 'new_players' in self.events['before_init']:
                     for player_el in self.events['before_init']['new_players']:
                         player = Loader.init_player(player_el['name'])
-                        player.pos = player_el['position']
+                        player.position = player_el['position']
                         self.players.append(player)
 
             # Set initial pos of players arbitrarily
@@ -300,12 +300,12 @@ class Level:
 
     def show_possible_attacks(self, movable, win):
         for tile in self.possible_attacks:
-            if movable.pos != tile:
+            if movable.position != tile:
                 blit_alpha(win, constant_sprites['attackable'], tile, ATTACKABLE_OPACITY)
 
     def show_possible_moves(self, movable, win):
         for tile in self.possible_moves.keys():
-            if movable.pos != tile:
+            if movable.position != tile:
                 blit_alpha(win, constant_sprites['landing'], tile, LANDING_OPACITY)
 
     def show_possible_interactions(self, win):
@@ -328,7 +328,7 @@ class Level:
             if 'new_players' in self.events['after_init']:
                 for player_el in self.events['after_init']['new_players']:
                     player = Loader.init_player(player_el['name'])
-                    player.pos = player_el['position']
+                    player.position = player_el['position']
                     self.players.append(player)
 
     def get_next_cases(self, pos):
@@ -370,7 +370,7 @@ class Level:
             entities += self.entities['allies'] + self.players
 
         for ent in entities:
-            pos = ent.pos
+            pos = ent.position
             for i in reach:
                 for x in range(-i, i + 1):
                     for y in {i - abs(x), -i + abs(x)}:
@@ -378,7 +378,7 @@ class Level:
                         case_y = pos[1] + (y * TILE_SIZE)
                         case_pos = (case_x, case_y)
                         if case_pos in possible_moves:
-                            tiles.append(ent.pos)
+                            tiles.append(ent.position)
 
         return set(tiles)
 
@@ -394,7 +394,7 @@ class Level:
         # Check all entities
         for collection in self.entities.values():
             for ent in collection:
-                if ent.pos == case:
+                if ent.position == case:
                     return ent
         return None
 
@@ -444,7 +444,7 @@ class Level:
         player = Player(
             name=character.name,
             sprite=character.sprite,
-            hp=character.hp,
+            hp=character.hit_points,
             defense=character.defense,
             res=character.res,
             strength=character.strength,
@@ -456,9 +456,9 @@ class Level:
             skills=character.skills,
             alterations=character.alterations)
         self.entities['players'].append(player)
-        player.earn_xp(character.xp)
-        player.hp = character.hp
-        player.pos = character.pos
+        player.earn_xp(character.experience)
+        player.hit_points = character.hit_points
+        player.position = character.position
         player.items = character.items
 
     def interact(self, actor, target, target_pos):
@@ -469,7 +469,7 @@ class Level:
         if not target:
             if self.wait_for_dest_tp:
                 self.wait_for_dest_tp = False
-                actor.pos = target_pos
+                actor.position = target_pos
 
                 # Turn is finished
                 self.background_menus = []
@@ -524,7 +524,7 @@ class Level:
                     self.open_door(target)
         # Check if player tries to use a portal
         elif isinstance(target, Portal):
-            new_based_pos = target.linked_to.pos
+            new_based_pos = target.linked_to.position
             possible_pos = self.get_possible_moves(new_based_pos, 1)
             # Remove portal pos since player cannot be on the portal
             del possible_pos[new_based_pos]
@@ -599,14 +599,14 @@ class Level:
                 continue
 
             damages = attacker.attack(target)
-            real_damages = target.hp - target.attacked(attacker, damages, kind, target_allies)
+            real_damages = target.hit_points - target.attacked(attacker, damages, kind, target_allies)
             self.diary_entries.append([{'type': 'text',
                                         'text': str(attacker) + " dealt " + str(real_damages) +
                                                 " damage to " + str(target), 'font': fonts['ITEM_DESC_FONT']}])
             # XP gain for dealt damages
             xp += real_damages // 2
             # If target has less than 0 HP at the end of the attack
-            if target.hp <= 0:
+            if target.hit_points <= 0:
                 # XP gain increased
                 if isinstance(attacker, Character):
                     xp += target.xp_gain
@@ -633,7 +633,7 @@ class Level:
                 self.remove_entity(target)
             else:
                 self.diary_entries.append([{'type': 'text', 'text': str(target) + " now has " +
-                                                                    str(target.hp) + " HP",
+                                                                    str(target.hit_points) + " HP",
                                             'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
                 if isinstance(attacker, Character):
@@ -655,14 +655,14 @@ class Level:
                                                 'text': str(attacker) + " gained a level !",
                                                 'font': fonts['ITEM_DESC_FONT']}])
 
-            if target.hp <= 0:
+            if target.hit_points <= 0:
                 # Target is dead, no more attack needed.
                 break
         while len(self.diary_entries) > 10:
             self.diary_entries.pop(0)
 
     def distance_between_all(self, ent_1, ents):
-        free_tiles_distance = self.get_possible_moves(ent_1.pos, (self.map['width'] * self.map['height']) // (
+        free_tiles_distance = self.get_possible_moves(ent_1.position, (self.map['width'] * self.map['height']) // (
                 TILE_SIZE * TILE_SIZE))
         ents_dist = {ent: self.map['width'] * self.map['height'] for ent in ents}
         for tile, dist in free_tiles_distance.items():
@@ -672,7 +672,7 @@ class Level:
         return ents_dist
 
     def entity_action(self, ent, is_ally):
-        possible_moves = self.get_possible_moves(ent.pos, ent.max_moves)
+        possible_moves = self.get_possible_moves(ent.position, ent.max_moves)
         targets = self.entities['foes'] if is_ally else self.players + self.entities['allies']
         allies = self.players + self.entities['allies'] if is_ally else self.entities['foes']
         case = ent.act(possible_moves, self.distance_between_all(ent, targets))
@@ -759,7 +759,7 @@ class Level:
         if method_id is CharacterMenu.ATTACK:
             self.background_menus.append((self.active_menu, False))
             self.selected_player.choose_target()
-            self.possible_attacks = self.get_possible_attacks([self.selected_player.pos], self.selected_player.reach,
+            self.possible_attacks = self.get_possible_attacks([self.selected_player.position], self.selected_player.reach,
                                                               True)
             self.possible_interactions = []
             self.active_menu = None
@@ -813,9 +813,9 @@ class Level:
                 self.active_menu = None
                 self.selected_player.choose_target()
                 self.possible_interactions = []
-                for ent in self.get_next_cases(self.selected_player.pos):
+                for ent in self.get_next_cases(self.selected_player.position):
                     if isinstance(ent, Chest) and not ent.opened:
-                        self.possible_interactions.append(ent.pos)
+                        self.possible_interactions.append(ent.position)
         elif method_id is CharacterMenu.OPEN_DOOR:
             # Check if player has a key
             has_key = False
@@ -835,9 +835,9 @@ class Level:
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.pos):
+            for ent in self.get_next_cases(self.selected_player.position):
                 if (isinstance(ent, Chest) and not ent.opened) or isinstance(ent, Door):
-                    self.possible_interactions.append(ent.pos)
+                    self.possible_interactions.append(ent.position)
         # Use a portal
         elif method_id is CharacterMenu.USE_PORTAL:
             self.select_interaction_with(Portal)
@@ -850,9 +850,9 @@ class Level:
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.pos):
+            for ent in self.get_next_cases(self.selected_player.position):
                 if isinstance(ent, Character) and not isinstance(ent, Player):
-                    self.possible_interactions.append(ent.pos)
+                    self.possible_interactions.append(ent.position)
         elif method_id is CharacterMenu.TRADE:
             self.select_interaction_with(Player)
         # Visit a house
@@ -860,7 +860,7 @@ class Level:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
-            self.possible_interactions = [(self.selected_player.pos[0], self.selected_player.pos[1] - TILE_SIZE)]
+            self.possible_interactions = [(self.selected_player.position[0], self.selected_player.position[1] - TILE_SIZE)]
             self.possible_attacks = []
         # Valid a mission position
         elif method_id is CharacterMenu.TAKE:
@@ -868,7 +868,7 @@ class Level:
                 if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
                     # Verify that character is not the last if the mission is not the main one
                     if mission.main or len(self.players) > 1:
-                        if mission.pos_is_valid(self.selected_player.pos):
+                        if mission.pos_is_valid(self.selected_player.position):
                             # Check if player is able to complete this objective
                             if mission.update_state(self.selected_player):
                                 self.players.remove(self.selected_player)
@@ -887,7 +887,7 @@ class Level:
         self.active_menu = None
         self.selected_player.choose_target()
         self.possible_interactions = []
-        for ent in self.get_next_cases(self.selected_player.pos):
+        for ent in self.get_next_cases(self.selected_player.position):
             if isinstance(ent, entity_kind):
                 self.possible_interactions.append(ent.pos)
 
@@ -1246,7 +1246,7 @@ class Level:
                         # Test if a character is on the tile, in this case, characters are swapped
                         ent = self.get_entity_on_case(tile)
                         if ent:
-                            ent.set_initial_pos(self.selected_player.pos)
+                            ent.set_initial_pos(self.selected_player.position)
 
                         self.selected_player.set_initial_pos(tile)
                         return
@@ -1258,7 +1258,7 @@ class Level:
                 else:
                     player.selected = True
                     self.selected_player = player
-                    self.possible_moves = self.get_possible_moves(player.pos,
+                    self.possible_moves = self.get_possible_moves(player.position,
                                                                   player.max_moves + player.get_stat_change('speed'))
                     self.possible_attacks = self.get_possible_attacks(self.possible_moves, self.selected_player.reach,
                                                                       True) if player.can_attack() else {}
@@ -1332,7 +1332,7 @@ class Level:
                 for collection in self.entities.values():
                     for ent in collection:
                         if isinstance(ent, Movable) and ent.get_rect().collidepoint(pos):
-                            pos = ent.pos
+                            pos = ent.position
                             self.watched_ent = ent
                             self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
                             reach = self.watched_ent.reach

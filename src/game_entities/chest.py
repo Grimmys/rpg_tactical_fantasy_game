@@ -15,7 +15,8 @@ class Chest(Entity):
         Entity.__init__(self, "Chest", pos, sprite_close)
         self.sprite_open_link = sprite_open
         self.sprite_close_link = sprite_close
-        self.sprite_open = pg.transform.scale(pg.image.load(sprite_open).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        self.sprite_open = pg.transform.scale(pg.image.load(sprite_open).convert_alpha(),
+                                              (TILE_SIZE, TILE_SIZE))
         self.item = Chest.determine_item(potential_items)
         self.opened = False
         self.pick_lock_initiated = False

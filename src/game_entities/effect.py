@@ -19,46 +19,43 @@ class Effect:
             abbr = alteration_root.find("abbreviated_name").text.strip()
             effs_el = alteration_root.find("effects")
             durable_effects = effs_el.text.strip().split(',') if effs_el is not None else []
-            self.alteration = Alteration(self.name, abbr, self.power, self.duration, desc, durable_effects)
+            self.alteration = Alteration(self.name, abbr, self.power, self.duration,
+                                         desc, durable_effects)
 
     def apply_on_ent(self, ent):
-        msg = ""
+        msg = ''
         success = True
         if self.name == 'heal':
             recovered = ent.healed(self.power)
             if recovered > 0:
-                msg = str(ent) + " recovered " + str(recovered) + " HP."
+                msg = f'{ent} recovered {recovered} HP.'
             else:
-                msg = str(ent) + " is at full health and can't be healed!"
+                msg = f"{ent} is at full health and can't be healed!"
                 success = False
         elif self.name == 'xp_up':
-            msg = str(ent) + " earned " + str(self.power) + " XP"
+            msg = f'{ent} earned {self.power} XP'
             if ent.earn_xp(self.power):
-                msg += ". " + str(ent) + " gained a level!"
+                msg += f'. {ent} gained a level!'
         elif self.name == 'speed_up':
             ent.set_alteration(self.alteration)
-            msg = "The speed of " + str(ent) + " has been increased for " + str(self.duration) + \
-                  " turns"
+            msg = f'The speed of {ent} has been increased for {self.duration} turns'
         elif self.name == 'strength_up':
             ent.set_alteration(self.alteration)
-            msg = "The strength of " + str(ent) + " has been increased for " + str(self.duration) + \
-                  " turns"
+            msg = f'The strength of {ent} has been increased for {self.duration} turns'
         elif self.name == 'defense_up':
             ent.set_alteration(self.alteration)
-            msg = "The defense of " + str(ent) + " has been increased for " + str(self.duration) + \
-                  " turns"
+            msg = f'The defense of {ent} has been increased for {self.duration} turns'
         elif self.name == 'stun':
             ent.set_alteration(self.alteration)
-            msg = str(ent) + " has been stunned for " + str(self.duration) + " turns"
+            msg = f'{ent} has been stunned for {self.duration} turns'
         return success, msg
 
     def get_formatted_desc(self):
         if self.name == 'heal':
-            return 'Recover ' + str(self.power) + ' HP'
+            return f'Recover {self.power} HP'
         elif self.name == 'xp_up':
-            return 'Earn ' + str(self.power) + ' XP'
-        else:
-            return self.alteration.desc
+            return f'Earn {self.power} XP'
+        return self.alteration.desc
 
     def __str__(self):
         return self.name.replace('_', ' ').title()

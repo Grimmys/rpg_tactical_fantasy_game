@@ -5,16 +5,17 @@ from src.constants import TILE_SIZE
 
 
 class Item:
-    internal_id = 0
+    internal_identifier = 0
 
     def __init__(self, name, sprite, description, price=0):
         self.name = name
-        self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+        self.sprite = pg.transform.scale(pg.image.load(sprite).convert_alpha(),
+                                         (TILE_SIZE, TILE_SIZE))
         self.desc = description
         self.price = price
         self.resell_price = price // 2
-        self.id = Item.internal_id
-        Item.internal_id += 1
+        self.identifier = Item.internal_identifier
+        Item.internal_identifier += 1
 
     def __str__(self):
         return self.name.replace('_', ' ').title().strip()

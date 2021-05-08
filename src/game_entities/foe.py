@@ -19,8 +19,8 @@ class Keyword(Enum):
 class Foe(Movable):
     grow_rates = {}
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind, strategy, reach, xp_gain,
-                 loot, keywords=None, lvl=1, alterations=None):
+    def __init__(self, name, pos, sprite, hp, defense, res, max_move, strength, attack_kind,
+                 strategy, reach, xp_gain, loot, keywords=None, lvl=1, alterations=None):
         Movable.__init__(self, name, pos, sprite, hp, defense, res, max_move,
                          strength, attack_kind, strategy, lvl, alterations=alterations)
         self.reach = reach
@@ -30,7 +30,7 @@ class Foe(Movable):
 
     def stats_up(self, nb_lvl=1):
         grow_rates = Foe.grow_rates[self.name]
-        for i in range(nb_lvl):
+        for _ in range(nb_lvl):
             self.hp_max += rd.choice(grow_rates['hp'])
             self.defense += rd.choice(grow_rates['def'])
             self.res += rd.choice(grow_rates['res'])
