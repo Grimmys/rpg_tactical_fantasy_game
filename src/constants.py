@@ -1,7 +1,7 @@
-"""Module to keep all the constants commonly used by other modules.
+"""
+    Module to keep all the constants commonly used by other modules.
 
-Can be imported from anywhere. Where more than one constant is needed, import * for ease of use.
-
+    Can be imported from anywhere.
 """
 import pygame as pg
 
