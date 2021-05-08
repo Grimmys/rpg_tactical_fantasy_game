@@ -19,6 +19,7 @@ from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.key import Key
 from src.game_entities.mission import MissionType
+from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
