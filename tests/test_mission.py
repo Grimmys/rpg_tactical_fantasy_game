@@ -78,7 +78,7 @@ class TestMission(unittest.TestCase):
     def test_update_state_kill_everybody_objective(self):
         nature = MissionType.KILL_EVERYBODY
         mission = Mission(True, nature, [], 'Test mission', 0)
-        foes = random_entities(Foe)
+        foes = random_entities(Foe, min=2)
         entities = {'foes': foes}
 
         self.assertTrue(mission.update_state(entities=entities))

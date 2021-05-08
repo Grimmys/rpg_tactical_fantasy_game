@@ -209,12 +209,12 @@ def random_player_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=
     return player
 
 
-def random_entities(entity_kind):
+def random_entities(entity_kind, min=1, max=10):
     if entity_kind is Foe:
         random_entity_callback = random_foe_entity
     else:
         random_entity_callback = random_player_entity
-    return [random_entity_callback() for _ in range(rd.randint(1, 10))]
+    return [random_entity_callback() for _ in range(rd.randint(min, max))]
 
 
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0, gold=True, item=True):
