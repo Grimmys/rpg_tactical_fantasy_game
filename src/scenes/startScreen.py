@@ -1,7 +1,8 @@
+import pygame
 from lxml import etree
 
+from src.constants import SCREEN_SIZE, BLACK, WIN_WIDTH, WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.services import menuCreatorManager
-from src.constants import *
 from src.gui.fonts import fonts
 from src.scenes.level import Level, LevelStatus
 from src.gui.infoBox import InfoBox
@@ -17,8 +18,9 @@ class StartScreen:
         self.menu_screen = self.screen.copy()
 
         # Start screen loop
-        background_image = pg.image.load('imgs/interface/main_menu_background.jpg').convert_alpha()
-        self.background = pg.transform.scale(background_image, screen.get_size())
+        background_image = pygame.image.load(
+            'imgs/interface/main_menu_background.jpg').convert_alpha()
+        self.background = pygame.transform.scale(background_image, screen.get_size())
 
         # Creating menu
         self.active_menu = menuCreatorManager.create_start_menu()
@@ -68,8 +70,8 @@ class StartScreen:
 
     def play(self, level):
         # Modify screen
-        flags = pg.FULLSCREEN if StartScreen.screen_size == 2 else 0
-        self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), flags)
+        flags = pygame.FULLSCREEN if StartScreen.screen_size == 2 else 0
+        self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), flags)
         self.level = level
 
     def update_state(self):
@@ -86,7 +88,7 @@ class StartScreen:
                 self.play(StartScreen.load_level(self.level_id, team))
             elif status is LevelStatus.ENDED_VICTORY or status is LevelStatus.ENDED_DEFEAT:
                 # TODO: Game win dialog?
-                self.screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+                self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
 
     @staticmethod
@@ -116,7 +118,8 @@ class StartScreen:
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level = Level(level_name, self.level_id, LevelStatus[game_status], turn_nb, tree_root.find("level/entities"))
+                level = Level(level_name, self.level_id, LevelStatus[game_status], turn_nb,
+                              tree_root.find("level/entities"))
                 self.play(level)
                 save.close()
                 return
@@ -125,7 +128,8 @@ class StartScreen:
             self.background_menus.append([self.active_menu, True])
 
             name = "Load Game"
-            entries = [[{'type': 'text', 'text': "No saved game.", 'font': fonts['MENU_SUB_TITLE_FONT']}]]
+            entries = [[{'type': 'text', 'text': "No saved game.", 'font':
+                fonts['MENU_SUB_TITLE_FONT']}]]
             width = self.screen.get_width() // 2
             self.active_menu = InfoBox(name, "", "imgs/interface/PopUpMenu.png",
                                        entries, width, close_button=1)
@@ -136,8 +140,9 @@ class StartScreen:
 
     def options_menu(self):
         self.background_menus.append([self.active_menu, False])
-        self.active_menu = menuCreatorManager.create_options_menu({'move_speed': int(self.read_options_file('move_speed')),
-                                                                   'screen_size': int(self.read_options_file('screen_size'))})
+        self.active_menu = menuCreatorManager.create_options_menu(
+            {'move_speed': int(self.read_options_file('move_speed')),
+             'screen_size': int(self.read_options_file('screen_size'))})
 
     def exit_game(self):
         self.exit = True

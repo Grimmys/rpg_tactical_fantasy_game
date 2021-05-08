@@ -36,8 +36,9 @@ class Destroyable(Entity):
             elif self.hit_points < self.hp_max * 0.75:
                 damage_bar = constant_sprites['moderately_damaged']
             damage_bar = pygame.transform.scale(damage_bar,
-                                            (int(damage_bar.get_width() * (self.hit_points / self.hp_max)),
-                                             damage_bar.get_height()))
+                                                (int(damage_bar.get_width() *
+                                                     (self.hit_points / self.hp_max)),
+                                                 damage_bar.get_height()))
             screen.blit(constant_sprites['hp_bar'], self.position)
             screen.blit(damage_bar, self.position)
 

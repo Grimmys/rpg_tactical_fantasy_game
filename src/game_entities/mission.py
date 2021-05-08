@@ -38,7 +38,8 @@ class Mission:
         return False
 
     def update_state(self, player=None, entities=None, turns=0):
-        if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) and player is not None:
+        if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) \
+                and player is not None:
             self.succeeded_chars.append(player)
             self.ended = len(self.succeeded_chars) == self.min_chars
         elif self.type is MissionType.KILL_EVERYBODY:

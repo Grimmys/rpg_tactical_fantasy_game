@@ -1,9 +1,10 @@
 from enum import IntEnum, auto
 
+import pygame
 from lxml import etree
 
+from src.constants import LIGHT_GREY
 from src.game_entities.character import Character
-from src.constants import *
 
 
 class PlayerState(IntEnum):
@@ -28,9 +29,9 @@ class Player(Character):
 
         # Sprite displayed when player cannot be selected
         self.sprite_unavaible = self.sprite.copy()
-        color_image = pg.Surface(self.sprite.get_size()).convert_alpha()
+        color_image = pygame.Surface(self.sprite.get_size()).convert_alpha()
         color_image.fill(LIGHT_GREY)
-        self.sprite_unavaible.blit(color_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        self.sprite_unavaible.blit(color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
         # Memorize normal state sprite
         self.normal_sprite = self.sprite
@@ -98,8 +99,8 @@ class Player(Character):
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return equipped
 
-    def unequip(self, eq):
-        unequipped = Character.unequip(self, eq)
+    def unequip(self, equipment):
+        unequipped = Character.unequip(self, equipment)
         if unequipped:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return unequipped

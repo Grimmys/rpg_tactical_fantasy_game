@@ -93,7 +93,8 @@ def create_equipment_menu(equipments):
                     index = i
                     break
             entry = {'type': 'item_button', 'item': equipment,
-                     'index': index, 'size': ITEM_BUTTON_SIZE_EQ, 'id': EquipmentMenu.INTERAC_EQUIPMENT}
+                     'index': index, 'size': ITEM_BUTTON_SIZE_EQ, 'id':
+                         EquipmentMenu.INTERAC_EQUIPMENT}
             row.append(entry)
         entries.append(row)
     return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
@@ -171,40 +172,45 @@ def determine_hp_color(hp, hp_max):
         return YELLOW
     if hp >= hp_max * 0.30:
         return ORANGE
-    else:
-        return RED
+    return RED
 
 
 def create_status_menu(player):
-    entries = [[{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': str(player)}, {}],
-               [{}, {}, {'type': 'text', 'color': DARK_GREEN, 'text': 'SKILLS',
-                         'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
-               [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': player.get_formatted_classes()}],
-               [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': player.get_formatted_race()}],
-               [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': str(player.lvl)}],
-               [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': fonts['ITALIC_ITEM_FONT']},
-                {'type': 'text', 'text': f'{player.experience} / {player.experience_to_lvl_up}'}],
-               [{'type': 'text', 'color': DARK_GREEN, 'text': 'STATS',
-                 'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
-                {'type': 'text', 'text': f'{player.hit_points} / {player.hp_max}',
-                 'color': determine_hp_color(player.hit_points, player.hp_max)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
-                {'type': 'text', 'text': str(player.max_moves) + player.get_formatted_stat_change('speed')}],
-               [{'type': 'text', 'color': WHITE, 'text': 'CONSTITUTION :'},
-                {'type': 'text', 'text': str(player.constitution)}],
-               [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
-                {'type': 'text', 'text': str(player.strength) + player.get_formatted_stat_change('strength')}],
-               [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},
-                {'type': 'text', 'text': str(player.defense) + player.get_formatted_stat_change('defense')}],
-               [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
-                {'type': 'text', 'text': str(player.res) + player.get_formatted_stat_change('resistance')}],
-               [{'type': 'text', 'color': DARK_GREEN, 'text': 'ALTERATIONS', 'font': fonts['MENU_SUB_TITLE_FONT'],
-                 'margin': (10, 0, 10, 0)}]]
+    entries = [
+        [{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
+         {'type': 'text', 'text': str(player)}, {}],
+        [{}, {}, {'type': 'text', 'color': DARK_GREEN, 'text': 'SKILLS',
+                  'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
+        [{'type': 'text', 'color': GREEN, 'text': 'Class :', 'font': fonts['ITALIC_ITEM_FONT']},
+         {'type': 'text', 'text': player.get_formatted_classes()}],
+        [{'type': 'text', 'color': GREEN, 'text': 'Race :', 'font': fonts['ITALIC_ITEM_FONT']},
+         {'type': 'text', 'text': player.get_formatted_race()}],
+        [{'type': 'text', 'color': GREEN, 'text': 'Level :', 'font': fonts['ITALIC_ITEM_FONT']},
+         {'type': 'text', 'text': str(player.lvl)}],
+        [{'type': 'text', 'color': GOLD, 'text': '   XP :', 'font': fonts['ITALIC_ITEM_FONT']},
+         {'type': 'text', 'text': f'{player.experience} / {player.experience_to_lvl_up}'}],
+        [{'type': 'text', 'color': DARK_GREEN, 'text': 'STATS',
+          'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
+        [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
+         {'type': 'text', 'text': f'{player.hit_points} / {player.hp_max}',
+          'color': determine_hp_color(player.hit_points, player.hp_max)}],
+        [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
+         {'type': 'text',
+          'text': str(player.max_moves) + player.get_formatted_stat_change('speed')}],
+        [{'type': 'text', 'color': WHITE, 'text': 'CONSTITUTION :'},
+         {'type': 'text', 'text': str(player.constitution)}],
+        [{'type': 'text', 'color': WHITE, 'text': 'ATTACK :'},
+         {'type': 'text',
+          'text': str(player.strength) + player.get_formatted_stat_change('strength')}],
+        [{'type': 'text', 'color': WHITE, 'text': 'DEFENSE :'},
+         {'type': 'text',
+          'text': str(player.defense) + player.get_formatted_stat_change('defense')}],
+        [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
+         {'type': 'text',
+          'text': str(player.res) + player.get_formatted_stat_change('resistance')}],
+        [{'type': 'text', 'color': DARK_GREEN, 'text': 'ALTERATIONS',
+          'font': fonts['MENU_SUB_TITLE_FONT'],
+          'margin': (10, 0, 10, 0)}]]
 
     alts = player.alterations
     if not alts:
@@ -216,7 +222,8 @@ def create_status_menu(player):
     # Display skills
     i = 2
     for skill in player.skills:
-        skill_displayed = {'type': 'text_button', 'name': skill.formatted_name, 'id': StatusMenu.INFO_SKILL,
+        skill_displayed = {'type': 'text_button', 'name': skill.formatted_name,
+                           'id': StatusMenu.INFO_SKILL,
                            'color': WHITE, 'color_hover': TURQUOISE, 'obj': skill}
         entries[i].append(skill_displayed)
         i += 1
@@ -250,7 +257,8 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
                 break
 
     for ent in interact_entities:
-        if abs(ent.position[0] - player.position[0]) + abs(ent.position[1] - player.position[1]) == TILE_SIZE:
+        if abs(ent.position[0] - player.position[0]) + abs(
+                ent.position[1] - player.position[1]) == TILE_SIZE:
             if isinstance(ent, Player):
                 if not trade_option:
                     entries.insert(0, [{'name': 'Trade', 'id': CharacterMenu.TRADE}])
@@ -345,7 +353,8 @@ def create_item_shop_menu(item_button_pos, item):
                             ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect,
+                   close_button=UNFINAL_ACTION)
 
 
 def create_item_sell_menu(item_button_pos, item):
@@ -358,7 +367,8 @@ def create_item_sell_menu(item_button_pos, item):
                             ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect,
+                   close_button=UNFINAL_ACTION)
 
 
 def create_trade_item_menu(item_button_pos, item, players):
@@ -408,14 +418,17 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
 
 
 def create_item_desc_stat(stat_name, stat_value):
-    return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 0, 100)},
-            {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 100, 0, 0)}]
+    return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'],
+             'margin': (0, 0, 0, 100)},
+            {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'],
+             'margin': (0, 100, 0, 0)}]
 
 
 def create_item_desc_menu(item):
     item_title = str(item)
 
-    entries = [[{'type': 'text', 'text': item.desc, 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+    entries = [[{'type': 'text', 'text': item.desc, 'font': fonts['ITEM_DESC_FONT'],
+                 'margin': (20, 0, 20, 0)}]]
 
     if isinstance(item, Equipment):
         if item.restrictions != {}:
@@ -436,7 +449,8 @@ def create_item_desc_menu(item):
             entries.append(create_item_desc_stat('REACH', reach_txt))
             for possible_effect in item.effects:
                 entries.append(create_item_desc_stat('EFFECT', str(possible_effect['effect']) +
-                                                     ' (' + str(possible_effect['probability']) + '%)'))
+                                                     ' (' + str(
+                    possible_effect['probability']) + '%)'))
             strong_against_formatted = item.get_formatted_strong_against()
             if strong_against_formatted:
                 entries.append(create_item_desc_stat('STRONG AGAINST', strong_against_formatted))
@@ -618,7 +632,8 @@ def create_save_menu():
     entries = []
 
     for i in range(SAVE_SLOTS):
-        entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
+        entries.append(
+            [{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
 
     return InfoBox("Save Game", SaveMenu,
                    "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)

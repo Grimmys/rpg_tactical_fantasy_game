@@ -40,10 +40,12 @@ class Movable(Destroyable):
     @staticmethod
     def init_constant_sprites():
         selected_sprite = 'imgs/dungeon_crawl/misc/cursor.png'
-        Movable.SELECTED_DISPLAY = pg.transform.scale(pg.image.load(selected_sprite).convert_alpha(),
-                                                      (TILE_SIZE, TILE_SIZE))
+        Movable.SELECTED_DISPLAY = pg.transform.scale(
+            pg.image.load(selected_sprite).convert_alpha(),
+            (TILE_SIZE, TILE_SIZE))
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy, lvl=1,
+    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind,
+                 strategy, lvl=1,
                  skills=None, alterations=None, compl_sprite=None):
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         if skills is None:
@@ -63,7 +65,8 @@ class Movable(Destroyable):
         self.state = EntityState.HAVE_TO_ACT
         self.target = None
         if compl_sprite:
-            compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
+            compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(),
+                                       (TILE_SIZE, TILE_SIZE))
             self.sprite.blit(compl, (0, 0))
 
         self._attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
@@ -86,7 +89,8 @@ class Movable(Destroyable):
 
     def attacked(self, ent, damage, kind, allies):
         # Compute distance of all allies
-        allies_dist = [(ally, (abs(self.position[0] - ally.position[0]) + abs(self.position[1] - ally.position[1])) // TILE_SIZE)
+        allies_dist = [(ally, (abs(self.position[0] - ally.position[0]) + abs(
+            self.position[1] - ally.position[1])) // TILE_SIZE)
                        for ally in allies]
 
         # Check if stats are modified by some alterations
@@ -94,7 +98,8 @@ class Movable(Destroyable):
         temp_res_change = self.get_stat_change('resistance')
         # Check if a skill is boosting stats during combat
         for skill in self.skills:
-            if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist if ally[1] == 1]:
+            if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist
+                                                           if ally[1] == 1]:
                 if 'defense' in skill.stats:
                     temp_def_change += skill.power
                 if 'resistance' in skill.stats:
@@ -231,14 +236,13 @@ class Movable(Destroyable):
     def act(self, possible_moves, targets):
         if self.state is EntityState.HAVE_TO_ACT:
             return self.determine_move(possible_moves, targets)
-        elif self.state is EntityState.ON_MOVE:
+        if self.state is EntityState.ON_MOVE:
             self.move()
         elif self.state is EntityState.HAVE_TO_ATTACK:
             attack = self.determine_attack(targets)
             if self.can_attack() and attack:
                 return attack
-            else:
-                self.end_turn()
+            self.end_turn()
         return None
 
     def determine_attack(self, targets):
