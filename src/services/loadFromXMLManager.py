@@ -237,7 +237,7 @@ def load_ally(ally, from_save, gap_x, gap_y):
         if from_save:
             eq_loaded = load_item(equipment)
         else:
-            eq_loaded = parse_item_file(equipment.text.strip)
+            eq_loaded = parse_item_file(equipment.text.strip())
         equipments.append(eq_loaded)
 
     if from_save:
