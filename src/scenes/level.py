@@ -388,12 +388,11 @@ class Level:
             entities += self.entities['allies'] + self.players
 
         for ent in entities:
-            pos = ent.position
             for i in reach:
                 for x_coordinate in range(-i, i + 1):
                     for y_coordinate in {i - abs(x_coordinate), -i + abs(x_coordinate)}:
-                        case_x = pos[0] + (x_coordinate * TILE_SIZE)
-                        case_y = pos[1] + (y_coordinate * TILE_SIZE)
+                        case_x = ent.position[0] + (x_coordinate * TILE_SIZE)
+                        case_y = ent.position[1] + (y_coordinate * TILE_SIZE)
                         case_pos = (case_x, case_y)
                         if case_pos in possible_moves:
                             tiles.append(ent.position)
@@ -924,7 +923,7 @@ class Level:
         self.possible_interactions = []
         for ent in self.get_next_cases(self.selected_player.position):
             if isinstance(ent, entity_kind):
-                self.possible_interactions.append(ent.pos)
+                self.possible_interactions.append(ent.position)
 
     def execute_inv_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -1249,9 +1248,9 @@ class Level:
             [{'sprite': constant_sprites['new_turn'], 'pos': constant_sprites['new_turn_pos']}],
             60)
 
-    def left_click(self, pos):
+    def left_click(self, position):
         if self.active_menu:
-            self.execute_action(self.active_menu.type, self.active_menu.click(pos))
+            self.execute_action(self.active_menu.type, self.active_menu.click(position))
             return
 
         # Player can only react to active menu if it is not his turn
@@ -1263,7 +1262,7 @@ class Level:
                 if self.possible_moves:
                     # Player is waiting to move
                     for move in self.possible_moves:
-                        if pygame.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                        if pygame.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(position):
                             path = self.determine_path_to(move, self.possible_moves)
                             self.selected_player.set_move(path)
                             self.possible_moves = {}
@@ -1275,7 +1274,7 @@ class Level:
                 elif self.possible_attacks:
                     # Player is waiting to attack
                     for attack in self.possible_attacks:
-                        if pygame.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                        if pygame.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(position):
                             ent = self.get_entity_on_case(attack)
                             self.duel(self.selected_player, ent,
                                       self.players + self.entities['allies'],
@@ -1288,14 +1287,14 @@ class Level:
                 elif self.possible_interactions:
                     # Player is waiting to interact
                     for interact in self.possible_interactions:
-                        if pygame.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                        if pygame.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(position):
                             ent = self.get_entity_on_case(interact)
                             self.interact(self.selected_player, ent, interact)
                             return
             else:
                 # Initialization phase : player try to change the place of the selected character
                 for tile in self.possible_placements:
-                    if pygame.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(pos):
+                    if pygame.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(position):
                         # Test if a character is on the tile, in this case, characters are swapped
                         ent = self.get_entity_on_case(tile)
                         if ent:
@@ -1305,7 +1304,7 @@ class Level:
                         return
             return
         for player in self.players:
-            if player.is_on_pos(pos):
+            if player.is_on_pos(position):
                 if player.turn_is_finished():
                     self.active_menu = menuCreatorManager.create_status_menu(player)
                 else:
@@ -1319,12 +1318,12 @@ class Level:
                                                                       True) if player.can_attack() else {}
                 return
         for ent in self.entities['foes'] + self.entities['allies']:
-            if ent.is_on_pos(pos):
+            if ent.is_on_pos(position):
                 self.active_menu = menuCreatorManager.create_status_entity_menu(ent)
                 return
 
         is_initialization = self.game_phase is LevelStatus.INITIALIZATION
-        self.active_menu = menuCreatorManager.create_main_menu(is_initialization, pos)
+        self.active_menu = menuCreatorManager.create_main_menu(is_initialization, position)
 
     def right_click(self):
         if self.selected_player:
@@ -1381,16 +1380,15 @@ class Level:
         elif button == 3:
             self.right_click()
 
-    def button_down(self, button, pos):
+    def button_down(self, button, position):
         # 3 is equals to right button
         if button == 3:
             if not self.active_menu and not self.selected_player and self.side_turn is EntityTurn.PLAYER:
                 for collection in self.entities.values():
                     for ent in collection:
-                        if isinstance(ent, Movable) and ent.get_rect().collidepoint(pos):
-                            pos = ent.position
+                        if isinstance(ent, Movable) and ent.get_rect().collidepoint(position):
                             self.watched_ent = ent
-                            self.possible_moves = self.get_possible_moves(pos, ent.max_moves)
+                            self.possible_moves = self.get_possible_moves(ent.position, ent.max_moves)
                             reach = self.watched_ent.reach
                             self.possible_attacks = {}
                             if ent.can_attack():
@@ -1399,13 +1397,13 @@ class Level:
                                     isinstance(ent, Character))
                             return
 
-    def motion(self, pos):
+    def motion(self, position):
         if self.active_menu:
-            self.active_menu.motion(pos)
+            self.active_menu.motion(position)
         else:
             self.hovered_ent = None
             for collection in self.entities.values():
                 for ent in collection:
-                    if ent.get_rect().collidepoint(pos):
+                    if ent.get_rect().collidepoint(position):
                         self.hovered_ent = ent
                         return

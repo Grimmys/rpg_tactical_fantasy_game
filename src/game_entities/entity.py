@@ -24,8 +24,8 @@ class Entity:
         string_entity = re.sub(r'[0-9]+', '', string_entity)  # Remove numbers like the id
         return string_entity.strip()
 
-    def is_on_pos(self, pos):
-        return self.get_rect().collidepoint(pos)
+    def is_on_pos(self, position):
+        return self.get_rect().collidepoint(position)
 
     def save(self, tree_name):
         # Build XML tree
