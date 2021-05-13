@@ -35,9 +35,9 @@ class Equipment(Item):
         for key in self.restrictions:
             if key == 'classes' or key == 'races':
                 formatted_string += ', '.join([restriction.capitalize()
-                                               for restriction in self.restrictions[key]])
+                                               for restriction in self.restrictions[key]]) + ', '
 
-        return formatted_string
+        return formatted_string[:-2]
 
     def display(self, screen, position, equipped=False):
         sprite_to_blit = self.equipped_sprite if equipped else self.sprite

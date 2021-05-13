@@ -54,11 +54,12 @@ def random_item_or_gold(gold_prob=0.3):
         return random_item()
 
 
-def random_equipment_attributes(price, durability, atk=None, defense=None, res=None):
+def random_equipment_attributes(price, durability, atk=None, defense=None,
+                                res=None, restrictions=None):
     attrs = random_item_attributes(price)
     attrs['weight'] = rd.randint(1, 10)
     attrs['durability'] = durability if durability else rd.randint(10, 60)
-    attrs['restrictions'] = {}
+    attrs['restrictions'] = {} if restrictions is None else restrictions
     attrs['body_part'] = rd.choice(['head', 'body', 'feet'])
     attrs['defense'] = rd.randint(1, 10) if defense is None else defense
     attrs['res'] = rd.randint(1, 10) if res is None else res
@@ -66,8 +67,9 @@ def random_equipment_attributes(price, durability, atk=None, defense=None, res=N
     return attrs
 
 
-def random_equipment(price=None, durability=None, atk=None, defense=None, res=None):
-    attrs = random_equipment_attributes(price, durability, atk, defense, res)
+def random_equipment(price=None, durability=None, atk=None, defense=None,
+                     res=None, restrictions=None):
+    attrs = random_equipment_attributes(price, durability, atk, defense, res, restrictions)
     return Equipment(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'],
                      [attrs['sample_img']],
                      attrs['body_part'], attrs['defense'], attrs['res'], attrs['atk'],
