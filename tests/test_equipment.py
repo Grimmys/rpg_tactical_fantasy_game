@@ -38,7 +38,8 @@ class TestEquipment(unittest.TestCase):
     def test_formatted_restrictions(self):
         equipment = random_equipment(restrictions={'classes': ['warrior', 'ranger', 'spy'],
                                                    'races': ['human', 'dwarf']})
-        self.assertEqual("Warrior, Ranger, Spy, Human, Dwarf", equipment.get_formatted_restrictions())
+        self.assertEqual("Warrior, Ranger, Spy, Human, Dwarf",
+                         equipment.get_formatted_restrictions())
 
 
 if __name__ == '__main__':
