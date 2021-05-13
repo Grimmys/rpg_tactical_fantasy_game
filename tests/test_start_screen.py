@@ -33,17 +33,22 @@ class TestStartScreen(unittest.TestCase):
         cls.save_url = "saves/main_save.xml"
         cls.level_class = Level
         cls.buttons = []
-        cls.buttons.append(Rect(NEW_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        cls.buttons.append(Rect(LOAD_GAME_BUTTON_POS[0], LOAD_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        cls.buttons.append(Rect(OPTIONS_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        cls.buttons.append(Rect(EXIT_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1]))
+        cls.buttons.append(Rect(NEW_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
+                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
+        cls.buttons.append(Rect(LOAD_GAME_BUTTON_POS[0], LOAD_GAME_BUTTON_POS[1],
+                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
+        cls.buttons.append(Rect(OPTIONS_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
+                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
+        cls.buttons.append(Rect(EXIT_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
+                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
         races = Loader.load_races()
         classes = Loader.load_classes()
         Character.init_data(races, classes)
 
     @staticmethod
     def generate_position(start_pos, end_pos):
-        # Generate random pos in a rect having start_pos as top left corner, and end_pos as bottom right corner
+        # Generate random pos in a rect having start_pos as top left corner
+        # and end_pos as bottom right corner
         pos = (randrange(start_pos[0], end_pos[0] + 1),
                randrange(start_pos[1], end_pos[1] + 1))
         # Print pos in case of test failure
@@ -108,7 +113,8 @@ class TestStartScreen(unittest.TestCase):
         pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
         self.start_screen.click(LEFT_BUTTON, pos)
         self.start_screen.display()
-        pos = self.generate_position(LOAD_FIRST_SLOT_BUTTON_POS, LOAD_FIRST_SLOT_BUTTON_POS + BUTTON_SIZE)
+        pos = self.generate_position(LOAD_FIRST_SLOT_BUTTON_POS,
+                                     LOAD_FIRST_SLOT_BUTTON_POS + BUTTON_SIZE)
         self.start_screen.click(LEFT_BUTTON, pos)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)

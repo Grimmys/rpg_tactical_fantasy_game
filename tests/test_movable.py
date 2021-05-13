@@ -2,7 +2,8 @@ import unittest
 
 import random as rd
 from src.game_entities.movable import Movable, DamageKind, EntityStrategy
-from tests.random_data_library import random_movable_entity, random_alteration, random_string, STATS, random_item
+from tests.random_data_library import random_movable_entity, random_alteration, random_string, \
+    STATS, random_item
 from tests.tools import minimal_setup_for_game
 
 
@@ -22,7 +23,8 @@ class TestMovable(unittest.TestCase):
         strength = 2
         attack_kind = 'PHYSICAL'
         strategy = 'STATIC'
-        movable_entity = Movable(name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind, strategy)
+        movable_entity = Movable(name, pos, sprite, hp, defense, res, max_moves,
+                                 strength, attack_kind, strategy)
         self.assertTrue(movable_entity.is_on_pos(pos))
         self.assertEqual(max_moves, movable_entity.max_moves)
         self.assertEqual(strength, movable_entity.strength)
@@ -50,7 +52,8 @@ class TestMovable(unittest.TestCase):
     def test_simple_move(self):
         movable_entity = random_movable_entity()
 
-        new_pos = (movable_entity.position[0] + rd.randint(1, 20), movable_entity.position[1] + rd.randint(1, 20))
+        new_pos = (movable_entity.position[0] + rd.randint(1, 20),
+                   movable_entity.position[1] + rd.randint(1, 20))
         movable_entity.set_move([new_pos])
         movable_entity.timer = 0
         movable_entity.move()
@@ -84,7 +87,8 @@ class TestMovable(unittest.TestCase):
         self.assertEqual(1, len(movable_entity.get_alterations_effect('alt_test_bis')))
 
         # Test formatted alterations rendering
-        self.assertEqual(f"{alteration}, {alteration_bis}", movable_entity.get_formatted_alterations())
+        self.assertEqual(f"{alteration}, {alteration_bis}",
+                         movable_entity.get_formatted_alterations())
         self.assertEqual(f"{alteration.abbreviated_name}, {alteration_bis.abbreviated_name}",
                          movable_entity.get_abbreviated_alterations())
 
@@ -101,7 +105,8 @@ class TestMovable(unittest.TestCase):
         self.assertEqual(0, movable_entity.get_stat_change(other_stat))
 
         # Test formatted stat change rendering
-        self.assertEqual(f' (+{stat_up_alteration.power})', movable_entity.get_formatted_stat_change(stat))
+        self.assertEqual(f' (+{stat_up_alteration.power})',
+                         movable_entity.get_formatted_stat_change(stat))
 
     def test_stat_down(self):
         movable_entity = random_movable_entity()
@@ -110,7 +115,8 @@ class TestMovable(unittest.TestCase):
 
         movable_entity.set_alteration(stat_down_alteration)
         # Test formatted stat change rendering
-        self.assertEqual(f' (-{stat_down_alteration.power})', movable_entity.get_formatted_stat_change(stat))
+        self.assertEqual(f' (-{stat_down_alteration.power})',
+                         movable_entity.get_formatted_stat_change(stat))
 
     def test_earn_xp(self):
         movable_entity = random_movable_entity()
@@ -217,7 +223,8 @@ class TestMovable(unittest.TestCase):
         attacked_entity.set_alteration(boost_alteration)
         hp_left = attacked_entity.attacked(attacker_entity, damage, DamageKind['PHYSICAL'], [])
         self.assertEqual(hp_left, attacked_entity.hit_points)
-        hp_expected = attacked_entity.hp_max - damage + attacked_entity.defense + boost_alteration.power \
+        hp_expected = attacked_entity.hp_max - damage + attacked_entity.defense + \
+                      boost_alteration.power \
             if hp_left < attacked_entity.hp_max \
             else attacked_entity.hp_max
         self.assertEqual(hp_expected, hp_left)

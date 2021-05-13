@@ -9,7 +9,7 @@ from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from src.services import menuCreatorManager
 from src.services.menus import ItemMenu, GenericActions, TradeMenu
 from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS
-from tests.tools import minimal_setup_for_game, NB_TESTS_FOR_PROPORTIONS
+from tests.tools import minimal_setup_for_game
 
 
 class TestLevel(unittest.TestCase):

@@ -2,9 +2,7 @@ import unittest
 
 from src.game_entities.item import Item
 from tests.random_data_library import random_item
-from tests.tools import minimal_setup_for_game
-
-NB_TESTS_FOR_PROPORTIONS = 100
+from tests.tools import minimal_setup_for_game, NB_TESTS_FOR_PROPORTIONS
 
 
 class TestItem(unittest.TestCase):

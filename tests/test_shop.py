@@ -7,8 +7,6 @@ from src.game_entities.shop import Shop
 from tests.random_data_library import random_item, random_character_entity
 from tests.tools import minimal_setup_for_game
 
-NB_TESTS_FOR_PROPORTIONS = 1000
-
 
 class TestShop(unittest.TestCase):
     @classmethod

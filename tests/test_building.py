@@ -3,11 +3,9 @@ import unittest
 import random as rd
 
 from src.game_entities.building import Building
-from tests.random_data_library import random_item, random_string, random_building, random_character_entity
+from tests.random_data_library import random_item, random_string, random_building, \
+    random_character_entity
 from tests.tools import minimal_setup_for_game
-
-NB_TESTS_FOR_PROPORTIONS = 1000
-
 
 class TestBuilding(unittest.TestCase):
     @classmethod
@@ -28,7 +26,8 @@ class TestBuilding(unittest.TestCase):
         name = 'house'
         pos = (3, 2)
         sprite = 'imgs/houses/blue_house.png'
-        interaction = {'talks': [random_string(min_len=10, max_len=100), random_string(min_len=10, max_len=100)],
+        interaction = {'talks': [random_string(min_len=10, max_len=100),
+                                 random_string(min_len=10, max_len=100)],
                        'gold': rd.randint(10, 1000),
                        'item': random_item()}
         house = Building(name, pos, sprite, interaction)

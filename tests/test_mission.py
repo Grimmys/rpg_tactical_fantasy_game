@@ -22,7 +22,8 @@ class TestMission(unittest.TestCase):
         turn_limit = 10
         gold_reward = 200
         items_reward = [random_item()]
-        mission = Mission(is_main, nature, positions, description, nb_players, turn_limit, gold_reward, items_reward)
+        mission = Mission(is_main, nature, positions, description, nb_players,
+                          turn_limit, gold_reward, items_reward)
         self.assertEqual(is_main, mission.main)
         self.assertEqual(nature, mission.type)
         self.assertEqual(positions, mission.positions)

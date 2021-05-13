@@ -7,9 +7,6 @@ from src.game_entities.weapon import Weapon
 from tests.random_data_library import random_weapon, random_foe_entity, random_player_entity
 from tests.tools import minimal_setup_for_game
 
-NB_TESTS_FOR_PROPORTIONS = 100
-
-
 class TestWeapon(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -29,8 +26,8 @@ class TestWeapon(unittest.TestCase):
         restrictions = []
         possible_effects = []
         strong_against = [Keyword.LARGE]
-        sword = Weapon(name, sprite, description, price, equipped_sprite, power, kind, weight, durability, reach,
-                       restrictions, possible_effects, strong_against)
+        sword = Weapon(name, sprite, description, price, equipped_sprite, power, kind, weight,
+                       durability, reach, restrictions, possible_effects, strong_against)
         self.assertEqual(name, sword.name)
         self.assertEqual(description, sword.desc)
         self.assertEqual('Short Sword', str(sword))

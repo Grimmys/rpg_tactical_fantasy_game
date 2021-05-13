@@ -7,8 +7,6 @@ from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from tests.random_data_library import random_position
 from tests.tools import minimal_setup_for_game
 
-NB_TESTS_FOR_PROPORTIONS = 1000
-
 
 class TestEntity(unittest.TestCase):
     @classmethod
@@ -52,7 +50,8 @@ class TestEntity(unittest.TestCase):
         entity = Entity(name, pos, sprite)
 
         self.assertTrue(entity.is_on_pos(pos))
-        self.assertTrue(entity.is_on_pos((pos[0] + rd.randrange(0, TILE_SIZE), pos[1] + rd.randrange(0, TILE_SIZE))))
+        self.assertTrue(entity.is_on_pos(
+            (pos[0] + rd.randrange(0, TILE_SIZE), pos[1] + rd.randrange(0, TILE_SIZE))))
         self.assertFalse(entity.is_on_pos((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1])))
         self.assertFalse(entity.is_on_pos((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT))))
 

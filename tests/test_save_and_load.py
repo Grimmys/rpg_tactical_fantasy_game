@@ -2,14 +2,10 @@ import unittest
 import random as rd
 
 from src.game_entities.foe import Keyword
-from src.game_entities.gold import Gold
-from src.game_entities.item import Item
-from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, parse_item_file, \
-    load_player, \
-    load_item
-from tests.random_data_library import random_character_entity, random_alteration, random_foe_entity, \
-    random_item, \
-    random_gold, random_equipment, random_weapon, random_player_entity
+from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, \
+    parse_item_file, load_player, load_item
+from tests.random_data_library import random_character_entity, random_alteration, \
+    random_foe_entity, random_gold, random_player_entity
 from tests.tools import minimal_setup_for_game
 
 
@@ -34,7 +30,8 @@ class TestSaveAndLoad(unittest.TestCase):
     def test_save_and_load_character(self):
         interaction = {
             'dialog': ["Hurry up ! Leave the village from the west, and enter the necropolis.",
-                       "The clock is ticking... The ogre's bones must be returned to their original place."],
+                       "The clock is ticking... The ogre's bones must be returned "
+                       "to their original place."],
             'join_team': False
         }
         character = random_character_entity(name='jist', classes=['innkeeper'], race='human',
