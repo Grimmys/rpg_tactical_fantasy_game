@@ -46,14 +46,14 @@ class StartScreen:
     @staticmethod
     def read_options_file(el_to_read):
         tree = etree.parse("saves/options.xml").getroot()
-        el = tree.find(".//" + el_to_read)
-        return el.text.strip()
+        element = tree.find(".//" + el_to_read)
+        return element.text.strip()
 
     @staticmethod
-    def modify_options_file(el_to_edit, new_value):
+    def modify_options_file(element_to_edit, new_value):
         tree = etree.parse("saves/options.xml")
-        el = tree.find(".//" + el_to_edit)
-        el.text = str(new_value)
+        element = tree.find(".//" + element_to_edit)
+        element.text = str(new_value)
         tree.write("saves/options.xml")
 
     def display(self):

@@ -10,7 +10,8 @@ ITEM_SPRITE = 'imgs/interface/item_frame.png'
 
 
 class ItemButton(Button):
-    def __init__(self, method_id, args, size, pos, item, margin, index, price=0, quantity=0, disabled=False):
+    def __init__(self, method_id, args, size, pos, item, margin, index,
+                 price=0, quantity=0, disabled=False):
         name = ""
         if item:
             name = str(item)

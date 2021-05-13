@@ -63,7 +63,8 @@ class Destroyable(Entity):
             # Full heal
             hp_recovered = self.hp_max - self.hit_points
         else:
-            hp_recovered = value if self.hit_points + value <= self.hp_max else self.hp_max - self.hit_points
+            hp_recovered = value if self.hit_points + value <= self.hp_max \
+                else self.hp_max - self.hit_points
         self.hit_points += hp_recovered
         return hp_recovered
 

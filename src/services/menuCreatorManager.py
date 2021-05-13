@@ -87,9 +87,9 @@ def create_equipment_menu(equipments):
         for member in part:
             equipment = None
             index = -1
-            for i, eq in enumerate(equipments):
-                if member == eq.body_part:
-                    equipment = eq
+            for i, potential_equipment in enumerate(equipments):
+                if member == potential_equipment.body_part:
+                    equipment = potential_equipment
                     index = i
                     break
             entry = {'type': 'item_button', 'item': equipment,
@@ -163,14 +163,14 @@ def create_trade_menu(first_player, second_player):
                    TRADE_MENU_WIDTH, close_button=UNFINAL_ACTION, sep=True, title_color=title_color)
 
 
-def determine_hp_color(hp, hp_max):
-    if hp == hp_max:
+def determine_hp_color(hit_points, hp_max):
+    if hit_points == hp_max:
         return WHITE
-    if hp >= hp_max * 0.75:
+    if hit_points >= hp_max * 0.75:
         return GREEN
-    if hp >= hp_max * 0.5:
+    if hit_points >= hp_max * 0.5:
         return YELLOW
-    if hp >= hp_max * 0.30:
+    if hit_points >= hp_max * 0.30:
         return ORANGE
     return RED
 
@@ -456,13 +456,13 @@ def create_item_desc_menu(item):
                 entries.append(create_item_desc_stat('STRONG AGAINST', strong_against_formatted))
         if isinstance(item, Shield):
             entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
-        if isinstance(item, Weapon) or isinstance(item, Shield):
+        if isinstance(item, (Shield, Weapon)):
             entries.append(create_item_desc_stat('DURABILITY',
                                                  f'{item.durability} / {item.durability_max}'))
         entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
     elif isinstance(item, Consumable):
-        for eff in item.effects:
-            entries.append(create_item_desc_stat('EFFECT', eff.get_formatted_desc()))
+        for effect in item.effects:
+            entries.append(create_item_desc_stat('EFFECT', effect.get_formatted_desc()))
 
     return InfoBox(item_title, "", "imgs/interface/PopUpMenu.png", entries,
                    ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)

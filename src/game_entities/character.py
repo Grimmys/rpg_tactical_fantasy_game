@@ -137,14 +137,12 @@ class Character(Movable):
     def equip(self, equipment):
         # Verify if player could wear this equipment
         allowed = True
-        if self.race == 'centaur' and not (
-                isinstance(equipment, Weapon) or isinstance(equipment, Shield)):
+        if self.race == 'centaur' and not isinstance(equipment, (Shield, Weapon)):
             allowed = False
         if equipment.restrictions != {}:
             allowed = False
             if 'classes' in equipment.restrictions and \
-                    (self.race != 'centaur' or isinstance(equipment, Weapon) or isinstance(
-                        equipment, Shield)):
+                    (self.race != 'centaur' or isinstance(equipment, (Shield, Weapon))):
                 for cls in equipment.restrictions['classes']:
                     if cls in self.classes:
                         allowed = True

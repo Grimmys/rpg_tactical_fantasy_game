@@ -1,6 +1,6 @@
-import pygame.mixer
-
 import os
+
+import pygame
 
 from src.game_entities.item import Item
 

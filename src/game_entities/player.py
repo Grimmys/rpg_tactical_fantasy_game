@@ -93,8 +93,8 @@ class Player(Character):
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return used, result_msgs
 
-    def equip(self, eq):
-        equipped = Character.equip(self, eq)
+    def equip(self, equipment):
+        equipped = Character.equip(self, equipment)
         if equipped > -1:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return equipped

@@ -143,8 +143,8 @@ class InfoBox:
         self.sep['posY'] += height
         for row in self.elements:
             max_height = 0
-            for el in row:
-                el_height = el.get_height() + MARGIN_TOP
+            for element in row:
+                el_height = element.get_height() + MARGIN_TOP
                 if el_height > max_height:
                     max_height = el_height
             height += max_height
@@ -187,27 +187,27 @@ class InfoBox:
     def find_buttons(self):
         buttons = []
         for row in self.elements:
-            for el in row[1:]:
-                if isinstance(el, Button):
-                    buttons.append(el)
+            for element in row[1:]:
+                if isinstance(element, Button):
+                    buttons.append(element)
         return buttons
 
     def determine_elements_pos(self):
-        y = self.pos[1] + MARGIN_BOX
+        y_coordinate = self.pos[1] + MARGIN_BOX
         # Memorize mouse position in case it is over a button
         mouse_pos = pygame.mouse.get_pos()
         # A row begins by a value identifying its height, followed by its elements
         for row in self.elements:
             nb_elements = len(row) - 1
             i = 1
-            for el in row[1:]:
+            for element in row[1:]:
                 base_x = self.pos[0] + (self.size[0] // (2 * nb_elements)) * i
-                x = base_x - el.get_width() // 2
-                el.pos = (x, y + el.get_margin_top())
-                if isinstance(el, Button):
-                    el.set_hover(el.get_rect().collidepoint(mouse_pos))
+                x_coordinate = base_x - element.get_width() // 2
+                element.pos = (x_coordinate, y_coordinate + element.get_margin_top())
+                if isinstance(element, Button):
+                    element.set_hover(element.get_rect().collidepoint(mouse_pos))
                 i += 2
-            y += row[0]
+            y_coordinate += row[0]
 
     def update_content(self, entries):
         self.elements = self.init_elements(entries, self.size[0])
@@ -226,8 +226,8 @@ class InfoBox:
             self.determine_elements_pos()
 
         for row in self.elements:
-            for el in row[1:]:
-                el.display(win)
+            for element in row[1:]:
+                element.display(win)
 
         if self.sep['display']:
             pygame.draw.line(win, WHITE, (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['posY']),

@@ -1,5 +1,5 @@
 import pygame as pg
-from pygame.locals import *
+from pygame.constants import SRCALPHA
 
 from src.constants import WHITE
 from src.gui.boxElement import BoxElement
@@ -46,3 +46,4 @@ class TextElement(BoxElement):
         for i in range(absolute_middle, len(txt)):
             if txt[i] == ' ':
                 return i
+        return -1

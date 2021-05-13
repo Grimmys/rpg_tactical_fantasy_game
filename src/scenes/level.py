@@ -5,8 +5,7 @@ import pygame
 from lxml import etree
 
 from src.constants import MAX_MAP_WIDTH, MAX_MAP_HEIGHT, MENU_WIDTH, MENU_HEIGHT, ITEM_MENU_WIDTH, \
-    FINAL_ACTION, \
-    UNFINAL_ACTION, ORANGE, ITEM_DELETE_MENU_WIDTH, ITEM_INFO_MENU_WIDTH, TILE_SIZE
+    FINAL_ACTION, UNFINAL_ACTION, ORANGE, ITEM_DELETE_MENU_WIDTH, ITEM_INFO_MENU_WIDTH, TILE_SIZE
 from src.game_entities.breakable import Breakable
 from src.game_entities.building import Building
 from src.game_entities.character import Character
@@ -32,8 +31,8 @@ from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.services import loadFromXMLManager as Loader, menuCreatorManager
 from src.services.menuCreatorManager import create_event_dialog
-from src.services.menus import InventoryMenu, CharacterMenu, ShopMenu, SellMenu, BuyMenu, MainMenu, \
-    EquipmentMenu, ItemMenu, StatusMenu, TradeMenu, SaveMenu, GenericActions
+from src.services.menus import InventoryMenu, CharacterMenu, ShopMenu, SellMenu, BuyMenu, \
+    MainMenu, EquipmentMenu, ItemMenu, StatusMenu, TradeMenu, SaveMenu, GenericActions
 from src.services.saveStateManager import SaveStateManager
 
 
@@ -217,7 +216,8 @@ class Level:
             return None
 
         # Game should be left if it's ended and there is no more animation nor menu
-        if self.game_phase is LevelStatus.ENDED_DEFEAT or self.game_phase is LevelStatus.ENDED_VICTORY:
+        if self.game_phase is LevelStatus.ENDED_DEFEAT \
+                or self.game_phase is LevelStatus.ENDED_VICTORY:
             print("Passed in 'ENDED_DEFEAT / ENDED_VICTORY' condition")
             return self.game_phase
 
@@ -238,7 +238,7 @@ class Level:
             self.game_phase = LevelStatus.ENDED_VICTORY
             self.victory = False
             return None
-        elif self.defeat:
+        if self.defeat:
             self.end_level(constant_sprites['defeat'], constant_sprites['defeat_pos'])
             self.game_phase = LevelStatus.ENDED_DEFEAT
             self.defeat = False
@@ -402,8 +402,8 @@ class Level:
     def case_is_available(self, case):
         min_case = (self.map['x'], self.map['y'])
         max_case = (self.map['x'] + self.map['width'], self.map['y'] + self.map['height'])
-        if not (all([(minimum <= case < maximum) for minimum, case, maximum in
-                     zip(min_case, case, max_case)])):
+        if not (all(minimum <= case < maximum for minimum, case, maximum in
+                    zip(min_case, case, max_case))):
             return False
 
         return self.get_entity_on_case(case) is None and case not in self.obstacles
@@ -610,7 +610,7 @@ class Level:
     def duel(self, attacker, target, attacker_allies, target_allies, kind):
         nb_attacks = 2 if 'double_attack' in attacker.skills else 1
         for i in range(nb_attacks):
-            xp = 0
+            experience = 0
 
             if isinstance(target, Character) and target.parried():
                 # Target parried attack
@@ -629,12 +629,12 @@ class Level:
                                                 " damage to " + str(target),
                                         'font': fonts['ITEM_DESC_FONT']}])
             # XP gain for dealt damages
-            xp += real_damages // 2
+            experience += real_damages // 2
             # If target has less than 0 HP at the end of the attack
             if target.hit_points <= 0:
                 # XP gain increased
                 if isinstance(attacker, Character):
-                    xp += target.xp_gain
+                    experience += target.xp_gain
 
                 self.diary_entries.append([{'type': 'text', 'text': str(target) + " died !",
                                             'font': fonts['ITEM_DESC_FONT']}])
@@ -652,8 +652,8 @@ class Level:
                                 attacker.gold += item.amount
                             elif not attacker.set_item(item):
                                 self.diary_entries.append([{'type': 'text',
-                                                            'text': 'But there is not enough space in inventory to '
-                                                                    'take it !',
+                                                            'text': 'But there is not enough space '
+                                                                    'in inventory to take it !',
                                                             'font': fonts['ITEM_DESC_FONT']}])
                 self.remove_entity(target)
             else:
@@ -662,9 +662,9 @@ class Level:
                                             'font': fonts['ITEM_DESC_FONT']}])
                 # Check if a side effect is applied to target
                 if isinstance(attacker, Character):
-                    w = attacker.get_weapon()
-                    if w:
-                        applied_effects = w.applied_effects(attacker, target)
+                    weapon = attacker.get_weapon()
+                    if weapon:
+                        applied_effects = weapon.applied_effects(attacker, target)
                         for eff in applied_effects:
                             _, msg = eff.apply_on_ent(target)
                             self.diary_entries.append(
@@ -673,9 +673,10 @@ class Level:
             # XP gain
             if isinstance(attacker, Player):
                 self.diary_entries.append([{'type': 'text',
-                                            'text': str(attacker) + " earned " + str(xp) + " XP",
+                                            'text': str(attacker) + " earned "
+                                                    + str(experience) + " XP",
                                             'font': fonts['ITEM_DESC_FONT']}])
-                if attacker.earn_xp(xp):
+                if attacker.earn_xp(experience):
                     # Attacker gained a level
                     self.diary_entries.append([{'type': 'text',
                                                 'text': str(attacker) + " gained a level !",
@@ -830,8 +831,8 @@ class Level:
         elif method_id is CharacterMenu.OPEN_CHEST:
             # Check if player has a key
             has_key = False
-            for it in self.selected_player.items:
-                if isinstance(it, Key) and it.for_chest:
+            for item in self.selected_player.items:
+                if isinstance(item, Key) and item.for_chest:
                     has_key = True
                     break
 
@@ -851,8 +852,8 @@ class Level:
         elif method_id is CharacterMenu.OPEN_DOOR:
             # Check if player has a key
             has_key = False
-            for it in self.selected_player.items:
-                if isinstance(it, Key) and it.for_door:
+            for item in self.selected_player.items:
+                if isinstance(item, Key) and item.for_door:
                     has_key = True
                     break
 
@@ -899,7 +900,8 @@ class Level:
         # Valid a mission position
         elif method_id is CharacterMenu.TAKE:
             for mission in self.missions:
-                if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
+                if mission.type is MissionType.POSITION or \
+                        mission.type is MissionType.TOUCH_POSITION:
                     # Verify that character is not the last if the mission is not the main one
                     if mission.main or len(self.players) > 1:
                         if mission.pos_is_valid(self.selected_player.position):
@@ -1333,7 +1335,8 @@ class Level:
                 self.selected_player = None
                 self.possible_moves = {}
             elif self.active_menu is not None:
-                # Test if player is on character's main menu, in this case, current move should be cancelled if possible
+                # Test if player is on character's main menu, in this case,
+                # current move should be cancelled if possible
                 if self.active_menu.type is CharacterMenu:
                     if self.selected_player.cancel_move():
                         if self.turn_items is not None:
@@ -1383,12 +1386,14 @@ class Level:
     def button_down(self, button, position):
         # 3 is equals to right button
         if button == 3:
-            if not self.active_menu and not self.selected_player and self.side_turn is EntityTurn.PLAYER:
+            if not self.active_menu and not self.selected_player \
+                    and self.side_turn is EntityTurn.PLAYER:
                 for collection in self.entities.values():
                     for ent in collection:
                         if isinstance(ent, Movable) and ent.get_rect().collidepoint(position):
                             self.watched_ent = ent
-                            self.possible_moves = self.get_possible_moves(ent.position, ent.max_moves)
+                            self.possible_moves = self.get_possible_moves(ent.position,
+                                                                          ent.max_moves)
                             reach = self.watched_ent.reach
                             self.possible_attacks = {}
                             if ent.can_attack():

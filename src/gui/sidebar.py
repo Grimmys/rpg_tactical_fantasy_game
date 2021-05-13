@@ -25,17 +25,16 @@ class Sidebar:
         self.nb_level = nb_level
 
     @staticmethod
-    def determine_hp_color(hp, hp_max):
-        if hp == hp_max:
+    def determine_hp_color(hit_points, hit_points_max):
+        if hit_points == hit_points_max:
             return BLACK
-        if hp >= hp_max * 0.75:
+        if hit_points >= hit_points_max * 0.75:
             return DARK_GREEN
-        if hp >= hp_max * 0.5:
+        if hit_points >= hit_points_max * 0.5:
             return YELLOW
-        if hp >= hp_max * 0.30:
+        if hit_points >= hit_points_max * 0.30:
             return ORANGE
-        else:
-            return RED
+        return RED
 
     def display(self, win, nb_turn, ent):
         # Sidebar background

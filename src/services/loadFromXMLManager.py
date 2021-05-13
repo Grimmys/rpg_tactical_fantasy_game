@@ -65,8 +65,8 @@ def load_classes():
     return classes
 
 
-def load_stat_up(el, stat_name):
-    return [int(val) for val in el.find('stats_up/' + stat_name).text.strip().split(',')]
+def load_stat_up(element, stat_name):
+    return [int(val) for val in element.find('stats_up/' + stat_name).text.strip().split(',')]
 
 
 def load_stats_up(el):
@@ -182,9 +182,9 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     strategy = infos.find('strategy').text.strip()
 
     # Dynamic data
-    x = int(entity.find('position/x').text) * TILE_SIZE + gap_x
-    y = int(entity.find('position/y').text) * TILE_SIZE + gap_y
-    pos = (x, y)
+    x_coordinate = int(entity.find('position/x').text) * TILE_SIZE + gap_x
+    y_coordinate = int(entity.find('position/y').text) * TILE_SIZE + gap_y
+    pos = (x_coordinate, y_coordinate)
 
     lvl_el = entity.find('level') if entity.find('level') is not None else infos.find('level')
     lvl = int(lvl_el.text.strip())
@@ -307,7 +307,8 @@ def load_foe(foe, from_save, gap_x, gap_y):
     # Dynamic data foe
     if from_save:
         # Overwrite static loaded loot
-        loot = [(parse_item_file(item.find('name').text.strip()), float(item.find('probability').text))
+        loot = [(parse_item_file(item.find('name').text.strip()),
+                 float(item.find('probability').text))
                 for item in foe.findall('loot/item')]
         gold_looted = foe.find('loot/gold')
         if gold_looted is not None:
@@ -425,9 +426,9 @@ def load_building(building, from_save, gap_x, gap_y):
         nature = nature.text.strip()
         if nature == "shop":
             stock = []
-            for it in building.findall('items/item'):
-                entry = {'item': parse_item_file(it.find('name').text.strip()),
-                         'quantity': int(it.find('quantity').text.strip())
+            for item in building.findall('items/item'):
+                entry = {'item': parse_item_file(item.find('name').text.strip()),
+                         'quantity': int(item.find('quantity').text.strip())
                          }
                 stock.append(entry)
             loaded_building = Shop(name, pos, sprite, None, stock)
@@ -534,9 +535,9 @@ def load_portal(portal_couple, gap_x, gap_y):
 
 def load_fountain(fountain, from_save, gap_x, gap_y):
     name = fountain.find('type').text.strip()
-    x = int(fountain.find('position/x').text) * TILE_SIZE + gap_x
-    y = int(fountain.find('position/y').text) * TILE_SIZE + gap_y
-    pos = (x, y)
+    x_coordinate = int(fountain.find('position/x').text) * TILE_SIZE + gap_x
+    y_coordinate = int(fountain.find('position/y').text) * TILE_SIZE + gap_y
+    pos = (x_coordinate, y_coordinate)
     if name not in fountains_infos:
         fountains_infos[name] = etree.parse('data/fountains.xml').find(name)
     sprite = 'imgs/dungeon_crawl/' + fountains_infos[name].find('sprite').text.strip()
@@ -563,9 +564,9 @@ def load_breakable(breakable, gap_x, gap_y):
     y_coordinate = int(breakable.find('position/y').text) * TILE_SIZE + gap_y
     pos = (x_coordinate, y_coordinate)
     sprite = 'imgs/dungeon_crawl/dungeon/' + breakable.find('sprite').text.strip()
-    hp = int(breakable.find('current_hp').text.strip())
+    hit_points = int(breakable.find('current_hp').text.strip())
 
-    return Breakable(pos, sprite, hp, 0, 0)
+    return Breakable(pos, sprite, hit_points, 0, 0)
 
 
 def load_restrictions(restrictions_el):

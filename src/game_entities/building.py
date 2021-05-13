@@ -24,7 +24,8 @@ class Building(Entity):
 
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
-            entries.append([{'type': 'text', 'text': 'This house seems closed...', 'font': fonts['ITEM_DESC_FONT']}])
+            entries.append([{'type': 'text', 'text': 'This house seems closed...',
+                             'font': fonts['ITEM_DESC_FONT']}])
         else:
             for talk in self.interaction['talks']:
                 pygame.mixer.Sound.play(self.talk_sfx)
@@ -33,12 +34,14 @@ class Building(Entity):
                 pygame.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction['gold']
                 earn_text = f'[You received {self.interaction["gold"]} gold]'
-                entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'], 'color': GREEN}])
+                entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'],
+                                 'color': GREEN}])
             if self.interaction['item'] is not None:
                 pygame.mixer.Sound.play(self.inventory_sfx)
                 actor.set_item(self.interaction['item'])
                 earn_text = f'[You received {self.interaction["item"]}]'
-                entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'], 'color': GREEN}])
+                entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'],
+                                 'color': GREEN}])
 
             # Interaction could not been repeated : should be remove after been used
             self.remove_interaction()

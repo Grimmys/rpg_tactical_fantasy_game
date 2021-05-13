@@ -33,7 +33,7 @@ class Equipment(Item):
     def get_formatted_restrictions(self):
         formatted_string = ''
         for key in self.restrictions:
-            if key == 'classes' or key == 'races':
+            if key in ('classes', 'races'):
                 formatted_string += ', '.join([restriction.capitalize()
                                                for restriction in self.restrictions[key]]) + ', '
 

@@ -30,8 +30,9 @@ constant_sprites = {}
 
 
 def init_constant_sprites():
-    constant_sprites['landing'] = pygame.transform.scale(pygame.image.load(LANDING_SPRITE).convert_alpha(),
-                                                     (TILE_SIZE, TILE_SIZE))
+    constant_sprites['landing'] = pygame.transform.scale(
+        pygame.image.load(LANDING_SPRITE).convert_alpha(),
+        (TILE_SIZE, TILE_SIZE))
     constant_sprites['attackable'] = pygame.transform.scale(
         pygame.image.load(ATTACKABLE_SPRITE).convert_alpha(),
         (TILE_SIZE, TILE_SIZE))
@@ -40,13 +41,14 @@ def init_constant_sprites():
         (TILE_SIZE, TILE_SIZE))
     NEW_TURN = pygame.image.load(NEW_TURN_SPRITE).convert_alpha()
     NEW_TURN = pygame.transform.scale(NEW_TURN.convert_alpha(), (int(NEW_TURN.get_width() * 1.5),
-                                                             int(NEW_TURN.get_height() * 1.5)))
+                                                                 int(NEW_TURN.get_height() * 1.5)))
     constant_sprites['new_turn'] = NEW_TURN
     constant_sprites['victory'] = NEW_TURN.copy()
     constant_sprites['defeat'] = NEW_TURN.copy()
 
     constant_sprites['new_turn_pos'] = (
-    MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2, MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
+        MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2,
+        MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
     NEW_TURN_TEXT = fonts['TITLE_FONT'].render("NEW TURN !", 1, WHITE)
     NEW_TURN.blit(NEW_TURN_TEXT, (NEW_TURN.get_width() / 2 - NEW_TURN_TEXT.get_width() / 2,
                                   NEW_TURN.get_height() / 2 - NEW_TURN_TEXT.get_height() / 2))
@@ -64,11 +66,13 @@ def init_constant_sprites():
                        constant_sprites['defeat'].get_height() / 2 - defeat_text.get_height() / 2)
     constant_sprites['defeat'].blit(defeat_text, defeat_text_pos)
 
-    constant_sprites['cracked'] = pygame.transform.scale(pygame.image.load(CRACKED_SPRITE).convert_alpha(),
-                                                     (TILE_SIZE, TILE_SIZE))
+    constant_sprites['cracked'] = pygame.transform.scale(
+        pygame.image.load(CRACKED_SPRITE).convert_alpha(),
+        (TILE_SIZE, TILE_SIZE))
 
-    constant_sprites['frame'] = pygame.transform.scale(pygame.image.load(FRAME_SPRITE).convert_alpha(),
-                                                   (TILE_SIZE + 10, TILE_SIZE + 10))
+    constant_sprites['frame'] = pygame.transform.scale(
+        pygame.image.load(FRAME_SPRITE).convert_alpha(),
+        (TILE_SIZE + 10, TILE_SIZE + 10))
     constant_sprites['main_mission_text'] = fonts['MENU_TITLE_FONT'].render("MAIN MISSION", 1,
                                                                             BLACK)
     constant_sprites['secondaries_mission_text'] = fonts['MENU_TITLE_FONT'].render(
@@ -90,5 +94,6 @@ def init_constant_sprites():
         pygame.image.load(ALMOST_DEAD_SPRITE).convert_alpha(),
         (TILE_SIZE, TILE_SIZE))
 
-    constant_sprites['hp_bar'] = pygame.transform.scale(pygame.image.load(HP_BAR_SPRITE).convert_alpha(),
-                                                    (TILE_SIZE, TILE_SIZE))
+    constant_sprites['hp_bar'] = pygame.transform.scale(
+        pygame.image.load(HP_BAR_SPRITE).convert_alpha(),
+        (TILE_SIZE, TILE_SIZE))
