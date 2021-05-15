@@ -1,5 +1,6 @@
 from enum import Enum
 import os
+from typing import Union, Sequence
 
 import pygame
 from lxml import etree
@@ -15,16 +16,17 @@ class DamageKind(Enum):
 
 class Destroyable(Entity):
 
-    def __init__(self, name, pos, sprite, hp, defense, res):
+    def __init__(self, name: str, pos: tuple[int, int], sprite: Union[str, pygame.Surface], hp: int,
+                 defense: int, res: int) -> None:
         Entity.__init__(self, name, pos, sprite)
-        self.hp_max = hp
-        self.hit_points = hp
-        self.defense = defense
-        self.res = res
+        self.hp_max: int = hp
+        self.hit_points: int = hp
+        self.defense: int = defense
+        self.res: int = res
 
-        self.attack_sfx = pygame.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
+        self.attack_sfx: pygame.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
 
-    def display_hp(self, screen):
+    def display_hp(self, screen: pygame.Surface) -> None:
         if self.hit_points != self.hp_max:
             damage_bar = constant_sprites['lightly_damaged']
             if self.hit_points < self.hp_max * 0.1:
@@ -42,7 +44,8 @@ class Destroyable(Entity):
             screen.blit(constant_sprites['hp_bar'], self.position)
             screen.blit(damage_bar, self.position)
 
-    def attacked(self, ent, damage, kind, allies):
+    def attacked(self, entity: Entity, damage: int,
+                 kind: DamageKind, allies: Sequence[Entity]) -> int:
         if kind is DamageKind.SPIRITUAL:
             real_damage = damage - self.res
         elif kind is DamageKind.PHYSICAL:
@@ -58,21 +61,21 @@ class Destroyable(Entity):
         self.hit_points -= real_damage
         return self.hit_points
 
-    def healed(self, value=None):
+    def healed(self, value: int = None) -> int:
         if not value:
             # Full heal
-            hp_recovered = self.hp_max - self.hit_points
+            hp_recovered: int = self.hp_max - self.hit_points
         else:
-            hp_recovered = value if self.hit_points + value <= self.hp_max \
+            hp_recovered: int = value if self.hit_points + value <= self.hp_max \
                 else self.hp_max - self.hit_points
         self.hit_points += hp_recovered
         return hp_recovered
 
-    def save(self, tree_name):
-        tree = Entity.save(self, tree_name)
+    def save(self, tree_name: str) -> etree.Element:
+        tree: etree.Element = Entity.save(self, tree_name)
 
         # Save current hp
-        hit_points = etree.SubElement(tree, 'current_hp')
+        hit_points: etree.SubElement = etree.SubElement(tree, 'current_hp')
         hit_points.text = str(self.hit_points)
 
         return tree

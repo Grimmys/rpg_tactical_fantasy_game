@@ -658,7 +658,7 @@ def load_player(element, from_save):
 
     player = Player(name, sprite, hit_points, defense, res, strength, [p_class],
                     equipments, race, gold, level,
-                    skills, alterations, compl_sprite=compl_sprite)
+                    skills, alterations, complementary_sprite_link=compl_sprite)
     player.earn_xp(experience)
     player.items = inv
     player.hit_points = current_hp

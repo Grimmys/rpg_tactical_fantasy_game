@@ -1,12 +1,17 @@
 from enum import IntEnum, auto, Enum
 import os
+from typing import Union, Sequence
 
-import pygame as pg
+import pygame
 from lxml import etree
 
 from src.constants import TILE_SIZE, ANIMATION_SPEED, INITIAL_MAX
+from src.game_entities.alteration import Alteration
+from src.game_entities.consumable import Consumable
 from src.game_entities.destroyable import Destroyable, DamageKind
-from src.game_entities.skill import SkillNature
+from src.game_entities.entity import Entity
+from src.game_entities.item import Item
+from src.game_entities.skill import SkillNature, Skill
 
 TIMER = 60
 NB_ITEMS_MAX = 8
@@ -33,69 +38,80 @@ class EntityStrategy(Enum):
 
 
 class Movable(Destroyable):
-    SELECTED_DISPLAY = None
-    XP_NEXT_LVL_BASE = 15
-    move_speed = ANIMATION_SPEED
+    SELECTED_DISPLAY: pygame.Surface = None
+    XP_NEXT_LVL_BASE: int = 15
+    move_speed: int = ANIMATION_SPEED
 
     @staticmethod
-    def init_constant_sprites():
-        selected_sprite = 'imgs/dungeon_crawl/misc/cursor.png'
-        Movable.SELECTED_DISPLAY = pg.transform.scale(
-            pg.image.load(selected_sprite).convert_alpha(),
+    def init_constant_sprites() -> None:
+        selected_sprite: str = 'imgs/dungeon_crawl/misc/cursor.png'
+        Movable.SELECTED_DISPLAY = pygame.transform.scale(
+            pygame.image.load(selected_sprite).convert_alpha(),
             (TILE_SIZE, TILE_SIZE))
 
-    def __init__(self, name, pos, sprite, hp, defense, res, max_moves, strength, attack_kind,
-                 strategy, lvl=1,
-                 skills=None, alterations=None, compl_sprite=None):
+    def __init__(self, name: str, pos: tuple[int, int], sprite: Union[str, pygame.Surface],
+                 hp: int, defense: int, res: int, max_moves: int, strength: int,
+                 attack_kind: str, strategy: str, lvl: int = 1,
+                 skills: Sequence[Skill] = None, alterations: Sequence[Alteration] = None,
+                 complementary_sprite_link: str = None) -> None:
         Destroyable.__init__(self, name, pos, sprite, hp, defense, res)
         if skills is None:
             skills = []
         if alterations is None:
             alterations = []
-        self._max_moves = max_moves
-        self.on_move = []
-        self.timer = TIMER
-        self.strength = strength
-        self.alterations = alterations
-        self.lvl = lvl
-        self.experience = 0
-        self.experience_to_lvl_up = self.determine_xp_goal()
-        self.items = []
-        self.nb_items_max = NB_ITEMS_MAX
-        self.state = EntityState.HAVE_TO_ACT
-        self.target = None
-        if compl_sprite:
-            compl = pg.transform.scale(pg.image.load(compl_sprite).convert_alpha(),
-                                       (TILE_SIZE, TILE_SIZE))
-            self.sprite.blit(compl, (0, 0))
+        self._max_moves: int = max_moves
+        self.on_move: list[tuple[int, int]] = []
+        self.timer: int = TIMER
+        self.strength: int = strength
+        self.alterations: list[Alteration] = alterations
+        self.lvl: int = lvl
+        self.experience: int = 0
+        self.experience_to_lvl_up: int = self.determine_xp_goal()
+        self.items: list[Item] = []
+        self.nb_items_max: int = NB_ITEMS_MAX
+        self.state: EntityState = EntityState.HAVE_TO_ACT
+        self.target: Union[Entity, None] = None
+        if complementary_sprite_link:
+            complementary_sprite: pygame.Surface = pygame.transform.scale(
+                pygame.image.load(complementary_sprite_link).convert_alpha(),
+                (TILE_SIZE, TILE_SIZE))
+            self.sprite.blit(complementary_sprite, (0, 0))
 
-        self._attack_kind = DamageKind[attack_kind] if attack_kind is not None else None
-        self.strategy = EntityStrategy[strategy]
-        self.skills = skills
+        self._attack_kind: DamageKind = DamageKind[attack_kind] if attack_kind is not None else None
+        self.strategy: EntityStrategy = EntityStrategy[strategy]
+        self.skills: Sequence[Skill] = skills
 
-        self.walk_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
-        self.skeleton_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'skeleton_walk.ogg'))
-        self.necrophage_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'necro_walk.ogg'))
-        self.centaur_sfx = pg.mixer.Sound(os.path.join('sound_fx', 'cent_walk.ogg'))
+        self.walk_sfx: pygame.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
+        self.skeleton_sfx: pygame.Sound = pygame.mixer.Sound(
+            os.path.join('sound_fx', 'skeleton_walk.ogg'))
+        self.necrophage_sfx: pygame.Sound = pygame.mixer.Sound(
+            os.path.join('sound_fx', 'necro_walk.ogg'))
+        self.centaur_sfx: pygame.Sound = pygame.mixer.Sound(
+            os.path.join('sound_fx', 'cent_walk.ogg'))
 
-    def display(self, screen):
+    def display(self, screen: pygame.Surface) -> None:
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
             screen.blit(Movable.SELECTED_DISPLAY, self.position)
 
     @property
-    def attack_kind(self):
+    def attack_kind(self) -> DamageKind:
         return self._attack_kind
 
-    def attacked(self, ent, damage, kind, allies):
+    def attacked(self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]) \
+            -> int:
         # Compute distance of all allies
-        allies_dist = [(ally, (abs(self.position[0] - ally.position[0]) + abs(
-            self.position[1] - ally.position[1])) // TILE_SIZE)
-                       for ally in allies]
+        allies_dist: Sequence[tuple[Entity, int]] = [(ally,
+                                                      (abs(self.position[0] -
+                                                           ally.position[0]) + abs(
+                                                          self.position[1] -
+                                                          ally.position[
+                                                              1])) // TILE_SIZE)
+                                                     for ally in allies]
 
         # Check if stats are modified by some alterations
-        temp_def_change = self.get_stat_change('defense')
-        temp_res_change = self.get_stat_change('resistance')
+        temp_def_change: int = self.get_stat_change('defense')
+        temp_res_change: int = self.get_stat_change('resistance')
         # Check if a skill is boosting stats during combat
         for skill in self.skills:
             if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist
@@ -109,7 +125,7 @@ class Movable(Destroyable):
         self.res += temp_res_change
 
         # Resolve attack with boosted stats
-        Destroyable.attacked(self, ent, damage, kind, allies)
+        Destroyable.attacked(self, entity, damage, kind, allies)
 
         # Restore stats to normal
         self.defense -= temp_def_change
@@ -117,64 +133,64 @@ class Movable(Destroyable):
 
         return self.hit_points
 
-    def end_turn(self):
+    def end_turn(self) -> None:
         self.state = EntityState.FINISHED
         # Remove all alterations that are finished
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
-    def turn_is_finished(self):
+    def turn_is_finished(self) -> bool:
         return self.state == EntityState.FINISHED
 
     @property
-    def max_moves(self):
+    def max_moves(self) -> int:
         return self._max_moves
 
-    def set_move(self, path):
+    def set_move(self, path: Sequence[tuple[int, int]]) -> None:
         self.on_move = path
         self.state = EntityState.ON_MOVE
 
         if self.strategy == EntityStrategy.MANUAL:
             if self.name == "chrisemon":
-                pg.mixer.Sound.play(self.centaur_sfx)
+                pygame.mixer.Sound.play(self.centaur_sfx)
             else:
-                pg.mixer.Sound.play(self.walk_sfx)
+                pygame.mixer.Sound.play(self.walk_sfx)
         elif self.target is not None:
             if self.name == "skeleton":
-                pg.mixer.Sound.play(self.skeleton_sfx)
+                pygame.mixer.Sound.play(self.skeleton_sfx)
             elif self.name == "necrophage":
-                pg.mixer.Sound.play(self.necrophage_sfx)
+                pygame.mixer.Sound.play(self.necrophage_sfx)
             elif self.name == "assassin":
-                pg.mixer.Sound.play(self.walk_sfx)
+                pygame.mixer.Sound.play(self.walk_sfx)
 
-    def get_formatted_alterations(self):
-        formatted_string = ""
+    def get_formatted_alterations(self) -> str:
+        formatted_string: str = ""
         for alteration in self.alterations:
             formatted_string += str(alteration) + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
 
-    def get_abbreviated_alterations(self):
-        formatted_string = ""
+    def get_abbreviated_alterations(self) -> str:
+        formatted_string: str = ""
         for alteration in self.alterations:
             formatted_string += alteration.abbreviated_name + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
 
-    def set_alteration(self, alteration):
+    def set_alteration(self, alteration: Alteration) -> None:
         self.alterations.append(alteration)
 
-    def get_alterations_effect(self, eff):
+    def get_alterations_effect(self, eff: str) -> list[Alteration]:
         return list(filter(lambda alteration: alteration.name == eff, self.alterations))
 
-    def get_stat_change(self, stat):
+    def get_stat_change(self, stat: str) -> int:
         # Check if character as a bonus due to alteration
         return sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_up'))) - \
                sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_down')))
 
-    def get_formatted_stat_change(self, stat):
-        change = self.get_stat_change(stat)
+    def get_formatted_stat_change(self, stat: str) -> str:
+        change: int = self.get_stat_change(stat)
         if change > 0:
             return ' (+' + str(change) + ')'
         if change < 0:
@@ -182,43 +198,43 @@ class Movable(Destroyable):
         return ''
 
     # The return value is a boolean indicating if the target gained a level
-    def earn_xp(self, xp):
+    def earn_xp(self, xp: int) -> bool:
         self.experience += xp
         if self.experience >= self.experience_to_lvl_up:
             self.lvl_up()
             return True
         return False
 
-    def determine_xp_goal(self):
+    def determine_xp_goal(self) -> int:
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
 
-    def lvl_up(self):
+    def lvl_up(self) -> None:
         self.lvl += 1
         self.experience -= self.experience_to_lvl_up
         self.experience_to_lvl_up = self.determine_xp_goal()
 
-    def get_item(self, index):
+    def get_item(self, index: int) -> Item:
         return self.items[index] if 0 <= index < len(self.items) else False
 
-    def has_free_space(self):
+    def has_free_space(self) -> bool:
         return len(self.items) < NB_ITEMS_MAX
 
-    def set_item(self, item):
+    def set_item(self, item: Item) -> bool:
         if self.has_free_space():
             self.items.append(item)
             return True
         return False
 
-    def remove_item(self, item_to_remove):
+    def remove_item(self, item_to_remove: Item) -> Item:
         for index, item in enumerate(self.items):
             if item.identifier == item_to_remove.identifier:
                 return self.items.pop(index)
         return -1
 
-    def use_item(self, item):
+    def use_item(self, item: Consumable) -> bool:
         return item.use(self)
 
-    def move(self):
+    def move(self) -> None:
         self.timer -= Movable.move_speed
         if self.timer <= 0:
             self.position = self.on_move.pop(0)
@@ -226,14 +242,15 @@ class Movable(Destroyable):
         if not self.on_move:
             self.state = EntityState.HAVE_TO_ATTACK
 
-    def can_attack(self):
+    def can_attack(self) -> bool:
         # Check if no alteration forbids the entity to attack
         for alt in self.alterations:
             if 'no_attack' in alt.specificities:
                 return False
         return True
 
-    def act(self, possible_moves, targets):
+    def act(self, possible_moves: Sequence[tuple[int, int]], targets: Sequence[Entity]) \
+            -> Union[tuple[int, int], None]:
         if self.state is EntityState.HAVE_TO_ACT:
             return self.determine_move(possible_moves, targets)
         if self.state is EntityState.ON_MOVE:
@@ -245,8 +262,8 @@ class Movable(Destroyable):
             self.end_turn()
         return None
 
-    def determine_attack(self, targets):
-        temporary_attack = None
+    def determine_attack(self, targets: Sequence[Entity]) -> tuple[int, int]:
+        temporary_attack: Union[tuple[int, int], None] = None
         for distance in self.reach:
             for target in targets:
                 if abs(self.position[0] - target.position[0]) + \
@@ -256,8 +273,8 @@ class Movable(Destroyable):
                     temporary_attack = target.position
         return temporary_attack
 
-    def determine_move(self, possible_moves, targets):
-        self.target = None
+    def determine_move(self, possible_moves, targets) -> tuple[int, int]:
+        self.target: Union[tuple[int, int], None] = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target, dist in targets.items():
                 for distance in self.reach:
@@ -284,52 +301,52 @@ class Movable(Destroyable):
         return self.position
 
     # Should return damage dealt
-    def attack(self, ent):
+    def attack(self, entity: Entity) -> int:
         return self.strength
 
-    def new_turn(self):
+    def new_turn(self) -> None:
         self.state = EntityState.HAVE_TO_ACT
         # Increment alterations turns passed
         for alteration in self.alterations:
             alteration.increment()
 
-    def save(self, tree_name):
-        tree = Destroyable.save(self, tree_name)
+    def save(self, tree_name: str) -> etree.Element:
+        tree: etree.Element = Destroyable.save(self, tree_name)
 
         # Save level
-        level = etree.SubElement(tree, 'level')
+        level: etree.SubElement = etree.SubElement(tree, 'level')
         level.text = str(self.lvl)
 
         # Save exp
-        experience = etree.SubElement(tree, 'exp')
+        experience: etree.SubElement = etree.SubElement(tree, 'exp')
         experience.text = str(self.experience)
 
         # Save strategy
-        strategy = etree.SubElement(tree, 'strategy')
+        strategy: etree.SubElement = etree.SubElement(tree, 'strategy')
         strategy.text = self.strategy.name
 
         # Save skills
-        skills = etree.SubElement(tree, 'skills')
+        skills: etree.SubElement = etree.SubElement(tree, 'skills')
         for skill in self.skills:
-            skill_el = etree.SubElement(skills, 'skill')
+            skill_el: etree.SubElement = etree.SubElement(skills, 'skill')
             skill_name = etree.SubElement(skill_el, 'name')
             skill_name.text = str(skill)
 
         # Save alterations
-        alterations = etree.SubElement(tree, 'alterations')
+        alterations: etree.SubElement = etree.SubElement(tree, 'alterations')
         for alteration in self.alterations:
             alterations.append(alteration.save('alteration'))
 
         # Save stats
-        hit_points_max = etree.SubElement(tree, 'hp')
+        hit_points_max: etree.SubElement = etree.SubElement(tree, 'hp')
         hit_points_max.text = str(self.hp_max)
-        atk = etree.SubElement(tree, 'strength')
+        atk: etree.SubElement = etree.SubElement(tree, 'strength')
         atk.text = str(self.strength)
-        defense = etree.SubElement(tree, 'defense')
+        defense: etree.SubElement = etree.SubElement(tree, 'defense')
         defense.text = str(self.defense)
-        res = etree.SubElement(tree, 'resistance')
+        res: etree.SubElement = etree.SubElement(tree, 'resistance')
         res.text = str(self.res)
-        move = etree.SubElement(tree, 'move')
+        move: etree.SubElement = etree.SubElement(tree, 'move')
         move.text = str(self._max_moves)
 
         return tree
