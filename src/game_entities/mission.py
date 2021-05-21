@@ -1,6 +1,10 @@
 from enum import Enum, auto
+from typing import Sequence, Union, List
 
 from src.constants import TILE_SIZE
+from src.game_entities.entity import Entity
+from src.game_entities.item import Item
+from src.game_entities.player import Player
 
 
 class MissionType(Enum):
@@ -12,32 +16,35 @@ class MissionType(Enum):
 
 
 class Mission:
-    def __init__(self, is_main, nature, positions, description, nb_players,
-                 turn_limit=None, gold_reward=0, items_reward=None):
+    def __init__(self, is_main: bool, nature: MissionType, positions: Sequence[tuple[int, int]],
+                 description: str, nb_players: int, turn_limit: int = None, gold_reward: int = 0,
+                 items_reward: Sequence[Item] = None) -> None:
         if items_reward is None:
             items_reward = []
-        self.main = is_main
-        self.type = nature
-        self.positions = positions
-        self.desc = description
-        self.ended = self.type is MissionType.TURN_LIMIT
-        self.turn_limit = turn_limit
-        self.restrictions = None
-        self.gold = gold_reward
-        self.items = items_reward
-        self.min_chars = nb_players
-        self.succeeded_chars = []
+        self.main: bool = is_main
+        self.type: MissionType = nature
+        self.positions: Sequence[tuple[int, int]] = positions
+        self.description: str = description
+        self.ended: bool = self.type is MissionType.TURN_LIMIT
+        self.turn_limit: int = turn_limit
+        self.restrictions: Union[Sequence[str], None] = None
+        self.gold: int = gold_reward
+        self.items: Sequence[Item] = items_reward
+        self.min_chars: int = nb_players
+        self.succeeded_chars: List[Player] = []
 
-    def pos_is_valid(self, pos):
+    def position_is_valid(self, position: tuple[int, int]) -> bool:
         if self.type is MissionType.POSITION:
-            return pos in self.positions
+            return position in self.positions
         if self.type is MissionType.TOUCH_POSITION:
             for mission_pos in self.positions:
-                if abs(pos[0] - mission_pos[0]) + abs(pos[1] - mission_pos[1]) == TILE_SIZE:
+                if abs(position[0] - mission_pos[0]) + abs(position[1] - mission_pos[1])\
+                        == TILE_SIZE:
                     return True
         return False
 
-    def update_state(self, player=None, entities=None, turns=0):
+    def update_state(self, player: Player = None, entities: dict[str, Sequence[Entity]] = None,
+                     turns: int = 0) -> bool:
         if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) \
                 and player is not None:
             self.succeeded_chars.append(player)

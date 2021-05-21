@@ -1,4 +1,5 @@
 import os
+from typing import Sequence, List, Union
 
 import pygame
 from lxml import etree
@@ -9,18 +10,21 @@ from src.gui.fonts import fonts
 
 
 class Building(Entity):
-    def __init__(self, name, position, sprite, interaction=None):
+    def __init__(self, name: str, position: tuple[int, int], sprite: str,
+                 interaction: dict[str, any] = None) -> None:
         Entity.__init__(self, name, position, sprite)
-        self.sprite_name = sprite
-        self.interaction = interaction
+        self.sprite_name: str = sprite
+        self.interaction: dict[str, Union[str, any]] = interaction
+        self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'door.ogg'))
+        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join('sound_fx', 'trade.ogg'))
+        self.talk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join('sound_fx', 'talking.ogg'))
+        self.inventory_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
+                                                                                 'inventory.ogg'))
 
-        self.door_sfx = pygame.mixer.Sound(os.path.join('sound_fx', 'door.ogg'))
-        self.gold_sfx = pygame.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
-        self.talk_sfx = pygame.mixer.Sound(os.path.join('sound_fx', 'talking.ogg'))
-        self.inventory_sfx = pygame.mixer.Sound(os.path.join('sound_fx', 'inventory.ogg'))
-
-    def interact(self, actor):
-        entries = []
+    def interact(self, actor) -> Sequence[Sequence[dict[str, str]]]:
+        entries: List[List[dict[str, str]]] = []
 
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
@@ -33,47 +37,46 @@ class Building(Entity):
             if self.interaction['gold'] > 0:
                 pygame.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction['gold']
-                earn_text = f'[You received {self.interaction["gold"]} gold]'
+                earn_text: str = f'[You received {self.interaction["gold"]} gold]'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'],
                                  'color': GREEN}])
             if self.interaction['item'] is not None:
                 pygame.mixer.Sound.play(self.inventory_sfx)
                 actor.set_item(self.interaction['item'])
-                earn_text = f'[You received {self.interaction["item"]}]'
+                earn_text: str = f'[You received {self.interaction["item"]}]'
                 entries.append([{'type': 'text', 'text': earn_text, 'font': fonts['ITEM_DESC_FONT'],
                                  'color': GREEN}])
-
             # Interaction could not been repeated : should be remove after been used
             self.remove_interaction()
 
         return entries
 
-    def remove_interaction(self):
+    def remove_interaction(self) -> None:
         self.interaction = None
 
-    def save(self, tree_name):
-        tree = Entity.save(self, tree_name)
+    def save(self, tree_name: str) -> etree.Element:
+        tree: etree.Element = Entity.save(self, tree_name)
 
         # Save state
-        state = etree.SubElement(tree, 'state')
+        state: etree.SubElement = etree.SubElement(tree, 'state')
         state.text = str(self.interaction is None)
 
         # Save sprite
-        sprite = etree.SubElement(tree, 'sprite')
+        sprite: etree.SubElement = etree.SubElement(tree, 'sprite')
         sprite.text = self.sprite_name
 
         # Save interaction
         if self.interaction:
-            interaction = etree.SubElement(tree, 'interaction')
-            talks = etree.SubElement(interaction, 'talks')
-            for t in self.interaction['talks']:
-                talk = etree.SubElement(talks, 'talk')
-                talk.text = t
+            interaction: etree.SubElement = etree.SubElement(tree, 'interaction')
+            talks: etree.SubElement = etree.SubElement(interaction, 'talks')
+            for talk in self.interaction['talks']:
+                talk_tag: etree.SubElement = etree.SubElement(talks, 'talk')
+                talk_tag.text = talk
             if self.interaction['gold'] > 0:
-                gold = etree.SubElement(interaction, 'gold')
+                gold: etree.SubElement = etree.SubElement(interaction, 'gold')
                 gold.text = str(self.interaction['gold'])
             if self.interaction['item'] is not None:
-                item = etree.SubElement(interaction, 'item')
+                item: etree.SubElement = etree.SubElement(interaction, 'item')
                 item.text = self.interaction['item'].name
 
         return tree
