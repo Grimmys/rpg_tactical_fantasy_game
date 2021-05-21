@@ -14,7 +14,7 @@ class Item:
         self.sprite: pygame.Surface = pygame.transform.scale(
             pygame.image.load(sprite).convert_alpha(),
             (TILE_SIZE, TILE_SIZE))
-        self.desc: str = description
+        self.description: str = description
         self.price: int = price
         self.resell_price: int = price // 2
         self.identifier: int = Item.internal_identifier

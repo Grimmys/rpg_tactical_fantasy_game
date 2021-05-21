@@ -55,7 +55,7 @@ class Effect:
             return f'Recover {self.power} HP'
         if self.name == 'xp_up':
             return f'Earn {self.power} XP'
-        return self.alteration.desc
+        return self.alteration.description
 
     def __str__(self):
         return self.name.replace('_', ' ').title()

@@ -26,7 +26,7 @@ class TestDestroyable(unittest.TestCase):
         self.assertEqual(hp, destroyable.hp_max)
         self.assertEqual(hp, destroyable.hit_points)
         self.assertEqual(defense, destroyable.defense)
-        self.assertEqual(res, destroyable.res)
+        self.assertEqual(res, destroyable.resistance)
         self.assertTrue(destroyable.is_on_pos(pos))
 
     def test_non_letal_damage(self):

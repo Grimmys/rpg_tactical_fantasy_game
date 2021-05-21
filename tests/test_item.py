@@ -16,7 +16,7 @@ class TestItem(unittest.TestCase):
         description = 'This is a test description'
         item = Item(name, sprite, description)
         self.assertEqual(name, item.name)
-        self.assertEqual(description, item.desc)
+        self.assertEqual(description, item.description)
         self.assertEqual('Life Potion', str(item))
 
     def test_init_item_with_price(self):
@@ -26,7 +26,7 @@ class TestItem(unittest.TestCase):
         price = 200
         item = Item(name, sprite, description, price)
         self.assertEqual(name, item.name)
-        self.assertEqual(description, item.desc)
+        self.assertEqual(description, item.description)
         self.assertEqual('Life Potion', str(item))
         self.assertEqual(price, item.price)
         self.assertEqual(price // 2, item.resell_price)

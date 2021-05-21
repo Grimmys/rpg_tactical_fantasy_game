@@ -23,7 +23,7 @@ class TestAlteration(unittest.TestCase):
         self.assertEqual(abbr, alteration.abbreviated_name)
         self.assertEqual(power, alteration.power)
         self.assertEqual(duration, alteration.duration)
-        self.assertEqual(description, alteration.desc)
+        self.assertEqual(description, alteration.description)
         self.assertEqual(specificites, alteration.specificities)
         self.assertFalse(alteration.is_finished())
 

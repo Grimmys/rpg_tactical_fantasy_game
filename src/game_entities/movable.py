@@ -122,14 +122,14 @@ class Movable(Destroyable):
                     temp_res_change += skill.power
         # Apply boosts (including alterations changes)
         self.defense += temp_def_change
-        self.res += temp_res_change
+        self.resistance += temp_res_change
 
         # Resolve attack with boosted stats
         Destroyable.attacked(self, entity, damage, kind, allies)
 
         # Restore stats to normal
         self.defense -= temp_def_change
-        self.res -= temp_res_change
+        self.resistance -= temp_res_change
 
         return self.hit_points
 
@@ -231,7 +231,7 @@ class Movable(Destroyable):
                 return self.items.pop(index)
         return -1
 
-    def use_item(self, item: Consumable) -> bool:
+    def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
         return item.use(self)
 
     def move(self) -> None:
@@ -345,7 +345,7 @@ class Movable(Destroyable):
         defense: etree.SubElement = etree.SubElement(tree, 'defense')
         defense.text = str(self.defense)
         res: etree.SubElement = etree.SubElement(tree, 'resistance')
-        res.text = str(self.res)
+        res.text = str(self.resistance)
         move: etree.SubElement = etree.SubElement(tree, 'move')
         move.text = str(self._max_moves)
 

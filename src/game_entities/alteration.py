@@ -2,7 +2,7 @@ from lxml import etree
 
 
 class Alteration:
-    def __init__(self, name, abbr, power, duration, desc, specificities=None):
+    def __init__(self, name, abbr, power, duration, description, specificities=None):
         if specificities is None:
             specificities = []
         self.name = name
@@ -10,7 +10,7 @@ class Alteration:
         self.power = power
         self.duration = duration
         self.time = 0
-        self.desc = desc
+        self.description = description
         self.specificities = specificities
 
     def get_turns_left(self):
@@ -40,7 +40,7 @@ class Alteration:
         alteration_duration = etree.SubElement(tree, 'duration')
         alteration_duration.text = str(self.duration)
         alteration_desc = etree.SubElement(tree, 'desc')
-        alteration_desc.text = self.desc
+        alteration_desc.text = self.description
         alteration_specs = etree.SubElement(tree, 'specs')
         for spec in self.specificities:
             spec_el = etree.SubElement(alteration_specs, 'spec')

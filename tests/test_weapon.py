@@ -29,7 +29,7 @@ class TestWeapon(unittest.TestCase):
         sword = Weapon(name, sprite, description, price, equipped_sprite, power, kind, weight,
                        durability, reach, restrictions, possible_effects, strong_against)
         self.assertEqual(name, sword.name)
-        self.assertEqual(description, sword.desc)
+        self.assertEqual(description, sword.description)
         self.assertEqual('Short Sword', str(sword))
         self.assertEqual(price, sword.price)
         self.assertEqual(price // 2, sword.resell_price)

@@ -25,7 +25,7 @@ class TestEquipment(unittest.TestCase):
         equipment = Equipment(name, sprite, description, price, [equipped_sprite], body_part,
                               defense, resistance, attack, weight, restrictions)
         self.assertEqual(name, equipment.name)
-        self.assertEqual(description, equipment.desc)
+        self.assertEqual(description, equipment.description)
         self.assertEqual('Dark Boots', str(equipment))
         self.assertEqual(price, equipment.price)
         self.assertEqual(price // 2, equipment.resell_price)

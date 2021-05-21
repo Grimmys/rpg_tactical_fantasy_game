@@ -99,7 +99,7 @@ class Character(Movable):
         for _ in range(nb_lvl):
             hp_increased: int = random.choice(self.classes_data[self.classes[0]]['stats_up']['hp'])
             self.defense += random.choice(self.classes_data[self.classes[0]]['stats_up']['def'])
-            self.res += random.choice(self.classes_data[self.classes[0]]['stats_up']['res'])
+            self.resistance += random.choice(self.classes_data[self.classes[0]]['stats_up']['res'])
             self.strength += random.choice(self.classes_data[self.classes[0]]['stats_up']['str'])
             self.hp_max += hp_increased
             self.hit_points += hp_increased

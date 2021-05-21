@@ -523,7 +523,7 @@ def create_status_entity_menu(ent):
                [{'type': 'text', 'text': 'DEFENSE :'},
                 {'type': 'text', 'text': str(ent.defense)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MAGICAL RES :'},
-                {'type': 'text', 'text': str(ent.res)}, {}, {}, {}],
+                {'type': 'text', 'text': str(ent.resistance)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ALTERATIONS',
                  'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (10, 0, 10, 0)}]]

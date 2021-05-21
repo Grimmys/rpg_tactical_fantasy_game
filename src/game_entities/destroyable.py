@@ -22,8 +22,7 @@ class Destroyable(Entity):
         self.hp_max: int = hp
         self.hit_points: int = hp
         self.defense: int = defense
-        self.res: int = res
-
+        self.resistance: int = res
         self.attack_sfx: pygame.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
 
     def display_hp(self, screen: pygame.Surface) -> None:
@@ -47,7 +46,7 @@ class Destroyable(Entity):
     def attacked(self, entity: Entity, damage: int,
                  kind: DamageKind, allies: Sequence[Entity]) -> int:
         if kind is DamageKind.SPIRITUAL:
-            real_damage = damage - self.res
+            real_damage = damage - self.resistance
         elif kind is DamageKind.PHYSICAL:
             real_damage = damage - self.defense
             pygame.mixer.Sound.play(self.attack_sfx)

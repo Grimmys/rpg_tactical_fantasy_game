@@ -5,7 +5,6 @@ import pygame
 
 from src.game_entities.effect import Effect
 from src.game_entities.item import Item
-from src.game_entities.player import Player
 
 
 class Consumable(Item):
@@ -16,15 +15,15 @@ class Consumable(Item):
         self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
                                                                              'potion.ogg'))
 
-    def use(self, player: Player) -> tuple[bool, Sequence[str]]:
+    def use(self, entity: 'Movable') -> tuple[bool, Sequence[str]]:
         success: bool = False
         msgs: List[str] = []
         for eff in self.effects:
-            sub_success, msg = eff.apply_on_ent(player)
+            sub_success, msg = eff.apply_on_ent(entity)
             msgs.append(msg)
             if sub_success:
                 success = True
         if success:
             pygame.mixer.Sound.play(self.drink_sfx)
-            player.remove_item(self)
+            entity.remove_item(self)
         return success, msgs

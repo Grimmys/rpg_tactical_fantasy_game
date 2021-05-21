@@ -42,7 +42,7 @@ class Foe(Movable):
         for _ in range(nb_lvl):
             self.hp_max += rd.choice(grow_rates['hp'])
             self.defense += rd.choice(grow_rates['def'])
-            self.res += rd.choice(grow_rates['res'])
+            self.resistance += rd.choice(grow_rates['res'])
             self.strength += rd.choice(grow_rates['str'])
             self.xp_gain = int(self.xp_gain * 1.1)
 

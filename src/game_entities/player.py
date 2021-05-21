@@ -29,7 +29,7 @@ class Player(Character):
                  res: int, strength: int, classes: Sequence[str], equipments: list[Equipment],
                  race: str, gold: int, lvl: int, skills: Sequence[Skill],
                  alterations: list[Alteration], complementary_sprite_link: str = None):
-        Character.__init__(self, name, (-1, -1), sprite, hp, defense, res, strength,
+        super().__init__(name, (-1, -1), sprite, hp, defense, res, strength,
                            classes, equipments, 'MANUAL', lvl, skills, alterations,
                            race, gold, {}, complementary_sprite_link)
         self.state: PlayerState = PlayerState.WAITING_SELECTION
@@ -96,7 +96,7 @@ class Player(Character):
     def cancel_interaction(self) -> None:
         self.state = PlayerState.WAITING_POST_ACTION
 
-    def use_item(self, item: Consumable) -> tuple[bool, str]:
+    def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
         used, result_msgs = Character.use_item(self, item)
         if used:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
