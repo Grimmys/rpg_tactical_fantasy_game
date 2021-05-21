@@ -16,7 +16,7 @@ class Consumable(Item):
         self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
                                                                              'potion.ogg'))
 
-    def use(self, entity: Movable) -> tuple[bool, Sequence[str]]:
+    def use(self, entity: Movable) -> tuple[bool, Sequence[str]]:  # NOQA
         success: bool = False
         msgs: List[str] = []
         for eff in self.effects:
