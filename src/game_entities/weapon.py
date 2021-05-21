@@ -9,11 +9,11 @@ from src.gui.tools import distance
 
 
 class Weapon(Equipment):
-    def __init__(self, name, sprite, description, price, equipped_sprite, atk, attack_kind,
+    def __init__(self, name, sprite, description, price, equipped_sprite, attack, attack_kind,
                  weight, durability, reach, restrictions, possible_effects,
                  strong_against, can_charge=False):
         Equipment.__init__(self, name, sprite, description, price, equipped_sprite, 'right_hand',
-                           0, 0, atk, weight, restrictions)
+                           0, 0, attack, weight, restrictions)
         self.durability_max = durability
         self.durability = self.durability_max
         self.reach = reach
@@ -34,7 +34,7 @@ class Weapon(Equipment):
         for keyword in target.keywords:
             if keyword in self.strong_against:
                 multiplier += 1
-        return int(multiplier * self.atk)
+        return int(multiplier * self.attack)
 
     def used(self):
         self.durability -= 1

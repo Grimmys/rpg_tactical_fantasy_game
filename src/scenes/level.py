@@ -464,7 +464,7 @@ class Level:
             sprite=character.sprite,
             hp=character.hit_points,
             defense=character.defense,
-            res=character.res,
+            res=character.resistance,
             strength=character.strength,
             classes=character.classes,
             equipments=character.equipments,
@@ -904,7 +904,7 @@ class Level:
                         mission.type is MissionType.TOUCH_POSITION:
                     # Verify that character is not the last if the mission is not the main one
                     if mission.main or len(self.players) > 1:
-                        if mission.pos_is_valid(self.selected_player.position):
+                        if mission.position_is_valid(self.selected_player.position):
                             # Check if player is able to complete this objective
                             if mission.update_state(self.selected_player):
                                 self.players.remove(self.selected_player)

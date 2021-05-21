@@ -83,7 +83,7 @@ class Character(Movable):
             if kind is DamageKind.PHYSICAL:
                 damage -= equipment.defense
             elif kind == DamageKind.SPIRITUAL:
-                damage -= equipment.res
+                damage -= equipment.resistance
         return Movable.attacked(self, entity, damage, kind, allies)
 
     def attack(self, entity: Entity) -> int:

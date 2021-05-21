@@ -95,7 +95,7 @@ class TestDestroyable(unittest.TestCase):
         returned_hp = destroyable.attacked(attacker, damage, kind, allies)
 
         self.assertEqual(returned_hp, destroyable.hit_points)
-        self.assertEqual(destroyable.hp_max, destroyable.hit_points + damage - destroyable.res)
+        self.assertEqual(destroyable.hp_max, destroyable.hit_points + damage - destroyable.resistance)
 
     def test_full_heal(self):
         destroyable = random_destroyable_entity(min_hp=30)

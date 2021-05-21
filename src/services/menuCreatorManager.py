@@ -207,7 +207,7 @@ def create_status_menu(player):
           'text': str(player.defense) + player.get_formatted_stat_change('defense')}],
         [{'type': 'text', 'color': WHITE, 'text': 'MAGICAL RES :'},
          {'type': 'text',
-          'text': str(player.res) + player.get_formatted_stat_change('resistance')}],
+          'text': str(player.resistance) + player.get_formatted_stat_change('resistance')}],
         [{'type': 'text', 'color': DARK_GREEN, 'text': 'ALTERATIONS',
           'font': fonts['MENU_SUB_TITLE_FONT'],
           'margin': (10, 0, 10, 0)}]]
@@ -293,7 +293,7 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
     # Check if player is on mission position
     for mission in missions:
         if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
-            if mission.pos_is_valid(player.position):
+            if mission.position_is_valid(player.position):
                 entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
 
     # Check if player could attack something, according to weapon range
@@ -427,18 +427,18 @@ def create_item_desc_stat(stat_name, stat_value):
 def create_item_desc_menu(item):
     item_title = str(item)
 
-    entries = [[{'type': 'text', 'text': item.desc, 'font': fonts['ITEM_DESC_FONT'],
+    entries = [[{'type': 'text', 'text': item.description, 'font': fonts['ITEM_DESC_FONT'],
                  'margin': (20, 0, 20, 0)}]]
 
     if isinstance(item, Equipment):
         if item.restrictions != {}:
             entries.append(create_item_desc_stat('RESERVED TO', item.get_formatted_restrictions()))
-        if item.atk > 0:
-            entries.append(create_item_desc_stat('POWER', str(item.atk)))
+        if item.attack > 0:
+            entries.append(create_item_desc_stat('POWER', str(item.attack)))
         if item.defense > 0:
             entries.append(create_item_desc_stat('DEFENSE', str(item.defense)))
-        if item.res > 0:
-            entries.append(create_item_desc_stat('MAGICAL RES', str(item.res)))
+        if item.resistance > 0:
+            entries.append(create_item_desc_stat('MAGICAL RES', str(item.resistance)))
         if isinstance(item, Weapon):
             # Compute reach
             reach_txt = ""
@@ -470,7 +470,7 @@ def create_item_desc_menu(item):
 
 def create_alteration_info_menu(alteration):
     turns_left = alteration.get_turns_left()
-    entries = [[{'type': 'text', 'text': alteration.desc,
+    entries = [[{'type': 'text', 'text': alteration.description,
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': f'Turns left : {turns_left}',
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
@@ -480,7 +480,7 @@ def create_alteration_info_menu(alteration):
 
 
 def create_skill_info_menu(skill):
-    entries = [[{'type': 'text', 'text': skill.desc,
+    entries = [[{'type': 'text', 'text': skill.description,
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
 
@@ -571,7 +571,7 @@ def create_reward_menu(mission):
     for item in mission.items:
         entries.append([{'type': 'text', 'text': f'Earned item : {item}'}])
 
-    return InfoBox(mission.desc, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
+    return InfoBox(mission.description, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
                    close_button=UNFINAL_ACTION)
 
 

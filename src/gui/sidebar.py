@@ -60,7 +60,7 @@ class Sidebar:
         vertical_shift = 0
         for mission in self.missions:
             mission_color = DARK_GREEN if mission.ended else BROWN_RED
-            mission_desc = fonts['MISSION_FONT'].render("> " + mission.desc, 1, mission_color)
+            mission_desc = fonts['MISSION_FONT'].render("> " + mission.description, 1, mission_color)
             if mission.main:
                 win.blit(mission_desc, (self.pos[0] + self.size[0] - 480,
                                         self.pos[1] + 10 + constant_sprites[

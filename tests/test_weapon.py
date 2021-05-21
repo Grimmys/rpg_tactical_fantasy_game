@@ -36,7 +36,7 @@ class TestWeapon(unittest.TestCase):
         self.assertEqual(durability, sword.durability_max)
         self.assertEqual(durability, sword.durability)
         self.assertEqual(reach, sword.reach)
-        self.assertEqual(power, sword.atk)
+        self.assertEqual(power, sword.attack)
         self.assertEqual(DamageKind[kind], sword.attack_kind)
         self.assertEqual(weight, sword.weight)
         self.assertEqual(restrictions, sword.restrictions)
@@ -110,15 +110,15 @@ class TestWeapon(unittest.TestCase):
         attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
         player.equip(spear)
         # No charge
-        self.assertEqual(player.strength + spear.atk, player.attack(attacked_ent))
+        self.assertEqual(player.strength + spear.attack, player.attack(attacked_ent))
 
         # Charge
         player.position = (player.old_position[0] + 5 * TILE_SIZE, player.old_position[1])
-        self.assertEqual(player.strength + int(spear.atk * 1.5), player.attack(attacked_ent))
+        self.assertEqual(player.strength + int(spear.attack * 1.5), player.attack(attacked_ent))
 
         # Stronger charge
         player.position = (player.old_position[0] + 8 * TILE_SIZE, player.old_position[1])
-        self.assertEqual(player.strength + int(spear.atk * 2), player.attack(attacked_ent))
+        self.assertEqual(player.strength + int(spear.attack * 2), player.attack(attacked_ent))
 
     def test_no_charge_bonus_for_weapon_with_no_charge(self):
         power = 4
@@ -130,7 +130,7 @@ class TestWeapon(unittest.TestCase):
 
         # No charge bonus even if there is a " charge "
         player.position = (player.old_position[0] + 5 * TILE_SIZE, player.old_position[1])
-        self.assertEqual(player.strength + weapon.atk, player.attack(attacked_ent))
+        self.assertEqual(player.strength + weapon.attack, player.attack(attacked_ent))
 
 
 if __name__ == '__main__':

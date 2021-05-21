@@ -30,8 +30,8 @@ class TestEquipment(unittest.TestCase):
         self.assertEqual(price, equipment.price)
         self.assertEqual(price // 2, equipment.resell_price)
         self.assertEqual(defense, equipment.defense)
-        self.assertEqual(resistance, equipment.res)
-        self.assertEqual(attack, equipment.atk)
+        self.assertEqual(resistance, equipment.resistance)
+        self.assertEqual(attack, equipment.attack)
         self.assertEqual(weight, equipment.weight)
         self.assertDictEqual(restrictions, equipment.restrictions)
 

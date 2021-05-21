@@ -27,7 +27,7 @@ class TestMission(unittest.TestCase):
         self.assertEqual(is_main, mission.main)
         self.assertEqual(nature, mission.type)
         self.assertEqual(positions, mission.positions)
-        self.assertEqual(description, mission.desc)
+        self.assertEqual(description, mission.description)
         self.assertFalse(mission.ended)
         self.assertEqual(turn_limit, mission.turn_limit)
         self.assertEqual(gold_reward, mission.gold)
@@ -39,28 +39,28 @@ class TestMission(unittest.TestCase):
         nature = MissionType.POSITION
         positions = [(1 * TILE_SIZE, 0 * TILE_SIZE), (3 * TILE_SIZE, 2 * TILE_SIZE)]
         mission = Mission(True, nature, positions, 'Test mission', 0)
-        self.assertTrue(mission.pos_is_valid(positions[0]))
-        self.assertTrue(mission.pos_is_valid(positions[1]))
+        self.assertTrue(mission.position_is_valid(positions[0]))
+        self.assertTrue(mission.position_is_valid(positions[1]))
         invalid_position = random_position()
         while invalid_position in positions:
             invalid_position = random_position()
-        self.assertFalse(mission.pos_is_valid(random_position))
+        self.assertFalse(mission.position_is_valid(random_position))
 
     def test_position_is_valid_to_touch(self):
         nature = MissionType.TOUCH_POSITION
         positions = [(1 * TILE_SIZE, 0 * TILE_SIZE), (3 * TILE_SIZE, 2 * TILE_SIZE)]
         mission = Mission(True, nature, positions, 'Test mission', 0)
-        self.assertFalse(mission.pos_is_valid(positions[0]))
-        self.assertFalse(mission.pos_is_valid(positions[1]))
+        self.assertFalse(mission.position_is_valid(positions[0]))
+        self.assertFalse(mission.position_is_valid(positions[1]))
 
         first_position = positions[0]
-        self.assertTrue(mission.pos_is_valid((first_position[0] + TILE_SIZE, first_position[1])))
-        self.assertTrue(mission.pos_is_valid((first_position[0], first_position[1] + TILE_SIZE)))
-        self.assertTrue(mission.pos_is_valid((first_position[0] - TILE_SIZE, first_position[1])))
-        self.assertTrue(mission.pos_is_valid((first_position[0], first_position[1] - TILE_SIZE)))
+        self.assertTrue(mission.position_is_valid((first_position[0] + TILE_SIZE, first_position[1])))
+        self.assertTrue(mission.position_is_valid((first_position[0], first_position[1] + TILE_SIZE)))
+        self.assertTrue(mission.position_is_valid((first_position[0] - TILE_SIZE, first_position[1])))
+        self.assertTrue(mission.position_is_valid((first_position[0], first_position[1] - TILE_SIZE)))
 
         second_position = positions[1]
-        self.assertTrue(mission.pos_is_valid((second_position[0] + TILE_SIZE, second_position[1])))
+        self.assertTrue(mission.position_is_valid((second_position[0] + TILE_SIZE, second_position[1])))
 
     def test_update_state_position_objective(self):
         nature = rd.choice([MissionType.POSITION, MissionType.TOUCH_POSITION])

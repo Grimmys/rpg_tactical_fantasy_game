@@ -100,7 +100,7 @@ class TestCharacter(unittest.TestCase):
         character_test.healed()
 
         # Mental attack
-        damage = character_test.res + 5
+        damage = character_test.resistance + 5
         character_test.attacked(random_foe_entity(), damage, DamageKind.SPIRITUAL, [])
         self.assertEqual(character_test.hp_max - 2, character_test.hit_points)
 
@@ -109,5 +109,5 @@ class TestCharacter(unittest.TestCase):
         equipments = [weapon]
         character_test = random_character_entity(equipments=equipments)
 
-        self.assertEqual(character_test.strength + weapon.atk,
+        self.assertEqual(character_test.strength + weapon.attack,
                          character_test.attack(random_foe_entity()))
