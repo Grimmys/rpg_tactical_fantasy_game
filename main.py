@@ -12,7 +12,8 @@ import pygame
 from src.scenes.startScreen import StartScreen
 
 
-def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.Font) -> None:
+def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock,
+             font: pygame.font.Font) -> None:
     """
     Display at the top left corner of the screen the current frame rate.
 
@@ -39,17 +40,17 @@ def main_loop(scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clo
     """
     quit_game: bool = False
     while not quit_game:
-        for e in pygame.event.get():
-            if e.type == pygame.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 quit_game = True
-            elif e.type == pygame.MOUSEMOTION:
-                scene.motion(e.pos)
-            elif e.type == pygame.MOUSEBUTTONUP:
-                if e.button == 1 or e.button == 3:
-                    quit_game = scene.click(e.button, e.pos)
-            elif e.type == pygame.MOUSEBUTTONDOWN:
-                if e.button == 1 or e.button == 3:
-                    scene.button_down(e.button, e.pos)
+            elif event.type == pygame.MOUSEMOTION:
+                scene.motion(event.pos)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1 or event.button == 3:
+                    quit_game = scene.click(event.button, event.pos)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1 or event.button == 3:
+                    scene.button_down(event.button, event.pos)
         scene.update_state()
         scene.display()
         show_fps(window, clock, fonts.fonts['FPS_FONT'])
