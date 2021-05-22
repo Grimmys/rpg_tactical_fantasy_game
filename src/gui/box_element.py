@@ -1,9 +1,9 @@
-import pygame as pg
+import pygame
 
 
 class BoxElement:
-    def __init__(self, pos, content, margin=(0, 0, 0, 0)):
-        self.pos = pos
+    def __init__(self, position, content, margin=(0, 0, 0, 0)):
+        self.pos = position
         self.content = content
         if self.content:
             self.size = (self.content.get_width(), self.content.get_height())
@@ -30,7 +30,7 @@ class BoxElement:
         return self.margin['RIGHT']
 
     def get_rect(self):
-        return pg.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
 
     def display(self, win):
         win.blit(self.content, (self.pos[0] + self.margin['LEFT'], self.pos[1]))

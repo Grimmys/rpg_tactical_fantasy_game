@@ -2,7 +2,7 @@ import unittest
 import random as rd
 
 from src.game_entities.foe import Keyword
-from src.services.loadFromXMLManager import load_ally, load_alteration, load_foe, \
+from src.services.load_from_xml_manager import load_ally, load_alteration, load_foe, \
     parse_item_file, load_player, load_item
 from tests.random_data_library import random_character_entity, random_alteration, \
     random_foe_entity, random_gold, random_player_entity

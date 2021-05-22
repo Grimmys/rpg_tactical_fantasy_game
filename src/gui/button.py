@@ -1,9 +1,9 @@
-from src.gui.boxElement import BoxElement
+from src.gui.box_element import BoxElement
 
 
 class Button(BoxElement):
-    def __init__(self, method_id, args, size, pos, sprite, sprite_hover, margin, linked_object=None):
-        BoxElement.__init__(self, pos, None, margin)
+    def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, linked_object=None):
+        BoxElement.__init__(self, position, None, margin)
 
         self.size = size
         self.method_id = method_id

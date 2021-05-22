@@ -2,7 +2,7 @@ import pygame
 from lxml import etree
 
 from src.game_entities.destroyable import Destroyable
-from src.gui.constantSprites import constant_sprites
+from src.gui.constant_sprites import constant_sprites
 
 
 class Breakable(Destroyable):

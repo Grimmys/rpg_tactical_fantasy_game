@@ -1,5 +1,5 @@
 import pygame as pg
-import src.services.loadFromXMLManager as Loader
+import src.services.load_from_xml_manager as Loader
 import src.gui.fonts as font
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.game_entities.character import Character

@@ -23,17 +23,17 @@ from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
 from src.gui.animation import Animation
-from src.gui.constantSprites import ATTACKABLE_OPACITY, LANDING_OPACITY, INTERACTION_OPACITY, \
+from src.gui.constant_sprites import ATTACKABLE_OPACITY, LANDING_OPACITY, INTERACTION_OPACITY, \
     constant_sprites
 from src.gui.fonts import fonts
-from src.gui.infoBox import InfoBox
+from src.gui.info_box import InfoBox
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
-from src.services import loadFromXMLManager as Loader, menuCreatorManager
-from src.services.menuCreatorManager import create_event_dialog
+from src.services import load_from_xml_manager as Loader, menu_creator_manager
+from src.services.menu_creator_manager import create_event_dialog
 from src.services.menus import InventoryMenu, CharacterMenu, ShopMenu, SellMenu, BuyMenu, \
     MainMenu, EquipmentMenu, ItemMenu, StatusMenu, TradeMenu, SaveMenu, GenericActions
-from src.services.saveStateManager import SaveStateManager
+from src.services.save_state_manager import SaveStateManager
 
 
 class LevelStatus(IntEnum):
@@ -183,7 +183,7 @@ class Level:
             for mission in self.missions:
                 if not mission.main and mission.ended:
                     self.background_menus.append(
-                        (menuCreatorManager.create_reward_menu(mission), False))
+                        (menu_creator_manager.create_reward_menu(mission), False))
                     if mission.gold:
                         for player in self.players:
                             player.gold += mission.gold
@@ -251,11 +251,11 @@ class Level:
                                         self.entities['doors'] + \
                                         self.entities['fountains'] + self.entities[
                                             'allies'] + self.players
-                self.active_menu = menuCreatorManager.create_player_menu(self.selected_player,
-                                                                         self.entities['buildings'],
-                                                                         interactable_entities,
-                                                                         self.missions,
-                                                                         self.entities['foes'])
+                self.active_menu = menu_creator_manager.create_player_menu(self.selected_player,
+                                                                           self.entities['buildings'],
+                                                                           interactable_entities,
+                                                                           self.missions,
+                                                                           self.entities['foes'])
             return None
 
         entities = []
@@ -565,7 +565,7 @@ class Level:
             self.background_menus = []
         # Check if player tries to trade with another player
         elif isinstance(target, Player):
-            self.active_menu = menuCreatorManager.create_trade_menu(self.selected_player, target)
+            self.active_menu = menu_creator_manager.create_trade_menu(self.selected_player, target)
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
             pygame.mixer.Sound.play(self.talk_sfx)
@@ -725,7 +725,7 @@ class Level:
             self.selected_item = item
 
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_item_shop_menu(item_button_pos, item)
+            self.active_menu = menu_creator_manager.create_item_shop_menu(item_button_pos, item)
         else:
             print("Unknown action in buy menu... : " + str(method_id))
 
@@ -737,7 +737,7 @@ class Level:
             self.selected_item = item
 
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_item_sell_menu(item_button_pos, item)
+            self.active_menu = menu_creator_manager.create_item_sell_menu(item_button_pos, item)
         else:
             print("Unknown action in sell menu... : " + str(method_id))
 
@@ -753,9 +753,9 @@ class Level:
             items += [None] * free_spaces
 
             self.background_menus.append((self.active_menu, False))
-            self.active_menu = menuCreatorManager.create_inventory_menu(items,
-                                                                        self.selected_player.gold,
-                                                                        for_sell=True)
+            self.active_menu = menu_creator_manager.create_inventory_menu(items,
+                                                                          self.selected_player.gold,
+                                                                          for_sell=True)
         else:
             print("Unknown action in shop menu... : " + str(method_id))
 
@@ -764,7 +764,7 @@ class Level:
             self.start_game()
         elif method_id is MainMenu.SAVE:
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_save_menu()
+            self.active_menu = menu_creator_manager.create_save_menu()
         elif method_id is MainMenu.SUSPEND:
             # Because player choose to leave game before end, it's obviously a defeat
             self.game_phase = LevelStatus.ENDED_DEFEAT
@@ -777,7 +777,7 @@ class Level:
             self.begin_turn()
         elif method_id is MainMenu.DIARY:
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_diary_menu(self.diary_entries)
+            self.active_menu = menu_creator_manager.create_diary_menu(self.diary_entries)
         else:
             print("Unknown action in main menu... : " + str(method_id))
 
@@ -802,19 +802,19 @@ class Level:
             items = list(self.selected_player.items)
             free_spaces = items_max - len(items)
             items += [None] * free_spaces
-            self.active_menu = menuCreatorManager.create_inventory_menu(items,
-                                                                        self.selected_player.gold)
+            self.active_menu = menu_creator_manager.create_inventory_menu(items,
+                                                                          self.selected_player.gold)
         # Equipment action : open the equipment screen
         elif method_id is CharacterMenu.EQUIPMENT:
             pygame.mixer.Sound.play(self.armor_sfx)
 
             self.background_menus.append((self.active_menu, True))
             equipments = list(self.selected_player.equipments)
-            self.active_menu = menuCreatorManager.create_equipment_menu(equipments)
+            self.active_menu = menu_creator_manager.create_equipment_menu(equipments)
         # Display player's status
         elif method_id is CharacterMenu.STATUS:
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_status_menu(self.selected_player)
+            self.active_menu = menu_creator_manager.create_status_menu(self.selected_player)
         # Wait action : Given Character's turn is finished
         elif method_id is CharacterMenu.WAIT:
             pygame.mixer.Sound.play(self.wait_sfx)
@@ -935,7 +935,7 @@ class Level:
 
             self.selected_item = item
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_item_menu(item_button_pos, item)
+            self.active_menu = menu_creator_manager.create_item_menu(item_button_pos, item)
 
     def execute_equipment_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -945,20 +945,20 @@ class Level:
 
             self.selected_item = item
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_item_menu(item_button_pos, item, True)
+            self.active_menu = menu_creator_manager.create_item_menu(item_button_pos, item, True)
 
     def execute_item_action(self, method_id, args):
         # Get info about an item
         if method_id is ItemMenu.INFO_ITEM:
             self.background_menus.append((self.active_menu, False))
-            self.active_menu = menuCreatorManager.create_item_desc_menu(self.selected_item)
+            self.active_menu = menu_creator_manager.create_item_desc_menu(self.selected_item)
         # Remove an item
         elif method_id is ItemMenu.THROW_ITEM:
             # Remove item from inventory/equipment according to the index
             if self.selected_player.has_equipment(self.selected_item):
                 self.selected_player.remove_equipment(self.selected_item)
                 equipments = list(self.selected_player.equipments)
-                new_items_menu = menuCreatorManager.create_equipment_menu(equipments)
+                new_items_menu = menu_creator_manager.create_equipment_menu(equipments)
             else:
                 self.selected_player.remove_item(self.selected_item)
                 items_max = self.selected_player.nb_items_max
@@ -966,8 +966,8 @@ class Level:
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                new_items_menu = menuCreatorManager.create_inventory_menu(items,
-                                                                          self.selected_player.gold)
+                new_items_menu = menu_creator_manager.create_inventory_menu(items,
+                                                                            self.selected_player.gold)
 
             # Update the inventory menu (i.e. first menu backward)
             self.background_menus[len(self.background_menus) - 1] = (new_items_menu, True)
@@ -1029,7 +1029,7 @@ class Level:
                 result_msg = "The item has been unequipped"
 
                 # Update equipment screen content
-                new_equipment_menu = menuCreatorManager.create_equipment_menu(
+                new_equipment_menu = menu_creator_manager.create_equipment_menu(
                     self.selected_player.equipments)
 
                 # Cancel item menu
@@ -1067,9 +1067,9 @@ class Level:
                 free_spaces = items_max - len(items)
                 items += [None] * free_spaces
 
-                new_sell_menu = menuCreatorManager.create_inventory_menu(items,
-                                                                         self.selected_player.gold,
-                                                                         for_sell=True)
+                new_sell_menu = menu_creator_manager.create_inventory_menu(items,
+                                                                           self.selected_player.gold,
+                                                                           for_sell=True)
 
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_sell_menu, True)
@@ -1103,7 +1103,7 @@ class Level:
                 # Remove item from owner inventory according to index
                 owner.remove_item(self.selected_item)
 
-                new_trade_menu = menuCreatorManager.create_trade_menu(first_player, second_player)
+                new_trade_menu = menu_creator_manager.create_trade_menu(first_player, second_player)
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_trade_menu, True)
 
@@ -1121,8 +1121,8 @@ class Level:
         items = list(self.selected_player.items)
         free_spaces = items_max - len(items)
         items += [None] * free_spaces
-        new_inventory_menu = menuCreatorManager.create_inventory_menu(items,
-                                                                      self.selected_player.gold)
+        new_inventory_menu = menu_creator_manager.create_inventory_menu(items,
+                                                                        self.selected_player.gold)
         # Cancel item menu
         self.background_menus.pop()
         # Update the inventory menu (i.e. first menu backward)
@@ -1134,13 +1134,13 @@ class Level:
             alteration = args[1]
 
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_alteration_info_menu(alteration)
+            self.active_menu = menu_creator_manager.create_alteration_info_menu(alteration)
         # Get infos about a skill
         elif method_id is StatusMenu.INFO_SKILL:
             skill = args[1]
 
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_skill_info_menu(skill)
+            self.active_menu = menu_creator_manager.create_skill_info_menu(skill)
 
     def execute_trade_action(self, method_id, args):
         # Watch item action : Open a menu to act with a given item
@@ -1151,8 +1151,8 @@ class Level:
 
             self.selected_item = item
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = menuCreatorManager.create_trade_item_menu(item_button_pos, item,
-                                                                         players)
+            self.active_menu = menu_creator_manager.create_trade_item_menu(item_button_pos, item,
+                                                                           players)
         elif method_id is TradeMenu.SEND_GOLD:
             pygame.mixer.Sound.play(self.gold_sfx)
 
@@ -1162,7 +1162,7 @@ class Level:
             gold_traded = args[2][3]
 
             Player.trade_gold(sender, players[(sender_id + 1) % 2], gold_traded)
-            self.active_menu = menuCreatorManager.create_trade_menu(players[0], players[1])
+            self.active_menu = menu_creator_manager.create_trade_menu(players[0], players[1])
 
     def execute_save_action(self, method_id, args):
         if method_id is SaveMenu.SAVE:
@@ -1197,12 +1197,12 @@ class Level:
                     interactable_entities = self.entities['chests'] + self.entities['portals'] + \
                                             self.entities['doors'] + self.entities['fountains'] + \
                                             self.entities['allies'] + self.players
-                    self.active_menu = menuCreatorManager.create_player_menu(self.selected_player,
-                                                                             self.entities[
+                    self.active_menu = menu_creator_manager.create_player_menu(self.selected_player,
+                                                                               self.entities[
                                                                                  'buildings'],
-                                                                             interactable_entities,
-                                                                             self.missions,
-                                                                             self.entities['foes'])
+                                                                               interactable_entities,
+                                                                               self.missions,
+                                                                               self.entities['foes'])
             return
 
         # Search from which menu came the action
@@ -1308,7 +1308,7 @@ class Level:
         for player in self.players:
             if player.is_on_pos(position):
                 if player.turn_is_finished():
-                    self.active_menu = menuCreatorManager.create_status_menu(player)
+                    self.active_menu = menu_creator_manager.create_status_menu(player)
                 else:
                     player.selected = True
                     self.selected_player = player
@@ -1321,11 +1321,11 @@ class Level:
                 return
         for ent in self.entities['foes'] + self.entities['allies']:
             if ent.is_on_pos(position):
-                self.active_menu = menuCreatorManager.create_status_entity_menu(ent)
+                self.active_menu = menu_creator_manager.create_status_entity_menu(ent)
                 return
 
         is_initialization = self.game_phase is LevelStatus.INITIALIZATION
-        self.active_menu = menuCreatorManager.create_main_menu(is_initialization, position)
+        self.active_menu = menu_creator_manager.create_main_menu(is_initialization, position)
 
     def right_click(self):
         if self.selected_player:

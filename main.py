@@ -9,7 +9,7 @@ The pygame events are catch here and delegated to the start screen.
 
 import pygame
 
-from src.scenes.startScreen import StartScreen
+from src.scenes.start_screen import StartScreen
 
 
 def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock,
@@ -62,10 +62,10 @@ if __name__ == "__main__":
     import os
 
     from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
-    from src.gui import constantSprites, fonts
+    from src.gui import constant_sprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
-    from src.services import loadFromXMLManager as Loader
+    from src.services import load_from_xml_manager as Loader
 
     pygame.init()
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Load constant sprites
     Movable.init_constant_sprites()
-    constantSprites.init_constant_sprites()
+    constant_sprites.init_constant_sprites()
 
     # Load some data
     races = Loader.load_races()

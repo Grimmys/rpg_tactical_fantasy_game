@@ -2,10 +2,10 @@ import pygame
 from lxml import etree
 
 from src.constants import SCREEN_SIZE, BLACK, WIN_WIDTH, WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
-from src.services import menuCreatorManager
+from src.services import menu_creator_manager
 from src.gui.fonts import fonts
 from src.scenes.level import Level, LevelStatus
-from src.gui.infoBox import InfoBox
+from src.gui.info_box import InfoBox
 from src.game_entities.movable import Movable
 from src.services.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
 
@@ -23,7 +23,7 @@ class StartScreen:
         self.background = pygame.transform.scale(background_image, screen.get_size())
 
         # Creating menu
-        self.active_menu = menuCreatorManager.create_start_menu()
+        self.active_menu = menu_creator_manager.create_start_menu()
         self.background_menus = []
 
         # Memorize if a game is currently being performed
@@ -136,11 +136,11 @@ class StartScreen:
 
     def load_menu(self):
         self.background_menus.append([self.active_menu, False])
-        self.active_menu = menuCreatorManager.create_load_menu()
+        self.active_menu = menu_creator_manager.create_load_menu()
 
     def options_menu(self):
         self.background_menus.append([self.active_menu, False])
-        self.active_menu = menuCreatorManager.create_options_menu(
+        self.active_menu = menu_creator_manager.create_options_menu(
             {'move_speed': int(self.read_options_file('move_speed')),
              'screen_size': int(self.read_options_file('screen_size'))})
 

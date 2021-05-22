@@ -6,7 +6,7 @@ import pygame
 from lxml import etree
 
 from src.game_entities.entity import Entity
-from src.gui.constantSprites import constant_sprites
+from src.gui.constant_sprites import constant_sprites
 
 
 class DamageKind(Enum):

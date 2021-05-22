@@ -16,7 +16,7 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe
 from src.game_entities.fountain import Fountain
 from src.gui.fonts import fonts
-from src.gui.infoBox import InfoBox
+from src.gui.info_box import InfoBox
 from src.game_entities.mission import MissionType
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal

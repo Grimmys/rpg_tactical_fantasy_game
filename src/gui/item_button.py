@@ -10,7 +10,7 @@ ITEM_SPRITE = 'imgs/interface/item_frame.png'
 
 
 class ItemButton(Button):
-    def __init__(self, method_id, args, size, pos, item, margin, index,
+    def __init__(self, method_id, args, size, position, item, margin, index,
                  price=0, quantity=0, disabled=False):
         name = ""
         if item:
@@ -87,7 +87,7 @@ class ItemButton(Button):
                                    item_frame.get_height() / nb_lines -
                                    fonts['ITEM_FONT_HOVER'].get_height() / 2))
 
-        Button.__init__(self, method_id, args, size, pos, item_frame, item_frame_hover, margin)
+        Button.__init__(self, method_id, args, size, position, item_frame, item_frame_hover, margin)
         self.item = item
         self.index = index
         self.disabled = disabled

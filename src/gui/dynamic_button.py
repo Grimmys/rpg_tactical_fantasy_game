@@ -4,9 +4,9 @@ from src.gui.button import Button
 
 
 class DynamicButton(Button):
-    def __init__(self, method_id, args, size, pos, sprite, sprite_hover, margin, values,
+    def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, values,
                  current_value, base_title, base_sprite, base_sprite_hover, linked_object=None):
-        Button.__init__(self, method_id, args, size, pos, sprite, sprite_hover,
+        Button.__init__(self, method_id, args, size, position, sprite, sprite_hover,
                         margin, linked_object)
         self.values = values
         self.current_value_ind = current_value

@@ -2,16 +2,16 @@ import pygame as pg
 from pygame.constants import SRCALPHA
 
 from src.constants import WHITE
-from src.gui.boxElement import BoxElement
+from src.gui.box_element import BoxElement
 
 
 class TextElement(BoxElement):
-    def __init__(self, text, container_width, pos, font, margin, text_color=WHITE):
+    def __init__(self, text, container_width, position, font, margin, text_color=WHITE):
         init_text = font.render(text, 1, text_color)
         final_text = TextElement.verify_rendered_text_size(init_text, text,
                                                            container_width, font, text_color)
 
-        BoxElement.__init__(self, pos, final_text, margin)
+        BoxElement.__init__(self, position, final_text, margin)
 
     @staticmethod
     def verify_rendered_text_size(rendered_txt, txt, container_width, font, text_color):

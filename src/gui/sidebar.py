@@ -2,7 +2,7 @@ import pygame
 
 from src.constants import BLACK, YELLOW, ORANGE, RED, DARK_GREEN, BROWN_RED, MIDNIGHT_BLUE
 from src.game_entities.foe import Foe
-from src.gui.constantSprites import constant_sprites
+from src.gui.constant_sprites import constant_sprites
 from src.gui.fonts import fonts
 from src.game_entities.destroyable import Destroyable
 from src.game_entities.player import Player

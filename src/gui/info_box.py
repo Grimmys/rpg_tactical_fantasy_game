@@ -2,12 +2,12 @@ import pygame
 
 from src.constants import WHITE, BUTTON_SIZE, ITEM_BUTTON_SIZE, TRADE_ITEM_BUTTON_SIZE, MARGIN_BOX, MARGIN_TOP, \
     CLOSE_BUTTON_SIZE, MAX_MAP_HEIGHT, MAX_MAP_WIDTH
-from src.gui.boxElement import BoxElement
+from src.gui.box_element import BoxElement
 from src.gui.fonts import fonts
-from src.gui.textElement import TextElement
+from src.gui.text_element import TextElement
 from src.gui.button import Button
-from src.gui.dynamicButton import DynamicButton
-from src.gui.itemButton import ItemButton
+from src.gui.dynamic_button import DynamicButton
+from src.gui.item_button import ItemButton
 from src.services.menus import GenericActions
 
 BUTTON_INACTIVE = "imgs/interface/MenuButtonInactiv.png"

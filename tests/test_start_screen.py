@@ -7,11 +7,11 @@ from pygame.rect import Rect
 from random import randrange
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
-from src.scenes.startScreen import StartScreen
+from src.scenes.start_screen import StartScreen
 import src.gui.fonts as font
 from src.scenes.level import Level
 from src.game_entities.character import Character
-from src.services import loadFromXMLManager as Loader
+from src.services import load_from_xml_manager as Loader
 
 NEW_GAME_BUTTON_POS = (210, 249)
 LOAD_GAME_BUTTON_POS = (210, 289)

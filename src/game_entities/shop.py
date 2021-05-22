@@ -7,8 +7,8 @@ from lxml import etree
 
 from src.game_entities.character import Character
 from src.game_entities.item import Item
-from src.gui.infoBox import InfoBox
-from src.services import menuCreatorManager
+from src.gui.info_box import InfoBox
+from src.services import menu_creator_manager
 from src.game_entities.building import Building
 from src.services.menus import ShopMenu
 
@@ -18,7 +18,7 @@ class Shop(Building):
                  interaction: dict[str, any], stock: List[dict[str, any]]) -> None:
         Building.__init__(self, name, position, sprite, interaction)
         self.stock: List[dict[str, any]] = stock
-        self.menu: InfoBox = menuCreatorManager.create_shop_menu(self.stock, 0)
+        self.menu: InfoBox = menu_creator_manager.create_shop_menu(self.stock, 0)
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
                                                                             'trade.ogg'))
 

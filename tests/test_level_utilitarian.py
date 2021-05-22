@@ -4,9 +4,9 @@ import random as rd
 
 import pygame as pg
 
-from src.scenes.startScreen import StartScreen
+from src.scenes.start_screen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
-from src.services import menuCreatorManager
+from src.services import menu_creator_manager
 from src.services.menus import ItemMenu, GenericActions, TradeMenu
 from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS
 from tests.tools import minimal_setup_for_game
@@ -102,7 +102,7 @@ class TestLevel(unittest.TestCase):
         item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.active_menu = menuCreatorManager.create_player_menu(active_player, [], [], [], [])
+        self.level.active_menu = menu_creator_manager.create_player_menu(active_player, [], [], [], [])
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, receiver_player, True)
@@ -129,7 +129,7 @@ class TestLevel(unittest.TestCase):
         item = rd.choice(sender_player.items)
 
         # Open character menu
-        self.level.active_menu = menuCreatorManager.create_player_menu(active_player, [], [], [], [])
+        self.level.active_menu = menu_creator_manager.create_player_menu(active_player, [], [], [], [])
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, sender_player, False)
@@ -157,7 +157,7 @@ class TestLevel(unittest.TestCase):
         second_item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.active_menu = menuCreatorManager.create_player_menu(active_player, [], [], [], [])
+        self.level.active_menu = menu_creator_manager.create_player_menu(active_player, [], [], [], [])
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, trade_partner_player, False)
