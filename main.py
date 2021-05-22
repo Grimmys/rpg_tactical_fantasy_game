@@ -1,21 +1,69 @@
 #!/usr/bin/env python3
 
+"""
+The entry point of the game.
+Initiate pygame, load game generic data & fonts, initiate pygame window
+and let the main loop running.
+The pygame events are catch here and delegated to the start screen.
+"""
 
-def show_fps(win, inner_clock, font):
-    fps_text = font.render("FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0))
-    win.blit(fps_text, (2, 2))
+import pygame
+
+from src.scenes.startScreen import StartScreen
+
+
+def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.Font) -> None:
+    """
+    Display at the top left corner of the screen the current frame rate.
+
+    Keyword arguments:
+    screen -- the surface on which the framerate should be drawn
+    inner_clock -- the pygame clock running and containing the current frame rate
+    font -- the font used to display the frame rate
+    """
+    fps_text: pygame.Surface = font.render("FPS: " + str(round(inner_clock.get_fps())),
+                                           True, (255, 255, 0))
+    surface.blit(fps_text, (2, 2))
+
+
+def main_loop(scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clock) -> None:
+    """
+    Run the game until a quit request happened.
+    Pygame events are catch and delegated to the scene.
+    The scene state and display are updated at each iteration.
+
+    Keyword arguments:
+    scene -- the scene acting as the main controller of the game
+    window -- the window on which the current frame rate is displayed
+    clock -- the clock regulating the maximum frame rate of the game
+    """
+    quit_game: bool = False
+    while not quit_game:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                quit_game = True
+            elif e.type == pygame.MOUSEMOTION:
+                scene.motion(e.pos)
+            elif e.type == pygame.MOUSEBUTTONUP:
+                if e.button == 1 or e.button == 3:
+                    quit_game = scene.click(e.button, e.pos)
+            elif e.type == pygame.MOUSEBUTTONDOWN:
+                if e.button == 1 or e.button == 3:
+                    scene.button_down(e.button, e.pos)
+        scene.update_state()
+        scene.display()
+        show_fps(window, clock, fonts.fonts['FPS_FONT'])
+        pygame.display.update()
+        clock.tick(60)
 
 
 if __name__ == "__main__":
     import os
 
-    import pygame
-
     from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
     from src.gui import constantSprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
-    from src.scenes.startScreen import StartScreen
     from src.services import loadFromXMLManager as Loader
 
     pygame.init()
@@ -25,7 +73,7 @@ if __name__ == "__main__":
 
     # Window parameters
     pygame.display.set_caption("In the name of the Five Cats")
-    screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+    main_window = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     # Load constant sprites
     Movable.init_constant_sprites()
@@ -36,29 +84,13 @@ if __name__ == "__main__":
     classes = Loader.load_classes()
     Character.init_data(races, classes)
 
-    clock = pygame.time.Clock()
+    start_screen = StartScreen(main_window)
 
-    start_screen = StartScreen(screen)
-
-    pygame.mixer.music.load(os.path.join('sound_fx', 'sndtrk.ogg'))
+    # Load and start menu soundtrack
+    pygame.mixer.music.load(os.path.join('sound_fx', 'soundtrack.ogg'))
     pygame.mixer.music.play(-1)
 
-    quit_game = False
-    while not quit_game:
-        for e in pygame.event.get():
-            if e.type == pygame.QUIT:
-                quit_game = True
-            elif e.type == pygame.MOUSEMOTION:
-                start_screen.motion(e.pos)
-            elif e.type == pygame.MOUSEBUTTONUP:
-                if e.button == 1 or e.button == 3:
-                    quit_game = start_screen.click(e.button, e.pos)
-            elif e.type == pygame.MOUSEBUTTONDOWN:
-                if e.button == 1 or e.button == 3:
-                    start_screen.button_down(e.button, e.pos)
-        start_screen.update_state()
-        start_screen.display()
-        show_fps(screen, clock, fonts.fonts['FPS_FONT'])
-        pygame.display.update()
-        clock.tick(60)
+    # Let's the game start!
+    main_loop(start_screen, main_window, pygame.time.Clock())
+
     raise SystemExit
