@@ -8,6 +8,9 @@ from src.constants import TILE_SIZE
 
 
 class Entity:
+    """
+
+    """
     def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface]) \
             -> None:
         self.name: str = name
@@ -17,9 +20,17 @@ class Entity:
                                         (TILE_SIZE, TILE_SIZE))
 
     def display(self, screen: pygame.Surface) -> None:
+        """
+
+        :param screen:
+        """
         screen.blit(self.sprite, self.position)
 
     def get_rect(self) -> pygame.Rect:
+        """
+
+        :return:
+        """
         return self.sprite.get_rect(topleft=self.position)
 
     def __str__(self) -> str:
@@ -28,9 +39,19 @@ class Entity:
         return string_entity.strip()
 
     def is_on_pos(self, position: tuple[int, int]) -> bool:
+        """
+
+        :param position:
+        :return:
+        """
         return self.get_rect().collidepoint(position)
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         # Build XML tree
         tree: etree.Element = etree.Element(tree_name)
 

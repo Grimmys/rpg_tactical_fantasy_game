@@ -19,11 +19,19 @@ from src.gui.fonts import fonts
 
 
 class Character(Movable):
+    """
+
+    """
     races_data: dict[str, dict[str, Any]] = {}
     classes_data: dict[str, dict[str, Any]] = {}
 
     @staticmethod
     def init_data(races: dict[str, dict[str, Any]], classes: dict[str, dict[str, Any]]) -> None:
+        """
+
+        :param races:
+        :param classes:
+        """
         Character.races_data = races
         Character.classes_data = classes
 
@@ -49,6 +57,11 @@ class Character(Movable):
                                  Character.classes_data[classes[0]]['constitution']
 
     def talk(self, actor: Entity) -> Sequence[Sequence[dict[str, str]]]:
+        """
+
+        :param actor:
+        :return:
+        """
         self.join_team = self.interaction['join_team']
         entries: list[list[dict[str, str]]] = []
         for line in self.interaction['dialog']:
@@ -58,16 +71,27 @@ class Character(Movable):
         return entries
 
     def display(self, screen: pygame.Surface) -> None:
+        """
+
+        :param screen:
+        """
         Movable.display(self, screen)
         for equipment in self.equipments:
             equipment.display(screen, self.position, True)
 
     def lvl_up(self) -> None:
+        """
+
+        """
         Movable.lvl_up(self)
         self.stats_up()
 
     # TODO : refactor part of this code in Shield class
     def parried(self) -> bool:
+        """
+
+        :return:
+        """
         for equipment in self.equipments:
             if isinstance(equipment, Shield):
                 parried: bool = random.randint(0, 100) < equipment.parry
@@ -79,6 +103,14 @@ class Character(Movable):
 
     def attacked(self, entity: Entity, damage: int, kind: DamageKind,
                  allies: Sequence[Entity]) -> int:
+        """
+
+        :param entity:
+        :param damage:
+        :param kind:
+        :param allies:
+        :return:
+        """
         for equipment in self.equipments:
             if kind is DamageKind.PHYSICAL:
                 damage -= equipment.defense
@@ -87,6 +119,11 @@ class Character(Movable):
         return Movable.attacked(self, entity, damage, kind, allies)
 
     def attack(self, entity: Entity) -> int:
+        """
+
+        :param entity:
+        :return:
+        """
         damages: int = self.strength + self.get_stat_change('strength')
         weapon: Weapon = self.get_weapon()
         if weapon:
@@ -96,6 +133,10 @@ class Character(Movable):
         return damages
 
     def stats_up(self, nb_lvl: int = 1) -> None:
+        """
+
+        :param nb_lvl:
+        """
         for _ in range(nb_lvl):
             hp_increased: int = random.choice(self.classes_data[self.classes[0]]['stats_up']['hp'])
             self.defense += random.choice(self.classes_data[self.classes[0]]['stats_up']['def'])
@@ -105,6 +146,10 @@ class Character(Movable):
             self.hit_points += hp_increased
 
     def get_weapon(self) -> Union[Weapon, None]:
+        """
+
+        :return:
+        """
         for equipment in self.equipments:
             if equipment.body_part == 'right_hand':
                 return equipment
@@ -112,6 +157,10 @@ class Character(Movable):
 
     @property
     def reach(self) -> Sequence[int]:
+        """
+
+        :return:
+        """
         reach: Sequence[int] = self.reach_
         weapon: Weapon = self.get_weapon()
         if weapon is not None:
@@ -120,6 +169,10 @@ class Character(Movable):
 
     @property
     def attack_kind(self) -> DamageKind:
+        """
+
+        :return:
+        """
         attack_kind: DamageKind = self._attack_kind
         weapon: Weapon = self.get_weapon()
         if weapon is not None:
@@ -127,14 +180,28 @@ class Character(Movable):
         return attack_kind
 
     def get_equipment(self, index: int) -> Union[Equipment, bool]:
+        """
+
+        :param index:
+        :return:
+        """
         if index not in range(len(self.equipments)):
             return False
         return self.equipments[index]
 
     def has_equipment(self, equipment: Equipment) -> bool:
+        """
+
+        :param equipment:
+        :return:
+        """
         return equipment in self.equipments
 
     def get_formatted_classes(self) -> str:
+        """
+
+        :return:
+        """
         formatted_string: str = ""
         for cls in self.classes:
             formatted_string += cls.capitalize() + ", "
@@ -143,13 +210,26 @@ class Character(Movable):
         return formatted_string[:-2]
 
     def get_formatted_race(self) -> str:
+        """
+
+        :return:
+        """
         return self.race.capitalize()
 
     def get_formatted_reach(self) -> str:
+        """
+
+        :return:
+        """
         return ', '.join([str(reach) for reach in self.reach])
 
     # TODO : Refactor me ; I'm too long and return type looks too generic
     def equip(self, equipment: Equipment) -> int:
+        """
+
+        :param equipment:
+        :return:
+        """
         # Verify if player could wear this equipment
         allowed: bool = True
         if self.race == 'centaur' and not isinstance(equipment, (Shield, Weapon)):
@@ -182,6 +262,11 @@ class Character(Movable):
         return -1
 
     def unequip(self, equipment: Equipment) -> bool:
+        """
+
+        :param equipment:
+        :return:
+        """
         # If the item has been appended to the inventory
         if self.set_item(equipment):
             self.remove_equipment(equipment)
@@ -189,12 +274,22 @@ class Character(Movable):
         return False
 
     def remove_equipment(self, equipment: Equipment) -> Union[Equipment, None]:
+        """
+
+        :param equipment:
+        :return:
+        """
         for index, equip in enumerate(self.equipments):
             if equip.identifier == equipment.identifier:
                 return self.equipments.pop(index)
         return None
 
     def get_stat_change(self, stat: str) -> int:
+        """
+
+        :param stat:
+        :return:
+        """
         malus: int = 0
         if stat == 'speed':
             # Check if character as a malus due to equipment weight exceeding constitution
@@ -204,6 +299,9 @@ class Character(Movable):
         return malus + Movable.get_stat_change(self, stat)
 
     def remove_chest_key(self) -> None:
+        """
+
+        """
         best_candidate: Union[Item, None] = None
         for item in self.items:
             if isinstance(item, Key) and item.for_chest:
@@ -215,6 +313,9 @@ class Character(Movable):
         self.items.remove(best_candidate)
 
     def remove_door_key(self) -> None:
+        """
+
+        """
         best_candidate: Union[Item, None] = None
         for item in self.items:
             if isinstance(item, Key) and item.for_door:
@@ -226,6 +327,11 @@ class Character(Movable):
         self.items.remove(best_candidate)
 
     def save(self, tree_name: etree.Element) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Movable.save(self, tree_name)
 
         # Save class (if possible)

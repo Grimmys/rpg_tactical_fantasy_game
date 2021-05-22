@@ -15,16 +15,26 @@ from tests.tools import minimal_setup_for_game
 class TestLevel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         minimal_setup_for_game()
         cls.save_path = "saves/save_0.xml"
 
     def setUp(self):
+        """
+
+        """
         # Window parameters
         screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
         self.start_screen = StartScreen(screen)
         self.start_screen.display()
 
     def import_save_file(self, import_path):
+        """
+
+        :param import_path:
+        """
         shutil.copyfile(import_path, self.save_path)
         self.start_screen.click(LEFT_BUTTON, LOAD_GAME_BUTTON_POS)
         self.start_screen.display()
@@ -32,6 +42,13 @@ class TestLevel(unittest.TestCase):
         self.level = self.start_screen.level
 
     def simulate_trade_item(self, item, active_player, other_player, is_active_the_sender):
+        """
+
+        :param item:
+        :param active_player:
+        :param other_player:
+        :param is_active_the_sender:
+        """
         # Store the current menu before making trade
         self.level.background_menus.append((self.level.active_menu, False))
         self.level.interact(active_player, other_player, ())

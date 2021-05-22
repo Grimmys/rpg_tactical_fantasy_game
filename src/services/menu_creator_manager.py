@@ -31,6 +31,12 @@ MAP_HEIGHT = TILE_SIZE * 10
 
 
 def create_shop_menu(stock, gold):
+    """
+
+    :param stock:
+    :param gold:
+    :return:
+    """
     entries = []
     row = []
     for i, item in enumerate(stock):
@@ -53,6 +59,13 @@ def create_shop_menu(stock, gold):
 
 
 def create_inventory_menu(items, gold, for_sell=False):
+    """
+
+    :param items:
+    :param gold:
+    :param for_sell:
+    :return:
+    """
     entries = []
     row = []
     method_id = SellMenu.INTERAC_SELL if for_sell else InventoryMenu.INTERAC_ITEM
@@ -80,6 +93,11 @@ def create_inventory_menu(items, gold, for_sell=False):
 
 
 def create_equipment_menu(equipments):
+    """
+
+    :param equipments:
+    :return:
+    """
     entries = []
     body_parts = [['head'], ['body'], ['right_hand', 'left_hand'], ['feet']]
     for part in body_parts:
@@ -102,6 +120,12 @@ def create_equipment_menu(equipments):
 
 
 def create_trade_menu(first_player, second_player):
+    """
+
+    :param first_player:
+    :param second_player:
+    :return:
+    """
     # Extract data from players
     items_max = first_player.nb_items_max
     items_first = list(first_player.items)
@@ -164,6 +188,12 @@ def create_trade_menu(first_player, second_player):
 
 
 def determine_hp_color(hit_points, hp_max):
+    """
+
+    :param hit_points:
+    :param hp_max:
+    :return:
+    """
     if hit_points == hp_max:
         return WHITE
     if hit_points >= hp_max * 0.75:
@@ -176,6 +206,11 @@ def determine_hp_color(hit_points, hp_max):
 
 
 def create_status_menu(player):
+    """
+
+    :param player:
+    :return:
+    """
     entries = [
         [{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
          {'type': 'text', 'text': str(player)}, {}],
@@ -235,6 +270,15 @@ def create_status_menu(player):
 
 
 def create_player_menu(player, buildings, interact_entities, missions, foes):
+    """
+
+    :param player:
+    :param buildings:
+    :param interact_entities:
+    :param missions:
+    :param foes:
+    :return:
+    """
     entries = [[{'name': 'Inventory', 'id': CharacterMenu.INV}],
                [{'name': 'Equipment', 'id': CharacterMenu.EQUIPMENT}],
                [{'name': 'Status', 'id': CharacterMenu.STATUS}],
@@ -319,11 +363,22 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
 
 
 def create_diary_menu(entries):
+    """
+
+    :param entries:
+    :return:
+    """
     return InfoBox("Diary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
                    close_button=UNFINAL_ACTION)
 
 
 def create_main_menu(initialization_phase, pos):
+    """
+
+    :param initialization_phase:
+    :param pos:
+    :return:
+    """
     # Transform pos tuple into rect
     tile = pygame.Rect(pos[0], pos[1], 1, 1)
     entries = [[{'name': 'Save', 'id': MainMenu.SAVE}],
@@ -344,6 +399,12 @@ def create_main_menu(initialization_phase, pos):
 
 
 def create_item_shop_menu(item_button_pos, item):
+    """
+
+    :param item_button_pos:
+    :param item:
+    :return:
+    """
     entries = [
         [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button'}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
@@ -358,6 +419,12 @@ def create_item_shop_menu(item_button_pos, item):
 
 
 def create_item_sell_menu(item_button_pos, item):
+    """
+
+    :param item_button_pos:
+    :param item:
+    :return:
+    """
     entries = [
         [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button'}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
@@ -372,6 +439,13 @@ def create_item_sell_menu(item_button_pos, item):
 
 
 def create_trade_item_menu(item_button_pos, item, players):
+    """
+
+    :param item_button_pos:
+    :param item:
+    :param players:
+    :return:
+    """
     entries = [
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
         [{'name': 'Trade', 'id': ItemMenu.TRADE_ITEM, 'args': players}]
@@ -391,6 +465,13 @@ def create_trade_item_menu(item_button_pos, item, players):
 
 
 def create_item_menu(item_button_pos, item, is_equipped=False):
+    """
+
+    :param item_button_pos:
+    :param item:
+    :param is_equipped:
+    :return:
+    """
     entries = [
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
         [{'name': 'Throw', 'id': ItemMenu.THROW_ITEM}]
@@ -418,6 +499,12 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
 
 
 def create_item_desc_stat(stat_name, stat_value):
+    """
+
+    :param stat_name:
+    :param stat_value:
+    :return:
+    """
     return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'],
              'margin': (0, 0, 0, 100)},
             {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'],
@@ -425,6 +512,11 @@ def create_item_desc_stat(stat_name, stat_value):
 
 
 def create_item_desc_menu(item):
+    """
+
+    :param item:
+    :return:
+    """
     item_title = str(item)
 
     entries = [[{'type': 'text', 'text': item.description, 'font': fonts['ITEM_DESC_FONT'],
@@ -469,6 +561,11 @@ def create_item_desc_menu(item):
 
 
 def create_alteration_info_menu(alteration):
+    """
+
+    :param alteration:
+    :return:
+    """
     turns_left = alteration.get_turns_left()
     entries = [[{'type': 'text', 'text': alteration.description,
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
@@ -480,6 +577,11 @@ def create_alteration_info_menu(alteration):
 
 
 def create_skill_info_menu(skill):
+    """
+
+    :param skill:
+    :return:
+    """
     entries = [[{'type': 'text', 'text': skill.description,
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
@@ -489,6 +591,11 @@ def create_skill_info_menu(skill):
 
 
 def create_status_entity_menu(ent):
+    """
+
+    :param ent:
+    :return:
+    """
     keywords_display = ent.get_formatted_keywords() if isinstance(ent, Foe) else ''
     entries = [[{'type': 'text', 'text': keywords_display,
                  'font': fonts['ITALIC_ITEM_FONT']}],
@@ -556,6 +663,11 @@ def create_status_entity_menu(ent):
 
 
 def create_event_dialog(dialog_el):
+    """
+
+    :param dialog_el:
+    :return:
+    """
     entries = [[{'type': 'text', 'text': talk, 'font': fonts['ITEM_DESC_FONT']}]
                for talk in dialog_el['talks']]
     return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
@@ -563,6 +675,11 @@ def create_event_dialog(dialog_el):
 
 
 def create_reward_menu(mission):
+    """
+
+    :param mission:
+    :return:
+    """
     entries = [
         [{'type': 'text', 'text': 'Congratulations ! Objective has been completed !',
           'font': fonts['ITEM_DESC_FONT']}]]
@@ -576,6 +693,10 @@ def create_reward_menu(mission):
 
 
 def create_start_menu():
+    """
+
+    :return:
+    """
     entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}],
                [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
                [{'name': 'Options', 'id': StartMenu.OPTIONS}],
@@ -590,6 +711,14 @@ def create_start_menu():
 
 
 def load_parameter_entry(formatted_name, values, current_value, identifier):
+    """
+
+    :param formatted_name:
+    :param values:
+    :param current_value:
+    :param identifier:
+    :return:
+    """
     entry = {'type': 'parameter_button', 'name': formatted_name, 'values': values,
              'id': identifier, 'current_value_ind': 0}
 
@@ -601,6 +730,11 @@ def load_parameter_entry(formatted_name, values, current_value, identifier):
 
 
 def create_options_menu(params):
+    """
+
+    :param params:
+    :return:
+    """
     entries = [[load_parameter_entry("Move speed : ",
                                      [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
                                       {'label': 'Normal', 'value': ANIMATION_SPEED},
@@ -618,6 +752,10 @@ def create_options_menu(params):
 
 
 def create_load_menu():
+    """
+
+    :return:
+    """
     entries = []
 
     for i in range(SAVE_SLOTS):
@@ -629,6 +767,10 @@ def create_load_menu():
 
 
 def create_save_menu():
+    """
+
+    :return:
+    """
     entries = []
 
     for i in range(SAVE_SLOTS):

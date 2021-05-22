@@ -10,6 +10,9 @@ from tests.tools import minimal_setup_for_game
 class TestWeapon(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         minimal_setup_for_game()
 
     def test_init_weapon(self):

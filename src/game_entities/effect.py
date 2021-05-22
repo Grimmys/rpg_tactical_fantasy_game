@@ -4,6 +4,9 @@ from src.game_entities.alteration import Alteration
 
 
 class Effect:
+    """
+
+    """
     def __init__(self, name, power, duration):
         self.name = name
         self.power = power
@@ -23,6 +26,11 @@ class Effect:
                                          desc, durable_effects)
 
     def apply_on_ent(self, ent):
+        """
+
+        :param ent:
+        :return:
+        """
         msg = ''
         success = True
         if self.name == 'heal':
@@ -51,6 +59,10 @@ class Effect:
         return success, msg
 
     def get_formatted_desc(self):
+        """
+
+        :return:
+        """
         if self.name == 'heal':
             return f'Recover {self.power} HP'
         if self.name == 'xp_up':

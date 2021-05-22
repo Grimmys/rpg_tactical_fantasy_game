@@ -27,6 +27,9 @@ RIGHT_BUTTON = 3
 class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         super(TestStartScreen, cls).setUpClass()
         pg.init()
         font.init_fonts()
@@ -47,6 +50,12 @@ class TestStartScreen(unittest.TestCase):
 
     @staticmethod
     def generate_position(start_pos, end_pos):
+        """
+
+        :param start_pos:
+        :param end_pos:
+        :return:
+        """
         # Generate random pos in a rect having start_pos as top left corner
         # and end_pos as bottom right corner
         pos = (randrange(start_pos[0], end_pos[0] + 1),
@@ -56,6 +65,9 @@ class TestStartScreen(unittest.TestCase):
         return pos
 
     def setUp(self):
+        """
+
+        """
         # Window parameters
         screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
         self.start_screen = StartScreen(screen)

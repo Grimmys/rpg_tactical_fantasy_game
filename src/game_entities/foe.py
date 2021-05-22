@@ -22,6 +22,9 @@ class Keyword(Enum):
 
 
 class Foe(Movable):
+    """
+
+    """
     grow_rates: dict[str, dict[str, Sequence[int]]] = {}
 
     def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface],
@@ -38,6 +41,10 @@ class Foe(Movable):
         self.keywords: Sequence[Keyword] = [] if keywords is None else keywords
 
     def stats_up(self, nb_lvl: int = 1) -> None:
+        """
+
+        :param nb_lvl:
+        """
         grow_rates: dict[str, Sequence[int]] = Foe.grow_rates[self.name]
         for _ in range(nb_lvl):
             self.hp_max += rd.choice(grow_rates['hp'])
@@ -47,6 +54,10 @@ class Foe(Movable):
             self.xp_gain = int(self.xp_gain * 1.1)
 
     def roll_for_loot(self) -> Sequence[Item]:
+        """
+
+        :return:
+        """
         loot: list[Item] = []
         for (item, probability) in self.potential_loot:
             if rd.random() < probability:
@@ -54,12 +65,25 @@ class Foe(Movable):
         return loot
 
     def get_formatted_keywords(self) -> str:
+        """
+
+        :return:
+        """
         return ", ".join([keyword.name.lower().capitalize() for keyword in self.keywords])
 
     def get_formatted_reach(self) -> str:
+        """
+
+        :return:
+        """
         return ', '.join([str(reach) for reach in self.reach])
 
     def save(self, tree_name) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Movable.save(self, tree_name)
 
         # Save loot

@@ -7,7 +7,9 @@ from src.game_entities.item import Item
 
 
 class Equipment(Item):
+    """
 
+    """
     def __init__(self, name: str, sprite: str, description: str, price: int,
                  equipped_sprites: Sequence[str], body_part: str,
                  defense: int, resistance: int, attack: int, weight: int,
@@ -36,6 +38,10 @@ class Equipment(Item):
         self.normal_sprite: pygame.Surface = self.equipped_sprite
 
     def get_formatted_restrictions(self) -> str:
+        """
+
+        :return:
+        """
         formatted_string: str = ''
         for key in self.restrictions:
             if key in ('classes', 'races'):
@@ -46,11 +52,23 @@ class Equipment(Item):
 
     def display(self, screen: pygame.Surface, position: tuple[int, int], equipped: bool = False) \
             -> None:
+        """
+
+        :param screen:
+        :param position:
+        :param equipped:
+        """
         sprite_to_blit: pygame.Surface = self.equipped_sprite if equipped else self.sprite
         screen.blit(sprite_to_blit, position)
 
     def set_grey(self) -> None:
+        """
+
+        """
         self.equipped_sprite = self.sprite_unavailable
 
     def unset_grey(self) -> None:
+        """
+
+        """
         self.equipped_sprite = self.normal_sprite

@@ -7,6 +7,9 @@ from src.constants import TILE_SIZE
 
 
 class Item:
+    """
+
+    """
     internal_identifier: int = 0
 
     def __init__(self, name: str, sprite: str, description: str, price: int = 0) -> None:
@@ -27,6 +30,11 @@ class Item:
         return self.name == it.name
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         # Build XML tree
         tree: etree.Element = etree.Element(tree_name)
 

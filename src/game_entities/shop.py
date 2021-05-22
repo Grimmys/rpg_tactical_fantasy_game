@@ -14,6 +14,9 @@ from src.services.menus import ShopMenu
 
 
 class Shop(Building):
+    """
+
+    """
     def __init__(self, name: str, position: tuple[int, int], sprite: str,
                  interaction: dict[str, any], stock: List[dict[str, any]]) -> None:
         Building.__init__(self, name, position, sprite, interaction)
@@ -23,12 +26,21 @@ class Shop(Building):
                                                                             'trade.ogg'))
 
     def get_item_entry(self, item: Item) -> Union[dict[str, any], None]:
+        """
+
+        :param item:
+        :return:
+        """
         for entry in self.stock:
             if entry['item'].name == item.name:
                 return entry
         return None
 
     def update_shop_menu(self, gold: int) -> None:
+        """
+
+        :param gold:
+        """
         for row in self.menu.entries:
             for entry in row:
                 if entry['type'] == 'item_button':
@@ -44,6 +56,11 @@ class Shop(Building):
         self.menu.update_content(self.menu.entries)
 
     def interact(self, actor: Character) -> Sequence[Sequence[dict[str, str]]]:
+        """
+
+        :param actor:
+        :return:
+        """
         self.update_shop_menu(actor.gold)
 
         entries: Sequence[Sequence[dict[str, str]]] = [[{'name': 'Buy', 'id': ShopMenu.BUY,
@@ -54,6 +71,12 @@ class Shop(Building):
 
     # TODO: Return type of buy and sell methods should be coherent
     def buy(self, actor: Character, item: Item) -> str:
+        """
+
+        :param actor:
+        :param item:
+        :return:
+        """
         if actor.gold >= item.price:
             if len(actor.items) < actor.nb_items_max:
                 pygame.mixer.Sound.play(self.gold_sfx)
@@ -74,6 +97,12 @@ class Shop(Building):
         return "Not enough gold to buy this item."
 
     def sell(self, actor: Character, item: Item) -> tuple[bool, str]:
+        """
+
+        :param actor:
+        :param item:
+        :return:
+        """
         if item.resell_price > 0:
             actor.remove_item(item)
             actor.gold += item.resell_price
@@ -85,6 +114,11 @@ class Shop(Building):
         return False, "This item can't be sold !"
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Building.save(self, tree_name)
 
         # Specify nature

@@ -19,6 +19,9 @@ DEFAULT_WIDTH = 400
 
 
 class InfoBox:
+    """
+
+    """
     def __init__(self, name, id_type, sprite, entries, width=DEFAULT_WIDTH, el_rect_linked=None, close_button=0,
                  sep=False, title_color=WHITE):
         self.name = name
@@ -45,6 +48,12 @@ class InfoBox:
         self.sprite = pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), self.size)
 
     def init_elements(self, entries, width):
+        """
+
+        :param entries:
+        :param width:
+        :return:
+        """
         elements = []
         for row in entries:
             element = []
@@ -137,6 +146,11 @@ class InfoBox:
         return elements
 
     def determine_height(self, close_button):
+        """
+
+        :param close_button:
+        :return:
+        """
         # Margin to be add at begin and at end
         height = MARGIN_BOX * 2
         self.sep['height'] -= height
@@ -172,6 +186,10 @@ class InfoBox:
         return height
 
     def determine_pos(self):
+        """
+
+        :return:
+        """
         if self.element_linked:
             pos = [self.element_linked.x + self.element_linked.width,
                    self.element_linked.y + self.element_linked.height - self.size[1] // 2]
@@ -185,6 +203,10 @@ class InfoBox:
         return []
 
     def find_buttons(self):
+        """
+
+        :return:
+        """
         buttons = []
         for row in self.elements:
             for element in row[1:]:
@@ -193,6 +215,9 @@ class InfoBox:
         return buttons
 
     def determine_elements_pos(self):
+        """
+
+        """
         y_coordinate = self.pos[1] + MARGIN_BOX
         # Memorize mouse position in case it is over a button
         mouse_pos = pygame.mouse.get_pos()
@@ -203,13 +228,17 @@ class InfoBox:
             for element in row[1:]:
                 base_x = self.pos[0] + (self.size[0] // (2 * nb_elements)) * i
                 x_coordinate = base_x - element.get_width() // 2
-                element.pos = (x_coordinate, y_coordinate + element.get_margin_top())
+                element.position = (x_coordinate, y_coordinate + element.get_margin_top())
                 if isinstance(element, Button):
                     element.set_hover(element.get_rect().collidepoint(mouse_pos))
                 i += 2
             y_coordinate += row[0]
 
     def update_content(self, entries):
+        """
+
+        :param entries:
+        """
         self.elements = self.init_elements(entries, self.size[0])
         self.size = (self.size[0], self.determine_height(self.close_button))
         self.sprite = pygame.transform.scale(self.sprite, self.size)
@@ -217,6 +246,10 @@ class InfoBox:
         self.buttons = self.find_buttons()
 
     def display(self, win):
+        """
+
+        :param win:
+        """
         if self.pos:
             win.blit(self.sprite, self.pos)
         else:
@@ -234,10 +267,19 @@ class InfoBox:
                              (self.pos[0] + self.size[0] / 2, self.pos[1] + self.sep['height']), 2)
 
     def motion(self, pos):
+        """
+
+        :param pos:
+        """
         for button in self.buttons:
             button.set_hover(button.get_rect().collidepoint(pos))
 
     def click(self, pos):
+        """
+
+        :param pos:
+        :return:
+        """
         for button in self.buttons:
             if button.get_rect().collidepoint(pos):
                 return button.action_triggered()

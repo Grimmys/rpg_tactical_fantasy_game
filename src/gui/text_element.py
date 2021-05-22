@@ -6,6 +6,9 @@ from src.gui.box_element import BoxElement
 
 
 class TextElement(BoxElement):
+    """
+
+    """
     def __init__(self, text, container_width, position, font, margin, text_color=WHITE):
         init_text = font.render(text, 1, text_color)
         final_text = TextElement.verify_rendered_text_size(init_text, text,
@@ -15,6 +18,15 @@ class TextElement(BoxElement):
 
     @staticmethod
     def verify_rendered_text_size(rendered_txt, txt, container_width, font, text_color):
+        """
+
+        :param rendered_txt:
+        :param txt:
+        :param container_width:
+        :param font:
+        :param text_color:
+        :return:
+        """
         final_render = rendered_txt
 
         if final_render.get_width() + 20 > container_width:
@@ -37,11 +49,21 @@ class TextElement(BoxElement):
 
     @staticmethod
     def divide_text(txt):
+        """
+
+        :param txt:
+        :return:
+        """
         sep_i = TextElement.get_middle_text(txt)
         return txt[:sep_i], txt[sep_i:]
 
     @staticmethod
     def get_middle_text(txt):
+        """
+
+        :param txt:
+        :return:
+        """
         absolute_middle = len(txt) // 2
         for i in range(absolute_middle, len(txt)):
             if txt[i] == ' ':

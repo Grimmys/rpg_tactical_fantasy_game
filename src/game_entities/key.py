@@ -2,6 +2,9 @@ from src.game_entities.item import Item
 
 
 class Key(Item):
+    """
+
+    """
     def __init__(self, name: str, sprite: str, description: str, price: int,
                  for_chest: bool, for_door: bool) -> None:
         Item.__init__(self, name, sprite, description, price)

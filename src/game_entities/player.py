@@ -25,6 +25,9 @@ class PlayerState(IntEnum):
 
 
 class Player(Character):
+    """
+
+    """
     def __init__(self, name: str, sprite: Union[str, pygame.Surface], hp: int, defense: int,
                  res: int, strength: int, classes: Sequence[str], equipments: list[Equipment],
                  race: str, gold: int, lvl: int, skills: Sequence[Skill],
@@ -49,16 +52,30 @@ class Player(Character):
         self.current_action: Union[CharacterMenu, None] = None
 
     def set_initial_pos(self, position: tuple[int, int]) -> None:
+        """
+
+        :param position:
+        """
         self.position = position
         self.old_position = position
 
     def display(self, screen: pygame.Surface) -> None:
+        """
+
+        :param screen:
+        """
         Character.display(self, screen)
         if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
             screen.blit(Player.SELECTED_DISPLAY, self.position)
 
     @staticmethod
     def trade_gold(sender: Character, receiver: Character, amount: int) -> None:
+        """
+
+        :param sender:
+        :param receiver:
+        :param amount:
+        """
         if amount > sender.gold:
             amount = sender.gold
         sender.gold -= amount
@@ -66,6 +83,10 @@ class Player(Character):
 
     @property
     def selected(self) -> bool:
+        """
+
+        :return:
+        """
         return self._selected
 
     @selected.setter
@@ -74,11 +95,19 @@ class Player(Character):
         self.state = PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
 
     def set_move(self, position: Sequence[tuple[int, int]]) -> None:
+        """
+
+        :param position:
+        """
         Character.set_move(self, position)
         self.state = PlayerState.ON_MOVE
         self.old_position = self.position
 
     def move(self) -> bool:
+        """
+
+        :return:
+        """
         if self.state is PlayerState.ON_MOVE:
             Character.move(self)
             if not self.on_move:
@@ -87,6 +116,10 @@ class Player(Character):
         return False
 
     def cancel_move(self) -> bool:
+        """
+
+        :return:
+        """
         if self.state is not PlayerState.WAITING_POST_ACTION_UNCANCELLABLE:
             self.state = PlayerState.WAITING_SELECTION
             self.position = self.old_position
@@ -94,32 +127,58 @@ class Player(Character):
         return False
 
     def cancel_interaction(self) -> None:
+        """
+
+        """
         self.state = PlayerState.WAITING_POST_ACTION
 
     def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
+        """
+
+        :param item:
+        :return:
+        """
         used, result_msgs = Character.use_item(self, item)
         if used:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return used, result_msgs
 
     def equip(self, equipment: Equipment) -> int:
+        """
+
+        :param equipment:
+        :return:
+        """
         equipped: int = Character.equip(self, equipment)
         if equipped > -1:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return equipped
 
     def unequip(self, equipment: Equipment) -> int:
+        """
+
+        :param equipment:
+        :return:
+        """
         unequipped = Character.unequip(self, equipment)
         if unequipped:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return unequipped
 
     def attack(self, entity: Entity) -> int:
+        """
+
+        :param entity:
+        :return:
+        """
         damages: int = Character.attack(self, entity)
         self.state = PlayerState.FINISHED
         return damages
 
     def end_turn(self) -> None:
+        """
+
+        """
         self.state = PlayerState.FINISHED
         self._selected = False
         self.sprite = self.sprite_unavailable
@@ -129,6 +188,9 @@ class Player(Character):
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def new_turn(self) -> None:
+        """
+
+        """
         Character.new_turn(self)
         self.state = PlayerState.WAITING_SELECTION
         self.sprite = self.normal_sprite
@@ -136,12 +198,24 @@ class Player(Character):
             equipment.unset_grey()
 
     def turn_is_finished(self) -> bool:
+        """
+
+        :return:
+        """
         return self.state == PlayerState.FINISHED
 
     def choose_target(self) -> None:
+        """
+
+        """
         self.state = PlayerState.WAITING_TARGET
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         # Build XML tree
         tree: etree.Element = Character.save(self, tree_name)
 

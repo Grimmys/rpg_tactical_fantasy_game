@@ -38,12 +38,18 @@ class EntityStrategy(Enum):
 
 
 class Movable(Destroyable):
+    """
+
+    """
     SELECTED_DISPLAY: pygame.Surface = None
     XP_NEXT_LVL_BASE: int = 15
     move_speed: int = ANIMATION_SPEED
 
     @staticmethod
     def init_constant_sprites() -> None:
+        """
+
+        """
         selected_sprite: str = 'imgs/dungeon_crawl/misc/cursor.png'
         Movable.SELECTED_DISPLAY = pygame.transform.scale(
             pygame.image.load(selected_sprite).convert_alpha(),
@@ -90,16 +96,32 @@ class Movable(Destroyable):
             os.path.join('sound_fx', 'cent_walk.ogg'))
 
     def display(self, screen: pygame.Surface) -> None:
+        """
+
+        :param screen:
+        """
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):
             screen.blit(Movable.SELECTED_DISPLAY, self.position)
 
     @property
     def attack_kind(self) -> DamageKind:
+        """
+
+        :return:
+        """
         return self._attack_kind
 
     def attacked(self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]) \
             -> int:
+        """
+
+        :param entity:
+        :param damage:
+        :param kind:
+        :param allies:
+        :return:
+        """
         # Compute distance of all allies
         allies_dist: Sequence[tuple[Entity, int]] = [(ally,
                                                       (abs(self.position[0] -
@@ -134,18 +156,33 @@ class Movable(Destroyable):
         return self.hit_points
 
     def end_turn(self) -> None:
+        """
+
+        """
         self.state = EntityState.FINISHED
         # Remove all alterations that are finished
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def turn_is_finished(self) -> bool:
+        """
+
+        :return:
+        """
         return self.state == EntityState.FINISHED
 
     @property
     def max_moves(self) -> int:
+        """
+
+        :return:
+        """
         return self._max_moves
 
     def set_move(self, path: Sequence[tuple[int, int]]) -> None:
+        """
+
+        :param path:
+        """
         self.on_move = path
         self.state = EntityState.ON_MOVE
 
@@ -163,6 +200,10 @@ class Movable(Destroyable):
                 pygame.mixer.Sound.play(self.walk_sfx)
 
     def get_formatted_alterations(self) -> str:
+        """
+
+        :return:
+        """
         formatted_string: str = ""
         for alteration in self.alterations:
             formatted_string += str(alteration) + ", "
@@ -171,6 +212,10 @@ class Movable(Destroyable):
         return formatted_string[:-2]
 
     def get_abbreviated_alterations(self) -> str:
+        """
+
+        :return:
+        """
         formatted_string: str = ""
         for alteration in self.alterations:
             formatted_string += alteration.abbreviated_name + ", "
@@ -179,17 +224,36 @@ class Movable(Destroyable):
         return formatted_string[:-2]
 
     def set_alteration(self, alteration: Alteration) -> None:
+        """
+
+        :param alteration:
+        """
         self.alterations.append(alteration)
 
     def get_alterations_effect(self, eff: str) -> list[Alteration]:
+        """
+
+        :param eff:
+        :return:
+        """
         return list(filter(lambda alteration: alteration.name == eff, self.alterations))
 
     def get_stat_change(self, stat: str) -> int:
+        """
+
+        :param stat:
+        :return:
+        """
         # Check if character as a bonus due to alteration
         return sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_up'))) - \
                sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_down')))
 
     def get_formatted_stat_change(self, stat: str) -> str:
+        """
+
+        :param stat:
+        :return:
+        """
         change: int = self.get_stat_change(stat)
         if change > 0:
             return ' (+' + str(change) + ')'
@@ -199,6 +263,11 @@ class Movable(Destroyable):
 
     # The return value is a boolean indicating if the target gained a level
     def earn_xp(self, xp: int) -> bool:
+        """
+
+        :param xp:
+        :return:
+        """
         self.experience += xp
         if self.experience >= self.experience_to_lvl_up:
             self.lvl_up()
@@ -206,35 +275,69 @@ class Movable(Destroyable):
         return False
 
     def determine_xp_goal(self) -> int:
+        """
+
+        :return:
+        """
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
 
     def lvl_up(self) -> None:
+        """
+
+        """
         self.lvl += 1
         self.experience -= self.experience_to_lvl_up
         self.experience_to_lvl_up = self.determine_xp_goal()
 
     def get_item(self, index: int) -> Item:
+        """
+
+        :param index:
+        :return:
+        """
         return self.items[index] if 0 <= index < len(self.items) else False
 
     def has_free_space(self) -> bool:
+        """
+
+        :return:
+        """
         return len(self.items) < NB_ITEMS_MAX
 
     def set_item(self, item: Item) -> bool:
+        """
+
+        :param item:
+        :return:
+        """
         if self.has_free_space():
             self.items.append(item)
             return True
         return False
 
     def remove_item(self, item_to_remove: Item) -> Item:
+        """
+
+        :param item_to_remove:
+        :return:
+        """
         for index, item in enumerate(self.items):
             if item.identifier == item_to_remove.identifier:
                 return self.items.pop(index)
         return -1
 
     def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
+        """
+
+        :param item:
+        :return:
+        """
         return item.use(self)
 
     def move(self) -> None:
+        """
+
+        """
         self.timer -= Movable.move_speed
         if self.timer <= 0:
             self.position = self.on_move.pop(0)
@@ -243,6 +346,10 @@ class Movable(Destroyable):
             self.state = EntityState.HAVE_TO_ATTACK
 
     def can_attack(self) -> bool:
+        """
+
+        :return:
+        """
         # Check if no alteration forbids the entity to attack
         for alt in self.alterations:
             if 'no_attack' in alt.specificities:
@@ -251,6 +358,12 @@ class Movable(Destroyable):
 
     def act(self, possible_moves: Sequence[tuple[int, int]], targets: Sequence[Entity]) \
             -> Union[tuple[int, int], None]:
+        """
+
+        :param possible_moves:
+        :param targets:
+        :return:
+        """
         if self.state is EntityState.HAVE_TO_ACT:
             return self.determine_move(possible_moves, targets)
         if self.state is EntityState.ON_MOVE:
@@ -263,6 +376,11 @@ class Movable(Destroyable):
         return None
 
     def determine_attack(self, targets: Sequence[Entity]) -> tuple[int, int]:
+        """
+
+        :param targets:
+        :return:
+        """
         temporary_attack: Union[tuple[int, int], None] = None
         for distance in self.reach:
             for target in targets:
@@ -274,6 +392,12 @@ class Movable(Destroyable):
         return temporary_attack
 
     def determine_move(self, possible_moves, targets) -> tuple[int, int]:
+        """
+
+        :param possible_moves:
+        :param targets:
+        :return:
+        """
         self.target: Union[tuple[int, int], None] = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target, dist in targets.items():
@@ -302,15 +426,28 @@ class Movable(Destroyable):
 
     # Should return damage dealt
     def attack(self, entity: Entity) -> int:
+        """
+
+        :param entity:
+        :return:
+        """
         return self.strength
 
     def new_turn(self) -> None:
+        """
+
+        """
         self.state = EntityState.HAVE_TO_ACT
         # Increment alterations turns passed
         for alteration in self.alterations:
             alteration.increment()
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Destroyable.save(self, tree_name)
 
         # Save level

@@ -11,6 +11,9 @@ from tests.tools import minimal_setup_for_game
 class TestShop(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         minimal_setup_for_game()
 
     def test_init_shop(self):

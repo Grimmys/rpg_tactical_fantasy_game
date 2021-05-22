@@ -8,6 +8,9 @@ NB_TESTS_FOR_PROPORTIONS = 1000
 
 
 def minimal_setup_for_game():
+    """
+
+    """
     pg.init()
     font.init_fonts()
     # Window parameters

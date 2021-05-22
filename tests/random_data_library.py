@@ -21,16 +21,31 @@ EFFECTS = ('no_attack', 'speed_up', 'strength_up', 'defense_up', 'resistance_up'
 
 
 def random_string(min_len=4, max_len=10):
+    """
+
+    :param min_len:
+    :param max_len:
+    :return:
+    """
     size = rd.randint(min_len, max_len)
     return ''.join([rd.choice(ALPHABET) for _ in range(size)])
 
 
 def random_position():
+    """
+
+    :return:
+    """
     return rd.randrange(0, MAIN_WIN_WIDTH // TILE_SIZE) * TILE_SIZE, \
            rd.randrange(0, MAIN_WIN_HEIGHT // TILE_SIZE) * TILE_SIZE
 
 
 def random_item_attributes(price):
+    """
+
+    :param price:
+    :return:
+    """
     return {'name': random_string(),
             'sample_img': 'imgs/dungeon_crawl/item/potion/yellow_new.png',
             'desc': random_string(min_len=10, max_len=100),
@@ -38,16 +53,30 @@ def random_item_attributes(price):
 
 
 def random_item(price=None):
+    """
+
+    :param price:
+    :return:
+    """
     attrs = random_item_attributes(price)
     return Item(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'])
 
 
 def random_gold():
+    """
+
+    :return:
+    """
     amount = rd.randint(10, 1000)
     return Gold(amount)
 
 
 def random_item_or_gold(gold_prob=0.3):
+    """
+
+    :param gold_prob:
+    :return:
+    """
     if rd.random() <= gold_prob:
         return random_gold()
     else:
@@ -56,6 +85,16 @@ def random_item_or_gold(gold_prob=0.3):
 
 def random_equipment_attributes(price, durability, atk=None, defense=None,
                                 res=None, restrictions=None):
+    """
+
+    :param price:
+    :param durability:
+    :param atk:
+    :param defense:
+    :param res:
+    :param restrictions:
+    :return:
+    """
     attrs = random_item_attributes(price)
     attrs['weight'] = rd.randint(1, 10)
     attrs['durability'] = durability if durability else rd.randint(10, 60)
@@ -69,6 +108,16 @@ def random_equipment_attributes(price, durability, atk=None, defense=None,
 
 def random_equipment(price=None, durability=None, atk=None, defense=None,
                      res=None, restrictions=None):
+    """
+
+    :param price:
+    :param durability:
+    :param atk:
+    :param defense:
+    :param res:
+    :param restrictions:
+    :return:
+    """
     attrs = random_equipment_attributes(price, durability, atk, defense, res, restrictions)
     return Equipment(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'],
                      [attrs['sample_img']],
@@ -78,6 +127,16 @@ def random_equipment(price=None, durability=None, atk=None, defense=None,
 
 
 def random_weapon_attributes(price, durability, atk, strong_against, attack_kind, charge):
+    """
+
+    :param price:
+    :param durability:
+    :param atk:
+    :param strong_against:
+    :param attack_kind:
+    :param charge:
+    :return:
+    """
     attrs = random_equipment_attributes(price, durability, atk)
     attrs['attack_kind'] = rd.choice(
         ['PHYSICAL', 'SPIRITUAL']) if attack_kind is None else attack_kind
@@ -91,6 +150,16 @@ def random_weapon_attributes(price, durability, atk, strong_against, attack_kind
 
 def random_weapon(price=None, durability=None, atk=None, strong_against=None, attack_kind=None,
                   charge=False):
+    """
+
+    :param price:
+    :param durability:
+    :param atk:
+    :param strong_against:
+    :param attack_kind:
+    :param charge:
+    :return:
+    """
     attrs = random_weapon_attributes(price, durability, atk, strong_against, attack_kind, charge)
     return Weapon(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'],
                   [attrs['sample_img']],
@@ -100,12 +169,26 @@ def random_weapon(price=None, durability=None, atk=None, strong_against=None, at
 
 
 def random_shield_attributes(price, durability, parry_rate):
+    """
+
+    :param price:
+    :param durability:
+    :param parry_rate:
+    :return:
+    """
     attrs = random_equipment_attributes(price, durability)
     attrs['parry'] = rd.randint(1, 100) if parry_rate is None else parry_rate
     return attrs
 
 
 def random_shield(price=None, durability=None, parry_rate=None):
+    """
+
+    :param price:
+    :param durability:
+    :param parry_rate:
+    :return:
+    """
     attrs = random_shield_attributes(price, durability, parry_rate)
     return Shield(attrs['name'], attrs['sample_img'], attrs['desc'], attrs['cost'],
                   [attrs['sample_img']],
@@ -114,6 +197,14 @@ def random_shield(price=None, durability=None, parry_rate=None):
 
 
 def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportion=0.3):
+    """
+
+    :param item_set:
+    :param nb_items:
+    :param equal_probs:
+    :param gold_proportion:
+    :return:
+    """
     pos = random_position()
     sprite_close = 'imgs/dungeon_crawl/dungeon/chest_2_closed.png'
     sprite_open = 'imgs/dungeon_crawl/dungeon/chest_2_open.png'
@@ -134,6 +225,15 @@ def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportio
 
 
 def random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :return:
+    """
     return {'name': name if name else random_string(), 'pos': random_position(),
             'sprite': 'imgs/dungeon_crawl/monster/angel.png',
             'hp': rd.randint(min_hp, max_hp), 'defense': rd.randint(0, max_defense),
@@ -141,12 +241,30 @@ def random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name):
 
 
 def random_destroyable_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :return:
+    """
     attrs = random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name)
     return Destroyable(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'],
                        attrs['res'])
 
 
 def random_movable_attributes(min_hp, max_hp, max_defense, max_res, name):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :return:
+    """
     attrs = random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name)
     attrs['max_moves'] = rd.randint(0, 12)
     attrs['strength'] = rd.randint(0, 20)
@@ -156,6 +274,15 @@ def random_movable_attributes(min_hp, max_hp, max_defense, max_res, name):
 
 
 def random_movable_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :return:
+    """
     attrs = random_movable_attributes(min_hp, max_hp, max_defense, max_res, name)
     return Movable(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'],
                    attrs['defense'], attrs['res'], attrs['max_moves'], attrs['strength'],
@@ -165,6 +292,20 @@ def random_movable_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name
 def random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments,
                                 classes, race,
                                 interaction):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :param lvl:
+    :param equipments:
+    :param classes:
+    :param race:
+    :param interaction:
+    :return:
+    """
     attrs = random_movable_attributes(min_hp, max_hp, max_defense, max_res, name)
     attrs['classes'] = classes if classes else [rd.choice(list(Character.classes_data.keys()))]
     attrs['race'] = race if race else rd.choice(list(Character.races_data.keys()))
@@ -179,6 +320,20 @@ def random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl,
 def random_character_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None, lvl=None,
                             equipments=None,
                             classes=None, race=None, interaction=None):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :param lvl:
+    :param equipments:
+    :param classes:
+    :param race:
+    :param interaction:
+    :return:
+    """
     attrs = random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments,
                                         classes, race,
                                         interaction)
@@ -190,6 +345,18 @@ def random_character_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, na
 
 
 def random_foe_attributes(min_hp, max_hp, max_defense, max_res, name, reach, keywords, loot):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :param reach:
+    :param keywords:
+    :param loot:
+    :return:
+    """
     attrs = random_movable_attributes(min_hp, max_hp, max_defense, max_res, name)
     attrs['reach'] = reach if reach else rd.choice([[1], [2], [1, 2], [3], [1, 2, 3]])
     attrs['xp_gain'] = rd.randint(10, 300)
@@ -204,6 +371,18 @@ def random_foe_attributes(min_hp, max_hp, max_defense, max_res, name, reach, key
 def random_foe_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None, reach=None,
                       keywords=None,
                       loot=None):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :param reach:
+    :param keywords:
+    :param loot:
+    :return:
+    """
     attrs = random_foe_attributes(min_hp, max_hp, max_defense, max_res, name, reach, keywords, loot)
     return Foe(attrs['name'], attrs['pos'], attrs['sprite'], attrs['hp'], attrs['defense'],
                attrs['res'],
@@ -215,6 +394,19 @@ def random_foe_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=Non
 
 def random_player_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments, classes,
                              race):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :param lvl:
+    :param equipments:
+    :param classes:
+    :param race:
+    :return:
+    """
     attrs = random_character_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments,
                                         classes, race,
                                         None)
@@ -224,6 +416,20 @@ def random_player_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, eq
 def random_player_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=None, lvl=None,
                          equipments=None,
                          classes=None, race=None, items=None):
+    """
+
+    :param min_hp:
+    :param max_hp:
+    :param max_defense:
+    :param max_res:
+    :param name:
+    :param lvl:
+    :param equipments:
+    :param classes:
+    :param race:
+    :param items:
+    :return:
+    """
     if items is None:
         items = []
     attrs = random_player_attributes(min_hp, max_hp, max_defense, max_res, name, lvl, equipments,
@@ -239,6 +445,13 @@ def random_player_entity(min_hp=10, max_hp=30, max_defense=10, max_res=10, name=
 
 
 def random_entities(entity_kind, min=1, max=10):
+    """
+
+    :param entity_kind:
+    :param min:
+    :param max:
+    :return:
+    """
     if entity_kind is Foe:
         random_entity_callback = random_foe_entity
     else:
@@ -248,6 +461,17 @@ def random_entities(entity_kind, min=1, max=10):
 
 def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, min_gold=0,
                     gold=True, item=True):
+    """
+
+    :param is_interactive:
+    :param min_talks:
+    :param max_talks:
+    :param talks:
+    :param min_gold:
+    :param gold:
+    :param item:
+    :return:
+    """
     name = random_string()
     pos = random_position()
     sprite = 'imgs/houses/blue_house.png'
@@ -264,6 +488,10 @@ def random_building(is_interactive=True, min_talks=0, max_talks=10, talks=True, 
 
 
 def random_stock():
+    """
+
+    :return:
+    """
     stock = []
     nb_items = rd.randint(1, 10)
     for _ in range(nb_items):
@@ -272,14 +500,29 @@ def random_stock():
 
 
 def random_shop():
+    """
+
+    """
     pass
 
 
 def random_effect():
+    """
+
+    :return:
+    """
     return rd.choice(EFFECTS)
 
 
 def random_alteration(name=None, effects=None, min_duration=1, max_duration=5):
+    """
+
+    :param name:
+    :param effects:
+    :param min_duration:
+    :param max_duration:
+    :return:
+    """
     name = name if name else random_string()
     abbr = random_string(2, 4)
     power = rd.randint(1, 5)

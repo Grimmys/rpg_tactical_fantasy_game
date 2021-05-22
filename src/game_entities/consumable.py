@@ -9,6 +9,9 @@ from src.game_entities.item import Item
 
 
 class Consumable(Item):
+    """
+
+    """
     def __init__(self, name: str, sprite: str, description: str,
                  price: int, effects: Sequence[Effect]) -> None:
         Item.__init__(self, name, sprite, description, price)

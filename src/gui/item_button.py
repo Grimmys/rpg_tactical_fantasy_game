@@ -10,6 +10,9 @@ ITEM_SPRITE = 'imgs/interface/item_frame.png'
 
 
 class ItemButton(Button):
+    """
+
+    """
     def __init__(self, method_id, args, size, position, item, margin, index,
                  price=0, quantity=0, disabled=False):
         name = ""
@@ -93,6 +96,10 @@ class ItemButton(Button):
         self.disabled = disabled
 
     def action_triggered(self):
+        """
+
+        :return:
+        """
         if not self.item or self.disabled:
             return False
-        return self.method_id, (self.pos, self.item, self.args)
+        return self.method_id, (self.position, self.item, self.args)

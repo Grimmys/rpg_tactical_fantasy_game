@@ -10,6 +10,9 @@ from src.gui.fonts import fonts
 
 
 class Building(Entity):
+    """
+
+    """
     def __init__(self, name: str, position: tuple[int, int], sprite: str,
                  interaction: dict[str, any] = None) -> None:
         Entity.__init__(self, name, position, sprite)
@@ -24,6 +27,11 @@ class Building(Entity):
                                                                                  'inventory.ogg'))
 
     def interact(self, actor) -> Sequence[Sequence[dict[str, str]]]:
+        """
+
+        :param actor:
+        :return:
+        """
         entries: List[List[dict[str, str]]] = []
 
         if not self.interaction:
@@ -52,9 +60,17 @@ class Building(Entity):
         return entries
 
     def remove_interaction(self) -> None:
+        """
+
+        """
         self.interaction = None
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Entity.save(self, tree_name)
 
         # Save state

@@ -13,6 +13,9 @@ random.seed()
 
 
 class Chest(Entity):
+    """
+
+    """
     def __init__(self, position: tuple[int, int], sprite_close: str, sprite_open: str,
                  potential_items: Sequence[tuple[Item, float]]) -> None:
         Entity.__init__(self, "Chest", position, sprite_close)
@@ -29,6 +32,11 @@ class Chest(Entity):
 
     @staticmethod
     def determine_item(potential_items: Sequence[tuple[Item, float]]) -> Item:
+        """
+
+        :param potential_items:
+        :return:
+        """
         bag: List[Item] = []
         # probability : between 0.1 and 1
         for (item, probability) in potential_items:
@@ -38,6 +46,10 @@ class Chest(Entity):
         return random.choice(bag)
 
     def open(self) -> Union[Item, None]:
+        """
+
+        :return:
+        """
         if not self.opened:
             self.sprite = self.sprite_open
             self.opened = True
@@ -46,6 +58,11 @@ class Chest(Entity):
         return None
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Entity.save(self, tree_name)
 
         # Save state

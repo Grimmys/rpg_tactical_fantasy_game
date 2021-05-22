@@ -2,12 +2,19 @@ from lxml import etree
 
 
 class SaveStateManager:
+    """
+
+    """
     def __init__(self, data):
         self.level = data
         # Init XML tree
         self.tree = etree.Element('save')
 
     def save_game(self, file_id):
+        """
+
+        :param file_id:
+        """
         save_file = open(f'saves/save_{file_id}.xml', 'w+')
 
         level = self.save_level()
@@ -19,6 +26,10 @@ class SaveStateManager:
         save_file.close()
 
     def save_level(self):
+        """
+
+        :return:
+        """
         level = etree.Element('level')
 
         # Save level identity
@@ -41,6 +52,10 @@ class SaveStateManager:
         return level
 
     def save_entities(self):
+        """
+
+        :return:
+        """
         entities = etree.Element('entities')
 
         entities.append(self.save_collection('allies', 'ally',
@@ -66,6 +81,13 @@ class SaveStateManager:
 
     @staticmethod
     def save_collection(collection_name, element_name, collection):
+        """
+
+        :param collection_name:
+        :param element_name:
+        :param collection:
+        :return:
+        """
         element = etree.Element(collection_name)
         element.extend([ent.save(element_name) for ent in collection])
         return element

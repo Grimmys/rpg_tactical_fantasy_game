@@ -4,6 +4,9 @@ from src.gui.button import Button
 
 
 class DynamicButton(Button):
+    """
+
+    """
     def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, values,
                  current_value, base_title, base_sprite, base_sprite_hover, linked_object=None):
         Button.__init__(self, method_id, args, size, position, sprite, sprite_hover,
@@ -16,6 +19,9 @@ class DynamicButton(Button):
         self.args.append(ANIMATION_SPEED)
 
     def update_sprite(self):
+        """
+
+        """
         name = fonts['ITEM_FONT'].render(self.base_title + ' ' +
                                          self.values[self.current_value_ind]['label'], 1, WHITE)
 
@@ -33,13 +39,21 @@ class DynamicButton(Button):
         self.set_hover(True)
 
     def action_triggered(self):
+        """
+
+        :return:
+        """
         # Search for next value
         self.current_value_ind += 1
         if self.current_value_ind == len(self.values):
             self.current_value_ind = 0
         self.update_sprite()
         self.args[0] = self.values[self.current_value_ind]['value']
-        return self.method_id, (self.pos, self.linked_object, self.args)
+        return self.method_id, (self.position, self.linked_object, self.args)
 
-    def display(self, win):
-        win.blit(self.content, self.pos)
+    def display(self, screen):
+        """
+
+        :param screen:
+        """
+        screen.blit(self.content, self.position)

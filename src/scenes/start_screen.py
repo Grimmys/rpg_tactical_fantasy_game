@@ -11,6 +11,9 @@ from src.services.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
 
 
 class StartScreen:
+    """
+
+    """
     screen_size = SCREEN_SIZE
 
     def __init__(self, screen):
@@ -39,24 +42,40 @@ class StartScreen:
 
     @staticmethod
     def load_options():
+        """
+
+        """
         # Load current move speed
         Movable.move_speed = int(StartScreen.read_options_file("move_speed"))
         StartScreen.screen_size = int(StartScreen.read_options_file("screen_size"))
 
     @staticmethod
     def read_options_file(el_to_read):
+        """
+
+        :param el_to_read:
+        :return:
+        """
         tree = etree.parse("saves/options.xml").getroot()
         element = tree.find(".//" + el_to_read)
         return element.text.strip()
 
     @staticmethod
     def modify_options_file(element_to_edit, new_value):
+        """
+
+        :param element_to_edit:
+        :param new_value:
+        """
         tree = etree.parse("saves/options.xml")
         element = tree.find(".//" + element_to_edit)
         element.text = str(new_value)
         tree.write("saves/options.xml")
 
     def display(self):
+        """
+
+        """
         if self.level:
             self.screen.fill(BLACK)
             self.level.display(self.screen)
@@ -69,12 +88,19 @@ class StartScreen:
                 self.active_menu.display(self.screen)
 
     def play(self, level):
+        """
+
+        :param level:
+        """
         # Modify screen
         flags = pygame.FULLSCREEN if StartScreen.screen_size == 2 else 0
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), flags)
         self.level = level
 
     def update_state(self):
+        """
+
+        """
         if self.level:
             status = self.level.update_state()
             if status is LevelStatus.ENDED_VICTORY and (self.level_id + 1) in self.levels:
@@ -93,16 +119,30 @@ class StartScreen:
 
     @staticmethod
     def load_level(level, team=None):
+        """
+
+        :param level:
+        :param team:
+        :return:
+        """
         if team is None:
             team = []
         return Level('maps/level_' + str(level) + '/', level, players=team)
 
     def new_game(self):
+        """
+
+        """
         # Init the first level
         self.level_id = 0
         self.play(StartScreen.load_level(self.level_id))
 
     def load_game(self, game_id):
+        """
+
+        :param game_id:
+        :return:
+        """
         try:
             save = open(f"saves/save_{game_id}.xml", "r")
 
@@ -135,19 +175,33 @@ class StartScreen:
                                        entries, width, close_button=1)
 
     def load_menu(self):
+        """
+
+        """
         self.background_menus.append([self.active_menu, False])
         self.active_menu = menu_creator_manager.create_load_menu()
 
     def options_menu(self):
+        """
+
+        """
         self.background_menus.append([self.active_menu, False])
         self.active_menu = menu_creator_manager.create_options_menu(
             {'move_speed': int(self.read_options_file('move_speed')),
              'screen_size': int(self.read_options_file('screen_size'))})
 
     def exit_game(self):
+        """
+
+        """
         self.exit = True
 
     def main_menu_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Execute action
         if method_id is StartMenu.NEW_GAME:
             self.new_game()
@@ -161,6 +215,11 @@ class StartScreen:
             print(f"Unknown action : {method_id}")
 
     def load_menu_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Execute action
         if method_id is LoadMenu.LOAD:
             self.load_game(args[2][0])
@@ -169,6 +228,11 @@ class StartScreen:
 
     @staticmethod
     def options_menu_action(method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Execute action
         if method_id is OptionsMenu.CHANGE_MOVE_SPEED:
             Movable.move_speed = args[2][0]
@@ -180,6 +244,12 @@ class StartScreen:
             print(f"Unknown action : {method_id}")
 
     def execute_action(self, menu_type, action):
+        """
+
+        :param menu_type:
+        :param action:
+        :return:
+        """
         if not action:
             return
         method_id = action[0]
@@ -201,12 +271,22 @@ class StartScreen:
             print(f"Unknown menu : {menu_type}")
 
     def motion(self, pos):
+        """
+
+        :param pos:
+        """
         if self.level is None:
             self.active_menu.motion(pos)
         else:
             self.level.motion(pos)
 
     def click(self, button, pos):
+        """
+
+        :param button:
+        :param pos:
+        :return:
+        """
         if self.level is None:
             if button == 1:
                 self.execute_action(self.active_menu.type, self.active_menu.click(pos))
@@ -215,5 +295,10 @@ class StartScreen:
         return self.exit
 
     def button_down(self, button, pos):
+        """
+
+        :param button:
+        :param pos:
+        """
         if self.level is not None:
             self.level.button_down(button, pos)

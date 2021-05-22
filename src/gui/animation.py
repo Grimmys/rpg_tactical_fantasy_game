@@ -1,4 +1,7 @@
 class Animation:
+    """
+
+    """
     def __init__(self, sprites_pos, timer):
         self.sprites_pos = sprites_pos
         self.timer_max = timer
@@ -6,6 +9,10 @@ class Animation:
         self.current_frame = self.sprites_pos.pop(0)
 
     def anim(self):
+        """
+
+        :return:
+        """
         self.timer -= 1
         if self.timer == 0:
             if self.sprites_pos:
@@ -16,4 +23,8 @@ class Animation:
         return False
 
     def display(self, win):
+        """
+
+        :param win:
+        """
         win.blit(self.current_frame['sprite'], self.current_frame['pos'])

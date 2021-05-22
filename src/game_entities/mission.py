@@ -16,6 +16,9 @@ class MissionType(Enum):
 
 
 class Mission:
+    """
+
+    """
     def __init__(self, is_main: bool, nature: MissionType, positions: Sequence[tuple[int, int]],
                  description: str, nb_players: int, turn_limit: int = None, gold_reward: int = 0,
                  items_reward: Sequence[Item] = None) -> None:
@@ -34,6 +37,11 @@ class Mission:
         self.succeeded_chars: List[Player] = []
 
     def position_is_valid(self, position: tuple[int, int]) -> bool:
+        """
+
+        :param position:
+        :return:
+        """
         if self.type is MissionType.POSITION:
             return position in self.positions
         if self.type is MissionType.TOUCH_POSITION:
@@ -45,6 +53,13 @@ class Mission:
 
     def update_state(self, player: Player = None, entities: dict[str, Sequence[Entity]] = None,
                      turns: int = 0) -> bool:
+        """
+
+        :param player:
+        :param entities:
+        :param turns:
+        :return:
+        """
         if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) \
                 and player is not None:
             self.succeeded_chars.append(player)

@@ -2,6 +2,9 @@ from lxml import etree
 
 
 class Alteration:
+    """
+
+    """
     def __init__(self, name, abbr, power, duration, description, specificities=None):
         if specificities is None:
             specificities = []
@@ -14,12 +17,23 @@ class Alteration:
         self.specificities = specificities
 
     def get_turns_left(self):
+        """
+
+        :return:
+        """
         return self.duration - self.time
 
     def increment(self):
+        """
+
+        """
         self.time += 1
 
     def is_finished(self):
+        """
+
+        :return:
+        """
         return self.time >= self.duration
 
     def __str__(self):
@@ -29,6 +43,11 @@ class Alteration:
         return self.name == o
 
     def save(self, tree_name):
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree = etree.Element(tree_name)
 
         alteration_name = etree.SubElement(tree, 'name')

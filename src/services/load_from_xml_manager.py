@@ -34,6 +34,10 @@ CLASSES_PATH = 'data/classes.xml'
 
 
 def load_races():
+    """
+
+    :return:
+    """
     races = {}
     races_file = etree.parse(RACES_PATH).getroot()
     for race_el in races_file.findall('*'):
@@ -49,6 +53,10 @@ def load_races():
 
 
 def load_classes():
+    """
+
+    :return:
+    """
     classes = {}
     classes_file = etree.parse(CLASSES_PATH).getroot()
     for cl_el in classes_file.findall('*'):
@@ -66,10 +74,21 @@ def load_classes():
 
 
 def load_stat_up(element, stat_name):
+    """
+
+    :param element:
+    :param stat_name:
+    :return:
+    """
     return [int(val) for val in element.find('stats_up/' + stat_name).text.strip().split(',')]
 
 
 def load_stats_up(el):
+    """
+
+    :param el:
+    :return:
+    """
     return {
         'hp': load_stat_up(el, 'hp'),
         'def': load_stat_up(el, 'defense'),
@@ -79,6 +98,11 @@ def load_stats_up(el):
 
 
 def load_skill(name):
+    """
+
+    :param name:
+    :return:
+    """
     if name not in skills_infos:
         # Required dat
         skill_el = etree.parse('data/skills.xml').find(name)
@@ -106,6 +130,11 @@ def load_skill(name):
 
 
 def load_alteration(alteration_el):
+    """
+
+    :param alteration_el:
+    :return:
+    """
     name = alteration_el.find('name').text.strip()
     abbr = alteration_el.find('abbr').text.strip()
     power = int(alteration_el.find('power').text.strip())
@@ -116,6 +145,13 @@ def load_alteration(alteration_el):
 
 
 def load_placements(positions, gap_x, gap_y):
+    """
+
+    :param positions:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     placements = []
     for coords in positions:
         x_coordinate = int(coords.find('x').text) * TILE_SIZE + gap_x
@@ -126,6 +162,14 @@ def load_placements(positions, gap_x, gap_y):
 
 
 def load_all_entities(data, from_save, gap_x, gap_y):
+    """
+
+    :param data:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     return {
         'allies': load_entities('character', data.findall('allies/ally'),
                                 from_save, gap_x, gap_y),
@@ -147,6 +191,15 @@ def load_all_entities(data, from_save, gap_x, gap_y):
 
 
 def load_entities(ent_nature, data, from_save, gap_x, gap_y):
+    """
+
+    :param ent_nature:
+    :param data:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     collection = []
 
     for element in data:
@@ -175,6 +228,16 @@ def load_entities(ent_nature, data, from_save, gap_x, gap_y):
 
 
 def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_path=''):
+    """
+
+    :param entity:
+    :param infos:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :param extension_path:
+    :return:
+    """
     name = entity.find('name').text.strip()
 
     # Static data
@@ -209,6 +272,14 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
 
 
 def load_ally(ally, from_save, gap_x, gap_y):
+    """
+
+    :param ally:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     name = ally.find('name').text.strip()
     infos = etree.parse('data/characters.xml').find(name)
 
@@ -278,6 +349,14 @@ def load_ally(ally, from_save, gap_x, gap_y):
 
 
 def load_foe(foe, from_save, gap_x, gap_y):
+    """
+
+    :param foe:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     name = foe.find('name').text.strip()
     if name not in foes_infos:
         foes_infos[name] = etree.parse('data/foes.xml').find(name)
@@ -346,6 +425,14 @@ def load_foe(foe, from_save, gap_x, gap_y):
 
 
 def load_chest(chest, from_save, gap_x, gap_y):
+    """
+
+    :param chest:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     # Static data
     x_coordinate = int(chest.find('position/x').text) * TILE_SIZE + gap_x
     y_coordinate = int(chest.find('position/y').text) * TILE_SIZE + gap_y
@@ -384,6 +471,14 @@ def load_chest(chest, from_save, gap_x, gap_y):
 
 
 def load_door(door, from_save, gap_x, gap_y):
+    """
+
+    :param door:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     # Static data
     x_coordinate = int(door.find('position/x').text) * TILE_SIZE + gap_x
     y_coordinate = int(door.find('position/y').text) * TILE_SIZE + gap_y
@@ -400,6 +495,14 @@ def load_door(door, from_save, gap_x, gap_y):
 
 
 def load_building(building, from_save, gap_x, gap_y):
+    """
+
+    :param building:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     # Static data
     name = building.find('name').text.strip()
     x_coordinate = int(building.find('position/x').text) * TILE_SIZE + gap_x
@@ -448,6 +551,13 @@ def load_building(building, from_save, gap_x, gap_y):
 
 
 def load_obstacles(tree, gap_x, gap_y):
+    """
+
+    :param tree:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     loaded_obstacles = []
     for positions in tree.findall('positions'):
         fixed_y = positions.find('y')
@@ -475,6 +585,15 @@ def load_obstacles(tree, gap_x, gap_y):
 
 
 def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
+    """
+
+    :param mission_xml:
+    :param is_main:
+    :param nb_players:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     nature = MissionType[mission_xml.find('type').text]
     desc = mission_xml.find('description').text.strip()
     positions = []
@@ -507,6 +626,14 @@ def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
 
 
 def load_missions(tree, players, gap_x, gap_y):
+    """
+
+    :param tree:
+    :param players:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     loaded_missions = []
     #  > Load main mission
     main_mission = tree.find('missions/main')
@@ -520,6 +647,13 @@ def load_missions(tree, players, gap_x, gap_y):
 
 
 def load_portal(portal_couple, gap_x, gap_y):
+    """
+
+    :param portal_couple:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     first_x = int(portal_couple.find('first/position/x').text) * TILE_SIZE + gap_x
     first_y = int(portal_couple.find('first/position/y').text) * TILE_SIZE + gap_y
     first_pos = (first_x, first_y)
@@ -534,6 +668,14 @@ def load_portal(portal_couple, gap_x, gap_y):
 
 
 def load_fountain(fountain, from_save, gap_x, gap_y):
+    """
+
+    :param fountain:
+    :param from_save:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     name = fountain.find('type').text.strip()
     x_coordinate = int(fountain.find('position/x').text) * TILE_SIZE + gap_x
     y_coordinate = int(fountain.find('position/y').text) * TILE_SIZE + gap_y
@@ -559,6 +701,13 @@ def load_fountain(fountain, from_save, gap_x, gap_y):
 
 
 def load_breakable(breakable, gap_x, gap_y):
+    """
+
+    :param breakable:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     # Static data
     x_coordinate = int(breakable.find('position/x').text) * TILE_SIZE + gap_x
     y_coordinate = int(breakable.find('position/y').text) * TILE_SIZE + gap_y
@@ -570,6 +719,11 @@ def load_breakable(breakable, gap_x, gap_y):
 
 
 def load_restrictions(restrictions_el):
+    """
+
+    :param restrictions_el:
+    :return:
+    """
     restrictions = {}
     if restrictions_el is None:
         return restrictions
@@ -585,6 +739,13 @@ def load_restrictions(restrictions_el):
 
 
 def load_events(events_el, gap_x, gap_y):
+    """
+
+    :param events_el:
+    :param gap_x:
+    :param gap_y:
+    :return:
+    """
     events = {}
     for event in events_el:
         events[event.tag] = {}
@@ -610,6 +771,12 @@ def load_events(events_el, gap_x, gap_y):
 
 
 def load_player(element, from_save):
+    """
+
+    :param element:
+    :param from_save:
+    :return:
+    """
     name = element.find("name").text.strip()
     level = element.find('level')
     if level is None:
@@ -679,6 +846,11 @@ def load_player(element, from_save):
 
 
 def load_players(data):
+    """
+
+    :param data:
+    :return:
+    """
     players = []
     for player_el in data.findall('players/player'):
         players.append(load_player(player_el, True))
@@ -686,6 +858,11 @@ def load_players(data):
 
 
 def load_escaped_players(data):
+    """
+
+    :param data:
+    :return:
+    """
     players = []
     for player_el in data.findall('escaped_players/player'):
         players.append(load_player(player_el, True))
@@ -693,6 +870,11 @@ def load_escaped_players(data):
 
 
 def init_player(name):
+    """
+
+    :param name:
+    :return:
+    """
     # -- Reading of the XML file
     tree = etree.parse("data/characters.xml").getroot()
     player_t = tree.xpath(name)[0]
@@ -700,6 +882,11 @@ def init_player(name):
 
 
 def load_weapon_effect(eff):
+    """
+
+    :param eff:
+    :return:
+    """
     loaded_eff = {}
 
     # Load effect
@@ -717,6 +904,11 @@ def load_weapon_effect(eff):
 
 
 def load_item(data):
+    """
+
+    :param data:
+    :return:
+    """
     name = data.find("name").text.strip()
 
     # Retrieve static data
@@ -729,6 +921,11 @@ def load_item(data):
 
 
 def parse_item_file(name):
+    """
+
+    :param name:
+    :return:
+    """
     # Retrieve data root for item
     it_tree_root = etree.parse('data/items.xml').getroot().find('.//' + name)
 

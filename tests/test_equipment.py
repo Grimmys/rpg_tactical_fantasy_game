@@ -8,6 +8,9 @@ from tests.tools import minimal_setup_for_game
 class TestEquipment(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         minimal_setup_for_game()
 
     def test_init_equipment(self):

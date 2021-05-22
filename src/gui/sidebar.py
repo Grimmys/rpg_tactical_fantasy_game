@@ -15,7 +15,9 @@ SIDEBAR_SPRITE = 'imgs/interface/sidebar.png'
 
 
 class Sidebar:
+    """
 
+    """
     def __init__(self, size, pos, missions, nb_level):
         self.size = size
         self.pos = pos
@@ -26,6 +28,12 @@ class Sidebar:
 
     @staticmethod
     def determine_hp_color(hit_points, hit_points_max):
+        """
+
+        :param hit_points:
+        :param hit_points_max:
+        :return:
+        """
         if hit_points == hit_points_max:
             return BLACK
         if hit_points >= hit_points_max * 0.75:
@@ -37,6 +45,12 @@ class Sidebar:
         return RED
 
     def display(self, win, nb_turn, ent):
+        """
+
+        :param win:
+        :param nb_turn:
+        :param ent:
+        """
         # Sidebar background
         win.blit(self.sprite, self.pos)
 

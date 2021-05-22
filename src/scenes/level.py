@@ -49,12 +49,18 @@ class EntityTurn(IntEnum):
     FOES = 2
 
     def get_next(self):
+        """
+
+        :return:
+        """
         next_value = self.value + 1 if self.value + 1 < len(EntityTurn.__members__) else 0
         return EntityTurn(next_value)
 
 
 class Level:
+    """
 
+    """
     def __init__(self, directory, nb_level, status=LevelStatus.INITIALIZATION, turn=0, data=None,
                  players=None):
         if players is None:
@@ -166,17 +172,33 @@ class Level:
         self.gold_sfx = pygame.mixer.Sound(os.path.join('sound_fx', 'trade.ogg'))
 
     def save_game(self, slot):
+        """
+
+        :param slot:
+        """
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot)
 
     def exit_game(self):
+        """
+
+        """
         # At next update, level will be destroyed
         self.quit_request = True
 
     def is_game_started(self):
+        """
+
+        :return:
+        """
         return self.game_phase is not LevelStatus.INITIALIZATION
 
     def end_level(self, anim_surf, pos):
+        """
+
+        :param anim_surf:
+        :param pos:
+        """
         self.background_menus = []
         # Check if some optional objectives have been completed
         if self.main_mission.ended:
@@ -200,6 +222,10 @@ class Level:
         self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
 
     def update_state(self):
+        """
+
+        :return:
+        """
         if self.quit_request:
             return self.game_phase
 
@@ -278,6 +304,10 @@ class Level:
         return None
 
     def display(self, win):
+        """
+
+        :param win:
+        """
         win.blit(self.map['img'], (self.map['x'], self.map['y']))
         self.sidebar.display(win, self.turn, self.hovered_ent)
 
@@ -313,28 +343,54 @@ class Level:
                 self.active_menu.display(win)
 
     def show_possible_actions(self, movable, win):
+        """
+
+        :param movable:
+        :param win:
+        """
         self.show_possible_moves(movable, win)
         self.show_possible_attacks(movable, win)
 
     def show_possible_attacks(self, movable, win):
+        """
+
+        :param movable:
+        :param win:
+        """
         for tile in self.possible_attacks:
             if movable.position != tile:
                 blit_alpha(win, constant_sprites['attackable'], tile, ATTACKABLE_OPACITY)
 
     def show_possible_moves(self, movable, win):
+        """
+
+        :param movable:
+        :param win:
+        """
         for tile in self.possible_moves.keys():
             if movable.position != tile:
                 blit_alpha(win, constant_sprites['landing'], tile, LANDING_OPACITY)
 
     def show_possible_interactions(self, win):
+        """
+
+        :param win:
+        """
         for tile in self.possible_interactions:
             blit_alpha(win, constant_sprites['interaction'], tile, INTERACTION_OPACITY)
 
     def show_possible_placements(self, win):
+        """
+
+        :param win:
+        """
         for tile in self.possible_placements:
             blit_alpha(win, constant_sprites['landing'], tile, LANDING_OPACITY)
 
     def start_game(self):
+        """
+
+        """
         self.active_menu = None
         self.game_phase = LevelStatus.IN_PROGRESS
         self.new_turn()
@@ -350,6 +406,11 @@ class Level:
                     self.players.append(player)
 
     def get_next_cases(self, pos):
+        """
+
+        :param pos:
+        :return:
+        """
         tiles = []
         for x_coordinate in range(-1, 2):
             for y_coordinate in {1 - abs(x_coordinate), -1 + abs(x_coordinate)}:
@@ -361,6 +422,12 @@ class Level:
         return tiles
 
     def get_possible_moves(self, pos, max_moves):
+        """
+
+        :param pos:
+        :param max_moves:
+        :return:
+        """
         tiles = {pos: 0}
         tiles_prev_level = tiles
         for i in range(1, max_moves + 1):
@@ -379,6 +446,13 @@ class Level:
         return tiles
 
     def get_possible_attacks(self, possible_moves, reach, from_ally_side):
+        """
+
+        :param possible_moves:
+        :param reach:
+        :param from_ally_side:
+        :return:
+        """
         tiles = []
 
         entities = list(self.entities['breakables'])
@@ -400,6 +474,11 @@ class Level:
         return set(tiles)
 
     def case_is_available(self, case):
+        """
+
+        :param case:
+        :return:
+        """
         min_case = (self.map['x'], self.map['y'])
         max_case = (self.map['x'] + self.map['width'], self.map['y'] + self.map['height'])
         if not (all(minimum <= case < maximum for minimum, case, maximum in
@@ -409,6 +488,11 @@ class Level:
         return self.get_entity_on_case(case) is None and case not in self.obstacles
 
     def get_entity_on_case(self, case):
+        """
+
+        :param case:
+        :return:
+        """
         # Check all entities
         for collection in self.entities.values():
             for ent in collection:
@@ -417,6 +501,12 @@ class Level:
         return None
 
     def determine_path_to(self, case_to, distance):
+        """
+
+        :param case_to:
+        :param distance:
+        :return:
+        """
         path = [case_to]
         current_case = case_to
         while distance[current_case] > 1:
@@ -431,6 +521,11 @@ class Level:
         return path
 
     def open_chest(self, actor, chest):
+        """
+
+        :param actor:
+        :param chest:
+        """
         # Get object inside the chest
         item = chest.open()
 
@@ -450,6 +545,10 @@ class Level:
                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def open_door(self, door):
+        """
+
+        :param door:
+        """
         self.entities['doors'].remove(door)
 
         entries = [[{'type': 'text', 'text': "Door has been opened.",
@@ -458,6 +557,10 @@ class Level:
                                    entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def ally_to_player(self, character):
+        """
+
+        :param character:
+        """
         self.entities['allies'].remove(character)
         player = Player(
             name=character.name,
@@ -480,6 +583,12 @@ class Level:
         player.items = character.items
 
     def interact(self, actor, target, target_pos):
+        """
+
+        :param actor:
+        :param target:
+        :param target_pos:
+        """
         # Since player chose his interaction, possible interactions should be reset
         self.possible_interactions = []
 
@@ -596,6 +705,10 @@ class Level:
             self.background_menus = []
 
     def remove_entity(self, entity):
+        """
+
+        :param entity:
+        """
         collection = None
         if isinstance(entity, Foe):
             collection = self.entities['foes']
@@ -608,6 +721,14 @@ class Level:
         collection.remove(entity)
 
     def duel(self, attacker, target, attacker_allies, target_allies, kind):
+        """
+
+        :param attacker:
+        :param target:
+        :param attacker_allies:
+        :param target_allies:
+        :param kind:
+        """
         nb_attacks = 2 if 'double_attack' in attacker.skills else 1
         for i in range(nb_attacks):
             experience = 0
@@ -689,6 +810,12 @@ class Level:
             self.diary_entries.pop(0)
 
     def distance_between_all(self, ent_1, ents):
+        """
+
+        :param ent_1:
+        :param ents:
+        :return:
+        """
         free_tiles_distance = self.get_possible_moves(ent_1.position,
                                                       (self.map['width'] * self.map['height']) // (
                                                               TILE_SIZE * TILE_SIZE))
@@ -700,6 +827,11 @@ class Level:
         return ents_dist
 
     def entity_action(self, ent, is_ally):
+        """
+
+        :param ent:
+        :param is_ally:
+        """
         possible_moves = self.get_possible_moves(ent.position, ent.max_moves)
         targets = self.entities['foes'] if is_ally else self.players + self.entities['allies']
         allies = self.players + self.entities['allies'] if is_ally else self.entities['foes']
@@ -718,6 +850,11 @@ class Level:
                 ent.end_turn()
 
     def execute_buy_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         if method_id is BuyMenu.INTERAC_BUY:
             item_button_pos = args[0]
             item = args[1]
@@ -730,6 +867,11 @@ class Level:
             print("Unknown action in buy menu... : " + str(method_id))
 
     def execute_sell_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         if method_id is SellMenu.INTERAC_SELL:
             item_button_pos = args[0]
             item = args[1]
@@ -742,6 +884,11 @@ class Level:
             print("Unknown action in sell menu... : " + str(method_id))
 
     def execute_shop_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         if method_id is ShopMenu.BUY:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = self.active_shop.menu
@@ -760,6 +907,11 @@ class Level:
             print("Unknown action in shop menu... : " + str(method_id))
 
     def execute_main_menu_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         if method_id is MainMenu.START:
             self.start_game()
         elif method_id is MainMenu.SAVE:
@@ -782,6 +934,11 @@ class Level:
             print("Unknown action in main menu... : " + str(method_id))
 
     def execute_character_menu_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Memorize current action
         self.selected_player.current_action = method_id
 
@@ -919,6 +1076,10 @@ class Level:
                                 break
 
     def select_interaction_with(self, entity_kind):
+        """
+
+        :param entity_kind:
+        """
         self.background_menus.append((self.active_menu, False))
         self.active_menu = None
         self.selected_player.choose_target()
@@ -928,6 +1089,11 @@ class Level:
                 self.possible_interactions.append(ent.position)
 
     def execute_inv_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Watch item action : Open a menu to act with a given item
         if method_id is InventoryMenu.INTERAC_ITEM:
             item_button_pos = args[0]
@@ -938,6 +1104,11 @@ class Level:
             self.active_menu = menu_creator_manager.create_item_menu(item_button_pos, item)
 
     def execute_equipment_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Watch item action : Open a menu to act with a given item
         if method_id is EquipmentMenu.INTERAC_EQUIPMENT:
             item_button_pos = args[0]
@@ -948,6 +1119,11 @@ class Level:
             self.active_menu = menu_creator_manager.create_item_menu(item_button_pos, item, True)
 
     def execute_item_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Get info about an item
         if method_id is ItemMenu.INFO_ITEM:
             self.background_menus.append((self.active_menu, False))
@@ -1117,6 +1293,9 @@ class Level:
             print(f"Unknown action in item menu : {method_id}")
 
     def refresh_inventory(self):
+        """
+
+        """
         items_max = self.selected_player.nb_items_max
         items = list(self.selected_player.items)
         free_spaces = items_max - len(items)
@@ -1129,6 +1308,11 @@ class Level:
         self.background_menus[len(self.background_menus) - 1] = (new_inventory_menu, True)
 
     def execute_status_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Get infos about an alteration
         if method_id is StatusMenu.INFO_ALTERATION:
             alteration = args[1]
@@ -1143,6 +1327,11 @@ class Level:
             self.active_menu = menu_creator_manager.create_skill_info_menu(skill)
 
     def execute_trade_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         # Watch item action : Open a menu to act with a given item
         if method_id is TradeMenu.INTERAC_ITEM:
             item_button_pos = args[0]
@@ -1165,6 +1354,11 @@ class Level:
             self.active_menu = menu_creator_manager.create_trade_menu(players[0], players[1])
 
     def execute_save_action(self, method_id, args):
+        """
+
+        :param method_id:
+        :param args:
+        """
         if method_id is SaveMenu.SAVE:
             self.save_game(args[2][0])
             self.background_menus.append((self.active_menu, True))
@@ -1176,6 +1370,12 @@ class Level:
             print(f"Unknown action in save menu : {method_id}")
 
     def execute_action(self, menu_type, action):
+        """
+
+        :param menu_type:
+        :param action:
+        :return:
+        """
         if not action:
             return
         method_id = action[0]
@@ -1232,6 +1432,9 @@ class Level:
             print(f"Unknown menu... : {menu_type}")
 
     def begin_turn(self):
+        """
+
+        """
         entities = []
         if self.side_turn is EntityTurn.PLAYER:
             self.new_turn()
@@ -1245,12 +1448,20 @@ class Level:
             ent.new_turn()
 
     def new_turn(self):
+        """
+
+        """
         self.turn += 1
         self.animation = Animation(
             [{'sprite': constant_sprites['new_turn'], 'pos': constant_sprites['new_turn_pos']}],
             60)
 
     def left_click(self, position):
+        """
+
+        :param position:
+        :return:
+        """
         if self.active_menu:
             self.execute_action(self.active_menu.type, self.active_menu.click(position))
             return
@@ -1328,6 +1539,10 @@ class Level:
         self.active_menu = menu_creator_manager.create_main_menu(is_initialization, position)
 
     def right_click(self):
+        """
+
+        :return:
+        """
         if self.selected_player:
             if self.possible_moves:
                 # Player was waiting to move
@@ -1372,6 +1587,12 @@ class Level:
             self.possible_attacks = []
 
     def click(self, button, pos):
+        """
+
+        :param button:
+        :param pos:
+        :return:
+        """
         # No event if there is an animation or it is not player turn
         if self.animation:
             return
@@ -1384,6 +1605,12 @@ class Level:
             self.right_click()
 
     def button_down(self, button, position):
+        """
+
+        :param button:
+        :param position:
+        :return:
+        """
         # 3 is equals to right button
         if button == 3:
             if not self.active_menu and not self.selected_player \
@@ -1403,6 +1630,11 @@ class Level:
                             return
 
     def motion(self, position):
+        """
+
+        :param position:
+        :return:
+        """
         if self.active_menu:
             self.active_menu.motion(position)
         else:

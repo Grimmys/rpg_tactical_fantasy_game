@@ -12,6 +12,9 @@ from tests.tools import minimal_setup_for_game
 class TestSaveAndLoad(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         minimal_setup_for_game()
 
     def test_save_and_load_alteration(self):

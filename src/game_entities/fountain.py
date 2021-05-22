@@ -12,6 +12,9 @@ from src.gui.fonts import fonts
 
 
 class Fountain(Entity):
+    """
+
+    """
     def __init__(self, name: str, position: tuple[int, int], sprite: str, sprite_empty: str,
                  effect: Effect, times: int) -> None:
         Entity.__init__(self, name, position, sprite)
@@ -22,6 +25,11 @@ class Fountain(Entity):
             (TILE_SIZE, TILE_SIZE))
 
     def drink(self, entity: Destroyable) -> Sequence[Sequence[dict[str, str]]]:
+        """
+
+        :param entity:
+        :return:
+        """
         entries: List[List[dict[str, str]]] = []
         if self.times > 0:
             result = self.effect.apply_on_ent(entity)
@@ -38,11 +46,20 @@ class Fountain(Entity):
         return entries
 
     def set_times(self, times: int) -> None:
+        """
+
+        :param times:
+        """
         self.times = times
         if self.times == 0:
             self.sprite = self.sprite_empty
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Entity.save(self, tree_name)
 
         # Save remaining uses

@@ -30,6 +30,9 @@ fonts = {}
 
 
 def init_fonts():
+    """
+
+    """
     global fonts
     for font in fonts_descs:
         if 'default' in fonts_descs[font]:

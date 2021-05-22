@@ -9,6 +9,9 @@ from src.gui.tools import distance
 
 
 class Weapon(Equipment):
+    """
+
+    """
     def __init__(self, name, sprite, description, price, equipped_sprite, attack, attack_kind,
                  weight, durability, reach, restrictions, possible_effects,
                  strong_against, can_charge=False):
@@ -23,9 +26,19 @@ class Weapon(Equipment):
         self.can_charge = can_charge
 
     def get_formatted_strong_against(self):
+        """
+
+        :return:
+        """
         return ", ".join([k.name.lower().capitalize() for k in self.strong_against])
 
     def hit(self, holder, target):
+        """
+
+        :param holder:
+        :param target:
+        :return:
+        """
         multiplier = 1
         if self.can_charge:
             distance_traveled = distance(holder.old_position, holder.position)
@@ -37,11 +50,21 @@ class Weapon(Equipment):
         return int(multiplier * self.attack)
 
     def used(self):
+        """
+
+        :return:
+        """
         self.durability -= 1
         self.resell_price = int((self.price // 2) * (self.durability / self.durability_max))
         return self.durability
 
     def applied_effects(self, user, target):
+        """
+
+        :param user:
+        :param target:
+        :return:
+        """
         # Try to trigger one or more effects
         effects = []
         for eff in self.effects:
@@ -56,6 +79,11 @@ class Weapon(Equipment):
         return effects
 
     def save(self, tree_name):
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree = Equipment.save(self, tree_name)
 
         # Save durability

@@ -30,6 +30,9 @@ constant_sprites = {}
 
 
 def init_constant_sprites():
+    """
+
+    """
     constant_sprites['landing'] = pygame.transform.scale(
         pygame.image.load(LANDING_SPRITE).convert_alpha(),
         (TILE_SIZE, TILE_SIZE))

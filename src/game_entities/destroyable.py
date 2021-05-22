@@ -15,7 +15,9 @@ class DamageKind(Enum):
 
 
 class Destroyable(Entity):
+    """
 
+    """
     def __init__(self, name: str, pos: tuple[int, int], sprite: Union[str, pygame.Surface], hp: int,
                  defense: int, res: int) -> None:
         Entity.__init__(self, name, pos, sprite)
@@ -26,6 +28,10 @@ class Destroyable(Entity):
         self.attack_sfx: pygame.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
 
     def display_hp(self, screen: pygame.Surface) -> None:
+        """
+
+        :param screen:
+        """
         if self.hit_points != self.hp_max:
             damage_bar = constant_sprites['lightly_damaged']
             if self.hit_points < self.hp_max * 0.1:
@@ -45,6 +51,14 @@ class Destroyable(Entity):
 
     def attacked(self, entity: Entity, damage: int,
                  kind: DamageKind, allies: Sequence[Entity]) -> int:
+        """
+
+        :param entity:
+        :param damage:
+        :param kind:
+        :param allies:
+        :return:
+        """
         if kind is DamageKind.SPIRITUAL:
             real_damage = damage - self.resistance
         elif kind is DamageKind.PHYSICAL:
@@ -61,6 +75,11 @@ class Destroyable(Entity):
         return self.hit_points
 
     def healed(self, value: int = None) -> int:
+        """
+
+        :param value:
+        :return:
+        """
         if not value:
             # Full heal
             hp_recovered: int = self.hp_max - self.hit_points
@@ -71,6 +90,11 @@ class Destroyable(Entity):
         return hp_recovered
 
     def save(self, tree_name: str) -> etree.Element:
+        """
+
+        :param tree_name:
+        :return:
+        """
         tree: etree.Element = Entity.save(self, tree_name)
 
         # Save current hp
