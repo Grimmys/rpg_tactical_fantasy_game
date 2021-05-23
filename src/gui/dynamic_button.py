@@ -9,8 +9,8 @@ class DynamicButton(Button):
     """
     def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, values,
                  current_value, base_title, base_sprite, base_sprite_hover, linked_object=None):
-        Button.__init__(self, method_id, args, size, position, sprite, sprite_hover,
-                        margin, linked_object)
+        super().__init__(method_id, args, size, position, sprite, sprite_hover,
+                         margin, linked_object)
         self.values = values
         self.current_value_ind = current_value
         self.base_title = base_title
@@ -50,10 +50,3 @@ class DynamicButton(Button):
         self.update_sprite()
         self.args[0] = self.values[self.current_value_ind]['value']
         return self.method_id, (self.position, self.linked_object, self.args)
-
-    def display(self, screen):
-        """
-
-        :param screen:
-        """
-        screen.blit(self.content, self.position)
