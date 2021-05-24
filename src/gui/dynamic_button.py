@@ -1,12 +1,48 @@
-from src.constants import ANIMATION_SPEED, WHITE
+"""
+Defines DynamicButton class, a special Button iterating through a list of values
+on each click.
+"""
+
+from src.constants import WHITE
 from src.gui.fonts import fonts
 from src.gui.button import Button
 
 
 class DynamicButton(Button):
     """
+    This class is representing a special button with an inner value changing after each click.
+    A DynamicButton has a sequence of values given at initialization, and a initial value.
+    The sequence will be iterated to determine the next inner value after a click.
+    This fluctuating value is the one that will be send has the first argument of
+    the method called on click, and a different label will be displayed on the button for
+    each different value of the sequence.
 
+    Keyword arguments:
+    method_id -- the id permitting to know the function that should be called on click
+    args -- a data structure containing any argument that can be useful to send to
+    the function called on click
+    size -- the size of the button following the format "(width, height)"
+    position -- the position of the element on the screen
+    sprite -- the pygame Surface corresponding to the sprite of the element
+    sprite_hover -- the pygame Surface corresponding to the sprite of the element
+    when it has the focus
+    margin -- a tuple containing the margins of the box,
+    should be in the form "(top_margin, right_margin, bottom_margin, left_margin)"
+    values -- the sequence of values that will be iterated to determine the next inner value
+    current_value -- the initial value of the button
+    base_title -- the initial label associated to the initial value
+    base_sprite --
+    base_sprite_hover --
+    linked_object --
+
+    Attributes:
+    values -- the sequence of values that will be iterated to determine the next inner value
+    current_value -- the initial value of the button
+    base_title -- the initial label associated to the initial value
+    base_sprite --
+    base_sprite_hover --
     """
+
     def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, values,
                  current_value, base_title, base_sprite, base_sprite_hover, linked_object=None):
         super().__init__(method_id, args, size, position, sprite, sprite_hover,
@@ -16,9 +52,9 @@ class DynamicButton(Button):
         self.base_title = base_title
         self.base_sprite = base_sprite
         self.base_sprite_hover = base_sprite_hover
-        self.args.append(ANIMATION_SPEED)
+        self.args.append(self.values[self.current_value_ind]['value'])
 
-    def update_sprite(self):
+    def __update_sprite(self):
         """
 
         """
@@ -47,6 +83,6 @@ class DynamicButton(Button):
         self.current_value_ind += 1
         if self.current_value_ind == len(self.values):
             self.current_value_ind = 0
-        self.update_sprite()
+        self.__update_sprite()
         self.args[0] = self.values[self.current_value_ind]['value']
         return self.method_id, (self.position, self.linked_object, self.args)
