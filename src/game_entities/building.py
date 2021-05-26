@@ -1,11 +1,12 @@
 import os
-from typing import Sequence, List, Union
+from typing import List, Union
 
 import pygame
 from lxml import etree
 
 from src.constants import GREEN
 from src.game_entities.entity import Entity
+from src.gui.entries import Entries
 from src.gui.fonts import fonts
 
 
@@ -26,13 +27,13 @@ class Building(Entity):
         self.inventory_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
                                                                                  'inventory.ogg'))
 
-    def interact(self, actor) -> Sequence[Sequence[dict[str, str]]]:
+    def interact(self, actor) -> Entries:
         """
 
         :param actor:
         :return:
         """
-        entries: List[List[dict[str, str]]] = []
+        entries: Entries = []
 
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)

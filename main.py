@@ -65,7 +65,7 @@ if __name__ == "__main__":
     from src.gui import constant_sprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
-    from src.services import load_from_xml_manager as Loader
+    from src.services import load_from_xml_manager as loader
 
     pygame.init()
 
@@ -81,8 +81,8 @@ if __name__ == "__main__":
     constant_sprites.init_constant_sprites()
 
     # Load some data
-    races = Loader.load_races()
-    classes = Loader.load_classes()
+    races = loader.load_races()
+    classes = loader.load_classes()
     Character.init_data(races, classes)
 
     start_screen = StartScreen(main_window)

@@ -1,31 +1,72 @@
-from src.gui.box_element import BoxElement
+"""
+Defines Button class, a BoxElement able to react to user actions.
+"""
+from enum import Enum
+from typing import List
+
+import pygame
+
+from src.gui.box_element import BoxElement, Margin
+from src.gui.position import Position
 
 
 class Button(BoxElement):
     """
+    This class is representing any kind of button that could be seen on an interface.
+    A button is receptive to user clicks and returns an id corresponding to a method,
+    it may have specific arguments too.
+    Mouse motion is also handled: the button appearance can change according to current focus.
 
+    Keyword arguments:
+    method_id -- the id permitting to know the function that should be called on click
+    arguments -- a data structure containing any argument that can be useful to send to
+    the function called on click
+    size -- the size of the button following the format "(width, height)"
+    position -- the position of the element on the screen
+    sprite -- the pygame Surface corresponding to the sprite of the element
+    sprite_hover -- the pygame Surface corresponding to the sprite of the element
+    when it has the focus
+    margin -- a tuple containing the margins of the box,
+    should be in the form "(top_margin, right_margin, bottom_margin, left_margin)"
+    linked_object -- the game entity linked to the button if there is one
+
+    Attributes:
+    method_id -- the id permitting to know which function should be called on click
+    arguments -- the data structure containing any argument that can be useful to send to
+    the function called on click
+    sprite -- the pygame Surface corresponding to the sprite of the element
+    sprite_hover -- the pygame Surface corresponding to the sprite of the element
+    when it has the focus
+    linked_object -- the game entity linked to the button if there is one,
+    would be returned on click
     """
-    def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, linked_object=None):
-        BoxElement.__init__(self, position, None, margin)
-
-        self.size = size
-        self.method_id = method_id
-        self.args = args
+    def __init__(self, method_id: Enum, arguments: List[any], size: tuple[int, int],
+                 position: Position, sprite: pygame.Surface, sprite_hover: pygame.Surface,
+                 margin: Margin, linked_object: any = None) -> None:
+        super().__init__(position, None, margin)
+        self.method_id: Enum = method_id
+        self.arguments: List[any] = arguments
+        self.size: tuple[int, int] = size
         self.sprite = sprite
         self.sprite_hover = sprite_hover
         self.content = self.sprite
         self.linked_object = linked_object
 
-    def set_hover(self, hover):
+    def set_hover(self, is_mouse_hover: bool) -> None:
         """
+        Change the current sprite between sprite or sprite_hover
+        depending on whether the mouse is over the element or not.
 
-        :param hover:
+        Keyword arguments:
+        is_mouse_hover -- a boolean value indicating if the mouse is over the element or not
         """
-        self.content = self.sprite_hover if hover else self.sprite
+        self.content = self.sprite_hover if is_mouse_hover else self.sprite
 
-    def action_triggered(self):
+    def action_triggered(self) -> tuple[Enum, tuple[Position, any, List[any]]]:
         """
+        Method that should be called after a click.
 
-        :return:
+        Return the id of the linked method and a tuple containing the position of the button,
+        the linked object, and any arguments that should be passed to the linked method
         """
-        return self.method_id, (self.position, self.linked_object, self.args)
+        return self.method_id, (self.position, self.linked_object, self.arguments)

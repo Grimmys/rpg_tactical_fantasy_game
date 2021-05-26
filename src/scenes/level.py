@@ -193,11 +193,11 @@ class Level:
         """
         return self.game_phase is not LevelStatus.INITIALIZATION
 
-    def end_level(self, anim_surf, pos):
+    def end_level(self, animation_surface, position):
         """
 
-        :param anim_surf:
-        :param pos:
+        :param animation_surface:
+        :param position:
         """
         self.background_menus = []
         # Check if some optional objectives have been completed
@@ -219,7 +219,7 @@ class Level:
                         self.background_menus.append((create_event_dialog(dialog), False))
 
         self.active_menu = self.background_menus.pop(0)[0] if self.background_menus else None
-        self.animation = Animation([{'sprite': anim_surf, 'pos': pos}], 180)
+        self.animation = Animation([{'sprite': animation_surface, 'pos': position}], 180)
 
     def update_state(self):
         """
@@ -230,7 +230,7 @@ class Level:
             return self.game_phase
 
         if self.animation:
-            if self.animation.anim():
+            if self.animation.animate():
                 self.animation = None
                 if self.game_phase > LevelStatus.IN_PROGRESS and not self.active_menu:
                     # End game animation is finished, level can be quit if there is no more menu
@@ -303,63 +303,63 @@ class Level:
 
         return None
 
-    def display(self, win):
+    def display(self, screen):
         """
 
-        :param win:
+        :param screen:
         """
-        win.blit(self.map['img'], (self.map['x'], self.map['y']))
-        self.sidebar.display(win, self.turn, self.hovered_ent)
+        screen.blit(self.map['img'], (self.map['x'], self.map['y']))
+        self.sidebar.display(screen, self.turn, self.hovered_ent)
 
         for collection in self.entities.values():
             for ent in collection:
-                ent.display(win)
+                ent.display(screen)
                 if isinstance(ent, Destroyable):
-                    ent.display_hp(win)
+                    ent.display_hp(screen)
 
         if self.watched_ent:
-            self.show_possible_actions(self.watched_ent, win)
+            self.show_possible_actions(self.watched_ent, screen)
 
         # If the game hasn't yet started
         if self.game_phase is LevelStatus.INITIALIZATION:
-            self.show_possible_placements(win)
+            self.show_possible_placements(screen)
         else:
             if self.selected_player:
                 # If player is waiting to move
                 if self.possible_moves:
-                    self.show_possible_actions(self.selected_player, win)
+                    self.show_possible_actions(self.selected_player, screen)
                 elif self.possible_attacks:
-                    self.show_possible_attacks(self.selected_player, win)
+                    self.show_possible_attacks(self.selected_player, screen)
                 elif self.possible_interactions:
-                    self.show_possible_interactions(win)
+                    self.show_possible_interactions(screen)
 
         if self.animation:
-            self.animation.display(win)
+            self.animation.display(screen)
         else:
             for menu in self.background_menus:
                 if menu[1]:
-                    menu[0].display(win)
+                    menu[0].display(screen)
             if self.active_menu:
-                self.active_menu.display(win)
+                self.active_menu.display(screen)
 
-    def show_possible_actions(self, movable, win):
+    def show_possible_actions(self, movable, screen):
         """
 
         :param movable:
-        :param win:
+        :param screen:
         """
-        self.show_possible_moves(movable, win)
-        self.show_possible_attacks(movable, win)
+        self.show_possible_moves(movable, screen)
+        self.show_possible_attacks(movable, screen)
 
-    def show_possible_attacks(self, movable, win):
+    def show_possible_attacks(self, movable, screen):
         """
 
         :param movable:
-        :param win:
+        :param screen:
         """
         for tile in self.possible_attacks:
             if movable.position != tile:
-                blit_alpha(win, constant_sprites['attackable'], tile, ATTACKABLE_OPACITY)
+                blit_alpha(screen, constant_sprites['attackable'], tile, ATTACKABLE_OPACITY)
 
     def show_possible_moves(self, movable, win):
         """
@@ -536,13 +536,14 @@ class Level:
             # Else the item should be added to the inventory
             actor.set_item(item)
 
+        # TODO: move the creation of the pop-up in menu_creator_manager
         entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
                       'id': InventoryMenu.INTERAC_ITEM}
         entries = [[entry_item],
                    [{'type': 'text', 'text': "Item has been added to your inventory",
                      'font': fonts['ITEM_DESC_FONT']}]]
-        self.active_menu = InfoBox("You found in the chest", "", "imgs/interface/PopUpMenu.png",
-                                   entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+        self.active_menu = InfoBox("You found in the chest", "imgs/interface/PopUpMenu.png",
+                                   entries, width=ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def open_door(self, door):
         """
@@ -551,10 +552,11 @@ class Level:
         """
         self.entities['doors'].remove(door)
 
+        # TODO: move the creation of the pop-up in menu_creator_manager
         entries = [[{'type': 'text', 'text': "Door has been opened.",
                      'font': fonts['ITEM_DESC_FONT']}]]
-        self.active_menu = InfoBox(str(door), "", "imgs/interface/PopUpMenu.png",
-                                   entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+        self.active_menu = InfoBox(str(door), "imgs/interface/PopUpMenu.png", entries,
+                                   width=ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
     def ally_to_player(self, character):
         """
@@ -615,20 +617,21 @@ class Level:
                     if not target.pick_lock_initiated:
                         # Lock picking has not been already initiated
                         target.pick_lock_initiated = True
+                        # TODO: move the creation of the pop-up in menu_creator_manager
                         entries = [
                             [{'type': 'text', 'text': "Started picking, one more turn to go.",
                               'font': fonts['ITEM_DESC_FONT']}]]
-                        self.active_menu = InfoBox("Chest", "", "imgs/interface/PopUpMenu.png",
-                                                   entries, ITEM_MENU_WIDTH,
-                                                   close_button=FINAL_ACTION)
+                        self.active_menu = InfoBox("Chest", "imgs/interface/PopUpMenu.png", entries,
+                                                   width=ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                     else:
                         # Lock picking is finished, get content
                         self.open_chest(actor, target)
 
             else:
-                self.active_menu = InfoBox("You have no free space in your inventory.", "",
-                                           "imgs/interface/PopUpMenu.png", [], ITEM_MENU_WIDTH,
-                                           close_button=UNFINAL_ACTION)
+                # TODO: move the creation of the pop-up in menu_creator_manager
+                self.active_menu = InfoBox("You have no free space in your inventory",
+                                           "imgs/interface/PopUpMenu.png", [],
+                                           width=ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
         # Check if player tries to open a door
         elif isinstance(target, Door):
             if self.selected_player.current_action is CharacterMenu.OPEN_DOOR:
@@ -644,10 +647,11 @@ class Level:
                 if not target.pick_lock_initiated:
                     # Lock picking has not been already initiated
                     target.pick_lock_initiated = True
+                    # TODO: move the creation of the pop-up in menu_creator_manager
                     entries = [[{'type': 'text', 'text': "Started picking, one more turn to go.",
                                  'font': fonts['ITEM_DESC_FONT']}]]
-                    self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
-                                               entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+                    self.active_menu = InfoBox(str(target), "imgs/interface/PopUpMenu.png", entries,
+                                               width=ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
                 else:
                     # Lock picking is finished, get content
                     self.open_door(target)
@@ -661,14 +665,14 @@ class Level:
                 self.possible_interactions = possible_pos.keys()
                 self.wait_for_dest_tp = True
             else:
-                self.active_menu = InfoBox("There is no free square around the other portal", "",
-                                           "imgs/interface/PopUpMenu.png",
-                                           [], ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                self.active_menu = InfoBox("There is no free square around the other portal",
+                                           "imgs/interface/PopUpMenu.png", [], "", ITEM_MENU_WIDTH,
+                                           close_button=UNFINAL_ACTION)
         # Check if player tries to drink in a fountain
         elif isinstance(target, Fountain):
             entries = target.drink(actor)
-            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
-                                       entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
+            self.active_menu = InfoBox(str(target), "imgs/interface/PopUpMenu.png", entries, "",
+                                       ITEM_MENU_WIDTH, close_button=FINAL_ACTION)
 
             # No more menu : turn is finished
             self.background_menus = []
@@ -680,8 +684,8 @@ class Level:
             pygame.mixer.Sound.play(self.talk_sfx)
 
             entries = target.talk(actor)
-            self.active_menu = InfoBox(str(target), "", "imgs/interface/PopUpMenu.png",
-                                       entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION,
+            self.active_menu = InfoBox(str(target), "imgs/interface/PopUpMenu.png", entries, "",
+                                       ITEM_MENU_WIDTH, close_button=FINAL_ACTION,
                                        title_color=ORANGE)
             # No more menu : turn is finished
             self.background_menus = []
@@ -697,8 +701,8 @@ class Level:
                 kind = ShopMenu
 
             entries = target.interact(actor)
-            self.active_menu = InfoBox(str(target), kind, "imgs/interface/PopUpMenu.png",
-                                       entries, ITEM_MENU_WIDTH, close_button=FINAL_ACTION,
+            self.active_menu = InfoBox(str(target), "imgs/interface/PopUpMenu.png", entries, kind,
+                                       ITEM_MENU_WIDTH, close_button=FINAL_ACTION,
                                        title_color=ORANGE)
 
             # No more menu : turn is finished
@@ -902,7 +906,7 @@ class Level:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = menu_creator_manager.create_inventory_menu(items,
                                                                           self.selected_player.gold,
-                                                                          for_sell=True)
+                                                                          is_to_sell=True)
         else:
             print("Unknown action in shop menu... : " + str(method_id))
 
@@ -995,9 +999,9 @@ class Level:
 
             if not has_key:
                 self.background_menus.append((self.active_menu, True))
-                self.active_menu = InfoBox("You have no key to open a chest", "",
-                                           "imgs/interface/PopUpMenu.png", [],
-                                           ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                self.active_menu = InfoBox("You have no key to open a chest",
+                                           "imgs/interface/PopUpMenu.png", [], "", ITEM_MENU_WIDTH,
+                                           close_button=UNFINAL_ACTION)
             else:
                 self.background_menus.append((self.active_menu, False))
                 self.active_menu = None
@@ -1016,9 +1020,9 @@ class Level:
 
             if not has_key:
                 self.background_menus.append((self.active_menu, True))
-                self.active_menu = InfoBox("You have no key to open a door", "",
-                                           "imgs/interface/PopUpMenu.png", [],
-                                           ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                self.active_menu = InfoBox("You have no key to open a door",
+                                           "imgs/interface/PopUpMenu.png", [], "", ITEM_MENU_WIDTH,
+                                           close_button=UNFINAL_ACTION)
             else:
                 self.select_interaction_with(Door)
         elif method_id is CharacterMenu.PICK_LOCK:
@@ -1127,7 +1131,7 @@ class Level:
         # Get info about an item
         if method_id is ItemMenu.INFO_ITEM:
             self.background_menus.append((self.active_menu, False))
-            self.active_menu = menu_creator_manager.create_item_desc_menu(self.selected_item)
+            self.active_menu = menu_creator_manager.create_item_description_menu(self.selected_item)
         # Remove an item
         elif method_id is ItemMenu.THROW_ITEM:
             # Remove item from inventory/equipment according to the index
@@ -1150,9 +1154,9 @@ class Level:
 
             remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.',
                                     'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       remove_msg_entries,
-                                       ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       remove_msg_entries, "", ITEM_DELETE_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         # Use an item from the inventory
         elif method_id is ItemMenu.USE_ITEM:
             self.background_menus.append((self.active_menu, False))
@@ -1167,9 +1171,9 @@ class Level:
             entries = [[{'type': 'text', 'text': msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in
                        result_msgs]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       entries, "", ITEM_INFO_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         # Equip an item
         elif method_id is ItemMenu.EQUIP_ITEM:
             self.background_menus.append((self.active_menu, False))
@@ -1191,9 +1195,9 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       entries, "", ITEM_INFO_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         # Unequip an item
         elif method_id is ItemMenu.UNEQUIP_ITEM:
             self.background_menus.append((self.active_menu, False))
@@ -1215,9 +1219,9 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'],
                          'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       entries, "", ITEM_INFO_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         # Buy an item
         elif method_id is ItemMenu.BUY_ITEM:
             # Try to buy the item
@@ -1225,9 +1229,9 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       entries, "", ITEM_INFO_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         # Sell an item
         elif method_id is ItemMenu.SELL_ITEM:
             sold, result_msg = self.active_shop.sell(self.selected_player, self.selected_item)
@@ -1245,7 +1249,7 @@ class Level:
 
                 new_sell_menu = menu_creator_manager.create_inventory_menu(items,
                                                                            self.selected_player.gold,
-                                                                           for_sell=True)
+                                                                           is_to_sell=True)
 
                 # Update the inventory menu (i.e. first menu backward)
                 self.background_menus[len(self.background_menus) - 1] = (new_sell_menu, True)
@@ -1254,9 +1258,9 @@ class Level:
 
             entries = [[{'type': 'text', 'text': result_msg,
                          'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       entries,
-                                       ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       entries, "", ITEM_INFO_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
             pygame.mixer.Sound.play(self.inventory_sfx)
@@ -1286,9 +1290,9 @@ class Level:
                 msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
                                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
             self.turn_items.append([self.selected_item, owner, receiver])
-            self.active_menu = InfoBox(str(self.selected_item), "", "imgs/interface/PopUpMenu.png",
-                                       msg_entries,
-                                       ITEM_DELETE_MENU_WIDTH, close_button=UNFINAL_ACTION)
+            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                       msg_entries, "", ITEM_DELETE_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         else:
             print(f"Unknown action in item menu : {method_id}")
 
@@ -1362,10 +1366,10 @@ class Level:
         if method_id is SaveMenu.SAVE:
             self.save_game(args[2][0])
             self.background_menus.append((self.active_menu, True))
-            self.active_menu = InfoBox("", "", "imgs/interface/PopUpMenu.png",
+            self.active_menu = InfoBox("", "imgs/interface/PopUpMenu.png",
                                        [[{'type': 'text', 'text': "Game has been saved",
-                                          'font': fonts['ITEM_DESC_FONT']}]],
-                                       ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                                          'font': fonts['ITEM_DESC_FONT']}]], "", ITEM_MENU_WIDTH,
+                                       close_button=UNFINAL_ACTION)
         else:
             print(f"Unknown action in save menu : {method_id}")
 

@@ -8,6 +8,7 @@ from src.game_entities.destroyable import Destroyable
 from src.game_entities.effect import Effect
 from src.game_entities.entity import Entity
 from src.constants import TILE_SIZE
+from src.gui.entries import Entries
 from src.gui.fonts import fonts
 
 
@@ -24,7 +25,7 @@ class Fountain(Entity):
             pg.image.load(sprite_empty).convert_alpha(),
             (TILE_SIZE, TILE_SIZE))
 
-    def drink(self, entity: Destroyable) -> Sequence[Sequence[dict[str, str]]]:
+    def drink(self, entity: Destroyable) -> Entries:
         """
 
         :param entity:

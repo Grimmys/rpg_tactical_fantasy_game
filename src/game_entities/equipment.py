@@ -1,3 +1,8 @@
+"""
+Defines Equipment class, an item that can be worn
+by specific entities at a specific body part.
+"""
+
 from typing import Sequence
 
 import pygame

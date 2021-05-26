@@ -1,3 +1,9 @@
+"""
+Defines static sprites at interpretation time.
+The init_constant_sprites function should be called at the beginning of the application
+after pygame initialization and after the initialization of at least one pygame window.
+"""
+
 import pygame
 
 from src.gui.fonts import fonts
@@ -29,9 +35,10 @@ HP_BAR_SPRITE = 'imgs/dungeon_crawl/misc/damage_meter_sample.png'
 constant_sprites = {}
 
 
-def init_constant_sprites():
+def init_constant_sprites() -> None:
     """
-
+    Initialize all sprites by loading them into a pygame Surface.
+    These sprites will be available in all modules by importing the constant_sprites dictionary.
     """
     constant_sprites['landing'] = pygame.transform.scale(
         pygame.image.load(LANDING_SPRITE).convert_alpha(),
@@ -42,26 +49,27 @@ def init_constant_sprites():
     constant_sprites['interaction'] = pygame.transform.scale(
         pygame.image.load(INTERACTION_SPRITE).convert_alpha(),
         (TILE_SIZE, TILE_SIZE))
-    NEW_TURN = pygame.image.load(NEW_TURN_SPRITE).convert_alpha()
-    NEW_TURN = pygame.transform.scale(NEW_TURN.convert_alpha(), (int(NEW_TURN.get_width() * 1.5),
-                                                                 int(NEW_TURN.get_height() * 1.5)))
-    constant_sprites['new_turn'] = NEW_TURN
-    constant_sprites['victory'] = NEW_TURN.copy()
-    constant_sprites['defeat'] = NEW_TURN.copy()
+    new_turn = pygame.image.load(NEW_TURN_SPRITE).convert_alpha()
+    new_turn = pygame.transform.scale(new_turn.convert_alpha(), (int(new_turn.get_width() * 1.5),
+                                                                 int(new_turn.get_height() * 1.5)))
+    constant_sprites['new_turn'] = new_turn
+    constant_sprites['victory'] = new_turn.copy()
+    constant_sprites['defeat'] = new_turn.copy()
 
     constant_sprites['new_turn_pos'] = (
-        MAX_MAP_WIDTH / 2 - NEW_TURN.get_width() / 2,
-        MAX_MAP_HEIGHT / 2 - NEW_TURN.get_height() / 2)
-    NEW_TURN_TEXT = fonts['TITLE_FONT'].render("NEW TURN !", 1, WHITE)
-    NEW_TURN.blit(NEW_TURN_TEXT, (NEW_TURN.get_width() / 2 - NEW_TURN_TEXT.get_width() / 2,
-                                  NEW_TURN.get_height() / 2 - NEW_TURN_TEXT.get_height() / 2))
+        MAX_MAP_WIDTH / 2 - new_turn.get_width() / 2,
+        MAX_MAP_HEIGHT / 2 - new_turn.get_height() / 2)
+    new_turn_text = fonts['TITLE_FONT'].render("NEW TURN !", 1, WHITE)
+    new_turn.blit(new_turn_text, (new_turn.get_width() / 2 - new_turn_text.get_width() / 2,
+                                  new_turn.get_height() / 2 - new_turn_text.get_height() / 2))
 
     constant_sprites['victory_pos'] = constant_sprites['new_turn_pos']
-    VICTORY_TEXT = fonts['TITLE_FONT'].render("VICTORY !", 1, WHITE)
-    VICTORY_TEXT_POS = (constant_sprites['victory'].get_width() / 2 - VICTORY_TEXT.get_width() / 2,
-                        constant_sprites[
-                            'victory'].get_height() / 2 - VICTORY_TEXT.get_height() / 2)
-    constant_sprites['victory'].blit(VICTORY_TEXT, VICTORY_TEXT_POS)
+    victory_text = fonts['TITLE_FONT'].render("VICTORY !", 1, WHITE)
+    victory_text_position = (
+        constant_sprites['victory'].get_width() / 2 - victory_text.get_width() / 2,
+        constant_sprites[
+            'victory'].get_height() / 2 - victory_text.get_height() / 2)
+    constant_sprites['victory'].blit(victory_text, victory_text_position)
 
     constant_sprites['defeat_pos'] = constant_sprites['new_turn_pos']
     defeat_text = fonts['TITLE_FONT'].render("DEFEAT !", 1, WHITE)

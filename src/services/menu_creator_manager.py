@@ -1,3 +1,9 @@
+"""
+Define functions creating a specific menu enveloping data from parameters.
+"""
+from enum import Enum
+from typing import Sequence, Union
+
 import pygame
 
 from src.constants import TILE_SIZE, ITEM_MENU_WIDTH, UNFINAL_ACTION, \
@@ -8,20 +14,27 @@ from src.constants import TILE_SIZE, ITEM_MENU_WIDTH, UNFINAL_ACTION, \
     ITEM_INFO_MENU_WIDTH, STATUS_INFO_MENU_WIDTH, \
     FOE_STATUS_MENU_WIDTH, DIALOG_WIDTH, REWARD_MENU_WIDTH, \
     START_MENU_WIDTH, ANIMATION_SPEED, SCREEN_SIZE, SAVE_SLOTS
+from src.game_entities.alteration import Alteration
+from src.game_entities.building import Building
 from src.game_entities.chest import Chest
 from src.game_entities.character import Character
 from src.game_entities.consumable import Consumable
 from src.game_entities.door import Door
+from src.game_entities.entity import Entity
 from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe
 from src.game_entities.fountain import Fountain
+from src.game_entities.item import Item
+from src.game_entities.skill import Skill
+from src.gui.entries import Entries, Entry, EntryLine
 from src.gui.fonts import fonts
 from src.gui.info_box import InfoBox
-from src.game_entities.mission import MissionType
+from src.game_entities.mission import MissionType, Mission
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
 from src.game_entities.weapon import Weapon
+from src.gui.position import Position
 from src.services.menus import BuyMenu, SellMenu, InventoryMenu, EquipmentMenu, \
     TradeMenu, StatusMenu, CharacterMenu, MainMenu, ItemMenu, StartMenu, \
     OptionsMenu, SaveMenu, LoadMenu
@@ -30,18 +43,19 @@ MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
 
-def create_shop_menu(stock, gold):
+def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) -> InfoBox:
     """
+    Return the interface of a shop menu with user as the buyer.
 
-    :param stock:
-    :param gold:
-    :return:
+    Keyword arguments:
+    stock -- the collection of items that are available in the shop, with the quantity of each one
+    gold -- the amount of gold that should be displayed at the bottom
     """
     entries = []
     row = []
-    for i, item in enumerate(stock):
+    for item in stock:
         entry = {'type': 'item_button', 'item': item['item'], 'price': item['item'].price,
-                 'quantity': item['quantity'], 'index': i, 'id': BuyMenu.INTERAC_BUY}
+                 'quantity': item['quantity'], 'id': BuyMenu.INTERAC_BUY}
         row.append(entry)
         if len(row) == 2:
             entries.append(row)
@@ -54,25 +68,27 @@ def create_shop_menu(stock, gold):
     entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
-    return InfoBox("Shop - Buying", BuyMenu, "imgs/interface/PopUpMenu.png", entries,
-                   ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+    return InfoBox("Shop - Buying", "imgs/interface/PopUpMenu.png", entries, id_type=BuyMenu,
+                   width=ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
-def create_inventory_menu(items, gold, for_sell=False):
+def create_inventory_menu(items: Sequence[Item], gold: int, is_to_sell: bool = False) -> InfoBox:
     """
+    Return the interface of a player inventory.
 
-    :param items:
-    :param gold:
-    :param for_sell:
-    :return:
+    Keyword arguments:
+    items -- the collection of items of the player in order
+    gold -- the amount of gold of the player
+    is_to_sell -- a boolean value indicating if this interface should be for potentially sell items
+    to the active shop or if it's only for looking at them
     """
     entries = []
     row = []
-    method_id = SellMenu.INTERAC_SELL if for_sell else InventoryMenu.INTERAC_ITEM
+    method_id = SellMenu.INTERAC_SELL if is_to_sell else InventoryMenu.INTERAC_ITEM
     for i, it in enumerate(items):
         entry = {'type': 'item_button', 'item': it, 'index': i, 'id': method_id}
         # Test if price should appeared
-        if for_sell and it:
+        if is_to_sell and it:
             entry['price'] = it.resell_price
         row.append(entry)
         if len(row) == 2:
@@ -85,18 +101,19 @@ def create_inventory_menu(items, gold, for_sell=False):
     entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
-    title = "Shop - Selling" if for_sell else "Inventory"
-    menu_id = SellMenu if for_sell else InventoryMenu
-    title_color = ORANGE if for_sell else WHITE
-    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.png", entries,
-                   ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=title_color)
+    title = "Shop - Selling" if is_to_sell else "Inventory"
+    menu_id = SellMenu if is_to_sell else InventoryMenu
+    title_color = ORANGE if is_to_sell else WHITE
+    return InfoBox(title, "imgs/interface/PopUpMenu.png", entries, id_type=menu_id,
+                   width=ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=title_color)
 
 
-def create_equipment_menu(equipments):
+def create_equipment_menu(equipments: Sequence[Equipment]) -> InfoBox:
     """
+    Return the interface of a player equipment.
 
-    :param equipments:
-    :return:
+    Keyword arguments:
+    equipments -- the collection of equipments currently equipped by the player
     """
     entries = []
     body_parts = [['head'], ['body'], ['right_hand', 'left_hand'], ['feet']]
@@ -115,16 +132,17 @@ def create_equipment_menu(equipments):
                          EquipmentMenu.INTERAC_EQUIPMENT}
             row.append(entry)
         entries.append(row)
-    return InfoBox("Equipment", EquipmentMenu, "imgs/interface/PopUpMenu.png", entries,
-                   EQUIPMENT_MENU_WIDTH, close_button=UNFINAL_ACTION)
+    return InfoBox("Equipment", "imgs/interface/PopUpMenu.png", entries, id_type=EquipmentMenu,
+                   width=EQUIPMENT_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_trade_menu(first_player, second_player):
+def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
     """
+    Return the interface for a trade between two players
 
-    :param first_player:
-    :param second_player:
-    :return:
+    Keyword arguments:
+    first_player -- the player who initiated the trade
+    second_player -- the other player
     """
     # Extract data from players
     items_max = first_player.nb_items_max
@@ -183,33 +201,37 @@ def create_trade_menu(first_player, second_player):
     title = "Trade"
     menu_id = TradeMenu
     title_color = WHITE
-    return InfoBox(title, menu_id, "imgs/interface/PopUpMenu.png", entries,
-                   TRADE_MENU_WIDTH, close_button=UNFINAL_ACTION, sep=True, title_color=title_color)
+    return InfoBox(title, "imgs/interface/PopUpMenu.png", entries, id_type=menu_id,
+                   width=TRADE_MENU_WIDTH, close_button=UNFINAL_ACTION,
+                   separator=True, title_color=title_color)
 
 
-def determine_hp_color(hit_points, hp_max):
+def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
     """
+    Returns the color that should be used to display the hp bar of a player according to the ratio
+    hit points / hit points max.
 
-    :param hit_points:
-    :param hp_max:
-    :return:
+    Keyword arguments:
+    hit_points -- the current hit points of the entity
+    hit_points_max -- the maximum hit points of the entity
     """
-    if hit_points == hp_max:
+    if hit_points == hit_points_max:
         return WHITE
-    if hit_points >= hp_max * 0.75:
+    if hit_points >= hit_points_max * 0.75:
         return GREEN
-    if hit_points >= hp_max * 0.5:
+    if hit_points >= hit_points_max * 0.5:
         return YELLOW
-    if hit_points >= hp_max * 0.30:
+    if hit_points >= hit_points_max * 0.30:
         return ORANGE
     return RED
 
 
-def create_status_menu(player):
+def create_status_menu(player: Player) -> InfoBox:
     """
+    Return the interface resuming the status of a player.
 
-    :param player:
-    :return:
+    Keyword arguments:
+    player -- the concerned player
     """
     entries = [
         [{}, {'type': 'text', 'color': GREEN, 'text': 'Name :', 'font': fonts['ITALIC_ITEM_FONT']},
@@ -265,19 +287,23 @@ def create_status_menu(player):
     for j in range(i, len(entries)):
         entries[j].append({})
 
-    return InfoBox("Status", StatusMenu, "imgs/interface/PopUpMenu.png", entries,
-                   STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+    return InfoBox("Status", "imgs/interface/PopUpMenu.png", entries, id_type=StatusMenu,
+                   width=STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_player_menu(player, buildings, interact_entities, missions, foes):
+def create_player_menu(player: Player, buildings: Sequence[Building],
+                       interactable_entities: Sequence[Entity], missions: Sequence[Mission],
+                       foes: Sequence[Foe]) -> InfoBox:
     """
+    Return the interface of a player menu.
 
-    :param player:
-    :param buildings:
-    :param interact_entities:
-    :param missions:
-    :param foes:
-    :return:
+    Keyword arguments:
+    player -- the active player
+    buildings -- the collection of buildings on the current level
+    interactable_entities -- the collection of entities with which the player
+    can interact on the current level
+    missions -- the missions of the current level
+    foes -- the foes that are still alive on the current level
     """
     entries = [[{'name': 'Inventory', 'id': CharacterMenu.INV}],
                [{'name': 'Equipment', 'id': CharacterMenu.EQUIPMENT}],
@@ -300,7 +326,7 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
                 entries.insert(0, [{'name': 'Visit', 'id': CharacterMenu.VISIT}])
                 break
 
-    for ent in interact_entities:
+    for ent in interactable_entities:
         if abs(ent.position[0] - player.position[0]) + abs(
                 ent.position[1] - player.position[1]) == TILE_SIZE:
             if isinstance(ent, Player):
@@ -358,33 +384,36 @@ def create_player_menu(player, buildings, interact_entities, missions, foes):
         for entry in row:
             entry['type'] = 'button'
 
-    return InfoBox("Select an action", CharacterMenu, "imgs/interface/PopUpMenu.png",
-                   entries, ACTION_MENU_WIDTH, el_rect_linked=player.get_rect())
+    return InfoBox("Select an action", "imgs/interface/PopUpMenu.png", entries,
+                   id_type=CharacterMenu, width=ACTION_MENU_WIDTH, element_linked=player.get_rect())
 
 
-def create_diary_menu(entries):
+def create_diary_menu(entries: Entries) -> InfoBox:
     """
+    Return the interface of the diary resuming the last battle logs of a specific player.
 
-    :param entries:
-    :return:
+    Keyword arguments:
+    entries -- the entries data structure containing all the data needed to build the interface
     """
-    return InfoBox("Diary", "", "imgs/interface/PopUpMenu.png", entries, BATTLE_SUMMARY_WIDTH,
+    return InfoBox("Diary", "imgs/interface/PopUpMenu.png", entries, width=BATTLE_SUMMARY_WIDTH,
                    close_button=UNFINAL_ACTION)
 
 
-def create_main_menu(initialization_phase, pos):
+def create_main_menu(is_initialization_phase: bool, position: Position) -> InfoBox:
     """
+    Return the interface of the main level menu.
 
-    :param initialization_phase:
-    :param pos:
-    :return:
+    Keyword arguments:
+    is_initialization_phase -- a boolean value indicating whether
+    it is the initialization phase or not
+    position -- the position where the pop-up should be on screen
     """
     # Transform pos tuple into rect
-    tile = pygame.Rect(pos[0], pos[1], 1, 1)
+    tile = pygame.Rect(position[0], position[1], 1, 1)
     entries = [[{'name': 'Save', 'id': MainMenu.SAVE}],
                [{'name': 'Suspend', 'id': MainMenu.SUSPEND}]]
 
-    if initialization_phase:
+    if is_initialization_phase:
         entries.append([{'name': 'Start', 'id': MainMenu.START}])
     else:
         entries.append([{'name': 'Diary', 'id': MainMenu.DIARY}]),
@@ -394,57 +423,60 @@ def create_main_menu(initialization_phase, pos):
         for entry in row:
             entry['type'] = 'button'
 
-    return InfoBox("Main Menu", MainMenu, "imgs/interface/PopUpMenu.png", entries,
-                   ACTION_MENU_WIDTH, el_rect_linked=tile)
+    return InfoBox("Main Menu", "imgs/interface/PopUpMenu.png", entries, id_type=MainMenu,
+                   width=ACTION_MENU_WIDTH, element_linked=tile)
 
 
-def create_item_shop_menu(item_button_pos, item):
+def create_item_shop_menu(item_button_position: Position, item: Item) -> InfoBox:
     """
+    Return the interface of an item that is on sale in a shop.
 
-    :param item_button_pos:
-    :param item:
-    :return:
+    Keyword arguments:
+    item_button_position -- the position of the item (so the pop-up could be displayed beside it)
+    item -- the concerned item
     """
     entries = [
         [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button'}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
     formatted_item_name = str(item)
-    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                            ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_position[0] - 20, item_button_position[1],
+                            ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect,
-                   close_button=UNFINAL_ACTION)
+    return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
-def create_item_sell_menu(item_button_pos, item):
+def create_item_sell_menu(item_button_position: Position, item: Item) -> InfoBox:
     """
+    Return the interface of an item that is in a player inventory and can be sold in a shop.
 
-    :param item_button_pos:
-    :param item:
-    :return:
+    Keyword arguments:
+    item_button_position -- the position of the item (so the pop-up could be displayed beside it)
+    item -- the concerned item
     """
     entries = [
         [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button'}],
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
     ]
     formatted_item_name = str(item)
-    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                            ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_position[0] - 20, item_button_position[1],
+                            ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                   entries, ACTION_MENU_WIDTH, el_rect_linked=item_rect,
-                   close_button=UNFINAL_ACTION)
+    return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
-def create_trade_item_menu(item_button_pos, item, players):
+def create_trade_item_menu(item_button_position: Position,
+                           item: Item, players: Sequence[Player]) -> InfoBox:
     """
+    Return the interface of an item that is in a player inventory
+    and can be trade to another player.
 
-    :param item_button_pos:
-    :param item:
-    :param players:
-    :return:
+    Keyword arguments:
+    item_button_position -- the position of the item (so the pop-up could be displayed beside it)
+    item -- the concerned item
+    players -- the two players that are currently involve in the trade
     """
     entries = [
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
@@ -456,21 +488,22 @@ def create_trade_item_menu(item_button_pos, item, players):
         for entry in row:
             entry['type'] = 'button'
 
-    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                            ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_position[0] - 20, item_button_position[1],
+                            ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                   entries,
-                   ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+    return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
-def create_item_menu(item_button_pos, item, is_equipped=False):
+def create_item_menu(item_button_position: Position, item: Item,
+                     is_equipped: bool = False) -> InfoBox:
     """
+    Return the interface of an item of a player.
 
-    :param item_button_pos:
-    :param item:
-    :param is_equipped:
-    :return:
+    Keyword arguments:
+    item_button_position -- the position of the item (so the pop-up could be displayed beside it)
+    item -- the concerned item
+    is_equipped -- a boolean value indicating whether the item is currently equipped or not
     """
     entries = [
         [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
@@ -490,20 +523,20 @@ def create_item_menu(item_button_pos, item, is_equipped=False):
         for entry in row:
             entry['type'] = 'button'
 
-    item_rect = pygame.Rect(item_button_pos[0] - 20, item_button_pos[1], ITEM_BUTTON_SIZE[0],
-                            ITEM_BUTTON_SIZE[1])
+    item_rect = pygame.Rect(item_button_position[0] - 20, item_button_position[1],
+                            ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
-    return InfoBox(formatted_item_name, ItemMenu, "imgs/interface/PopUpMenu.png",
-                   entries,
-                   ACTION_MENU_WIDTH, el_rect_linked=item_rect, close_button=UNFINAL_ACTION)
+    return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
 
 
-def create_item_desc_stat(stat_name, stat_value):
+def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
     """
+    Return the entry line for the formatted display of an item stat description.
 
-    :param stat_name:
-    :param stat_value:
-    :return:
+    Keyword arguments:
+    stat_name -- the name of the statistic
+    stat_value -- the value of the statistic
     """
     return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'],
              'margin': (0, 0, 0, 100)},
@@ -511,11 +544,12 @@ def create_item_desc_stat(stat_name, stat_value):
              'margin': (0, 100, 0, 0)}]
 
 
-def create_item_desc_menu(item):
+def create_item_description_menu(item: Item) -> InfoBox:
     """
+    Return the interface for the full description of an item.
 
-    :param item:
-    :return:
+    Keyword arguments:
+    item -- the concerned item
     """
     item_title = str(item)
 
@@ -524,47 +558,50 @@ def create_item_desc_menu(item):
 
     if isinstance(item, Equipment):
         if item.restrictions != {}:
-            entries.append(create_item_desc_stat('RESERVED TO', item.get_formatted_restrictions()))
+            entries.append(create_item_description_stat('RESERVED TO',
+                                                        item.get_formatted_restrictions()))
         if item.attack > 0:
-            entries.append(create_item_desc_stat('POWER', str(item.attack)))
+            entries.append(create_item_description_stat('POWER', str(item.attack)))
         if item.defense > 0:
-            entries.append(create_item_desc_stat('DEFENSE', str(item.defense)))
+            entries.append(create_item_description_stat('DEFENSE', str(item.defense)))
         if item.resistance > 0:
-            entries.append(create_item_desc_stat('MAGICAL RES', str(item.resistance)))
+            entries.append(create_item_description_stat('MAGICAL RES', str(item.resistance)))
         if isinstance(item, Weapon):
             # Compute reach
             reach_txt = ""
             for distance in item.reach:
                 reach_txt += str(distance) + ', '
             reach_txt = reach_txt[:len(reach_txt) - 2]
-            entries.append(create_item_desc_stat('TYPE OF DAMAGE', str(item.attack_kind.value)))
-            entries.append(create_item_desc_stat('REACH', reach_txt))
+            entries.append(create_item_description_stat('TYPE OF DAMAGE',
+                                                        str(item.attack_kind.value)))
+            entries.append(create_item_description_stat('REACH', reach_txt))
             for possible_effect in item.effects:
-                entries.append(create_item_desc_stat('EFFECT', str(possible_effect['effect']) +
-                                                     ' (' + str(
-                    possible_effect['probability']) + '%)'))
+                entries.append(create_item_description_stat(
+                    'EFFECT', f'{possible_effect["effect"]} ({possible_effect["probability"]}%)'))
             strong_against_formatted = item.get_formatted_strong_against()
             if strong_against_formatted:
-                entries.append(create_item_desc_stat('STRONG AGAINST', strong_against_formatted))
+                entries.append(create_item_description_stat('STRONG AGAINST',
+                                                            strong_against_formatted))
         if isinstance(item, Shield):
-            entries.append(create_item_desc_stat('PARRY RATE', str(item.parry) + '%'))
+            entries.append(create_item_description_stat('PARRY RATE', str(item.parry) + '%'))
         if isinstance(item, (Shield, Weapon)):
-            entries.append(create_item_desc_stat('DURABILITY',
-                                                 f'{item.durability} / {item.durability_max}'))
-        entries.append(create_item_desc_stat('WEIGHT', str(item.weight)))
+            entries.append(create_item_description_stat(
+                'DURABILITY', f'{item.durability} / {item.durability_max}'))
+        entries.append(create_item_description_stat('WEIGHT', str(item.weight)))
     elif isinstance(item, Consumable):
         for effect in item.effects:
-            entries.append(create_item_desc_stat('EFFECT', effect.get_formatted_desc()))
+            entries.append(create_item_description_stat('EFFECT', effect.get_formatted_desc()))
 
-    return InfoBox(item_title, "", "imgs/interface/PopUpMenu.png", entries,
-                   ITEM_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+    return InfoBox(item_title, "imgs/interface/PopUpMenu.png", entries, width=ITEM_INFO_MENU_WIDTH,
+                   close_button=UNFINAL_ACTION)
 
 
-def create_alteration_info_menu(alteration):
+def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
     """
+    Return the interface for the description of an alteration.
 
-    :param alteration:
-    :return:
+    Keyword arguments:
+    alteration -- the concerned alteration
     """
     turns_left = alteration.get_turns_left()
     entries = [[{'type': 'text', 'text': alteration.description,
@@ -572,34 +609,36 @@ def create_alteration_info_menu(alteration):
                [{'type': 'text', 'text': f'Turns left : {turns_left}',
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
-    return InfoBox(str(alteration), "", "imgs/interface/PopUpMenu.png", entries,
-                   STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+    return InfoBox(str(alteration), "imgs/interface/PopUpMenu.png", entries,
+                   width=STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_skill_info_menu(skill):
+def create_skill_info_menu(skill: Skill) -> InfoBox:
     """
+    Return the interface for the description of a skill.
 
-    :param skill:
-    :return:
+    Keyword arguments:
+    skill -- the concerned skill
     """
     entries = [[{'type': 'text', 'text': skill.description,
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}],
                [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
 
-    return InfoBox(skill.formatted_name, "", "imgs/interface/PopUpMenu.png", entries,
-                   STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+    return InfoBox(skill.formatted_name, "imgs/interface/PopUpMenu.png", entries,
+                   width=STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_status_entity_menu(ent):
+def create_status_entity_menu(entity: Entity) -> InfoBox:
     """
+    Return the interface for the status screen of an entity.
 
-    :param ent:
-    :return:
+    Keyword arguments:
+    entity -- the concerned entity
     """
-    keywords_display = ent.get_formatted_keywords() if isinstance(ent, Foe) else ''
+    keywords_display = entity.get_formatted_keywords() if isinstance(entity, Foe) else ''
     entries = [[{'type': 'text', 'text': keywords_display,
                  'font': fonts['ITALIC_ITEM_FONT']}],
-               [{'type': 'text', 'text': f'LEVEL : {ent.lvl}', 'font': fonts['ITEM_DESC_FONT']}],
+               [{'type': 'text', 'text': f'LEVEL : {entity.lvl}', 'font': fonts['ITEM_DESC_FONT']}],
                [{'type': 'text', 'text': 'ATTACK',
                  'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (20, 0, 20, 0)}, {}, {},
@@ -607,11 +646,11 @@ def create_status_entity_menu(ent):
                  'font': fonts['MENU_SUB_TITLE_FONT'],
                  'color': DARK_GREEN,
                  'margin': (20, 0, 20, 0)}
-                if isinstance(ent, Foe) else {}, {}],
+                if isinstance(entity, Foe) else {}, {}],
                [{'type': 'text', 'text': 'TYPE :'},
-                {'type': 'text', 'text': str(ent.attack_kind.value)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.attack_kind.value)}, {}, {}, {}],
                [{'type': 'text', 'text': 'REACH :'},
-                {'type': 'text', 'text': ent.get_formatted_reach()}, {}, {}, {}],
+                {'type': 'text', 'text': entity.get_formatted_reach()}, {}, {}, {}],
                [{}, {}, {}, {}, {}],
                [{}, {}, {}, {}, {}],
                [{'type': 'text', 'text': 'STATS',
@@ -621,21 +660,21 @@ def create_status_entity_menu(ent):
                                                      'color': DARK_GREEN,
                                                      'margin': (10, 0, 10, 0)}, {}],
                [{'type': 'text', 'text': 'HP :'},
-                {'type': 'text', 'text': str(ent.hit_points) + ' / ' + str(ent.hp_max),
-                 'color': determine_hp_color(ent.hit_points, ent.hp_max)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.hit_points) + ' / ' + str(entity.hp_max),
+                 'color': determine_hp_color(entity.hit_points, entity.hp_max)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MOVE :'},
-                {'type': 'text', 'text': str(ent.max_moves)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.max_moves)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ATTACK :'},
-                {'type': 'text', 'text': str(ent.strength)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.strength)}, {}, {}, {}],
                [{'type': 'text', 'text': 'DEFENSE :'},
-                {'type': 'text', 'text': str(ent.defense)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.defense)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MAGICAL RES :'},
-                {'type': 'text', 'text': str(ent.resistance)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.resistance)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ALTERATIONS',
                  'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (10, 0, 10, 0)}]]
 
-    alts = ent.alterations
+    alts = entity.alterations
     if not alts:
         entries.append([{'type': 'text', 'text': 'None'}])
     for alt in alts:
@@ -643,8 +682,8 @@ def create_status_entity_menu(ent):
                          'color': WHITE,
                          'color_hover': TURQUOISE, 'obj': alt}])
 
-    if isinstance(ent, Foe):
-        loot = ent.potential_loot
+    if isinstance(entity, Foe):
+        loot = entity.potential_loot
         i = 3
         for (item, probability) in loot:
             name = str(item)
@@ -654,48 +693,49 @@ def create_status_entity_menu(ent):
 
     # Display skills
     i = 7
-    for skill in ent.skills:
+    for skill in entity.skills:
         entries[i][3] = {'type': 'text', 'text': '> ' + skill.formatted_name}
         i += 1
 
-    return InfoBox(str(ent), StatusMenu, "imgs/interface/PopUpMenu.png", entries,
+    return InfoBox(str(entity), "imgs/interface/PopUpMenu.png", entries, StatusMenu,
                    FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_event_dialog(dialog_el):
+def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
     """
+    Return the interface of a dialog.
 
-    :param dialog_el:
-    :return:
+    Keyword arguments:
+    dialog_element -- a data structure containing the title and the content of the dialog
     """
     entries = [[{'type': 'text', 'text': talk, 'font': fonts['ITEM_DESC_FONT']}]
-               for talk in dialog_el['talks']]
-    return InfoBox(dialog_el['title'], "", "imgs/interface/PopUpMenu.png",
-                   entries, DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+               for talk in dialog_element['talks']]
+    return InfoBox(dialog_element['title'], "imgs/interface/PopUpMenu.png", entries,
+                   width=DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
 
 
-def create_reward_menu(mission):
+def create_reward_menu(mission: Mission) -> InfoBox:
     """
+    Return the interface for an accomplished mission.
 
-    :param mission:
-    :return:
+    Keyword arguments:
+    mission -- the concerned mission
     """
     entries = [
-        [{'type': 'text', 'text': 'Congratulations ! Objective has been completed !',
+        [{'type': 'text', 'text': 'Congratulations! Objective has been completed!',
           'font': fonts['ITEM_DESC_FONT']}]]
     if mission.gold:
         entries.append([{'type': 'text', 'text': f'Earned gold : {mission.gold} (all characters)'}])
     for item in mission.items:
         entries.append([{'type': 'text', 'text': f'Earned item : {item}'}])
 
-    return InfoBox(mission.description, "", "imgs/interface/PopUpMenu.png", entries, REWARD_MENU_WIDTH,
-                   close_button=UNFINAL_ACTION)
+    return InfoBox(mission.description, "imgs/interface/PopUpMenu.png", entries,
+                   width=REWARD_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_start_menu():
+def create_start_menu() -> InfoBox:
     """
-
-    :return:
+    Return the interface of the main menu of the game (in the start screen).
     """
     entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}],
                [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
@@ -706,18 +746,20 @@ def create_start_menu():
         for entry in row:
             entry['type'] = 'button'
 
-    return InfoBox("In the name of the Five Cats", StartMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH)
+    return InfoBox("In the name of the Five Cats", "imgs/interface/PopUpMenu.png", entries,
+                   id_type=StartMenu, width=START_MENU_WIDTH)
 
 
-def load_parameter_entry(formatted_name, values, current_value, identifier):
+def load_parameter_entry(formatted_name: str, values: Sequence[dict[str, int]], current_value: int,
+                         identifier: Enum) -> Entry:
     """
+    Return an entry corresponding to the data of a specific game parameter.
 
-    :param formatted_name:
-    :param values:
-    :param current_value:
-    :param identifier:
-    :return:
+    Keyword arguments:
+    formatted_name -- the formatted name of the parameter
+    values -- the sequence of values that can be taken by the parameter
+    current_value -- the current value of the parameter
+    identifier -- the identifier of the parameter
     """
     entry = {'type': 'parameter_button', 'name': formatted_name, 'values': values,
              'id': identifier, 'current_value_ind': 0}
@@ -729,32 +771,32 @@ def load_parameter_entry(formatted_name, values, current_value, identifier):
     return entry
 
 
-def create_options_menu(params):
+def create_options_menu(parameters: dict[str, int]) -> InfoBox:
     """
+    Return the interface of the game options menu.
 
-    :param params:
-    :return:
+    Keyword arguments:
+    parameters -- the dictionary containing all parameters with their current value
     """
-    entries = [[load_parameter_entry("Move speed : ",
+    entries = [[load_parameter_entry("Move speed :",
                                      [{'label': 'Slow', 'value': ANIMATION_SPEED // 2},
                                       {'label': 'Normal', 'value': ANIMATION_SPEED},
                                       {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
-                                     params['move_speed'],
+                                     parameters['move_speed'],
                                      OptionsMenu.CHANGE_MOVE_SPEED)],
-               [load_parameter_entry("Screen mode : ",
+               [load_parameter_entry("Screen mode :",
                                      [{'label': 'Window', 'value': SCREEN_SIZE // 2},
                                       {'label': 'Full', 'value': SCREEN_SIZE}],
-                                     params['screen_size'],
+                                     parameters['screen_size'],
                                      OptionsMenu.CHANGE_SCREEN_SIZE)]]
 
-    return InfoBox("Options", OptionsMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+    return InfoBox("Options", "imgs/interface/PopUpMenu.png", entries, id_type=OptionsMenu,
+                   width=START_MENU_WIDTH, close_button=1)
 
 
-def create_load_menu():
+def create_load_menu() -> InfoBox:
     """
-
-    :return:
+    Return the interface of the load game menu.
     """
     entries = []
 
@@ -762,14 +804,13 @@ def create_load_menu():
         entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1),
                          'id': LoadMenu.LOAD, 'args': [i]}])
 
-    return InfoBox("Load Game", LoadMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+    return InfoBox("Load Game", "imgs/interface/PopUpMenu.png", entries, id_type=LoadMenu,
+                   width=START_MENU_WIDTH, close_button=1)
 
 
-def create_save_menu():
+def create_save_menu() -> InfoBox:
     """
-
-    :return:
+    Return the interface of the save game menu
     """
     entries = []
 
@@ -777,5 +818,5 @@ def create_save_menu():
         entries.append(
             [{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
 
-    return InfoBox("Save Game", SaveMenu,
-                   "imgs/interface/PopUpMenu.png", entries, START_MENU_WIDTH, close_button=1)
+    return InfoBox("Save Game", "imgs/interface/PopUpMenu.png", entries, id_type=SaveMenu,
+                   width=START_MENU_WIDTH, close_button=1)

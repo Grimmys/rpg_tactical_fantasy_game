@@ -11,10 +11,11 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.item import Item
 from src.game_entities.key import Key
 from src.game_entities.shield import Shield
-from src.game_entities.movable import Movable, EntityStrategy
+from src.game_entities.movable import Movable
 from src.game_entities.destroyable import DamageKind
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
+from src.gui.entries import Entries, Entry
 from src.gui.fonts import fonts
 
 
@@ -56,18 +57,18 @@ class Character(Movable):
         self.constitution: int = Character.races_data[race]['constitution'] + \
                                  Character.classes_data[classes[0]]['constitution']
 
-    def talk(self, actor: Entity) -> Sequence[Sequence[dict[str, str]]]:
+    def talk(self, actor: Entity) -> Entries:
         """
 
         :param actor:
         :return:
         """
         self.join_team = self.interaction['join_team']
-        entries: list[list[dict[str, str]]] = []
+        entries: Entries = []
         for line in self.interaction['dialog']:
-            entry: list[dict[str, str]] = [
+            entry_line: list[Entry] = [
                 {'type': 'text', 'text': line, 'font': fonts['ITEM_DESC_FONT']}]
-            entries.append(entry)
+            entries.append(entry_line)
         return entries
 
     def display(self, screen: pygame.Surface) -> None:

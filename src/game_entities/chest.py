@@ -1,3 +1,8 @@
+"""
+Defines Chest class, corresponding to an entity that could be opened by a player and containing gold
+or items.
+"""
+
 import os
 import random
 from typing import Sequence, List, Union

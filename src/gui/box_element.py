@@ -1,13 +1,20 @@
 """
-Defines BoxElement class, useful for drawing elements
+Defines BoxElement class, useful for drawing elements.
+All other GUI elements inherit from this class.
 """
 
+from typing import Union
+
 import pygame
+
+from src.gui.position import Position
+
+Margin = tuple[int, int, int, int]
 
 
 class BoxElement:
     """
-    This class acts as a wrapper for a gui element.
+    This element acts as a wrapper for a gui element.
     In fact, it adds a margin to any border of an element to have a cleaner interface.
 
     Keyword arguments:
@@ -23,9 +30,9 @@ class BoxElement:
     margin -- a dict containing all the values for margins TOP, BOTTOM, LEFT and RIGHT
     """
 
-    def __init__(self, position: tuple[int, int], content: pygame.Surface,
-                 margin: tuple[int, int, int, int] = (0, 0, 0, 0)) -> None:
-        self.position: tuple[int, int] = position
+    def __init__(self, position: Position, content: Union[pygame.Surface, None],
+                 margin: Margin = (0, 0, 0, 0)) -> None:
+        self.position: Position = position
         self.content: pygame.Surface = content
         self.size: tuple[int, int] = (0, 0)
         if self.content:

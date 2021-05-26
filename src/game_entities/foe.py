@@ -1,3 +1,7 @@
+"""
+Defines Foe class, an hostile entity which targets players and allies.
+"""
+
 import random as rd
 from enum import Enum, auto
 from typing import Union, Sequence
@@ -6,13 +10,16 @@ import pygame
 from lxml import etree
 
 from src.game_entities.alteration import Alteration
-from src.game_entities.destroyable import DamageKind
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
-from src.game_entities.movable import Movable, EntityStrategy
+from src.game_entities.movable import Movable
 
 
 class Keyword(Enum):
+    """
+    Enumeration of possible keywords for a Foe.
+    A foe can have multiple different keywords.
+    """
     LARGE = auto()
     CAVALRY = auto()
     FLY = auto()
@@ -25,12 +32,13 @@ class Foe(Movable):
     """
 
     """
+
     grow_rates: dict[str, dict[str, Sequence[int]]] = {}
 
     def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface],
                  hp: int, defense: int, res: int, max_move: int, strength: int,
-                 attack_kind: DamageKind,
-                 strategy: EntityStrategy, reach: Sequence[int], xp_gain: int,
+                 attack_kind: str,
+                 strategy: str, reach: Sequence[int], xp_gain: int,
                  loot: Sequence[tuple[Item, float]], keywords: Sequence[Keyword] = None,
                  lvl: int = 1, alterations: Sequence[Alteration] = None) -> None:
         Movable.__init__(self, name, position, sprite, hp, defense, res, max_move,

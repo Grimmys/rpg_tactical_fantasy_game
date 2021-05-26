@@ -1,8 +1,17 @@
+"""
+Defines ItemButton class, a special Button used to represent items on an interface.
+"""
+from enum import Enum
+from typing import List, Union
+
 import pygame
 
 from src.constants import BLACK, MIDNIGHT_BLUE
+from src.game_entities.item import Item
 from src.gui.button import Button
+from src.gui.entries import Margin
 from src.gui.fonts import fonts
+from src.gui.position import Position
 
 FRAME_SPRITE = 'imgs/interface/grey_frame.png'
 FRAME_SPRITE_HOVER = 'imgs/interface/blue_frame.png'
@@ -11,38 +20,60 @@ ITEM_SPRITE = 'imgs/interface/item_frame.png'
 
 class ItemButton(Button):
     """
+    This class is representing a button for an Item visible on any kind of interface 
+    (a player inventory, a shop etc.).
+    A squared frame is reserved to the image of the button, and there is space at the right 
+    to display the name of the item and other data.
+    
+    Keyword attributes:
+    method_id -- the id permitting to know the function that should be called on click
+    arguments -- a data structure containing any argument that can be useful to send to
+    the function called on click
+    size -- the size of the button following the format "(width, height)"
+    position -- the position of the element on the screen
+    item -- the concerned Item
+    margin -- a tuple containing the margins of the box,
+    should be in the form "(top_margin, right_margin, bottom_margin, left_margin)"
+    price -- the price of the Item if it's for sale
+    quantity -- the quantity of the Item if it's in a shop
+    disabled -- a boolean value indicating whether the button can be triggered or not
 
+    Attributes:
+    item -- the concerned Item
+    disabled -- a boolean value indicating whether the button can be triggered or not
     """
-    def __init__(self, method_id, args, size, position, item, margin, index,
-                 price=0, quantity=0, disabled=False):
-        name = ""
+    def __init__(self, method_id, arguments, size: tuple[int, int], position: Position, item: Item,
+                 margin: Margin, price: int = 0, quantity: int = 0,
+                 disabled: bool = False) -> None:
+        name: str = ""
         if item:
             name = str(item)
-        price_text = ""
+        price_text: str = ""
         if price > 0:
-            price_text = "(" + str(price) + " gold)"
-        quantity_text = ""
+            price_text = f"({price} gold)"
+        quantity_text: str = ""
         if quantity > 0:
-            quantity_text = "(" + str(quantity) + " in stock)"
+            quantity_text = f"({quantity} in stock)"
 
-        padding = size[1] // 10
-        frame_pos = (padding, padding)
-        frame_size = (size[1] - padding * 2, size[1] - padding * 2)
-        frame = pygame.transform.scale(pygame.image.load(FRAME_SPRITE).convert_alpha(),
-                                       frame_size)
-        frame_hover = pygame.transform.scale(pygame.image.load(FRAME_SPRITE_HOVER).convert_alpha(),
-                                             frame_size)
+        padding: int = size[1] // 10
+        frame_position: Position = (padding, padding)
+        frame_size: tuple[int, int] = (size[1] - padding * 2, size[1] - padding * 2)
+        frame: pygame.Surface = pygame.transform.scale(
+            pygame.image.load(FRAME_SPRITE).convert_alpha(), frame_size)
+        frame_hover: pygame.Surface = pygame.transform.scale(
+            pygame.image.load(FRAME_SPRITE_HOVER).convert_alpha(), frame_size)
 
-        item_frame = pygame.transform.scale(pygame.image.load(ITEM_SPRITE).convert_alpha(), size)
-        item_frame.blit(frame, frame_pos)
+        item_frame: pygame.Surface = pygame.transform.scale(
+            pygame.image.load(ITEM_SPRITE).convert_alpha(), size)
+        item_frame.blit(frame, frame_position)
         if item:
             item_frame.blit(pygame.transform.scale(item.sprite,
                                                    (frame_size[0] - padding * 2,
                                                     frame_size[1] - padding * 2)),
-                            (frame_pos[0] + padding, frame_pos[1] + padding))
+                            (frame_position[0] + padding, frame_position[1] + padding))
 
-        name_rendering = fonts['ITEM_FONT'].render(name, 1, BLACK)
-        nb_lines = 2
+        name_rendering: pygame.Surface = fonts['ITEM_FONT'].render(name, 1, BLACK)
+        nb_lines: int = 2
         if price_text:
             price_rendering = fonts['ITEM_FONT'].render(price_text, 1, BLACK)
             item_frame.blit(price_rendering,
@@ -59,16 +90,17 @@ class ItemButton(Button):
                                          item_frame.get_height() / nb_lines
                                          - fonts['ITEM_FONT'].get_height() / 2))
 
-        item_frame_hover = item_frame
+        item_frame_hover: pygame.Surface = item_frame
         if item and not disabled:
-            raw_item_frame_hover = pygame.image.load(ITEM_SPRITE).convert_alpha()
+            raw_item_frame_hover: pygame.Surface = pygame.image.load(ITEM_SPRITE).convert_alpha()
             item_frame_hover = pygame.transform.scale(raw_item_frame_hover, size)
-            item_frame_hover.blit(frame_hover, frame_pos)
+            item_frame_hover.blit(frame_hover, frame_position)
             item_frame_hover.blit(pygame.transform.scale(item.sprite,
                                                          (frame_size[0] - padding * 2,
                                                           frame_size[1] - padding * 2)),
-                                  (frame_pos[0] + padding, frame_pos[1] + padding))
-            name_rendering_hover = fonts['ITEM_FONT_HOVER'].render(name, 1, MIDNIGHT_BLUE)
+                                  (frame_position[0] + padding, frame_position[1] + padding))
+            name_rendering_hover: pygame.Surface = fonts['ITEM_FONT_HOVER'].render(name,
+                                                                                   1, MIDNIGHT_BLUE)
             nb_lines = 3 if price_text or quantity_text else 2
             if price_text:
                 price_rendering_hover = fonts['ITEM_FONT_HOVER'].render(price_text, 1,
@@ -90,16 +122,18 @@ class ItemButton(Button):
                                    item_frame.get_height() / nb_lines -
                                    fonts['ITEM_FONT_HOVER'].get_height() / 2))
 
-        Button.__init__(self, method_id, args, size, position, item_frame, item_frame_hover, margin)
-        self.item = item
-        self.index = index
-        self.disabled = disabled
+        super().__init__(method_id, arguments, size, position, item_frame, item_frame_hover, margin,
+                         linked_object=item)
+        self.item: Item = item
+        self.disabled: bool = disabled
 
-    def action_triggered(self):
+    def action_triggered(self) -> Union[tuple[Enum, tuple[Position, any, List[any]]], bool]:
         """
+        Method that should be called after a click.
 
-        :return:
+        Behavior similar to the implementation for Button, except that it will rejects the action
+        request if there is no reference to an Item or if the button is disabled.
         """
         if not self.item or self.disabled:
             return False
-        return self.method_id, (self.position, self.item, self.args)
+        return super().action_triggered()

@@ -1,11 +1,19 @@
 """
 Defines DynamicButton class, a special Button iterating through a list of values
 on each click.
+Generally use as a parameter button.
 """
 
+from enum import Enum
+from typing import Sequence, List
+
+import pygame
+
 from src.constants import WHITE
+from src.gui.entries import Margin
 from src.gui.fonts import fonts
 from src.gui.button import Button
+from src.gui.position import Position
 
 
 class DynamicButton(Button):
@@ -19,8 +27,6 @@ class DynamicButton(Button):
 
     Keyword arguments:
     method_id -- the id permitting to know the function that should be called on click
-    args -- a data structure containing any argument that can be useful to send to
-    the function called on click
     size -- the size of the button following the format "(width, height)"
     position -- the position of the element on the screen
     sprite -- the pygame Surface corresponding to the sprite of the element
@@ -30,59 +36,68 @@ class DynamicButton(Button):
     should be in the form "(top_margin, right_margin, bottom_margin, left_margin)"
     values -- the sequence of values that will be iterated to determine the next inner value
     current_value -- the initial value of the button
-    base_title -- the initial label associated to the initial value
-    base_sprite --
-    base_sprite_hover --
-    linked_object --
+    base_title -- the common prefix of all the different labels
+    (it could be the name of the dynamic button in a way)
+    linked_object -- the game entity linked to the button if there is one
 
     Attributes:
     values -- the sequence of values that will be iterated to determine the next inner value
-    current_value -- the initial value of the button
-    base_title -- the initial label associated to the initial value
-    base_sprite --
-    base_sprite_hover --
+    current_value -- the index of the current value of the button
+    base_title -- the common prefix of all the different labels
+    (it could be the name of the dynamic button in a way)
     """
 
-    def __init__(self, method_id, args, size, position, sprite, sprite_hover, margin, values,
-                 current_value, base_title, base_sprite, base_sprite_hover, linked_object=None):
-        super().__init__(method_id, args, size, position, sprite, sprite_hover,
+    def __init__(self, method_id: Enum, size: tuple[int, int], position: Position,
+                 sprite: pygame.Surface, sprite_hover: pygame.Surface, margin: Margin,
+                 values: Sequence[any], current_value_index: int, base_title: str,
+                 linked_object: any = None) -> None:
+        super().__init__(method_id, [], size, position, sprite, sprite_hover,
                          margin, linked_object)
-        self.values = values
-        self.current_value_ind = current_value
-        self.base_title = base_title
-        self.base_sprite = base_sprite
-        self.base_sprite_hover = base_sprite_hover
-        self.args.append(self.values[self.current_value_ind]['value'])
+        self.values: Sequence[any] = values
+        self.current_value_index: int = current_value_index
+        self.base_title: str = base_title
+        self.__base_sprite: pygame.Surface = sprite
+        self.__base_sprite_hover: pygame.Surface = sprite_hover
+        self.__update_sprite()
 
-    def __update_sprite(self):
+    def __update_sprite(self) -> None:
         """
-
+        Update the render of the button to display the updated dynamic value.
+        Should be called after the current value changed.
         """
-        name = fonts['ITEM_FONT'].render(self.base_title + ' ' +
-                                         self.values[self.current_value_ind]['label'], 1, WHITE)
+        rendered_name: pygame.Surface = fonts['ITEM_FONT'].render(
+            f'{self.base_title} {self.values[self.current_value_index]["label"]}', 1, WHITE)
 
-        tmp_sprite = self.base_sprite.copy()
-        tmp_sprite.blit(name, (tmp_sprite.get_width() // 2 - name.get_width() // 2,
-                               tmp_sprite.get_height() // 2 - name.get_height() // 2))
-        self.sprite = tmp_sprite
+        temporary_sprite: pygame.Surface = self.__base_sprite.copy()
+        temporary_sprite.blit(rendered_name,
+                              (temporary_sprite.get_width() // 2 - rendered_name.get_width() // 2,
+                               temporary_sprite.get_height() // 2 - rendered_name.get_height() // 2
+                               ))
+        self.sprite = temporary_sprite
 
-        tmp_sprite_hover = self.base_sprite_hover.copy()
-        tmp_sprite_hover.blit(name, (tmp_sprite_hover.get_width() // 2 - name.get_width() // 2,
-                                     tmp_sprite_hover.get_height() // 2 - name.get_height() // 2))
-        self.sprite_hover = tmp_sprite_hover
+        temporary_sprite_hover: pygame.Surface = self.__base_sprite_hover.copy()
+        temporary_sprite_hover.blit(rendered_name, (temporary_sprite_hover.get_width() // 2 -
+                                                    rendered_name.get_width() // 2,
+                                                    temporary_sprite_hover.get_height() // 2 -
+                                                    rendered_name.get_height() // 2))
+        self.sprite_hover = temporary_sprite_hover
 
         # Force display update
         self.set_hover(True)
 
-    def action_triggered(self):
+    def action_triggered(self) -> tuple[Enum, tuple[Position, any, List[any]]]:
         """
+        Method that should be called after a click.
+        Change the current value of the button to the next one in the sequence of values.
+        If the end of the sequence is reach, the iteration restarts at the first value.
 
-        :return:
+        Return the id of the linked method and a tuple containing the position of the button,
+        the linked object, and a list containing the current value of the dynamic button.
         """
         # Search for next value
-        self.current_value_ind += 1
-        if self.current_value_ind == len(self.values):
-            self.current_value_ind = 0
+        self.current_value_index += 1
+        if self.current_value_index == len(self.values):
+            self.current_value_index = 0
         self.__update_sprite()
-        self.args[0] = self.values[self.current_value_ind]['value']
-        return self.method_id, (self.position, self.linked_object, self.args)
+        self.arguments = [self.values[self.current_value_index]['value']]
+        return super().action_triggered()
