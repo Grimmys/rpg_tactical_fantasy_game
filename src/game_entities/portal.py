@@ -9,7 +9,7 @@ class Portal(Entity):
 
     """
     def __init__(self, position: tuple[int, int], sprite: str) -> None:
-        Entity.__init__(self, "Portal", position, sprite)
+        super().__init__("Portal", position, sprite)
         self.linked_to: Union[Portal, None] = None
 
     @staticmethod

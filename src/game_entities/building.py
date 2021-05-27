@@ -16,7 +16,7 @@ class Building(Entity):
     """
     def __init__(self, name: str, position: tuple[int, int], sprite: str,
                  interaction: dict[str, any] = None) -> None:
-        Entity.__init__(self, name, position, sprite)
+        super().__init__(name, position, sprite)
         self.sprite_name: str = sprite
         self.interaction: dict[str, Union[str, any]] = interaction
         self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'door.ogg'))
@@ -68,11 +68,14 @@ class Building(Entity):
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the building in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Entity.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save state
         state: etree.SubElement = etree.SubElement(tree, 'state')

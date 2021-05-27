@@ -25,37 +25,37 @@ class Effect:
             self.alteration = Alteration(self.name, abbr, self.power, self.duration,
                                          desc, durable_effects)
 
-    def apply_on_ent(self, ent):
+    def apply_on_ent(self, entity):
         """
 
-        :param ent:
+        :param entity:
         :return:
         """
         msg = ''
         success = True
         if self.name == 'heal':
-            recovered = ent.healed(self.power)
+            recovered = entity.healed(self.power)
             if recovered > 0:
-                msg = f'{ent} recovered {recovered} HP.'
+                msg = f'{entity} recovered {recovered} HP.'
             else:
-                msg = f"{ent} is at full health and can't be healed!"
+                msg = f"{entity} is at full health and can't be healed!"
                 success = False
         elif self.name == 'xp_up':
-            msg = f'{ent} earned {self.power} XP'
-            if ent.earn_xp(self.power):
-                msg += f'. {ent} gained a level!'
+            msg = f'{entity} earned {self.power} XP'
+            if entity.earn_xp(self.power):
+                msg += f'. {entity} gained a level!'
         elif self.name == 'speed_up':
-            ent.set_alteration(self.alteration)
-            msg = f'The speed of {ent} has been increased for {self.duration} turns'
+            entity.set_alteration(self.alteration)
+            msg = f'The speed of {entity} has been increased for {self.duration} turns'
         elif self.name == 'strength_up':
-            ent.set_alteration(self.alteration)
-            msg = f'The strength of {ent} has been increased for {self.duration} turns'
+            entity.set_alteration(self.alteration)
+            msg = f'The strength of {entity} has been increased for {self.duration} turns'
         elif self.name == 'defense_up':
-            ent.set_alteration(self.alteration)
-            msg = f'The defense of {ent} has been increased for {self.duration} turns'
+            entity.set_alteration(self.alteration)
+            msg = f'The defense of {entity} has been increased for {self.duration} turns'
         elif self.name == 'stun':
-            ent.set_alteration(self.alteration)
-            msg = f'{ent} has been stunned for {self.duration} turns'
+            entity.set_alteration(self.alteration)
+            msg = f'{entity} has been stunned for {self.duration} turns'
         return success, msg
 
     def get_formatted_desc(self):

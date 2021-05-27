@@ -1,9 +1,11 @@
 """
-    Module to keep all the constants commonly used by other modules.
+Module to keep all the constants commonly used by other modules.
 
-    Can be imported from anywhere.
+Can be imported from anywhere.
 """
-import pygame as pg
+import pygame
+
+GAME_TITLE = "In the name of the Five Cats"
 
 INITIAL_MAX = 10000
 
@@ -21,24 +23,24 @@ MAIN_WIN_WIDTH = 600
 MAIN_WIN_HEIGHT = 600
 
 # Colors
-WHITE = pg.Color('white')
-BLACK = pg.Color('black')
-LIGHT_GREY = pg.Color('grey59')
-GREY = pg.Color('grey50')
-RED = pg.Color('red')
-GREEN = pg.Color('green')
-DARK_GREEN = pg.Color('green4')
-BLUE = pg.Color('blue')
-MIDNIGHT_BLUE = pg.Color('midnightblue')
-MARINE_BLUE = pg.Color('royalblue4')
-ORANGE = pg.Color('orange')
-YELLOW = pg.Color('yellow4')
-LIGHT_YELLOW = pg.Color('yellow')
-GOLD = pg.Color('gold3')
-BROWN = pg.Color('brown4')
-BROWN_RED = pg.Color('brown')
-MAROON = pg.Color('maroon')
-TURQUOISE = pg.Color('turquoise')
+WHITE = pygame.Color('white')
+BLACK = pygame.Color('black')
+LIGHT_GREY = pygame.Color('grey59')
+GREY = pygame.Color('grey50')
+RED = pygame.Color('red')
+GREEN = pygame.Color('green')
+DARK_GREEN = pygame.Color('green4')
+BLUE = pygame.Color('blue')
+MIDNIGHT_BLUE = pygame.Color('midnightblue')
+MARINE_BLUE = pygame.Color('royalblue4')
+ORANGE = pygame.Color('orange')
+YELLOW = pygame.Color('yellow4')
+LIGHT_YELLOW = pygame.Color('yellow')
+GOLD = pygame.Color('gold3')
+BROWN = pygame.Color('brown4')
+BROWN_RED = pygame.Color('brown')
+MAROON = pygame.Color('maroon')
+TURQUOISE = pygame.Color('turquoise')
 
 # Display parameters
 MARGIN_TOP = 10

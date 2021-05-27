@@ -24,7 +24,7 @@ class TestEntity(unittest.TestCase):
         self.assertEqual(name, entity.name)
         self.assertEqual(pos, entity.position)
         self.assertEqual('Entity', str(entity))
-        self.assertTrue(entity.is_on_pos(pos))
+        self.assertTrue(entity.is_on_position(pos))
 
     def test_name_format(self):
         pos = random_position()
@@ -52,11 +52,11 @@ class TestEntity(unittest.TestCase):
         pos = random_position()
         entity = Entity(name, pos, sprite)
 
-        self.assertTrue(entity.is_on_pos(pos))
-        self.assertTrue(entity.is_on_pos(
+        self.assertTrue(entity.is_on_position(pos))
+        self.assertTrue(entity.is_on_position(
             (pos[0] + rd.randrange(0, TILE_SIZE), pos[1] + rd.randrange(0, TILE_SIZE))))
-        self.assertFalse(entity.is_on_pos((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1])))
-        self.assertFalse(entity.is_on_pos((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT))))
+        self.assertFalse(entity.is_on_position((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1])))
+        self.assertFalse(entity.is_on_position((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT))))
 
 
 if __name__ == '__main__':

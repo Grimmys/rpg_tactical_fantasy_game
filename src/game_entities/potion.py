@@ -10,4 +10,4 @@ class Potion(Consumable):
     """
     def __init__(self, name: str, sprite: str, description: str,
                  price: int, effects: Sequence[Effect]) -> None:
-        Consumable.__init__(self, name, sprite, description, price, effects)
+        super().__init__(name, sprite, description, price, effects)

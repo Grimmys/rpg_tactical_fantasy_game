@@ -42,7 +42,7 @@ class Character(Movable):
                  skills: Sequence[Skill], alterations: list[Alteration], race: str,
                  gold: int, interaction: dict[str, Any],
                  complementary_sprite_link: str = None):
-        Movable.__init__(self, name, pos, sprite, hp, defense, res,
+        super().__init__(name, pos, sprite, hp, defense, res,
                          Character.races_data[race]['move'] +
                          Character.classes_data[classes[0]]['move'],
                          strength, 'PHYSICAL', strategy, lvl, skills, alterations,
@@ -329,11 +329,14 @@ class Character(Movable):
 
     def save(self, tree_name: etree.Element) -> etree.Element:
         """
+        Save the current state of the character in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Movable.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save class (if possible)
         if len(self.classes) > 0:

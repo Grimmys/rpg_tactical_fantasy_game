@@ -41,7 +41,7 @@ class Foe(Movable):
                  strategy: str, reach: Sequence[int], xp_gain: int,
                  loot: Sequence[tuple[Item, float]], keywords: Sequence[Keyword] = None,
                  lvl: int = 1, alterations: Sequence[Alteration] = None) -> None:
-        Movable.__init__(self, name, position, sprite, hp, defense, res, max_move,
+        super().__init__(name, position, sprite, hp, defense, res, max_move,
                          strength, attack_kind, strategy, lvl, alterations=alterations)
         self.reach: Sequence[int] = reach
         self.xp_gain: int = int(xp_gain * (1.1 ** (lvl - 1)))
@@ -88,11 +88,14 @@ class Foe(Movable):
 
     def save(self, tree_name) -> etree.Element:
         """
+        Save the current state of the foe in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Movable.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save loot
         loot: etree.SubElement = etree.SubElement(tree, "loot")

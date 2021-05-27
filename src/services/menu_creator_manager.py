@@ -363,7 +363,7 @@ def create_player_menu(player: Player, buildings: Sequence[Building],
     # Check if player is on mission position
     for mission in missions:
         if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
-            if mission.position_is_valid(player.position):
+            if mission.is_position_valid(player.position):
                 entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
 
     # Check if player could attack something, according to weapon range

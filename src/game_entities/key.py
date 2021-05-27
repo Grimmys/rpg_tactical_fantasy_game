@@ -7,6 +7,6 @@ class Key(Item):
     """
     def __init__(self, name: str, sprite: str, description: str, price: int,
                  for_chest: bool, for_door: bool) -> None:
-        Item.__init__(self, name, sprite, description, price)
+        super().__init__(name, sprite, description, price)
         self.for_chest: bool = for_chest
         self.for_door: bool = for_door

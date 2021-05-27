@@ -23,7 +23,7 @@ class Chest(Entity):
     """
     def __init__(self, position: tuple[int, int], sprite_close: str, sprite_open: str,
                  potential_items: Sequence[tuple[Item, float]]) -> None:
-        Entity.__init__(self, "Chest", position, sprite_close)
+        super().__init__("Chest", position, sprite_close)
         self.sprite_open_link: str = sprite_open
         self.sprite_close_link: str = sprite_close
         self.sprite_open: pygame.Surface = pygame.transform.scale(
@@ -64,11 +64,14 @@ class Chest(Entity):
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the chest in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Entity.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save state
         state: etree.SubElement = etree.SubElement(tree, 'state')

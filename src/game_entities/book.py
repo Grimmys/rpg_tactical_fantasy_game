@@ -6,4 +6,4 @@ class Book(Item):
 
     """
     def __init__(self, name: str, sprite: str, description: str, price: int):
-        Item.__init__(self, name, sprite, description, price)
+        super().__init__(name, sprite, description, price)

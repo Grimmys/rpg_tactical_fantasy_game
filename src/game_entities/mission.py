@@ -36,7 +36,7 @@ class Mission:
         self.min_chars: int = nb_players
         self.succeeded_chars: List[Player] = []
 
-    def position_is_valid(self, position: tuple[int, int]) -> bool:
+    def is_position_valid(self, position: tuple[int, int]) -> bool:
         """
 
         :param position:

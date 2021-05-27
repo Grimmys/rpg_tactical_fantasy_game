@@ -31,9 +31,12 @@ class Item:
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the item in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
         # Build XML tree
         tree: etree.Element = etree.Element(tree_name)

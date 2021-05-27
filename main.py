@@ -61,7 +61,7 @@ def main_loop(scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clo
 if __name__ == "__main__":
     import os
 
-    from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+    from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, GAME_TITLE
     from src.gui import constant_sprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     fonts.init_fonts()
 
     # Window parameters
-    pygame.display.set_caption("In the name of the Five Cats")
+    pygame.display.set_caption(GAME_TITLE)
     main_window = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     # Load constant sprites

@@ -19,7 +19,7 @@ class Equipment(Item):
                  equipped_sprites: Sequence[str], body_part: str,
                  defense: int, resistance: int, attack: int, weight: int,
                  restrictions: dict[Sequence[str]]) -> None:
-        Item.__init__(self, name, sprite, description, price)
+        super().__init__(name, sprite, description, price)
         self.defense: int = defense
         self.resistance: int = resistance
         self.attack: int = attack

@@ -34,7 +34,7 @@ class TextElement(BoxElement):
                                                                            container_width, font,
                                                                            text_color)
 
-        BoxElement.__init__(self, position, final_text, margin)
+        super().__init__(position, final_text, margin)
 
     @staticmethod
     def verify_rendered_text_size(rendered_text: pygame.Surface, text: str,

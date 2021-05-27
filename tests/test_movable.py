@@ -28,7 +28,7 @@ class TestMovable(unittest.TestCase):
         strategy = 'STATIC'
         movable_entity = Movable(name, pos, sprite, hp, defense, res, max_moves,
                                  strength, attack_kind, strategy)
-        self.assertTrue(movable_entity.is_on_pos(pos))
+        self.assertTrue(movable_entity.is_on_position(pos))
         self.assertEqual(max_moves, movable_entity.max_moves)
         self.assertEqual(strength, movable_entity.strength)
         self.assertEqual(DamageKind[attack_kind], movable_entity.attack_kind)
@@ -61,7 +61,7 @@ class TestMovable(unittest.TestCase):
         movable_entity.timer = 0
         movable_entity.move()
 
-        self.assertTrue(movable_entity.is_on_pos(new_pos))
+        self.assertTrue(movable_entity.is_on_position(new_pos))
 
     def test_new_alteration(self):
         movable_entity = random_movable_entity()

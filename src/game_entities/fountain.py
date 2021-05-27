@@ -18,7 +18,7 @@ class Fountain(Entity):
     """
     def __init__(self, name: str, position: tuple[int, int], sprite: str, sprite_empty: str,
                  effect: Effect, times: int) -> None:
-        Entity.__init__(self, name, position, sprite)
+        super().__init__(name, position, sprite)
         self.effect: Effect = effect
         self.times: int = times
         self.sprite_empty: pygame.Surface = pg.transform.scale(
@@ -57,11 +57,14 @@ class Fountain(Entity):
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the fountain in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Entity.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save remaining uses
         times: etree.SubElement = etree.SubElement(tree, 'times')

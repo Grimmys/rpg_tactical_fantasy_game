@@ -212,12 +212,15 @@ class Player(Character):
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the player in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
         # Build XML tree
-        tree: etree.Element = Character.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save if turn is finished or not
         state: etree.SubElement = etree.SubElement(tree, 'turnFinished')

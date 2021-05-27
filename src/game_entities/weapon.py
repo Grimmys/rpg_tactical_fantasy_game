@@ -12,11 +12,12 @@ class Weapon(Equipment):
     """
 
     """
+
     def __init__(self, name, sprite, description, price, equipped_sprite, attack, attack_kind,
                  weight, durability, reach, restrictions, possible_effects,
                  strong_against, can_charge=False):
-        Equipment.__init__(self, name, sprite, description, price, equipped_sprite, 'right_hand',
-                           0, 0, attack, weight, restrictions)
+        super().__init__(name, sprite, description, price, equipped_sprite, 'right_hand',
+                         0, 0, attack, weight, restrictions)
         self.durability_max = durability
         self.durability = self.durability_max
         self.reach = reach
@@ -80,11 +81,14 @@ class Weapon(Equipment):
 
     def save(self, tree_name):
         """
+        Save the current state of the weapon in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree = Equipment.save(self, tree_name)
+        tree = super().save(tree_name)
 
         # Save durability
         durability = etree.SubElement(tree, 'durability')

@@ -20,7 +20,7 @@ class Destroyable(Entity):
     """
     def __init__(self, name: str, pos: tuple[int, int], sprite: Union[str, pygame.Surface], hp: int,
                  defense: int, res: int) -> None:
-        Entity.__init__(self, name, pos, sprite)
+        super().__init__(name, pos, sprite)
         self.hp_max: int = hp
         self.hit_points: int = hp
         self.defense: int = defense
@@ -91,11 +91,14 @@ class Destroyable(Entity):
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the destroyable entity in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Entity.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Save current hp
         hit_points: etree.SubElement = etree.SubElement(tree, 'current_hp')

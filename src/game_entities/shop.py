@@ -19,7 +19,7 @@ class Shop(Building):
     """
     def __init__(self, name: str, position: tuple[int, int], sprite: str,
                  interaction: dict[str, any], stock: List[dict[str, any]]) -> None:
-        Building.__init__(self, name, position, sprite, interaction)
+        super().__init__(name, position, sprite, interaction)
         self.stock: List[dict[str, any]] = stock
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(self.stock, 0)
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
@@ -115,11 +115,14 @@ class Shop(Building):
 
     def save(self, tree_name: str) -> etree.Element:
         """
+        Save the current state of the shop in XML format.
 
-        :param tree_name:
-        :return:
+        Return the result of this generation.
+
+        Keyword arguments:
+        tree_name -- the name that should be given to the root element of the generated XML.
         """
-        tree: etree.Element = Building.save(self, tree_name)
+        tree: etree.Element = super().save(tree_name)
 
         # Specify nature
         nature: etree.SubElement = etree.SubElement(tree, 'type')

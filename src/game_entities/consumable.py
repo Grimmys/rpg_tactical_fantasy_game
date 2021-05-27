@@ -14,7 +14,7 @@ class Consumable(Item):
     """
     def __init__(self, name: str, sprite: str, description: str,
                  price: int, effects: Sequence[Effect]) -> None:
-        Item.__init__(self, name, sprite, description, price)
+        super().__init__(name, sprite, description, price)
         self.effects: Sequence[Effect] = effects
         self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
                                                                              'potion.ogg'))
