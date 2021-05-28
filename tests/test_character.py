@@ -73,10 +73,10 @@ class TestCharacter(unittest.TestCase):
 
     def test_lvl_up(self):
         character_test = random_character_entity(lvl=3)
-        hp_before = character_test.hp_max
+        hp_before = character_test.hit_points_max
         character_test.lvl_up()
         self.assertEqual(4, character_test.lvl)
-        self.assertNotEqual(hp_before, character_test.hp_max)
+        self.assertNotEqual(hp_before, character_test.hit_points_max)
 
     def test_parried(self):
         parry_rate = 100
@@ -98,14 +98,14 @@ class TestCharacter(unittest.TestCase):
         # Physical attack
         damage = character_test.defense + 5
         character_test.attacked(random_foe_entity(), damage, DamageKind.PHYSICAL, [])
-        self.assertEqual(character_test.hp_max - 3, character_test.hit_points)
+        self.assertEqual(character_test.hit_points_max - 3, character_test.hit_points)
 
         character_test.healed()
 
         # Mental attack
         damage = character_test.resistance + 5
         character_test.attacked(random_foe_entity(), damage, DamageKind.SPIRITUAL, [])
-        self.assertEqual(character_test.hp_max - 2, character_test.hit_points)
+        self.assertEqual(character_test.hit_points_max - 2, character_test.hit_points)
 
     def test_attack_with_weapon(self):
         weapon = random_weapon(strong_against=[])

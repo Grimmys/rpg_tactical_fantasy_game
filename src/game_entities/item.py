@@ -1,3 +1,7 @@
+"""
+Defines Item, the base class for all items in the game.
+"""
+
 from __future__ import annotations
 
 import pygame
@@ -8,7 +12,22 @@ from src.constants import TILE_SIZE
 
 class Item:
     """
+    An Item is something that can be found in a chest, in a house or bought at a shop.
+    Until be used, it will stay on the inventory of the entity that is currently bearing it.
 
+    Keyword arguments:
+    name -- the name of the item
+    sprite -- the relative path to the visual representation of the item
+    description -- the description of the item that might be displayed on an interface
+    price -- the standard price of the item in a shop, optional if the item can't be sold or bought
+
+    Attributes:
+    name -- the name of the item
+    sprite -- the pygame surface representing the item on screen
+    description -- the description of the item that might be displayed on an interface
+    price -- the standard price of the item in a shop, optional if the item can't be sold or bought
+    resell_price -- the price at which the item can be sold in a shop by a player
+    identifier -- the unique value identifying the item
     """
     internal_identifier: int = 0
 
@@ -26,8 +45,8 @@ class Item:
     def __str__(self) -> str:
         return self.name.replace('_', ' ').title().strip()
 
-    def __eq__(self, it: Item) -> bool:
-        return self.name == it.name
+    def __eq__(self, item: Item) -> bool:
+        return self.name == item.name
 
     def save(self, tree_name: str) -> etree.Element:
         """

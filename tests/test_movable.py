@@ -212,9 +212,9 @@ class TestMovable(unittest.TestCase):
 
         hp_left = attacked_entity.attacked(attacker_entity, damage, DamageKind['PHYSICAL'], [])
         self.assertEqual(hp_left, attacked_entity.hit_points)
-        hp_expected = attacked_entity.hp_max - damage + attacked_entity.defense \
-            if hp_left < attacked_entity.hp_max \
-            else attacked_entity.hp_max
+        hp_expected = attacked_entity.hit_points_max - damage + attacked_entity.defense \
+            if hp_left < attacked_entity.hit_points_max \
+            else attacked_entity.hit_points_max
         self.assertEqual(hp_expected, hp_left)
 
     def test_alteration_boost_defense(self):
@@ -226,8 +226,8 @@ class TestMovable(unittest.TestCase):
         attacked_entity.set_alteration(boost_alteration)
         hp_left = attacked_entity.attacked(attacker_entity, damage, DamageKind['PHYSICAL'], [])
         self.assertEqual(hp_left, attacked_entity.hit_points)
-        hp_expected = attacked_entity.hp_max - damage + attacked_entity.defense + \
+        hp_expected = attacked_entity.hit_points_max - damage + attacked_entity.defense + \
                       boost_alteration.power \
-            if hp_left < attacked_entity.hp_max \
-            else attacked_entity.hp_max
+            if hp_left < attacked_entity.hit_points_max \
+            else attacked_entity.hit_points_max
         self.assertEqual(hp_expected, hp_left)

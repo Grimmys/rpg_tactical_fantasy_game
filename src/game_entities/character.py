@@ -36,13 +36,13 @@ class Character(Movable):
         Character.races_data = races
         Character.classes_data = classes
 
-    def __init__(self, name: str, pos: tuple[int, int], sprite: Union[str, pygame.Surface], hp: int,
-                 defense: int, res: int, strength: int, classes: Sequence[str],
+    def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface], hit_points: int,
+                 defense: int, resistance: int, strength: int, classes: Sequence[str],
                  equipments: list[Equipment], strategy: str, lvl: int,
                  skills: Sequence[Skill], alterations: list[Alteration], race: str,
                  gold: int, interaction: dict[str, Any],
                  complementary_sprite_link: str = None):
-        super().__init__(name, pos, sprite, hp, defense, res,
+        super().__init__(name, position, sprite, hit_points, defense, resistance,
                          Character.races_data[race]['move'] +
                          Character.classes_data[classes[0]]['move'],
                          strength, 'PHYSICAL', strategy, lvl, skills, alterations,
@@ -143,7 +143,7 @@ class Character(Movable):
             self.defense += random.choice(self.classes_data[self.classes[0]]['stats_up']['def'])
             self.resistance += random.choice(self.classes_data[self.classes[0]]['stats_up']['res'])
             self.strength += random.choice(self.classes_data[self.classes[0]]['stats_up']['str'])
-            self.hp_max += hp_increased
+            self.hit_points_max += hp_increased
             self.hit_points += hp_increased
 
     def get_weapon(self) -> Union[Weapon, None]:

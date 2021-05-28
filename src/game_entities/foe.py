@@ -36,12 +36,12 @@ class Foe(Movable):
     grow_rates: dict[str, dict[str, Sequence[int]]] = {}
 
     def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface],
-                 hp: int, defense: int, res: int, max_move: int, strength: int,
+                 hit_points: int, defense: int, resistance: int, max_move: int, strength: int,
                  attack_kind: str,
                  strategy: str, reach: Sequence[int], xp_gain: int,
                  loot: Sequence[tuple[Item, float]], keywords: Sequence[Keyword] = None,
                  lvl: int = 1, alterations: Sequence[Alteration] = None) -> None:
-        super().__init__(name, position, sprite, hp, defense, res, max_move,
+        super().__init__(name, position, sprite, hit_points, defense, resistance, max_move,
                          strength, attack_kind, strategy, lvl, alterations=alterations)
         self.reach: Sequence[int] = reach
         self.xp_gain: int = int(xp_gain * (1.1 ** (lvl - 1)))
@@ -55,7 +55,7 @@ class Foe(Movable):
         """
         grow_rates: dict[str, Sequence[int]] = Foe.grow_rates[self.name]
         for _ in range(nb_lvl):
-            self.hp_max += rd.choice(grow_rates['hp'])
+            self.hit_points_max += rd.choice(grow_rates['hp'])
             self.defense += rd.choice(grow_rates['def'])
             self.resistance += rd.choice(grow_rates['res'])
             self.strength += rd.choice(grow_rates['str'])

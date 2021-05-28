@@ -1,3 +1,8 @@
+"""
+Defines Breakable class, a static Destroyable object that is an element of the background.
+Generally, this class helps to represent breakable walls.
+"""
+
 import pygame
 from lxml import etree
 
@@ -7,7 +12,19 @@ from src.gui.constant_sprites import constant_sprites
 
 class Breakable(Destroyable):
     """
+    A Breakable represent an element of the background that can be destroyed, like a brittle wall.
+    At display time, some cracks are added to the sprite of the entity to differentiate it from
+    other elements that might be similar but un-breakable.
 
+    Keyword arguments:
+    position -- the current position of the entity on screen
+    sprite -- the relative path to the visual representation of the entity
+    hit_points -- the total of damage that the entity can take before disappearing
+    defense -- the resistance of the entity from physical attacks
+    resistance -- the resistance of the entity from spiritual attacks
+
+    Attributes:
+    sprite_link -- the relative path to the visual representation of the element
     """
     def __init__(self, position: tuple[int, int], sprite: str,
                  hit_points: int, defense: int, resistance: int) -> None:
@@ -17,10 +34,13 @@ class Breakable(Destroyable):
 
     def display(self, screen: pygame.Surface) -> None:
         """
+        Display the entity on the given screen and adding some cracks on it to add emphasis to its
+        fragile nature.
 
-        :param screen:
+        Keyword arguments:
+        screen -- the screen on which the entity should be drawn
         """
-        Destroyable.display(self, screen)
+        super().display(screen)
         screen.blit(constant_sprites['cracked'], self.position)
 
     def save(self, tree_name: str) -> etree.Element:

@@ -20,7 +20,8 @@ class Entity:
     Keyword arguments:
     name -- the name of the entity
     position -- the current position of the entity on screen
-    sprite -- the pygame Surface corresponding to the appearance of the entity on screen
+    sprite -- the pygame Surface corresponding to the appearance of the entity on screen or
+    the relative path to the visual representation of the entity
 
     Attributes:
     name -- the name of the entity

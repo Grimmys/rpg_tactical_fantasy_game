@@ -208,7 +208,7 @@ def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
 
 def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
     """
-    Returns the color that should be used to display the hp bar of a player according to the ratio
+    Return the color that should be used to display the hp bar of a player according to the ratio
     hit points / hit points max.
 
     Keyword arguments:
@@ -249,8 +249,8 @@ def create_status_menu(player: Player) -> InfoBox:
         [{'type': 'text', 'color': DARK_GREEN, 'text': 'STATS',
           'font': fonts['MENU_SUB_TITLE_FONT'], 'margin': (10, 0, 10, 0)}],
         [{'type': 'text', 'color': WHITE, 'text': 'HP :'},
-         {'type': 'text', 'text': f'{player.hit_points} / {player.hp_max}',
-          'color': determine_hp_color(player.hit_points, player.hp_max)}],
+         {'type': 'text', 'text': f'{player.hit_points} / {player.hit_points_max}',
+          'color': determine_hp_color(player.hit_points, player.hit_points_max)}],
         [{'type': 'text', 'color': WHITE, 'text': 'MOVE :'},
          {'type': 'text',
           'text': str(player.max_moves) + player.get_formatted_stat_change('speed')}],
@@ -660,8 +660,8 @@ def create_status_entity_menu(entity: Entity) -> InfoBox:
                                                      'color': DARK_GREEN,
                                                      'margin': (10, 0, 10, 0)}, {}],
                [{'type': 'text', 'text': 'HP :'},
-                {'type': 'text', 'text': str(entity.hit_points) + ' / ' + str(entity.hp_max),
-                 'color': determine_hp_color(entity.hit_points, entity.hp_max)}, {}, {}, {}],
+                {'type': 'text', 'text': str(entity.hit_points) + ' / ' + str(entity.hit_points_max),
+                 'color': determine_hp_color(entity.hit_points, entity.hit_points_max)}, {}, {}, {}],
                [{'type': 'text', 'text': 'MOVE :'},
                 {'type': 'text', 'text': str(entity.max_moves)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ATTACK :'},

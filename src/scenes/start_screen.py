@@ -137,7 +137,7 @@ class StartScreen:
                 team = self.level.passed_players + self.level.players
                 for player in team:
                     # Players are fully restored between level
-                    player.healed(player.hp_max)
+                    player.healed(player.hit_points_max)
                     # Reset player's state
                     player.new_turn()
                 self.play(StartScreen.load_level(self.level_id, team))

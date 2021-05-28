@@ -59,7 +59,7 @@ class Sidebar:
         # TODO : this method is also defined in menu_creator_manager module.
         #  It should be moved into a dedicated file to be shared.
         """
-        Returns the color that should be used to display the hp bar of a player according to the
+        Return the color that should be used to display the hp bar of a player according to the
         ratio hit points / hit points max.
 
         Keyword arguments:
@@ -173,7 +173,7 @@ class Sidebar:
             # HP if it's a destroyable entity
             if isinstance(hovered_entity, Destroyable):
                 hit_points: int = hovered_entity.hit_points
-                hit_points_max: int = hovered_entity.hp_max
+                hit_points_max: int = hovered_entity.hit_points_max
                 hit_points_pre_text: pygame.Surface = \
                     fonts['ITEM_FONT_STRONG'].render("HP : ", True, color)
                 text_position: Position = (

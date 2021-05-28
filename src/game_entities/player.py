@@ -28,13 +28,13 @@ class Player(Character):
     """
 
     """
-    def __init__(self, name: str, sprite: Union[str, pygame.Surface], hp: int, defense: int,
-                 res: int, strength: int, classes: Sequence[str], equipments: list[Equipment],
+    def __init__(self, name: str, sprite: Union[str, pygame.Surface], hit_points: int, defense: int,
+                 resistance: int, strength: int, classes: Sequence[str], equipments: list[Equipment],
                  race: str, gold: int, lvl: int, skills: Sequence[Skill],
                  alterations: list[Alteration], complementary_sprite_link: str = None):
-        super().__init__(name, (-1, -1), sprite, hp, defense, res, strength,
-                           classes, equipments, 'MANUAL', lvl, skills, alterations,
-                           race, gold, {}, complementary_sprite_link)
+        super().__init__(name, (-1, -1), sprite, hit_points, defense, resistance, strength,
+                         classes, equipments, 'MANUAL', lvl, skills, alterations,
+                         race, gold, {}, complementary_sprite_link)
         self.state: PlayerState = PlayerState.WAITING_SELECTION
         self.old_position: tuple[int, int] = (-1, -1)
         self._selected: bool = False

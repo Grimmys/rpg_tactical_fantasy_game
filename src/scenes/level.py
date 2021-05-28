@@ -317,7 +317,7 @@ class Level:
             for ent in collection:
                 ent.display(screen)
                 if isinstance(ent, Destroyable):
-                    ent.display_hp(screen)
+                    ent.display_hit_points(screen)
 
         if self.watched_ent:
             self.show_possible_actions(self.watched_ent, screen)
@@ -569,9 +569,9 @@ class Level:
         player = Player(
             name=character.name,
             sprite=character.sprite,
-            hp=character.hit_points,
+            hit_points=character.hit_points,
             defense=character.defense,
-            res=character.resistance,
+            resistance=character.resistance,
             strength=character.strength,
             classes=character.classes,
             equipments=character.equipments,

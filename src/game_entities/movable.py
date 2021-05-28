@@ -55,12 +55,12 @@ class Movable(Destroyable):
             pygame.image.load(selected_sprite).convert_alpha(),
             (TILE_SIZE, TILE_SIZE))
 
-    def __init__(self, name: str, pos: tuple[int, int], sprite: Union[str, pygame.Surface],
-                 hp: int, defense: int, res: int, max_moves: int, strength: int,
+    def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface],
+                 hit_points: int, defense: int, resistance: int, max_moves: int, strength: int,
                  attack_kind: str, strategy: str, lvl: int = 1,
                  skills: Sequence[Skill] = None, alterations: Sequence[Alteration] = None,
                  complementary_sprite_link: str = None) -> None:
-        super().__init__(name, pos, sprite, hp, defense, res)
+        super().__init__(name, position, sprite, hit_points, defense, resistance)
         if skills is None:
             skills = []
         if alterations is None:
@@ -479,7 +479,7 @@ class Movable(Destroyable):
 
         # Save stats
         hit_points_max: etree.SubElement = etree.SubElement(tree, 'hp')
-        hit_points_max.text = str(self.hp_max)
+        hit_points_max.text = str(self.hit_points_max)
         atk: etree.SubElement = etree.SubElement(tree, 'strength')
         atk.text = str(self.strength)
         defense: etree.SubElement = etree.SubElement(tree, 'defense')
