@@ -1,8 +1,8 @@
 """
 Defines ItemButton class, a special Button used to represent items on an interface.
 """
-from enum import Enum
-from typing import List, Union
+
+from typing import Callable
 
 import pygame
 
@@ -26,9 +26,7 @@ class ItemButton(Button):
     to display the name of the item and other data.
     
     Keyword attributes:
-    method_id -- the id permitting to know the function that should be called on click
-    arguments -- a data structure containing any argument that can be useful to send to
-    the function called on click
+    callback -- the reference to the function that should be call after a click
     size -- the size of the button following the format "(width, height)"
     position -- the position of the element on the screen
     item -- the concerned Item
@@ -42,7 +40,7 @@ class ItemButton(Button):
     item -- the concerned Item
     disabled -- a boolean value indicating whether the button can be triggered or not
     """
-    def __init__(self, method_id, arguments, size: tuple[int, int], position: Position, item: Item,
+    def __init__(self, callback, size: tuple[int, int], position: Position, item: Item,
                  margin: Margin, price: int = 0, quantity: int = 0,
                  disabled: bool = False) -> None:
         name: str = ""
@@ -72,16 +70,16 @@ class ItemButton(Button):
                                                     frame_size[1] - padding * 2)),
                             (frame_position[0] + padding, frame_position[1] + padding))
 
-        name_rendering: pygame.Surface = fonts['ITEM_FONT'].render(name, 1, BLACK)
+        name_rendering: pygame.Surface = fonts['ITEM_FONT'].render(name, True, BLACK)
         nb_lines: int = 2
         if price_text:
-            price_rendering = fonts['ITEM_FONT'].render(price_text, 1, BLACK)
+            price_rendering = fonts['ITEM_FONT'].render(price_text, True, BLACK)
             item_frame.blit(price_rendering,
                             (frame.get_width() + padding * 2,
                              2 * item_frame.get_height() / 3 - fonts['ITEM_FONT'].get_height() / 2))
             nb_lines = 3
         if quantity_text:
-            quantity_rendering = fonts['ITEM_FONT'].render(quantity_text, 1, BLACK)
+            quantity_rendering = fonts['ITEM_FONT'].render(quantity_text, True, BLACK)
             item_frame.blit(quantity_rendering,
                             (item_frame.get_width() - padding * 2 - quantity_rendering.get_width(),
                              2 * item_frame.get_height() / 3 - fonts['ITEM_FONT'].get_height() / 2))
@@ -100,17 +98,18 @@ class ItemButton(Button):
                                                           frame_size[1] - padding * 2)),
                                   (frame_position[0] + padding, frame_position[1] + padding))
             name_rendering_hover: pygame.Surface = fonts['ITEM_FONT_HOVER'].render(name,
-                                                                                   1, MIDNIGHT_BLUE)
+                                                                                   True,
+                                                                                   MIDNIGHT_BLUE)
             nb_lines = 3 if price_text or quantity_text else 2
             if price_text:
-                price_rendering_hover = fonts['ITEM_FONT_HOVER'].render(price_text, 1,
+                price_rendering_hover = fonts['ITEM_FONT_HOVER'].render(price_text, True,
                                                                         MIDNIGHT_BLUE)
                 item_frame_hover.blit(price_rendering_hover,
                                       (frame.get_width() + padding * 2,
                                        2 * item_frame.get_height() / 3
                                        - fonts['ITEM_FONT_HOVER'].get_height() / 2))
             if quantity_text:
-                quantity_rendering = fonts['ITEM_FONT_HOVER'].render(quantity_text, 1,
+                quantity_rendering = fonts['ITEM_FONT_HOVER'].render(quantity_text, True,
                                                                      MIDNIGHT_BLUE)
                 item_frame_hover.blit(quantity_rendering,
                                       (item_frame.get_width() - padding * 2
@@ -122,12 +121,12 @@ class ItemButton(Button):
                                    item_frame.get_height() / nb_lines -
                                    fonts['ITEM_FONT_HOVER'].get_height() / 2))
 
-        super().__init__(method_id, arguments, size, position, item_frame, item_frame_hover, margin,
+        super().__init__(callback, size, position, item_frame, item_frame_hover, margin,
                          linked_object=item)
         self.item: Item = item
         self.disabled: bool = disabled
 
-    def action_triggered(self) -> Union[tuple[Enum, tuple[Position, any, List[any]]], bool]:
+    def action_triggered(self) -> Callable:
         """
         Method that should be called after a click.
 
@@ -135,5 +134,5 @@ class ItemButton(Button):
         request if there is no reference to an Item or if the button is disabled.
         """
         if not self.item or self.disabled:
-            return False
+            return lambda: None
         return super().action_triggered()

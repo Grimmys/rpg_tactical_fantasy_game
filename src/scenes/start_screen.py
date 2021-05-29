@@ -20,7 +20,7 @@ from src.game_entities.movable import Movable
 
 class StartScreen:
     """
-    This class is the initial scene of the game, handling all kind of pyame events directly
+    This class is the initial scene of the game, handling all kind of pygame events directly
     received from the main file.
     Also manage the display of different menus, the ability to read and edit configuration files
     or saved games and the request to quit the game.
@@ -70,6 +70,8 @@ class StartScreen:
         StartScreen.load_options()
 
         self.exit: bool = False
+
+        menu_creator_manager.close_function = self.close_active_menu
 
     @staticmethod
     def load_options():
@@ -137,6 +139,7 @@ class StartScreen:
         flags = pygame.FULLSCREEN if StartScreen.screen_size == 2 else 0
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), flags)
         self.level = level
+        menu_creator_manager.close_function = self.level.close_active_menu
 
     def update_state(self) -> None:
         """
@@ -161,8 +164,9 @@ class StartScreen:
                 # TODO: Game win dialog?
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
+                menu_creator_manager.close_function = self.close_active_menu
 
-    def close_active_menu(self):
+    def close_active_menu(self) -> None:
         """
         Replace the active menu by the first menu in background if there is any.
         """
@@ -236,8 +240,7 @@ class StartScreen:
         as the new active menu.
         """
         self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_load_menu(self.load_game,
-                                                                 self.close_active_menu)
+        self.active_menu = menu_creator_manager.create_load_menu(self.load_game)
 
     def options_menu(self) -> None:
         """
@@ -249,8 +252,7 @@ class StartScreen:
         self.active_menu = menu_creator_manager.create_options_menu(
             {'move_speed': int(self.read_options_file('move_speed')),
              'screen_size': int(self.read_options_file('screen_size'))},
-            self.modify_option_value,
-            self.close_active_menu)
+            self.modify_option_value)
 
     def exit_game(self) -> None:
         """

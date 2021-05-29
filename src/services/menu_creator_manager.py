@@ -1,12 +1,12 @@
 """
 Define functions creating a specific menu enveloping data from parameters.
 """
-from enum import Enum
+
 from typing import Sequence, Union, Callable
 
 import pygame
 
-from src.constants import TILE_SIZE, ITEM_MENU_WIDTH, UNFINAL_ACTION, \
+from src.constants import TILE_SIZE, ITEM_MENU_WIDTH, \
     ORANGE, WHITE, ITEM_BUTTON_SIZE_EQ, \
     EQUIPMENT_MENU_WIDTH, TRADE_MENU_WIDTH, GREEN, YELLOW, RED, \
     DARK_GREEN, GOLD, TURQUOISE, STATUS_MENU_WIDTH, \
@@ -42,6 +42,8 @@ from src.services.menus import BuyMenu, SellMenu, InventoryMenu, EquipmentMenu, 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
+close_function: Union[Callable, None] = None
+
 
 def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) -> InfoBox:
     """
@@ -69,10 +71,12 @@ def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) ->
     entries.append(entry)
 
     return InfoBox("Shop - Buying", "imgs/interface/PopUpMenu.png", entries, id_type=BuyMenu,
-                   width=ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+                   width=ITEM_MENU_WIDTH, close_button=lambda: close_function(False),
+                   title_color=ORANGE)
 
 
-def create_inventory_menu(items: Sequence[Item], gold: int, is_to_sell: bool = False) -> InfoBox:
+def create_inventory_menu(items: Sequence[Item], gold: int,
+                          is_to_sell: bool = False) -> InfoBox:
     """
     Return the interface of a player inventory.
 
@@ -105,7 +109,8 @@ def create_inventory_menu(items: Sequence[Item], gold: int, is_to_sell: bool = F
     menu_id = SellMenu if is_to_sell else InventoryMenu
     title_color = ORANGE if is_to_sell else WHITE
     return InfoBox(title, "imgs/interface/PopUpMenu.png", entries, id_type=menu_id,
-                   width=ITEM_MENU_WIDTH, close_button=UNFINAL_ACTION, title_color=title_color)
+                   width=ITEM_MENU_WIDTH, close_button=lambda: close_function(False),
+                   title_color=title_color)
 
 
 def create_equipment_menu(equipments: Sequence[Equipment]) -> InfoBox:
@@ -133,7 +138,7 @@ def create_equipment_menu(equipments: Sequence[Equipment]) -> InfoBox:
             row.append(entry)
         entries.append(row)
     return InfoBox("Equipment", "imgs/interface/PopUpMenu.png", entries, id_type=EquipmentMenu,
-                   width=EQUIPMENT_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   width=EQUIPMENT_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
 def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
@@ -202,7 +207,7 @@ def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
     menu_id = TradeMenu
     title_color = WHITE
     return InfoBox(title, "imgs/interface/PopUpMenu.png", entries, id_type=menu_id,
-                   width=TRADE_MENU_WIDTH, close_button=UNFINAL_ACTION,
+                   width=TRADE_MENU_WIDTH, close_button=lambda: close_function(False),
                    separator=True, title_color=title_color)
 
 
@@ -288,7 +293,7 @@ def create_status_menu(player: Player) -> InfoBox:
         entries[j].append({})
 
     return InfoBox("Status", "imgs/interface/PopUpMenu.png", entries, id_type=StatusMenu,
-                   width=STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   width=STATUS_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
 def create_player_menu(player: Player, buildings: Sequence[Building],
@@ -396,10 +401,11 @@ def create_diary_menu(entries: Entries) -> InfoBox:
     entries -- the entries data structure containing all the data needed to build the interface
     """
     return InfoBox("Diary", "imgs/interface/PopUpMenu.png", entries, width=BATTLE_SUMMARY_WIDTH,
-                   close_button=UNFINAL_ACTION)
+                   close_button=lambda: close_function(False))
 
 
-def create_main_menu(is_initialization_phase: bool, position: Position) -> InfoBox:
+def create_main_menu(buttons_callback: dict[str, Callable],
+                     is_initialization_phase: bool, position: Position) -> InfoBox:
     """
     Return the interface of the main level menu.
 
@@ -410,14 +416,14 @@ def create_main_menu(is_initialization_phase: bool, position: Position) -> InfoB
     """
     # Transform pos tuple into rect
     tile = pygame.Rect(position[0], position[1], 1, 1)
-    entries = [[{'name': 'Save', 'id': MainMenu.SAVE}],
-               [{'name': 'Suspend', 'id': MainMenu.SUSPEND}]]
+    entries = [[{'name': 'Save', 'callback': buttons_callback['save']}],
+               [{'name': 'Suspend', 'callback': buttons_callback['suspend']}]]
 
     if is_initialization_phase:
-        entries.append([{'name': 'Start', 'id': MainMenu.START}])
+        entries.append([{'name': 'Start', 'callback': buttons_callback['start']}])
     else:
-        entries.append([{'name': 'Diary', 'id': MainMenu.DIARY}]),
-        entries.append([{'name': 'End Turn', 'id': MainMenu.END_TURN}])
+        entries.append([{'name': 'Diary', 'callback': buttons_callback['diary']}]),
+        entries.append([{'name': 'End Turn', 'callback': buttons_callback['end_turn']}])
 
     for row in entries:
         for entry in row:
@@ -444,7 +450,7 @@ def create_item_shop_menu(item_button_position: Position, item: Item) -> InfoBox
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
 
 
 def create_item_sell_menu(item_button_position: Position, item: Item) -> InfoBox:
@@ -464,7 +470,7 @@ def create_item_sell_menu(item_button_position: Position, item: Item) -> InfoBox
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
 
 
 def create_trade_item_menu(item_button_position: Position,
@@ -492,7 +498,7 @@ def create_trade_item_menu(item_button_position: Position,
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
 
 
 def create_item_menu(item_button_position: Position, item: Item,
@@ -527,7 +533,7 @@ def create_item_menu(item_button_position: Position, item: Item,
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=UNFINAL_ACTION)
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
 
 
 def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
@@ -538,7 +544,7 @@ def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
     stat_name -- the name of the statistic
     stat_value -- the value of the statistic
     """
-    return [{'type': 'text', 'text': stat_name + ' : ', 'font': fonts['ITEM_DESC_FONT'],
+    return [{'type': 'text', 'text': f'{stat_name} : ', 'font': fonts['ITEM_DESC_FONT'],
              'margin': (0, 0, 0, 100)},
             {'type': 'text', 'text': stat_value, 'font': fonts['ITEM_DESC_FONT'],
              'margin': (0, 100, 0, 0)}]
@@ -593,7 +599,7 @@ def create_item_description_menu(item: Item) -> InfoBox:
             entries.append(create_item_description_stat('EFFECT', effect.get_formatted_desc()))
 
     return InfoBox(item_title, "imgs/interface/PopUpMenu.png", entries, width=ITEM_INFO_MENU_WIDTH,
-                   close_button=UNFINAL_ACTION)
+                   close_button=lambda: close_function(False))
 
 
 def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
@@ -610,7 +616,7 @@ def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
                  'font': fonts['ITEM_DESC_FONT'], 'margin': (0, 0, 10, 0), 'color': ORANGE}]]
 
     return InfoBox(str(alteration), "imgs/interface/PopUpMenu.png", entries,
-                   width=STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   width=STATUS_INFO_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
 def create_skill_info_menu(skill: Skill) -> InfoBox:
@@ -625,7 +631,7 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
                [{'type': 'text', 'text': '', 'margin': (0, 0, 10, 0)}]]
 
     return InfoBox(skill.formatted_name, "imgs/interface/PopUpMenu.png", entries,
-                   width=STATUS_INFO_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   width=STATUS_INFO_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
 def create_status_entity_menu(entity: Entity) -> InfoBox:
@@ -660,8 +666,9 @@ def create_status_entity_menu(entity: Entity) -> InfoBox:
                                                      'color': DARK_GREEN,
                                                      'margin': (10, 0, 10, 0)}, {}],
                [{'type': 'text', 'text': 'HP :'},
-                {'type': 'text', 'text': str(entity.hit_points) + ' / ' + str(entity.hit_points_max),
-                 'color': determine_hp_color(entity.hit_points, entity.hit_points_max)}, {}, {}, {}],
+                {'type': 'text', 'text': f'{entity.hit_points} / {entity.hit_points_max}',
+                 'color': determine_hp_color(entity.hit_points, entity.hit_points_max)},
+                {}, {}, {}],
                [{'type': 'text', 'text': 'MOVE :'},
                 {'type': 'text', 'text': str(entity.max_moves)}, {}, {}, {}],
                [{'type': 'text', 'text': 'ATTACK :'},
@@ -698,7 +705,7 @@ def create_status_entity_menu(entity: Entity) -> InfoBox:
         i += 1
 
     return InfoBox(str(entity), "imgs/interface/PopUpMenu.png", entries, StatusMenu,
-                   FOE_STATUS_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   FOE_STATUS_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
 def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
@@ -711,7 +718,8 @@ def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
     entries = [[{'type': 'text', 'text': talk, 'font': fonts['ITEM_DESC_FONT']}]
                for talk in dialog_element['talks']]
     return InfoBox(dialog_element['title'], "imgs/interface/PopUpMenu.png", entries,
-                   width=DIALOG_WIDTH, close_button=UNFINAL_ACTION, title_color=ORANGE)
+                   width=DIALOG_WIDTH, close_button=lambda: close_function(False),
+                   title_color=ORANGE)
 
 
 def create_reward_menu(mission: Mission) -> InfoBox:
@@ -730,7 +738,7 @@ def create_reward_menu(mission: Mission) -> InfoBox:
         entries.append([{'type': 'text', 'text': f'Earned item : {item}'}])
 
     return InfoBox(mission.description, "imgs/interface/PopUpMenu.png", entries,
-                   width=REWARD_MENU_WIDTH, close_button=UNFINAL_ACTION)
+                   width=REWARD_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
 def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
@@ -771,8 +779,7 @@ def load_parameter_entry(formatted_name: str, values: Sequence[dict[str, int]], 
     return entry
 
 
-def create_options_menu(parameters: dict[str, int], modify_option_function: Callable,
-                        close_function: Callable) -> InfoBox:
+def create_options_menu(parameters: dict[str, int], modify_option_function: Callable) -> InfoBox:
     """
     Return the interface of the game options menu.
 
@@ -795,7 +802,7 @@ def create_options_menu(parameters: dict[str, int], modify_option_function: Call
                    width=START_MENU_WIDTH, close_button=close_function)
 
 
-def create_load_menu(load_game_function: Callable, close_function: Callable) -> InfoBox:
+def create_load_menu(load_game_function: Callable) -> InfoBox:
     """
     Return the interface of the load game menu.
     """
@@ -809,7 +816,7 @@ def create_load_menu(load_game_function: Callable, close_function: Callable) -> 
                    width=START_MENU_WIDTH, close_button=close_function)
 
 
-def create_save_menu() -> InfoBox:
+def create_save_menu(save_game_function: Callable) -> InfoBox:
     """
     Return the interface of the save game menu
     """
@@ -817,7 +824,8 @@ def create_save_menu() -> InfoBox:
 
     for i in range(SAVE_SLOTS):
         entries.append(
-            [{'type': 'button', 'name': 'Save ' + str(i + 1), 'id': SaveMenu.SAVE, 'args': [i]}])
+            [{'type': 'button', 'name': 'Save ' + str(i + 1),
+              'callback': lambda slot_id=i: save_game_function(slot_id)}])
 
     return InfoBox("Save Game", "imgs/interface/PopUpMenu.png", entries, id_type=SaveMenu,
-                   width=START_MENU_WIDTH, close_button=1)
+                   width=START_MENU_WIDTH, close_button=lambda: close_function(False))

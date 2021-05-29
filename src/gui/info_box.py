@@ -117,7 +117,7 @@ class InfoBox:
                         font = fonts['BUTTON_FONT']
                     else:
                         font = entry['font']
-                    name = font.render(entry['name'], 1, WHITE)
+                    name = font.render(entry['name'], True, WHITE)
                     sprite = pygame.transform.scale(
                         pygame.image.load(BUTTON_INACTIVE).convert_alpha(), size)
                     sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
@@ -127,16 +127,8 @@ class InfoBox:
                     sprite_hover.blit(name, (sprite_hover.get_width() // 2 - name.get_width() // 2,
                                              sprite_hover.get_height() // 2 - name.get_height() // 2
                                              ))
-                    if 'args' not in entry:
-                        entry['args'] = []
-                    if 'callback' not in entry:
-                        # TODO: remove this block when all buttons will have replaced their id
-                        #  by a callback reference
-                        entry['callback'] = entry['id']
-
-                    print(entry['callback'])
                     element.append(
-                        Button(entry['callback'], entry['args'], size, (0, 0), sprite, sprite_hover,
+                        Button(entry['callback'], size, (0, 0), sprite, sprite_hover,
                                entry['margin']))
                 elif entry['type'] == 'parameter_button':
                     name = fonts['ITEM_FONT'].render(entry['name'] + ' ' +
@@ -161,11 +153,12 @@ class InfoBox:
                                                  entry['values'], entry['current_value_ind'],
                                                  entry['name']))
                 elif entry['type'] == 'text_button':
-                    name = fonts['ITEM_FONT'].render(entry['name'], 1, entry['color'])
-                    name_hover = fonts['ITEM_FONT'].render(entry['name'], 1, entry['color_hover'])
+                    name = fonts['ITEM_FONT'].render(entry['name'], True, entry['color'])
+                    name_hover = fonts['ITEM_FONT'].render(entry['name'], True,
+                                                           entry['color_hover'])
                     if 'obj' not in entry:
                         entry['obj'] = None
-                    element.append(Button(entry['id'], [], name.get_size(), (0, 0), name,
+                    element.append(Button(entry['id'], name.get_size(), (0, 0), name,
                                           name_hover, entry['margin'], entry['obj']))
 
                 elif entry['type'] == 'item_button':
@@ -179,9 +172,7 @@ class InfoBox:
                         entry['price'] = 0
                     if 'quantity' not in entry:
                         entry['quantity'] = 0
-                    if 'args' not in entry:
-                        entry['args'] = []
-                    element.append(ItemButton(entry['id'], entry['args'], button_size,
+                    element.append(ItemButton(entry['id'], button_size,
                                               (0, 0), entry['item'], entry['margin'],
                                               entry['price'], entry['quantity'], disabled))
                 elif entry['type'] == 'text':
@@ -236,7 +227,7 @@ class InfoBox:
                                      sprite_hover.get_height() // 2 - name.get_height() // 2))
 
             self.elements.append([close_button_height,
-                                  Button(close_button, [close_button],
+                                  Button(close_button,
                                          CLOSE_BUTTON_SIZE, (0, 0), sprite,
                                          sprite_hover, (CLOSE_BUTTON_MARGIN_TOP, 0, 0, 0))])
         return height

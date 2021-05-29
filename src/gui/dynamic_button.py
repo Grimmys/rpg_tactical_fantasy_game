@@ -51,7 +51,7 @@ class DynamicButton(Button):
                  sprite: pygame.Surface, sprite_hover: pygame.Surface, margin: Margin,
                  values: Sequence[any], current_value_index: int, base_title: str,
                  linked_object: any = None) -> None:
-        super().__init__(callback, [], size, position, sprite, sprite_hover,
+        super().__init__(callback, size, position, sprite, sprite_hover,
                          margin, linked_object)
         self.values: Sequence[any] = values
         self.current_value_index: int = current_value_index
