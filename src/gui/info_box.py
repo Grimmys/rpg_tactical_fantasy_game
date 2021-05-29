@@ -3,7 +3,7 @@ Defines InfoBox class, an helper to draw any kind of pop-up (menu or informative
 """
 
 from enum import Enum
-from typing import Union, Sequence, List, Type
+from typing import Union, Sequence, List, Type, Callable
 
 import pygame
 
@@ -131,9 +131,13 @@ class InfoBox:
                                              ))
                     if 'args' not in entry:
                         entry['args'] = []
+                    if 'callback' not in entry:
+                        # TODO: remove this block when all buttons will have replaced their id
+                        #  by a callback reference
+                        entry['callback'] = entry['id']
 
                     element.append(
-                        Button(entry['id'], entry['args'], size, (0, 0), sprite, sprite_hover,
+                        Button(entry['callback'], entry['args'], size, (0, 0), sprite, sprite_hover,
                                entry['margin']))
                 elif entry['type'] == 'parameter_button':
                     name = fonts['ITEM_FONT'].render(entry['name'] + ' ' +
@@ -342,8 +346,9 @@ class InfoBox:
         for button in self.buttons:
             button.set_hover(button.get_rect().collidepoint(position))
 
-    def click(self, position: tuple[int, int]) -> Union[tuple[Enum, tuple[tuple[int, int],
-                                                                          any, list]], bool]:
+    def click(self, position: tuple[int, int]) -> Union[tuple[Union[Enum, Callable],
+                                                              tuple[tuple[int, int],
+                                                                    any, list]], bool]:
         """
         Handle the triggering of a click event.
         Return the data corresponding of the action that should be done if the click was done

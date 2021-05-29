@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 
-import pygame as pg
+import pygame
 from pygame.rect import Rect
 from random import randrange
 
@@ -11,7 +11,7 @@ from src.scenes.start_screen import StartScreen
 import src.gui.fonts as font
 from src.scenes.level import Level
 from src.game_entities.character import Character
-from src.services import load_from_xml_manager as Loader
+from src.services import load_from_xml_manager as loader
 
 NEW_GAME_BUTTON_POS = (210, 249)
 LOAD_GAME_BUTTON_POS = (210, 289)
@@ -28,7 +28,7 @@ class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestStartScreen, cls).setUpClass()
-        pg.init()
+        pygame.init()
         font.init_fonts()
         cls.save_url = "saves/main_save.xml"
         cls.level_class = Level
@@ -41,23 +41,23 @@ class TestStartScreen(unittest.TestCase):
                                 BUTTON_SIZE[0], BUTTON_SIZE[1]))
         cls.buttons.append(Rect(EXIT_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
                                 BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        races = Loader.load_races()
-        classes = Loader.load_classes()
+        races = loader.load_races()
+        classes = loader.load_classes()
         Character.init_data(races, classes)
 
     @staticmethod
     def generate_position(start_pos, end_pos):
         # Generate random pos in a rect having start_pos as top left corner
         # and end_pos as bottom right corner
-        pos = (randrange(start_pos[0], end_pos[0] + 1),
+        position = (randrange(start_pos[0], end_pos[0] + 1),
                randrange(start_pos[1], end_pos[1] + 1))
         # Print pos in case of test failure
-        print("Generated position : " + str(pos))
-        return pos
+        print("Generated position : " + str(position))
+        return position
 
     def setUp(self):
         # Window parameters
-        screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+        screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
         self.start_screen = StartScreen(screen)
         self.start_screen.display()
 
@@ -91,8 +91,8 @@ class TestStartScreen(unittest.TestCase):
             os.remove(self.save_url)
 
         # Generate random pos on load game button
-        pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
-        self.start_screen.click(LEFT_BUTTON, pos)
+        position = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsNone(self.start_screen.level)
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
@@ -110,12 +110,12 @@ class TestStartScreen(unittest.TestCase):
         shutil.copyfile("tests/test_saves/simple_save.xml", self.save_url)
 
         # Generate random pos on load game buttons
-        pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
-        self.start_screen.click(LEFT_BUTTON, pos)
+        position = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(LEFT_BUTTON, position)
         self.start_screen.display()
-        pos = self.generate_position(LOAD_FIRST_SLOT_BUTTON_POS,
+        position = self.generate_position(LOAD_FIRST_SLOT_BUTTON_POS,
                                      LOAD_FIRST_SLOT_BUTTON_POS + BUTTON_SIZE)
-        self.start_screen.click(LEFT_BUTTON, pos)
+        self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
         self.assertEqual(self.start_screen.level_id, 0)
@@ -134,8 +134,8 @@ class TestStartScreen(unittest.TestCase):
 
     def test_exit_game(self):
         # Generate random pos on exit game button
-        pos = self.generate_position(EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE)
-        self.assertEqual(self.start_screen.click(LEFT_BUTTON, pos), True)
+        position = self.generate_position(EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.assertEqual(self.start_screen.click(LEFT_BUTTON, position), True)
 
     def test_click_on_nothing(self):
         # Make a copy of the current window

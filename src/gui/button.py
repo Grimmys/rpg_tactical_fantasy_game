@@ -2,7 +2,7 @@
 Defines Button class, a BoxElement able to react to user actions.
 """
 from enum import Enum
-from typing import List
+from typing import List, Union, Callable
 
 import pygame
 
@@ -40,11 +40,12 @@ class Button(BoxElement):
     linked_object -- the game entity linked to the button if there is one,
     would be returned on click
     """
-    def __init__(self, method_id: Enum, arguments: List[any], size: tuple[int, int],
-                 position: Position, sprite: pygame.Surface, sprite_hover: pygame.Surface,
+    def __init__(self, method_id: Union[Enum, Callable], arguments: List[any],
+                 size: tuple[int, int], position: Position,
+                 sprite: pygame.Surface, sprite_hover: pygame.Surface,
                  margin: Margin, linked_object: any = None) -> None:
         super().__init__(position, None, margin)
-        self.method_id: Enum = method_id
+        self.method_id: Union[Enum, Callable] = method_id
         self.arguments: List[any] = arguments
         self.size: tuple[int, int] = size
         self.sprite = sprite
@@ -62,7 +63,7 @@ class Button(BoxElement):
         """
         self.content = self.sprite_hover if is_mouse_hover else self.sprite
 
-    def action_triggered(self) -> tuple[Enum, tuple[Position, any, List[any]]]:
+    def action_triggered(self) -> tuple[Union[Enum, Callable], tuple[Position, any, List[any]]]:
         """
         Method that should be called after a click.
 

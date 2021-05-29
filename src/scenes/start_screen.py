@@ -3,7 +3,7 @@ Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
 from enum import Enum
-from typing import Sequence, List, Union, TextIO, Type
+from typing import Sequence, List, Union, TextIO, Type, Callable
 
 import pygame
 from lxml import etree
@@ -56,7 +56,7 @@ class StartScreen:
                                                                  screen.get_size())
 
         # Creating menu
-        self.active_menu: InfoBox = menu_creator_manager.create_start_menu()
+        self.active_menu: InfoBox = menu_creator_manager.create_start_menu(self.new_game, self.load_menu, self.options_menu, self.exit_game)
         self.background_menus: List[tuple[InfoBox, bool]] = []
 
         # Memorize if a game is currently being performed
@@ -303,11 +303,12 @@ class StartScreen:
         else:
             print(f"Unknown action : {method_id}")
 
-    def execute_action(self, menu_type: Type[Enum], action: Union[tuple[Union
-                                                                 [StartMenu, OptionsMenu, LoadMenu],
-                                                                 tuple[Position,
-                                                                       any, List[
-                                                                           any]]], bool]) -> None:
+    @staticmethod
+    def execute_action(action: Union[tuple[Union
+                                                 [StartMenu, OptionsMenu, LoadMenu, Callable],
+                                                 tuple[Position,
+                                                       any, List[
+                                                           any]]], bool]) -> None:
         """
         Manager of actions related to a click on a button.
         Delegate the responsibility to execute the action to the dedicated handler.
@@ -320,23 +321,8 @@ class StartScreen:
         if not action:
             return
 
-        method_id = action[0]
-        arguments = action[1]
-
-        # Test if the action is a generic one (according to the method_id)
-        # Close menu : Active menu is closed
-        if method_id is GenericActions.CLOSE:
-            self.active_menu = self.background_menus.pop()[0] if self.background_menus else None
-            return
-
-        if menu_type is StartMenu:
-            self.main_menu_action(method_id, arguments)
-        elif menu_type is OptionsMenu:
-            StartScreen.options_menu_action(method_id, arguments)
-        elif menu_type is LoadMenu:
-            self.load_menu_action(method_id, arguments)
-        else:
-            print(f"Unknown menu : {menu_type}")
+        # Execute the action
+        action[0]()
 
     def motion(self, position: Position) -> None:
         """
@@ -367,7 +353,7 @@ class StartScreen:
         """
         if self.level is None:
             if button == 1:
-                self.execute_action(self.active_menu.type, self.active_menu.click(position))
+                StartScreen.execute_action(self.active_menu.click(position))
         else:
             self.level.click(button, position)
         return self.exit
