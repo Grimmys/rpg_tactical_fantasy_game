@@ -136,6 +136,7 @@ class InfoBox:
                         #  by a callback reference
                         entry['callback'] = entry['id']
 
+                    print(entry['callback'])
                     element.append(
                         Button(entry['callback'], entry['args'], size, (0, 0), sprite, sprite_hover,
                                entry['margin']))
@@ -143,7 +144,7 @@ class InfoBox:
                     name = fonts['ITEM_FONT'].render(entry['name'] + ' ' +
                                                      entry['values'][entry['current_value_ind']][
                                                          'label'],
-                                                     1, WHITE)
+                                                     True, WHITE)
                     raw_inactive_button = pygame.image.load(BUTTON_INACTIVE).convert_alpha()
                     base_sprite = pygame.transform.scale(raw_inactive_button, BUTTON_SIZE)
                     sprite = base_sprite.copy()

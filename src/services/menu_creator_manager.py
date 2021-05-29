@@ -733,15 +733,14 @@ def create_reward_menu(mission: Mission) -> InfoBox:
                    width=REWARD_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_start_menu(new_game_function: Callable, load_menu_function: Callable,
-                      options_menu_function: Callable, exit_game_function: Callable) -> InfoBox:
+def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
     """
     Return the interface of the main menu of the game (in the start screen).
     """
-    entries = [[{'name': 'New game', 'callback': lambda: new_game_function()}],
-               [{'name': 'Load game', 'callback': lambda: load_menu_function()}],
-               [{'name': 'Options', 'callback': lambda: options_menu_function()}],
-               [{'name': 'Exit game', 'callback': lambda: exit_game_function()}]]
+    entries = [[{'name': 'New game', 'callback': buttons_callback['new_game']}],
+               [{'name': 'Load game', 'callback': buttons_callback['load_menu']}],
+               [{'name': 'Options', 'callback': buttons_callback['options_menu']}],
+               [{'name': 'Exit game', 'callback': buttons_callback['exit_game']}]]
 
     for row in entries:
         for entry in row:
@@ -795,7 +794,7 @@ def create_options_menu(parameters: dict[str, int]) -> InfoBox:
                    width=START_MENU_WIDTH, close_button=1)
 
 
-def create_load_menu() -> InfoBox:
+def create_load_menu(load_game_function: Callable) -> InfoBox:
     """
     Return the interface of the load game menu.
     """
@@ -803,7 +802,7 @@ def create_load_menu() -> InfoBox:
 
     for i in range(SAVE_SLOTS):
         entries.append([{'type': 'button', 'name': 'Save ' + str(i + 1),
-                         'id': LoadMenu.LOAD, 'args': [i]}])
+                         'callback': lambda slot_id=i: load_game_function(slot_id)}])
 
     return InfoBox("Load Game", "imgs/interface/PopUpMenu.png", entries, id_type=LoadMenu,
                    width=START_MENU_WIDTH, close_button=1)

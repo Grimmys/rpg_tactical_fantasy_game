@@ -56,7 +56,10 @@ class StartScreen:
                                                                  screen.get_size())
 
         # Creating menu
-        self.active_menu: InfoBox = menu_creator_manager.create_start_menu(self.new_game, self.load_menu, self.options_menu, self.exit_game)
+        self.active_menu: InfoBox = menu_creator_manager.create_start_menu(
+            {'new_game': self.new_game, 'load_menu': self.load_menu,
+             'options_menu': self.options_menu, 'exit_game': self.exit_game}
+        )
         self.background_menus: List[tuple[InfoBox, bool]] = []
 
         # Memorize if a game is currently being performed
@@ -191,6 +194,7 @@ class StartScreen:
         Keyword arguments:
         game_id -- the id of the saved file that should be load
         """
+        print(game_id)
         try:
             save: TextIO = open(f"saves/save_{game_id}.xml", "r")
 
@@ -228,7 +232,7 @@ class StartScreen:
         as the new active menu.
         """
         self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_load_menu()
+        self.active_menu = menu_creator_manager.create_load_menu(self.load_game)
 
     def options_menu(self) -> None:
         """
@@ -304,17 +308,15 @@ class StartScreen:
             print(f"Unknown action : {method_id}")
 
     @staticmethod
-    def execute_action(action: Union[tuple[Union
-                                                 [StartMenu, OptionsMenu, LoadMenu, Callable],
-                                                 tuple[Position,
-                                                       any, List[
-                                                           any]]], bool]) -> None:
+    def execute_action(action: Union[tuple[Callable,
+                                           tuple[Position,
+                                                 any, List[
+                                                     any]]], bool]) -> None:
         """
-        Manager of actions related to a click on a button.
+        Manage actions related to a click on a button.
         Delegate the responsibility to execute the action to the dedicated handler.
 
         Keyword arguments:
-        menu_type -- the type of menu on which the click has been done
         action -- the data relative to the action that should been done (id to reference the method,
         arguments to send to the called method)
         """
