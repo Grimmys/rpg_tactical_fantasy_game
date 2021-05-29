@@ -18,9 +18,7 @@ class Button(BoxElement):
     Mouse motion is also handled: the button appearance can change according to current focus.
 
     Keyword arguments:
-    method_id -- the id permitting to know the function that should be called on click
-    arguments -- a data structure containing any argument that can be useful to send to
-    the function called on click
+    callback -- the reference to the function that should be call after a click
     size -- the size of the button following the format "(width, height)"
     position -- the position of the element on the screen
     sprite -- the pygame Surface corresponding to the sprite of the element
@@ -31,22 +29,19 @@ class Button(BoxElement):
     linked_object -- the game entity linked to the button if there is one
 
     Attributes:
-    method_id -- the id permitting to know which function should be called on click
-    arguments -- the data structure containing any argument that can be useful to send to
-    the function called on click
+    callback -- the reference to the function that should be call after a click
     sprite -- the pygame Surface corresponding to the sprite of the element
     sprite_hover -- the pygame Surface corresponding to the sprite of the element
     when it has the focus
     linked_object -- the game entity linked to the button if there is one,
     would be returned on click
     """
-    def __init__(self, method_id: Union[Enum, Callable], arguments: List[any],
+    def __init__(self, callback: Union[Enum, Callable],
                  size: tuple[int, int], position: Position,
                  sprite: pygame.Surface, sprite_hover: pygame.Surface,
                  margin: Margin, linked_object: any = None) -> None:
         super().__init__(position, None, margin)
-        self.method_id: Union[Enum, Callable] = method_id
-        self.arguments: List[any] = arguments
+        self.callback: Union[Enum, Callable] = callback
         self.size: tuple[int, int] = size
         self.sprite = sprite
         self.sprite_hover = sprite_hover
@@ -69,4 +64,4 @@ class Button(BoxElement):
 
         Return the callback that should be executed.
         """
-        return self.method_id
+        return self.callback
