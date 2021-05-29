@@ -296,9 +296,9 @@ def create_status_menu(player: Player) -> InfoBox:
                    width=STATUS_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
-def create_player_menu(player: Player, buildings: Sequence[Building],
-                       interactable_entities: Sequence[Entity], missions: Sequence[Mission],
-                       foes: Sequence[Foe]) -> InfoBox:
+def create_player_menu(buttons_callback: dict[str, Callable], player: Player,
+                       buildings: Sequence[Building], interactable_entities: Sequence[Entity],
+                       missions: Sequence[Mission], foes: Sequence[Foe]) -> InfoBox:
     """
     Return the interface of a player menu.
 
@@ -310,10 +310,10 @@ def create_player_menu(player: Player, buildings: Sequence[Building],
     missions -- the missions of the current level
     foes -- the foes that are still alive on the current level
     """
-    entries = [[{'name': 'Inventory', 'id': CharacterMenu.INV}],
-               [{'name': 'Equipment', 'id': CharacterMenu.EQUIPMENT}],
-               [{'name': 'Status', 'id': CharacterMenu.STATUS}],
-               [{'name': 'Wait', 'id': CharacterMenu.WAIT}]]
+    entries = [[{'name': 'Inventory', 'callback': buttons_callback['inventory']}],
+               [{'name': 'Equipment', 'callback': buttons_callback['equipment']}],
+               [{'name': 'Status', 'callback': buttons_callback['status']}],
+               [{'name': 'Wait', 'callback': buttons_callback['wait']}]]
 
     # Options flags
     chest_option = False
@@ -328,48 +328,50 @@ def create_player_menu(player: Player, buildings: Sequence[Building],
     if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
         for building in buildings:
             if building.position == case_pos:
-                entries.insert(0, [{'name': 'Visit', 'id': CharacterMenu.VISIT}])
+                entries.insert(0, [{'name': 'Visit', 'callback': buttons_callback['visit']}])
                 break
 
-    for ent in interactable_entities:
-        if abs(ent.position[0] - player.position[0]) + abs(
-                ent.position[1] - player.position[1]) == TILE_SIZE:
-            if isinstance(ent, Player):
+    for entity in interactable_entities:
+        if abs(entity.position[0] - player.position[0]) + abs(
+                entity.position[1] - player.position[1]) == TILE_SIZE:
+            if isinstance(entity, Player):
                 if not trade_option:
-                    entries.insert(0, [{'name': 'Trade', 'id': CharacterMenu.TRADE}])
+                    entries.insert(0, [{'name': 'Trade', 'callback': buttons_callback['trade']}])
                     trade_option = True
-            elif isinstance(ent, Chest):
-                if not ent.opened and not chest_option:
-                    entries.insert(0, [{'name': 'Open Chest', 'id': CharacterMenu.OPEN_CHEST}])
+            elif isinstance(entity, Chest):
+                if not entity.opened and not chest_option:
+                    entries.insert(0, [{'name': 'Open Chest', 'callback': buttons_callback['open_chest']}]
+                                   )
                     chest_option = True
                 if 'lock_picking' in player.skills and not pick_lock_option:
-                    entries.insert(0, [{'name': 'Pick Lock', 'id': CharacterMenu.PICK_LOCK}])
+                    entries.insert(0, [{'name': 'Pick Lock', 'callback': buttons_callback['pick_lock']}])
                     pick_lock_option = True
-            elif isinstance(ent, Door):
+            elif isinstance(entity, Door):
                 if not door_option:
-                    entries.insert(0, [{'name': 'Open Door', 'id': CharacterMenu.OPEN_DOOR}])
+                    entries.insert(0, [{'name': 'Open Door', 'callback': buttons_callback['open_door']}])
                     door_option = True
                 if 'lock_picking' in player.skills and not pick_lock_option:
-                    entries.insert(0, [{'name': 'Pick Lock', 'id': CharacterMenu.PICK_LOCK}])
+                    entries.insert(0, [{'name': 'Pick Lock', 'callback': buttons_callback['pick_lock']}])
                     pick_lock_option = True
-            elif isinstance(ent, Portal):
+            elif isinstance(entity, Portal):
                 if not portal_option:
-                    entries.insert(0, [{'name': 'Use Portal', 'id': CharacterMenu.USE_PORTAL}])
+                    entries.insert(0, [{'name': 'Use Portal', 'callback': buttons_callback['use_portal']}]
+                                   )
                     portal_option = True
-            elif isinstance(ent, Fountain):
+            elif isinstance(entity, Fountain):
                 if not fountain_option:
-                    entries.insert(0, [{'name': 'Drink', 'id': CharacterMenu.DRINK}])
+                    entries.insert(0, [{'name': 'Drink', 'callback': buttons_callback['drink']}])
                     fountain_option = True
-            elif isinstance(ent, Character):
+            elif isinstance(entity, Character):
                 if not talk_option:
-                    entries.insert(0, [{'name': 'Talk', 'id': CharacterMenu.TALK}])
+                    entries.insert(0, [{'name': 'Talk', 'callback': buttons_callback['talk']}])
                     talk_option = True
 
     # Check if player is on mission position
     for mission in missions:
         if mission.type is MissionType.POSITION or mission.type is MissionType.TOUCH_POSITION:
             if mission.is_position_valid(player.position):
-                entries.insert(0, [{'name': 'Take', 'id': CharacterMenu.TAKE}])
+                entries.insert(0, [{'name': 'Take', 'callback': buttons_callback['take']}])
 
     # Check if player could attack something, according to weapon range
     if player.can_attack():
@@ -379,7 +381,7 @@ def create_player_menu(player: Player, buildings: Sequence[Building],
             for reach in w_range:
                 if abs(foe.position[0] - player.position[0]) + abs(
                         foe.position[1] - player.position[1]) == TILE_SIZE * reach:
-                    entries.insert(0, [{'name': 'Attack', 'id': CharacterMenu.ATTACK}])
+                    entries.insert(0, [{'name': 'Attack', 'callback': buttons_callback['attack']}])
                     end = True
                     break
             if end:
