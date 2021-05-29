@@ -2,7 +2,7 @@
 Define functions creating a specific menu enveloping data from parameters.
 """
 from enum import Enum
-from typing import Sequence, Union
+from typing import Sequence, Union, Callable
 
 import pygame
 
@@ -733,14 +733,15 @@ def create_reward_menu(mission: Mission) -> InfoBox:
                    width=REWARD_MENU_WIDTH, close_button=UNFINAL_ACTION)
 
 
-def create_start_menu() -> InfoBox:
+def create_start_menu(new_game_function: Callable, load_menu_function: Callable,
+                      options_menu_function: Callable, exit_game_function: Callable) -> InfoBox:
     """
     Return the interface of the main menu of the game (in the start screen).
     """
-    entries = [[{'name': 'New game', 'id': StartMenu.NEW_GAME}],
-               [{'name': 'Load game', 'id': StartMenu.LOAD_GAME}],
-               [{'name': 'Options', 'id': StartMenu.OPTIONS}],
-               [{'name': 'Exit game', 'id': StartMenu.EXIT}]]
+    entries = [[{'name': 'New game', 'callback': lambda: new_game_function()}],
+               [{'name': 'Load game', 'callback': lambda: load_menu_function()}],
+               [{'name': 'Options', 'callback': lambda: options_menu_function()}],
+               [{'name': 'Exit game', 'callback': lambda: exit_game_function()}]]
 
     for row in entries:
         for entry in row:
