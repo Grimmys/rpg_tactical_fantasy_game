@@ -5,7 +5,7 @@ Generally use as a parameter button.
 """
 
 from enum import Enum
-from typing import Sequence, List
+from typing import Sequence, List, Callable
 
 import pygame
 
@@ -26,7 +26,7 @@ class DynamicButton(Button):
     each different value of the sequence.
 
     Keyword arguments:
-    method_id -- the id permitting to know the function that should be called on click
+    callback -- the reference to the function that should be call after a click
     size -- the size of the button following the format "(width, height)"
     position -- the position of the element on the screen
     sprite -- the pygame Surface corresponding to the sprite of the element
@@ -47,11 +47,11 @@ class DynamicButton(Button):
     (it could be the name of the dynamic button in a way)
     """
 
-    def __init__(self, method_id: Enum, size: tuple[int, int], position: Position,
+    def __init__(self, callback: Callable, size: tuple[int, int], position: Position,
                  sprite: pygame.Surface, sprite_hover: pygame.Surface, margin: Margin,
                  values: Sequence[any], current_value_index: int, base_title: str,
                  linked_object: any = None) -> None:
-        super().__init__(method_id, [], size, position, sprite, sprite_hover,
+        super().__init__(callback, [], size, position, sprite, sprite_hover,
                          margin, linked_object)
         self.values: Sequence[any] = values
         self.current_value_index: int = current_value_index
@@ -85,19 +85,20 @@ class DynamicButton(Button):
         # Force display update
         self.set_hover(True)
 
-    def action_triggered(self) -> tuple[Enum, tuple[Position, any, List[any]]]:
+    def action_triggered(self) -> Callable:
         """
         Method that should be called after a click.
         Change the current value of the button to the next one in the sequence of values.
         If the end of the sequence is reach, the iteration restarts at the first value.
 
-        Return the id of the linked method and a tuple containing the position of the button,
-        the linked object, and a list containing the current value of the dynamic button.
+        Return a lambda containing the function that should be called with the current value of the
+        dynamic button as an argument.
         """
         # Search for next value
         self.current_value_index += 1
         if self.current_value_index == len(self.values):
             self.current_value_index = 0
         self.__update_sprite()
-        self.arguments = [self.values[self.current_value_index]['value']]
-        return super().action_triggered()
+        current_value = self.values[self.current_value_index]['value']
+        function_to_call: Callable = super().action_triggered()
+        return lambda: function_to_call(current_value)

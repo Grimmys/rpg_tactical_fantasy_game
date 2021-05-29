@@ -63,11 +63,10 @@ class Button(BoxElement):
         """
         self.content = self.sprite_hover if is_mouse_hover else self.sprite
 
-    def action_triggered(self) -> tuple[Union[Enum, Callable], tuple[Position, any, List[any]]]:
+    def action_triggered(self) -> Callable:
         """
         Method that should be called after a click.
 
-        Return the id of the linked method and a tuple containing the position of the button,
-        the linked object, and any arguments that should be passed to the linked method
+        Return the callback that should be executed.
         """
-        return self.method_id, (self.position, self.linked_object, self.arguments)
+        return self.method_id

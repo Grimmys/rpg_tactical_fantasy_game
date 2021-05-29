@@ -250,7 +250,9 @@ class StartScreen:
         self.background_menus.append((self.active_menu, False))
         self.active_menu = menu_creator_manager.create_options_menu(
             {'move_speed': int(self.read_options_file('move_speed')),
-             'screen_size': int(self.read_options_file('screen_size'))}, self.close_active_menu)
+             'screen_size': int(self.read_options_file('screen_size'))},
+            self.modify_option_value,
+            self.close_active_menu)
 
     def exit_game(self) -> None:
         """
@@ -258,41 +260,22 @@ class StartScreen:
         """
         self.exit = True
 
-    def main_menu_action(self, method_id: StartMenu, arguments: Sequence[any]) -> None:
+    @staticmethod
+    def modify_option_value(option_name: str, option_value: int) -> None:
         """
-        Execute the method corresponding to the id provided for an action related to the main menu.
-        Currently, no arguments are required for any of the available methods.
 
         Keyword arguments:
-        method_id -- the id referencing the method that should be called
-        arguments -- the arguments that should be passed to the called method
-        (unused for the moment)
+        option_name --
+        option_value --
         """
-        # Execute action
-        if method_id is StartMenu.NEW_GAME:
-            self.new_game()
-        elif method_id is StartMenu.LOAD_GAME:
-            self.load_menu()
-        elif method_id is StartMenu.OPTIONS:
-            self.options_menu()
-        elif method_id is StartMenu.EXIT:
-            self.exit_game()
+        if option_name == "move_speed":
+            Movable.move_speed = option_value
+        elif option_name == "screen_size":
+            StartScreen.screen_size = option_value
         else:
-            print(f"Unknown action : {method_id}")
-
-    def load_menu_action(self, method_id: LoadMenu, arguments: Sequence[any]) -> None:
-        """
-        Execute the method corresponding to the id provided for an action related to the load menu.
-
-        Keyword arguments:
-        method_id -- the id referencing the method that should be called
-        arguments -- the arguments that should be passed to the called method
-        """
-        # Execute action
-        if method_id is LoadMenu.LOAD:
-            self.load_game(arguments[2][0])
-        else:
-            print(f"Unknown action: {method_id}")
+            print(f"Unrecognized option name : {option_name} with value {option_value}")
+            return
+        StartScreen.modify_options_file(option_name, str(option_value))
 
     @staticmethod
     def options_menu_action(method_id: OptionsMenu, arguments: Sequence[any]) -> None:
@@ -315,10 +298,7 @@ class StartScreen:
             print(f"Unknown action : {method_id}")
 
     @staticmethod
-    def execute_action(action: Union[tuple[Callable,
-                                           tuple[Position,
-                                                 any, List[
-                                                     any]]], bool]) -> None:
+    def execute_action(action: Callable) -> None:
         """
         Manage actions related to a click on a button.
         Delegate the responsibility to execute the action to the dedicated handler.
@@ -331,7 +311,7 @@ class StartScreen:
             return
 
         # Execute the action
-        action[0]()
+        action()
 
     def motion(self, position: Position) -> None:
         """

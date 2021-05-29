@@ -751,7 +751,7 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
 
 
 def load_parameter_entry(formatted_name: str, values: Sequence[dict[str, int]], current_value: int,
-                         identifier: Enum) -> Entry:
+                         edit_parameter_callback: Callable) -> Entry:
     """
     Return an entry corresponding to the data of a specific game parameter.
 
@@ -762,7 +762,7 @@ def load_parameter_entry(formatted_name: str, values: Sequence[dict[str, int]], 
     identifier -- the identifier of the parameter
     """
     entry = {'type': 'parameter_button', 'name': formatted_name, 'values': values,
-             'id': identifier, 'current_value_ind': 0}
+             'callback': edit_parameter_callback, 'current_value_ind': 0}
 
     for i in range(len(entry['values'])):
         if entry['values'][i]['value'] == current_value:
@@ -771,7 +771,8 @@ def load_parameter_entry(formatted_name: str, values: Sequence[dict[str, int]], 
     return entry
 
 
-def create_options_menu(parameters: dict[str, int], close_function: Callable) -> InfoBox:
+def create_options_menu(parameters: dict[str, int], modify_option_function: Callable,
+                        close_function: Callable) -> InfoBox:
     """
     Return the interface of the game options menu.
 
@@ -783,12 +784,12 @@ def create_options_menu(parameters: dict[str, int], close_function: Callable) ->
                                       {'label': 'Normal', 'value': ANIMATION_SPEED},
                                       {'label': 'Fast', 'value': ANIMATION_SPEED * 2}],
                                      parameters['move_speed'],
-                                     OptionsMenu.CHANGE_MOVE_SPEED)],
+                                     lambda value: modify_option_function('move_speed', value))],
                [load_parameter_entry("Screen mode :",
                                      [{'label': 'Window', 'value': SCREEN_SIZE // 2},
                                       {'label': 'Full', 'value': SCREEN_SIZE}],
                                      parameters['screen_size'],
-                                     OptionsMenu.CHANGE_SCREEN_SIZE)]]
+                                     lambda value: modify_option_function('screen_size', value))]]
 
     return InfoBox("Options", "imgs/interface/PopUpMenu.png", entries, id_type=OptionsMenu,
                    width=START_MENU_WIDTH, close_button=close_function)
