@@ -2,8 +2,7 @@
 Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
-from enum import Enum
-from typing import Sequence, List, Union, TextIO, Type, Callable
+from typing import Sequence, List, Union, TextIO, Callable
 
 import pygame
 from lxml import etree
@@ -17,7 +16,6 @@ from src.gui.fonts import fonts
 from src.scenes.level import Level, LevelStatus
 from src.gui.info_box import InfoBox
 from src.game_entities.movable import Movable
-from src.services.menus import StartMenu, OptionsMenu, GenericActions, LoadMenu
 
 
 class StartScreen:
@@ -278,39 +276,14 @@ class StartScreen:
         StartScreen.modify_options_file(option_name, str(option_value))
 
     @staticmethod
-    def options_menu_action(method_id: OptionsMenu, arguments: Sequence[any]) -> None:
-        """
-        Execute the method corresponding to the id provided for an action related to the
-        options menu.
-
-        Keyword arguments:
-        method_id -- the id referencing the method that should be called
-        arguments -- the arguments that should be passed to the called method
-        """
-        # Execute action
-        if method_id is OptionsMenu.CHANGE_MOVE_SPEED:
-            Movable.move_speed = arguments[2][0]
-            StartScreen.modify_options_file("move_speed", str(arguments[2][0]))
-        elif method_id is OptionsMenu.CHANGE_SCREEN_SIZE:
-            StartScreen.screen_size = arguments[2][0]
-            StartScreen.modify_options_file("screen_size", str(arguments[2][0]))
-        else:
-            print(f"Unknown action : {method_id}")
-
-    @staticmethod
     def execute_action(action: Callable) -> None:
         """
         Manage actions related to a click on a button.
-        Delegate the responsibility to execute the action to the dedicated handler.
+        Simply execute the given callable
 
         Keyword arguments:
-        action -- the data relative to the action that should been done (id to reference the method,
-        arguments to send to the called method)
+        action -- the callable associated to the clicked button
         """
-        if not action:
-            return
-
-        # Execute the action
         action()
 
     def motion(self, position: Position) -> None:
