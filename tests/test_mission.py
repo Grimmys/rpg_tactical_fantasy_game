@@ -11,9 +11,6 @@ from tests.tools import minimal_setup_for_game
 class TestMission(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-
-        """
         minimal_setup_for_game()
 
     def test_init_mision(self):

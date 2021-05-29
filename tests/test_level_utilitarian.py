@@ -15,16 +15,10 @@ from tests.tools import minimal_setup_for_game
 class TestLevel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-
-        """
         minimal_setup_for_game()
         cls.save_path = "saves/save_0.xml"
 
     def setUp(self):
-        """
-
-        """
         # Window parameters
         screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
         self.start_screen = StartScreen(screen)

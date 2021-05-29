@@ -10,9 +10,6 @@ from tests.tools import minimal_setup_for_game, NB_TESTS_FOR_PROPORTIONS
 class TestChest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-
-        """
         minimal_setup_for_game()
 
     def test_init_chest(self):

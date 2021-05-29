@@ -27,9 +27,6 @@ RIGHT_BUTTON = 3
 class TestStartScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-
-        """
         super(TestStartScreen, cls).setUpClass()
         pg.init()
         font.init_fonts()
@@ -50,12 +47,6 @@ class TestStartScreen(unittest.TestCase):
 
     @staticmethod
     def generate_position(start_pos, end_pos):
-        """
-
-        :param start_pos:
-        :param end_pos:
-        :return:
-        """
         # Generate random pos in a rect having start_pos as top left corner
         # and end_pos as bottom right corner
         pos = (randrange(start_pos[0], end_pos[0] + 1),
@@ -65,9 +56,6 @@ class TestStartScreen(unittest.TestCase):
         return pos
 
     def setUp(self):
-        """
-
-        """
         # Window parameters
         screen = pg.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
         self.start_screen = StartScreen(screen)
@@ -83,8 +71,8 @@ class TestStartScreen(unittest.TestCase):
         screen = self.start_screen.screen.copy()
 
         # Generate random pos on new game button
-        pos = self.generate_position(NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE)
-        self.start_screen.click(LEFT_BUTTON, pos)
+        position = self.generate_position(NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE)
+        self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
         self.assertEqual(self.start_screen.level_id, 0)

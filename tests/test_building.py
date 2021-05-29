@@ -10,9 +10,6 @@ from tests.tools import minimal_setup_for_game
 class TestBuilding(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-
-        """
         minimal_setup_for_game()
 
     def test_init_building_no_interaction(self):
