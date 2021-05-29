@@ -3,13 +3,14 @@ Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
 from enum import Enum
-from typing import Sequence, List, Union
+from typing import Sequence, List, Union, TextIO, Type
 
 import pygame
 from lxml import etree
 
 from src.constants import SCREEN_SIZE, BLACK, WIN_WIDTH, WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.game_entities.player import Player
+from src.gui.entries import Entries
 from src.gui.position import Position
 from src.services import menu_creator_manager
 from src.gui.fonts import fonts
@@ -42,9 +43,9 @@ class StartScreen:
     level_id -- the id of the current level
     exit -- the boolean value indicating if an exit request has been made
     """
-    screen_size = SCREEN_SIZE
+    screen_size: int = SCREEN_SIZE
 
-    def __init__(self, screen: pygame.Surface):
+    def __init__(self, screen: pygame.Surface) -> None:
         self.screen: pygame.Surface = screen
         self.menu_screen: pygame.Surface = self.screen.copy()
 
@@ -59,20 +60,20 @@ class StartScreen:
         self.background_menus: List[tuple[InfoBox, bool]] = []
 
         # Memorize if a game is currently being performed
-        self.level = None
+        self.level: Union[Level, None] = None
 
-        self.levels = [0, 1, 2, 3]
-        self.level_id = None
+        self.levels: Sequence[int] = [0, 1, 2, 3]
+        self.level_id: Union[int, None] = None
 
         # Load current saved parameters
         StartScreen.load_options()
 
-        self.exit = False
+        self.exit: bool = False
 
     @staticmethod
     def load_options():
         """
-
+        Load the saved game configuration from local file.
         """
         # Load current move speed
         Movable.move_speed = int(StartScreen.read_options_file("move_speed"))
@@ -81,10 +82,14 @@ class StartScreen:
     @staticmethod
     def read_options_file(element_to_read: str) -> str:
         """
+        Read and parse a specific option saved in the local configuration file.
 
-        :param element_to_read:
-        :return:
+        Return the parsed value option value.
+
+        Keyword arguments:
+        element_to_read -- a name corresponding to the option that should be read
         """
+        # TODO: Might be interesting to not re-load the file for each different option to parse
         tree = etree.parse("saves/options.xml").getroot()
         element = tree.find(".//" + element_to_read)
         return element.text.strip()
@@ -92,9 +97,11 @@ class StartScreen:
     @staticmethod
     def modify_options_file(element_to_edit: str, new_value: str) -> None:
         """
+        Edit the value of a specific option in the local configuration file.
 
-        :param element_to_edit:
-        :param new_value:
+        Keyword arguments:
+        element_to_edit -- a name corresponding to the option that should be edited
+        new_value -- the new value of the option
         """
         tree = etree.parse("saves/options.xml")
         element = tree.find(".//" + element_to_edit)
@@ -103,7 +110,8 @@ class StartScreen:
 
     def display(self) -> None:
         """
-
+        Display the level on screen if there is one, else display the background
+        of the start screen, all the menus in the background and lastly the active menu.
         """
         if self.level:
             self.screen.fill(BLACK)
@@ -118,8 +126,11 @@ class StartScreen:
 
     def play(self, level: Level) -> None:
         """
+        Replace the current screen by the appropriate one for playing the game.
+        Set the current level too.
 
-        :param level:
+        Keyword arguments:
+        level -- the ongoing level
         """
         # Modify screen
         flags = pygame.FULLSCREEN if StartScreen.screen_size == 2 else 0
@@ -128,13 +139,17 @@ class StartScreen:
 
     def update_state(self) -> None:
         """
-
+        Update the state of the game.
+        If there is an ongoing level, update it and verify that it's not ended.
+        If it's ended with a victory, start the next level.
+        If it's a defeat or if there is no next level, let the start screen be the active screen
+        again.
         """
         if self.level:
-            status = self.level.update_state()
+            status: int = self.level.update_state()
             if status is LevelStatus.ENDED_VICTORY and (self.level_id + 1) in self.levels:
                 self.level_id += 1
-                team = self.level.passed_players + self.level.players
+                team: Sequence[Player] = self.level.passed_players + self.level.players
                 for player in team:
                     # Players are fully restored between level
                     player.healed(player.hit_points_max)
@@ -147,12 +162,15 @@ class StartScreen:
                 self.level = None
 
     @staticmethod
-    def load_level(level: int, team: Sequence[Player] = None):
+    def load_level(level: int, team: Sequence[Player] = None) -> Level:
         """
+        Load a specific level.
 
-        :param level:
-        :param team:
-        :return:
+        Return the Level instance created.
+
+        Keyword arguments:
+        level -- the id of the level that should be loaded
+        team -- the sequence of players that will be in this level
         """
         if team is None:
             team = []
@@ -160,35 +178,36 @@ class StartScreen:
 
     def new_game(self) -> None:
         """
-
+        Load the first level of the game.
         """
         # Init the first level
         self.level_id = 0
         self.play(StartScreen.load_level(self.level_id))
 
-    def load_game(self, game_id: int):
+    def load_game(self, game_id: int) -> None:
         """
+        Load a saved game from local directory.
 
-        :param game_id:
-        :return:
+        Keyword arguments:
+        game_id -- the id of the saved file that should be load
         """
         try:
-            save = open(f"saves/save_{game_id}.xml", "r")
+            save: TextIO = open(f"saves/save_{game_id}.xml", "r")
 
             # Test if there is a current saved game
             if save:
-                tree_root = etree.parse(save).getroot()
-                index = tree_root.find("level/index").text.strip()
-                level_name = 'maps/level_' + index + '/'
-                game_status = tree_root.find("level/phase").text.strip()
-                turn_nb = 0
+                tree_root: etree.Element = etree.parse(save).getroot()
+                index: str = tree_root.find("level/index").text.strip()
+                level_name: str = f'maps/level_{index}/'
+                game_status: str = tree_root.find("level/phase").text.strip()
+                turn_nb: int = 0
                 if game_status != 'I':
                     turn_nb = int(tree_root.find("level/turn").text.strip())
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level = Level(level_name, self.level_id, LevelStatus[game_status], turn_nb,
-                              tree_root.find("level/entities"))
+                level: Level = Level(level_name, self.level_id, LevelStatus[game_status], turn_nb,
+                                     tree_root.find("level/entities"))
                 self.play(level)
                 save.close()
                 return
@@ -196,11 +215,11 @@ class StartScreen:
             # No saved game
             self.background_menus.append((self.active_menu, True))
 
-            name = "Load Game"
-            entries = [[{'type': 'text', 'text': "No saved game.",
-                         'font': fonts['MENU_SUB_TITLE_FONT']}]]
-            width = self.screen.get_width() // 2
-            self.active_menu = InfoBox(name, "imgs/interface/PopUpMenu.png", entries, "", width,
+            name: str = "Load Game"
+            entries: Entries = [[{'type': 'text', 'text': "No saved game.",
+                                  'font': fonts['MENU_SUB_TITLE_FONT']}]]
+            width: int = self.screen.get_width() // 2
+            self.active_menu = InfoBox(name, "imgs/interface/PopUpMenu.png", entries, width=width,
                                        close_button=1)
 
     def load_menu(self) -> None:
@@ -284,7 +303,7 @@ class StartScreen:
         else:
             print(f"Unknown action : {method_id}")
 
-    def execute_action(self, menu_type: int, action: Union[tuple[Union
+    def execute_action(self, menu_type: Type[Enum], action: Union[tuple[Union
                                                                  [StartMenu, OptionsMenu, LoadMenu],
                                                                  tuple[Position,
                                                                        any, List[
