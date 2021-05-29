@@ -42,8 +42,7 @@ class InfoBox:
     width -- the width of the infoBox, DEFAULT_WIDTH will be assigned if none is given
     element_linked -- the pygame Rect of the element linked to this infoBox if any
     The infoBox will be displayed beside the element if provided
-    close_button -- an integer value indicating if there should be a close button, and if so,
-    should this button terminating the player's turn or not
+    close_button -- the callback to run when pressing the close button if there should be one
     separator -- a boolean indicating if there should be a line splitting the infoBox
     at middle width or not
     title_color -- the color of the title
@@ -52,8 +51,7 @@ class InfoBox:
     name -- the title of the infoBox
     type -- the reference to the menu which the infoBox is linked if there is one
     element_linked -- the pygame Rect of the element linked to this infoBox if there is one
-    close_button -- an integer value indicating if there should be a close button, and if so,
-    should this button terminating the player's turn or not
+    close_button -- the callback to run when pressing the close button if there should be one
     title_color -- the color of the title
     separator -- the structure containing the following information about the splitting line:
     if it should be drawn, its vertical position, and its height
@@ -68,12 +66,12 @@ class InfoBox:
 
     def __init__(self, name: str, sprite: str, entries: Entries, id_type: Type[Enum] = None,
                  width: int = DEFAULT_WIDTH, element_linked: pygame.Rect = None,
-                 close_button: int = 0, separator: bool = False,
+                 close_button: Callable = None, separator: bool = False,
                  title_color: pygame.Color = WHITE) -> None:
         self.name: str = name
         self.type: Type[Enum] = id_type
         self.element_linked: pygame.Rect = element_linked
-        self.close_button: int = close_button
+        self.close_button: Callable = close_button
         self.title_color: pygame.Color = title_color
         self.separator: dict[str, Union[bool, int]] = {'display': separator,
                                                        'posY': 0,
@@ -200,15 +198,14 @@ class InfoBox:
         elements.insert(0, [title])
         return elements
 
-    def determine_height(self, close_button: int) -> int:
+    def determine_height(self, close_button: Callable) -> int:
         """
         Compute the total height of the infoBox, defined according
         to the height of each element in it and the separator if present.
         Return the computed height.
 
         Keyword arguments:
-        close_button -- the integer value indicating if there should be a close button, and if so,
-        should this button terminating the player's turn or not
+        close_button -- the callback to run when pressing the close button if there should be one
         """
         # Margin to be add at begin and at end
         height: int = MARGIN_BOX * 2
@@ -222,13 +219,13 @@ class InfoBox:
                     max_height = el_height
             height += max_height
             row.insert(0, max_height)
-        if close_button > 0:
+        if close_button:
             close_button_height: int = CLOSE_BUTTON_SIZE[1] + MARGIN_TOP + CLOSE_BUTTON_MARGIN_TOP
             height += close_button_height
             self.separator['height'] -= close_button_height
 
             # Button sprites
-            name = fonts['ITEM_FONT'].render("Close", 1, WHITE)
+            name = fonts['ITEM_FONT'].render("Close", True, WHITE)
             raw_inactive_button = pygame.image.load(BUTTON_INACTIVE).convert_alpha()
             sprite = pygame.transform.scale(raw_inactive_button, CLOSE_BUTTON_SIZE)
             sprite.blit(name, (sprite.get_width() // 2 - name.get_width() // 2,
@@ -239,7 +236,7 @@ class InfoBox:
                                      sprite_hover.get_height() // 2 - name.get_height() // 2))
 
             self.elements.append([close_button_height,
-                                  Button(GenericActions.CLOSE, [close_button],
+                                  Button(close_button, [close_button],
                                          CLOSE_BUTTON_SIZE, (0, 0), sprite,
                                          sprite_hover, (CLOSE_BUTTON_MARGIN_TOP, 0, 0, 0))])
         return height

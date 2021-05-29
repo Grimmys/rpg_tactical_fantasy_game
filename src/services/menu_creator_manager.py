@@ -771,7 +771,7 @@ def load_parameter_entry(formatted_name: str, values: Sequence[dict[str, int]], 
     return entry
 
 
-def create_options_menu(parameters: dict[str, int]) -> InfoBox:
+def create_options_menu(parameters: dict[str, int], close_function: Callable) -> InfoBox:
     """
     Return the interface of the game options menu.
 
@@ -791,10 +791,10 @@ def create_options_menu(parameters: dict[str, int]) -> InfoBox:
                                      OptionsMenu.CHANGE_SCREEN_SIZE)]]
 
     return InfoBox("Options", "imgs/interface/PopUpMenu.png", entries, id_type=OptionsMenu,
-                   width=START_MENU_WIDTH, close_button=1)
+                   width=START_MENU_WIDTH, close_button=close_function)
 
 
-def create_load_menu(load_game_function: Callable) -> InfoBox:
+def create_load_menu(load_game_function: Callable, close_function: Callable) -> InfoBox:
     """
     Return the interface of the load game menu.
     """
@@ -805,7 +805,7 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
                          'callback': lambda slot_id=i: load_game_function(slot_id)}])
 
     return InfoBox("Load Game", "imgs/interface/PopUpMenu.png", entries, id_type=LoadMenu,
-                   width=START_MENU_WIDTH, close_button=1)
+                   width=START_MENU_WIDTH, close_button=close_function)
 
 
 def create_save_menu() -> InfoBox:

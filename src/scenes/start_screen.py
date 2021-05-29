@@ -164,6 +164,12 @@ class StartScreen:
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
 
+    def close_active_menu(self):
+        """
+        Replace the active menu by the first menu in background if there is any.
+        """
+        self.active_menu = self.background_menus.pop()[0] if self.background_menus else None
+
     @staticmethod
     def load_level(level: int, team: Sequence[Player] = None) -> Level:
         """
@@ -224,7 +230,7 @@ class StartScreen:
                                   'font': fonts['MENU_SUB_TITLE_FONT']}]]
             width: int = self.screen.get_width() // 2
             self.active_menu = InfoBox(name, "imgs/interface/PopUpMenu.png", entries, width=width,
-                                       close_button=1)
+                                       close_button=self.close_active_menu)
 
     def load_menu(self) -> None:
         """
@@ -232,7 +238,8 @@ class StartScreen:
         as the new active menu.
         """
         self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_load_menu(self.load_game)
+        self.active_menu = menu_creator_manager.create_load_menu(self.load_game,
+                                                                 self.close_active_menu)
 
     def options_menu(self) -> None:
         """
@@ -243,7 +250,7 @@ class StartScreen:
         self.background_menus.append((self.active_menu, False))
         self.active_menu = menu_creator_manager.create_options_menu(
             {'move_speed': int(self.read_options_file('move_speed')),
-             'screen_size': int(self.read_options_file('screen_size'))})
+             'screen_size': int(self.read_options_file('screen_size'))}, self.close_active_menu)
 
     def exit_game(self) -> None:
         """
