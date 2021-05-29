@@ -156,7 +156,7 @@ class InfoBox:
                                        - name.get_width() // 2,
                                        base_sprite_hover.get_height() // 2
                                        - name.get_height() // 2))
-                    element.append(DynamicButton(entry['id'], BUTTON_SIZE, (0, 0),
+                    element.append(DynamicButton(entry['callback'], BUTTON_SIZE, (0, 0),
                                                  base_sprite, base_sprite_hover, entry['margin'],
                                                  entry['values'], entry['current_value_ind'],
                                                  entry['name']))
