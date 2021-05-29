@@ -344,9 +344,7 @@ class InfoBox:
         for button in self.buttons:
             button.set_hover(button.get_rect().collidepoint(position))
 
-    def click(self, position: tuple[int, int]) -> Union[tuple[Union[Enum, Callable],
-                                                              tuple[tuple[int, int],
-                                                                    any, list]], bool]:
+    def click(self, position: tuple[int, int]) -> Callable:
         """
         Handle the triggering of a click event.
         Return the data corresponding of the action that should be done if the click was done
@@ -358,4 +356,5 @@ class InfoBox:
         for button in self.buttons:
             if button.get_rect().collidepoint(position):
                 return button.action_triggered()
-        return False
+        # Return a " do nothing " callable when clicking on empty space
+        return lambda: None
