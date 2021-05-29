@@ -192,7 +192,22 @@ class Level:
                 interactable_entities = self.entities['chests'] + self.entities['portals'] + \
                                         self.entities['doors'] + self.entities['fountains'] + \
                                         self.entities['allies'] + self.players
-                self.active_menu = menu_creator_manager.create_player_menu(
+                self.active_menu = menu_creator_manager.create_player_menu({
+                    'inventory': self.open_inventory,
+                    'equipment': self.open_equipment,
+                    'status': self.open_status_interface,
+                    'wait': self.end_character_turn,
+                    'visit': self.select_visit,
+                    'trade': lambda: self.select_interaction_with(Player),
+                    'open_chest': self.try_open_chest,
+                    'pick_lock': self.pick_lock,
+                    'open_door': self.try_open_door,
+                    'use_portal': lambda: self.select_interaction_with(Portal),
+                    'drink': lambda: self.select_interaction_with(Fountain),
+                    'talk': self.talk,
+                    'take': self.take_objective,
+                    'attack': self.select_attack_target
+                },
                     self.selected_player, self.entities['buildings'], interactable_entities,
                     self.missions, self.entities['foes'])
 
@@ -318,12 +333,27 @@ class Level:
                                         self.entities['doors'] + \
                                         self.entities['fountains'] + self.entities[
                                             'allies'] + self.players
-                self.active_menu = menu_creator_manager.create_player_menu(self.selected_player,
-                                                                           self.entities[
-                                                                               'buildings'],
-                                                                           interactable_entities,
-                                                                           self.missions,
-                                                                           self.entities['foes'])
+                self.active_menu = menu_creator_manager.create_player_menu({
+                    'inventory': self.open_inventory,
+                    'equipment': self.open_equipment,
+                    'status': self.open_status_interface,
+                    'wait': self.end_character_turn,
+                    'visit': self.select_visit,
+                    'trade': lambda: self.select_interaction_with(Player),
+                    'open_chest': self.try_open_chest,
+                    'pick_lock': self.pick_lock,
+                    'open_door': self.try_open_door,
+                    'use_portal': lambda: self.select_interaction_with(Portal),
+                    'drink': lambda: self.select_interaction_with(Fountain),
+                    'talk': self.talk,
+                    'take': self.take_objective,
+                    'attack': self.select_attack_target
+                }, self.selected_player,
+                    self.entities[
+                        'buildings'],
+                    interactable_entities,
+                    self.missions,
+                    self.entities['foes'])
             return None
 
         entities = []
@@ -1015,95 +1045,26 @@ class Level:
 
         # Attack action : Character has to choose a target
         if method_id is CharacterMenu.ATTACK:
-            self.background_menus.append((self.active_menu, False))
-            self.selected_player.choose_target()
-            self.possible_attacks = self.get_possible_attacks([self.selected_player.position],
-                                                              self.selected_player.reach,
-                                                              True)
-            self.possible_interactions = []
-            self.active_menu = None
+            self.select_attack_target()
         # Item action : Character's inventory is opened
         elif method_id is CharacterMenu.INV:
-            pygame.mixer.Sound.play(self.inventory_sfx)
-            self.background_menus.append((self.active_menu, True))
-            items_max = self.selected_player.nb_items_max
-            items = list(self.selected_player.items)
-            free_spaces = items_max - len(items)
-            items += [None] * free_spaces
-            self.active_menu = menu_creator_manager.create_inventory_menu(
-                items, self.selected_player.gold)
+            self.open_inventory()
         # Equipment action : open the equipment screen
         elif method_id is CharacterMenu.EQUIPMENT:
-            pygame.mixer.Sound.play(self.armor_sfx)
-
-            self.background_menus.append((self.active_menu, True))
-            equipments = list(self.selected_player.equipments)
-            self.active_menu = menu_creator_manager.create_equipment_menu(
-                equipments)
+            self.open_equipment()
         # Display player's status
         elif method_id is CharacterMenu.STATUS:
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_status_menu(
-                self.selected_player)
+            self.open_status_interface()
         # Wait action : Given Character's turn is finished
         elif method_id is CharacterMenu.WAIT:
-            pygame.mixer.Sound.play(self.wait_sfx)
-
-            self.active_menu = None
-            self.selected_item = None
-            self.selected_player.end_turn()
-            self.selected_player = None
-            self.possible_moves = []
-            self.possible_attacks = []
-            self.possible_interactions = []
-            self.background_menus = []
+            self.end_character_turn()
         # Open a chest
         elif method_id is CharacterMenu.OPEN_CHEST:
-            # Check if player has a key
-            has_key = False
-            for item in self.selected_player.items:
-                if isinstance(item, Key) and item.for_chest:
-                    has_key = True
-                    break
-
-            if not has_key:
-                self.background_menus.append((self.active_menu, True))
-                self.active_menu = InfoBox("You have no key to open a chest",
-                                           "imgs/interface/PopUpMenu.png", [],
-                                           width=ITEM_MENU_WIDTH,
-                                           close_button=lambda: self.close_active_menu(False))
-            else:
-                self.background_menus.append((self.active_menu, False))
-                self.active_menu = None
-                self.selected_player.choose_target()
-                self.possible_interactions = []
-                for ent in self.get_next_cases(self.selected_player.position):
-                    if isinstance(ent, Chest) and not ent.opened:
-                        self.possible_interactions.append(ent.position)
+            self.try_open_chest()
         elif method_id is CharacterMenu.OPEN_DOOR:
-            # Check if player has a key
-            has_key = False
-            for item in self.selected_player.items:
-                if isinstance(item, Key) and item.for_door:
-                    has_key = True
-                    break
-
-            if not has_key:
-                self.background_menus.append((self.active_menu, True))
-                self.active_menu = InfoBox("You have no key to open a door",
-                                           "imgs/interface/PopUpMenu.png", [],
-                                           width=ITEM_MENU_WIDTH,
-                                           close_button=lambda: self.close_active_menu(False))
-            else:
-                self.select_interaction_with(Door)
+            self.try_open_door()
         elif method_id is CharacterMenu.PICK_LOCK:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = None
-            self.selected_player.choose_target()
-            self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.position):
-                if (isinstance(ent, Chest) and not ent.opened) or isinstance(ent, Door):
-                    self.possible_interactions.append(ent.position)
+            self.pick_lock()
         # Use a portal
         elif method_id is CharacterMenu.USE_PORTAL:
             self.select_interaction_with(Portal)
@@ -1112,43 +1073,145 @@ class Level:
             self.select_interaction_with(Fountain)
         # Talk with an ally
         elif method_id is CharacterMenu.TALK:
+            self.talk()
+        elif method_id is CharacterMenu.TRADE:
+            self.select_interaction_with(Player)
+        # Visit a house
+        elif method_id is CharacterMenu.VISIT:
+            self.select_visit()
+        # Valid a mission position
+        elif method_id is CharacterMenu.TAKE:
+            self.take_objective()
+
+    def select_visit(self):
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = None
+        self.selected_player.choose_target()
+        self.possible_interactions = [
+            (self.selected_player.position[0], self.selected_player.position[1] - TILE_SIZE)]
+        self.possible_attacks = []
+
+    def take_objective(self):
+        for mission in self.missions:
+            if mission.type is MissionType.POSITION or \
+                    mission.type is MissionType.TOUCH_POSITION:
+                # Verify that character is not the last if the mission is not the main one
+                if mission.main or len(self.players) > 1:
+                    if mission.is_position_valid(self.selected_player.position):
+                        # Check if player is able to complete this objective
+                        if mission.update_state(self.selected_player):
+                            self.players.remove(self.selected_player)
+                            self.passed_players.append(self.selected_player)
+                            if mission.main and mission.ended:
+                                self.victory = True
+                            # Turn is finished
+                            self.active_menu = None
+                            self.background_menus = []
+                            self.selected_player.end_turn()
+                            self.selected_player = None
+                            break
+
+    def talk(self):
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = None
+        self.selected_player.choose_target()
+        self.possible_interactions = []
+        for ent in self.get_next_cases(self.selected_player.position):
+            if isinstance(ent, Character) and not isinstance(ent, Player):
+                self.possible_interactions.append(ent.position)
+
+    def pick_lock(self):
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = None
+        self.selected_player.choose_target()
+        self.possible_interactions = []
+        for ent in self.get_next_cases(self.selected_player.position):
+            if (isinstance(ent, Chest) and not ent.opened) or isinstance(ent, Door):
+                self.possible_interactions.append(ent.position)
+
+    def try_open_door(self):
+        # Check if player has a key
+        has_key = False
+        for item in self.selected_player.items:
+            if isinstance(item, Key) and item.for_door:
+                has_key = True
+                break
+        if not has_key:
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = InfoBox("You have no key to open a door",
+                                       "imgs/interface/PopUpMenu.png", [],
+                                       width=ITEM_MENU_WIDTH,
+                                       close_button=lambda: self.close_active_menu(False))
+        else:
+            self.select_interaction_with(Door)
+
+    def try_open_chest(self):
+        # Check if player has a key
+        has_key = False
+        for item in self.selected_player.items:
+            if isinstance(item, Key) and item.for_chest:
+                has_key = True
+                break
+        if not has_key:
+            self.background_menus.append((self.active_menu, True))
+            self.active_menu = InfoBox("You have no key to open a chest",
+                                       "imgs/interface/PopUpMenu.png", [],
+                                       width=ITEM_MENU_WIDTH,
+                                       close_button=lambda: self.close_active_menu(False))
+        else:
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
             for ent in self.get_next_cases(self.selected_player.position):
-                if isinstance(ent, Character) and not isinstance(ent, Player):
+                if isinstance(ent, Chest) and not ent.opened:
                     self.possible_interactions.append(ent.position)
-        elif method_id is CharacterMenu.TRADE:
-            self.select_interaction_with(Player)
-        # Visit a house
-        elif method_id is CharacterMenu.VISIT:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = None
-            self.selected_player.choose_target()
-            self.possible_interactions = [
-                (self.selected_player.position[0], self.selected_player.position[1] - TILE_SIZE)]
-            self.possible_attacks = []
-        # Valid a mission position
-        elif method_id is CharacterMenu.TAKE:
-            for mission in self.missions:
-                if mission.type is MissionType.POSITION or \
-                        mission.type is MissionType.TOUCH_POSITION:
-                    # Verify that character is not the last if the mission is not the main one
-                    if mission.main or len(self.players) > 1:
-                        if mission.is_position_valid(self.selected_player.position):
-                            # Check if player is able to complete this objective
-                            if mission.update_state(self.selected_player):
-                                self.players.remove(self.selected_player)
-                                self.passed_players.append(self.selected_player)
-                                if mission.main and mission.ended:
-                                    self.victory = True
-                                # Turn is finished
-                                self.active_menu = None
-                                self.background_menus = []
-                                self.selected_player.end_turn()
-                                self.selected_player = None
-                                break
+
+    def select_attack_target(self):
+        self.background_menus.append((self.active_menu, False))
+        self.selected_player.choose_target()
+        self.possible_attacks = self.get_possible_attacks([self.selected_player.position],
+                                                          self.selected_player.reach,
+                                                          True)
+        self.possible_interactions = []
+        self.active_menu = None
+
+    def open_status_interface(self):
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_status_menu(
+            self.selected_player)
+
+    def end_character_turn(self):
+        pygame.mixer.Sound.play(self.wait_sfx)
+        self.active_menu = None
+        self.selected_item = None
+        self.selected_player.end_turn()
+        self.selected_player = None
+        self.possible_moves = []
+        self.possible_attacks = []
+        self.possible_interactions = []
+        self.background_menus = []
+
+    def open_equipment(self) -> None:
+        pygame.mixer.Sound.play(self.armor_sfx)
+        self.background_menus.append((self.active_menu, True))
+        equipments = list(self.selected_player.equipments)
+        self.active_menu = menu_creator_manager.create_equipment_menu(
+            equipments)
+
+    def open_inventory(self) -> None:
+        """
+        Replace the current active menu by the interface corresponding to the inventory of the
+        selected player
+        """
+        pygame.mixer.Sound.play(self.inventory_sfx)
+        self.background_menus.append((self.active_menu, True))
+        items_max = self.selected_player.nb_items_max
+        items = list(self.selected_player.items)
+        free_spaces = items_max - len(items)
+        items += [None] * free_spaces
+        self.active_menu = menu_creator_manager.create_inventory_menu(
+            items, self.selected_player.gold)
 
     def select_interaction_with(self, entity_kind):
         """
