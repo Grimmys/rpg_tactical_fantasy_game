@@ -9,15 +9,38 @@ from src.gui.tools import distance
 
 
 class Weapon(Equipment):
-    """
+    """ """
 
-    """
-
-    def __init__(self, name, sprite, description, price, equipped_sprite, attack, attack_kind,
-                 weight, durability, reach, restrictions, possible_effects,
-                 strong_against, can_charge=False):
-        super().__init__(name, sprite, description, price, equipped_sprite, 'right_hand',
-                         0, 0, attack, weight, restrictions)
+    def __init__(
+        self,
+        name,
+        sprite,
+        description,
+        price,
+        equipped_sprite,
+        attack,
+        attack_kind,
+        weight,
+        durability,
+        reach,
+        restrictions,
+        possible_effects,
+        strong_against,
+        can_charge=False,
+    ):
+        super().__init__(
+            name,
+            sprite,
+            description,
+            price,
+            equipped_sprite,
+            "right_hand",
+            0,
+            0,
+            attack,
+            weight,
+            restrictions,
+        )
         self.durability_max = durability
         self.durability = self.durability_max
         self.reach = reach
@@ -56,7 +79,9 @@ class Weapon(Equipment):
         :return:
         """
         self.durability -= 1
-        self.resell_price = int((self.price // 2) * (self.durability / self.durability_max))
+        self.resell_price = int(
+            (self.price // 2) * (self.durability / self.durability_max)
+        )
         return self.durability
 
     def applied_effects(self, user, target):
@@ -69,14 +94,16 @@ class Weapon(Equipment):
         # Try to trigger one or more effects
         effects = []
         for eff in self.effects:
-            probability = eff['probability']
+            probability = eff["probability"]
             for skill in user.skills:
-                if skill.nature is SkillNature.ALTERATION_CHANCE_BOOST \
-                        and eff['effect'].alteration in skill.alterations:
+                if (
+                    skill.nature is SkillNature.ALTERATION_CHANCE_BOOST
+                    and eff["effect"].alteration in skill.alterations
+                ):
                     probability += skill.power
 
             if rd.randint(0, 100) < probability:
-                effects.append(eff['effect'])
+                effects.append(eff["effect"])
         return effects
 
     def save(self, tree_name):
@@ -91,7 +118,7 @@ class Weapon(Equipment):
         tree = super().save(tree_name)
 
         # Save durability
-        durability = etree.SubElement(tree, 'durability')
+        durability = etree.SubElement(tree, "durability")
         durability.text = str(self.durability)
 
         return tree

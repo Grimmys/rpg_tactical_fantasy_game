@@ -9,10 +9,18 @@ class SkillNature(Enum):
 
 
 class Skill:
-    """
+    """ """
 
-    """
-    def __init__(self, name, formatted_name, nature, description, power=0, stats=None, alterations=None):
+    def __init__(
+        self,
+        name,
+        formatted_name,
+        nature,
+        description,
+        power=0,
+        stats=None,
+        alterations=None,
+    ):
         if alterations is None:
             alterations = []
         if stats is None:

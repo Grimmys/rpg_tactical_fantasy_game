@@ -7,7 +7,14 @@ from typing import Sequence, List, Union, TextIO, Callable
 import pygame
 from lxml import etree
 
-from src.constants import SCREEN_SIZE, BLACK, WIN_WIDTH, WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.constants import (
+    SCREEN_SIZE,
+    BLACK,
+    WIN_WIDTH,
+    WIN_HEIGHT,
+    MAIN_WIN_WIDTH,
+    MAIN_WIN_HEIGHT,
+)
 from src.game_entities.player import Player
 from src.gui.entries import Entries
 from src.gui.position import Position
@@ -41,6 +48,7 @@ class StartScreen:
     level_id -- the id of the current level
     exit -- the boolean value indicating if an exit request has been made
     """
+
     screen_size: int = SCREEN_SIZE
 
     def __init__(self, screen: pygame.Surface) -> None:
@@ -49,14 +57,20 @@ class StartScreen:
 
         # Start screen loop
         background_image: pygame.Surface = pygame.image.load(
-            'imgs/interface/main_menu_background.jpg').convert_alpha()
-        self.background: pygame.Surface = pygame.transform.scale(background_image,
-                                                                 screen.get_size())
+            "imgs/interface/main_menu_background.jpg"
+        ).convert_alpha()
+        self.background: pygame.Surface = pygame.transform.scale(
+            background_image, screen.get_size()
+        )
 
         # Creating menu
         self.active_menu: InfoBox = menu_creator_manager.create_start_menu(
-            {'new_game': self.new_game, 'load_menu': self.load_menu,
-             'options_menu': self.options_menu, 'exit_game': self.exit_game}
+            {
+                "new_game": self.new_game,
+                "load_menu": self.load_menu,
+                "options_menu": self.options_menu,
+                "exit_game": self.exit_game,
+            }
         )
         self.background_menus: List[tuple[InfoBox, bool]] = []
 
@@ -151,7 +165,10 @@ class StartScreen:
         """
         if self.level:
             status: int = self.level.update_state()
-            if status is LevelStatus.ENDED_VICTORY and (self.level_id + 1) in self.levels:
+            if (
+                status is LevelStatus.ENDED_VICTORY
+                and (self.level_id + 1) in self.levels
+            ):
                 self.level_id += 1
                 team: Sequence[Player] = self.level.passed_players + self.level.players
                 for player in team:
@@ -160,7 +177,10 @@ class StartScreen:
                     # Reset player's state
                     player.new_turn()
                 self.play(StartScreen.load_level(self.level_id, team))
-            elif status is LevelStatus.ENDED_VICTORY or status is LevelStatus.ENDED_DEFEAT:
+            elif (
+                status is LevelStatus.ENDED_VICTORY
+                or status is LevelStatus.ENDED_DEFEAT
+            ):
                 # TODO: Game win dialog?
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
@@ -170,7 +190,9 @@ class StartScreen:
         """
         Replace the active menu by the first menu in background if there is any.
         """
-        self.active_menu = self.background_menus.pop()[0] if self.background_menus else None
+        self.active_menu = (
+            self.background_menus.pop()[0] if self.background_menus else None
+        )
 
     @staticmethod
     def load_level(level: int, team: Sequence[Player] = None) -> Level:
@@ -185,7 +207,7 @@ class StartScreen:
         """
         if team is None:
             team = []
-        return Level('maps/level_' + str(level) + '/', level, players=team)
+        return Level("maps/level_" + str(level) + "/", level, players=team)
 
     def new_game(self) -> None:
         """
@@ -210,16 +232,21 @@ class StartScreen:
             if save:
                 tree_root: etree.Element = etree.parse(save).getroot()
                 index: str = tree_root.find("level/index").text.strip()
-                level_name: str = f'maps/level_{index}/'
+                level_name: str = f"maps/level_{index}/"
                 game_status: str = tree_root.find("level/phase").text.strip()
                 turn_nb: int = 0
-                if game_status != 'I':
+                if game_status != "I":
                     turn_nb = int(tree_root.find("level/turn").text.strip())
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level: Level = Level(level_name, self.level_id, LevelStatus[game_status], turn_nb,
-                                     tree_root.find("level/entities"))
+                level: Level = Level(
+                    level_name,
+                    self.level_id,
+                    LevelStatus[game_status],
+                    turn_nb,
+                    tree_root.find("level/entities"),
+                )
                 self.play(level)
                 save.close()
                 return
@@ -228,11 +255,23 @@ class StartScreen:
             self.background_menus.append((self.active_menu, True))
 
             name: str = "Load Game"
-            entries: Entries = [[{'type': 'text', 'text': "No saved game.",
-                                  'font': fonts['MENU_SUB_TITLE_FONT']}]]
+            entries: Entries = [
+                [
+                    {
+                        "type": "text",
+                        "text": "No saved game.",
+                        "font": fonts["MENU_SUB_TITLE_FONT"],
+                    }
+                ]
+            ]
             width: int = self.screen.get_width() // 2
-            self.active_menu = InfoBox(name, "imgs/interface/PopUpMenu.png", entries, width=width,
-                                       close_button=self.close_active_menu)
+            self.active_menu = InfoBox(
+                name,
+                "imgs/interface/PopUpMenu.png",
+                entries,
+                width=width,
+                close_button=self.close_active_menu,
+            )
 
     def load_menu(self) -> None:
         """
@@ -250,9 +289,12 @@ class StartScreen:
         """
         self.background_menus.append((self.active_menu, False))
         self.active_menu = menu_creator_manager.create_options_menu(
-            {'move_speed': int(self.read_options_file('move_speed')),
-             'screen_size': int(self.read_options_file('screen_size'))},
-            self.modify_option_value)
+            {
+                "move_speed": int(self.read_options_file("move_speed")),
+                "screen_size": int(self.read_options_file("screen_size")),
+            },
+            self.modify_option_value,
+        )
 
     def exit_game(self) -> None:
         """

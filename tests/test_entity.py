@@ -14,47 +14,57 @@ class TestEntity(unittest.TestCase):
         minimal_setup_for_game()
 
     def test_init_entity(self):
-        name = 'entity'
+        name = "entity"
         pos = (3, 2)
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        sprite = "imgs/dungeon_crawl/monster/angel.png"
         entity = Entity(name, pos, sprite)
         self.assertEqual(name, entity.name)
         self.assertEqual(pos, entity.position)
-        self.assertEqual('Entity', str(entity))
+        self.assertEqual("Entity", str(entity))
         self.assertTrue(entity.is_on_position(pos))
 
     def test_name_format(self):
         pos = random_position()
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        sprite = "imgs/dungeon_crawl/monster/angel.png"
 
-        name = 'test'
+        name = "test"
         entity = Entity(name, pos, sprite)
-        self.assertEqual('Test', str(entity))
+        self.assertEqual("Test", str(entity))
 
-        name = 'Test'
+        name = "Test"
         entity = Entity(name, pos, sprite)
-        self.assertEqual('Test', str(entity))
+        self.assertEqual("Test", str(entity))
 
-        name = 'entity_test'
+        name = "entity_test"
         entity = Entity(name, pos, sprite)
-        self.assertEqual('Entity Test', str(entity))
+        self.assertEqual("Entity Test", str(entity))
 
-        name = '5entity_test_01'
+        name = "5entity_test_01"
         entity = Entity(name, pos, sprite)
-        self.assertEqual('Entity Test', str(entity))
+        self.assertEqual("Entity Test", str(entity))
 
     def test_position(self):
-        name = 'test'
-        sprite = 'imgs/dungeon_crawl/monster/angel.png'
+        name = "test"
+        sprite = "imgs/dungeon_crawl/monster/angel.png"
         pos = random_position()
         entity = Entity(name, pos, sprite)
 
         self.assertTrue(entity.is_on_position(pos))
-        self.assertTrue(entity.is_on_position(
-            (pos[0] + rd.randrange(0, TILE_SIZE), pos[1] + rd.randrange(0, TILE_SIZE))))
-        self.assertFalse(entity.is_on_position((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1])))
-        self.assertFalse(entity.is_on_position((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT))))
+        self.assertTrue(
+            entity.is_on_position(
+                (
+                    pos[0] + rd.randrange(0, TILE_SIZE),
+                    pos[1] + rd.randrange(0, TILE_SIZE),
+                )
+            )
+        )
+        self.assertFalse(
+            entity.is_on_position((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1]))
+        )
+        self.assertFalse(
+            entity.is_on_position((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT)))
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

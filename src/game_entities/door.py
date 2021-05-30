@@ -4,10 +4,11 @@ from src.game_entities.entity import Entity
 
 
 class Door(Entity):
-    """
+    """ """
 
-    """
-    def __init__(self, position: tuple[int, int], sprite: str, pick_lock_initiated: bool) -> None:
+    def __init__(
+        self, position: tuple[int, int], sprite: str, pick_lock_initiated: bool
+    ) -> None:
         super().__init__("Door", position, sprite)
         self.sprite_name: str = sprite
         self.pick_lock_initiated: bool = pick_lock_initiated
@@ -24,11 +25,11 @@ class Door(Entity):
         tree: etree.Element = super().save(tree_name)
 
         # Save sprite
-        sprite: etree.SubElement = etree.SubElement(tree, 'sprite')
+        sprite: etree.SubElement = etree.SubElement(tree, "sprite")
         sprite.text = self.sprite_name
 
         # Save if pick lock has been initiated
         if self.pick_lock_initiated:
-            etree.SubElement(tree, 'pick_lock_initiated')
+            etree.SubElement(tree, "pick_lock_initiated")
 
         return tree

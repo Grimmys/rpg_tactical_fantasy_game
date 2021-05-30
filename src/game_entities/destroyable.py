@@ -17,8 +17,9 @@ class DamageKind(Enum):
     """
     Defines the different kind of damage that could be done to a destroyable entity
     """
-    PHYSICAL = 'Physical'
-    SPIRITUAL = 'Spiritual'
+
+    PHYSICAL = "Physical"
+    SPIRITUAL = "Spiritual"
 
 
 class Destroyable(Entity):
@@ -42,14 +43,24 @@ class Destroyable(Entity):
     resistance -- the resistance of the entity from spiritual attacks
     attack_sfx -- the sound that should be started when the entity is taking physical damage
     """
-    def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface],
-                 hit_points: int, defense: int, resistance: int) -> None:
+
+    def __init__(
+        self,
+        name: str,
+        position: tuple[int, int],
+        sprite: Union[str, pygame.Surface],
+        hit_points: int,
+        defense: int,
+        resistance: int,
+    ) -> None:
         super().__init__(name, position, sprite)
         self.hit_points_max: int = hit_points
         self.hit_points: int = hit_points
         self.defense: int = defense
         self.resistance: int = resistance
-        self.attack_sfx: pygame.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'attack.ogg'))
+        self.attack_sfx: pygame.Sound = pygame.mixer.Sound(
+            os.path.join("sound_fx", "attack.ogg")
+        )
 
     def display_hit_points(self, screen: pygame.Surface) -> None:
         """
@@ -60,24 +71,30 @@ class Destroyable(Entity):
         screen -- the screen on which the bar should be drawn
         """
         if self.hit_points != self.hit_points_max:
-            damage_bar = constant_sprites['lightly_damaged']
+            damage_bar = constant_sprites["lightly_damaged"]
             if self.hit_points < self.hit_points_max * 0.1:
-                damage_bar = constant_sprites['almost_dead']
+                damage_bar = constant_sprites["almost_dead"]
             elif self.hit_points < self.hit_points_max * 0.25:
-                damage_bar = constant_sprites['severely_damaged']
+                damage_bar = constant_sprites["severely_damaged"]
             elif self.hit_points < self.hit_points_max * 0.5:
-                damage_bar = constant_sprites['heavily_damaged']
+                damage_bar = constant_sprites["heavily_damaged"]
             elif self.hit_points < self.hit_points_max * 0.75:
-                damage_bar = constant_sprites['moderately_damaged']
-            damage_bar = pygame.transform.scale(damage_bar,
-                                                (int(damage_bar.get_width() *
-                                                     (self.hit_points / self.hit_points_max)),
-                                                 damage_bar.get_height()))
-            screen.blit(constant_sprites['hp_bar'], self.position)
+                damage_bar = constant_sprites["moderately_damaged"]
+            damage_bar = pygame.transform.scale(
+                damage_bar,
+                (
+                    int(
+                        damage_bar.get_width() * (self.hit_points / self.hit_points_max)
+                    ),
+                    damage_bar.get_height(),
+                ),
+            )
+            screen.blit(constant_sprites["hp_bar"], self.position)
             screen.blit(damage_bar, self.position)
 
-    def attacked(self, entity: Entity, damage: int,
-                 kind: DamageKind, allies: Sequence[Entity]) -> int:
+    def attacked(
+        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
+    ) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
         the entity by this value.
@@ -98,7 +115,7 @@ class Destroyable(Entity):
             real_damage = damage - self.defense
             pygame.mixer.Sound.play(self.attack_sfx)
         else:
-            print('Error : Invalid kind of attack : ' + str(kind))
+            print("Error : Invalid kind of attack : " + str(kind))
             raise SystemError
         if real_damage < 0:
             real_damage = 0
@@ -121,8 +138,11 @@ class Destroyable(Entity):
             # Full heal
             hp_recovered: int = self.hit_points_max - self.hit_points
         else:
-            hp_recovered: int = value if self.hit_points + value <= self.hit_points_max \
+            hp_recovered: int = (
+                value
+                if self.hit_points + value <= self.hit_points_max
                 else self.hit_points_max - self.hit_points
+            )
         self.hit_points += hp_recovered
         return hp_recovered
 
@@ -138,7 +158,7 @@ class Destroyable(Entity):
         tree: etree.Element = super().save(tree_name)
 
         # Save current hp
-        hit_points: etree.SubElement = etree.SubElement(tree, 'current_hp')
+        hit_points: etree.SubElement = etree.SubElement(tree, "current_hp")
         hit_points.text = str(self.hit_points)
 
         return tree

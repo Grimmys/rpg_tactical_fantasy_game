@@ -38,28 +38,37 @@ class EntityStrategy(Enum):
 
 
 class Movable(Destroyable):
-    """
+    """ """
 
-    """
     SELECTED_DISPLAY: pygame.Surface = None
     XP_NEXT_LVL_BASE: int = 15
     move_speed: int = ANIMATION_SPEED
 
     @staticmethod
     def init_constant_sprites() -> None:
-        """
-
-        """
-        selected_sprite: str = 'imgs/dungeon_crawl/misc/cursor.png'
+        """ """
+        selected_sprite: str = "imgs/dungeon_crawl/misc/cursor.png"
         Movable.SELECTED_DISPLAY = pygame.transform.scale(
-            pygame.image.load(selected_sprite).convert_alpha(),
-            (TILE_SIZE, TILE_SIZE))
+            pygame.image.load(selected_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        )
 
-    def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface],
-                 hit_points: int, defense: int, resistance: int, max_moves: int, strength: int,
-                 attack_kind: str, strategy: str, lvl: int = 1,
-                 skills: Sequence[Skill] = None, alterations: Sequence[Alteration] = None,
-                 complementary_sprite_link: str = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        position: tuple[int, int],
+        sprite: Union[str, pygame.Surface],
+        hit_points: int,
+        defense: int,
+        resistance: int,
+        max_moves: int,
+        strength: int,
+        attack_kind: str,
+        strategy: str,
+        lvl: int = 1,
+        skills: Sequence[Skill] = None,
+        alterations: Sequence[Alteration] = None,
+        complementary_sprite_link: str = None,
+    ) -> None:
         super().__init__(name, position, sprite, hit_points, defense, resistance)
         if skills is None:
             skills = []
@@ -80,20 +89,28 @@ class Movable(Destroyable):
         if complementary_sprite_link:
             complementary_sprite: pygame.Surface = pygame.transform.scale(
                 pygame.image.load(complementary_sprite_link).convert_alpha(),
-                (TILE_SIZE, TILE_SIZE))
+                (TILE_SIZE, TILE_SIZE),
+            )
             self.sprite.blit(complementary_sprite, (0, 0))
 
-        self._attack_kind: DamageKind = DamageKind[attack_kind] if attack_kind is not None else None
+        self._attack_kind: DamageKind = (
+            DamageKind[attack_kind] if attack_kind is not None else None
+        )
         self.strategy: EntityStrategy = EntityStrategy[strategy]
         self.skills: Sequence[Skill] = skills
 
-        self.walk_sfx: pygame.Sound = pygame.mixer.Sound(os.path.join('sound_fx', 'walk.ogg'))
+        self.walk_sfx: pygame.Sound = pygame.mixer.Sound(
+            os.path.join("sound_fx", "walk.ogg")
+        )
         self.skeleton_sfx: pygame.Sound = pygame.mixer.Sound(
-            os.path.join('sound_fx', 'skeleton_walk.ogg'))
+            os.path.join("sound_fx", "skeleton_walk.ogg")
+        )
         self.necrophage_sfx: pygame.Sound = pygame.mixer.Sound(
-            os.path.join('sound_fx', 'necro_walk.ogg'))
+            os.path.join("sound_fx", "necro_walk.ogg")
+        )
         self.centaur_sfx: pygame.Sound = pygame.mixer.Sound(
-            os.path.join('sound_fx', 'cent_walk.ogg'))
+            os.path.join("sound_fx", "cent_walk.ogg")
+        )
 
     def display(self, screen: pygame.Surface) -> None:
         """
@@ -112,8 +129,9 @@ class Movable(Destroyable):
         """
         return self._attack_kind
 
-    def attacked(self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]) \
-            -> int:
+    def attacked(
+        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
+    ) -> int:
         """
 
         :param entity:
@@ -123,24 +141,29 @@ class Movable(Destroyable):
         :return:
         """
         # Compute distance of all allies
-        allies_dist: Sequence[tuple[Entity, int]] = [(ally,
-                                                      (abs(self.position[0] -
-                                                           ally.position[0]) + abs(
-                                                          self.position[1] -
-                                                          ally.position[
-                                                              1])) // TILE_SIZE)
-                                                     for ally in allies]
+        allies_dist: Sequence[tuple[Entity, int]] = [
+            (
+                ally,
+                (
+                    abs(self.position[0] - ally.position[0])
+                    + abs(self.position[1] - ally.position[1])
+                )
+                // TILE_SIZE,
+            )
+            for ally in allies
+        ]
 
         # Check if stats are modified by some alterations
-        temp_def_change: int = self.get_stat_change('defense')
-        temp_res_change: int = self.get_stat_change('resistance')
+        temp_def_change: int = self.get_stat_change("defense")
+        temp_res_change: int = self.get_stat_change("resistance")
         # Check if a skill is boosting stats during combat
         for skill in self.skills:
-            if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist
-                                                           if ally[1] == 1]:
-                if 'defense' in skill.stats:
+            if skill.nature is SkillNature.ALLY_BOOST and [
+                ally[0] for ally in allies_dist if ally[1] == 1
+            ]:
+                if "defense" in skill.stats:
                     temp_def_change += skill.power
-                if 'resistance' in skill.stats:
+                if "resistance" in skill.stats:
                     temp_res_change += skill.power
         # Apply boosts (including alterations changes)
         self.defense += temp_def_change
@@ -156,9 +179,7 @@ class Movable(Destroyable):
         return self.hit_points
 
     def end_turn(self) -> None:
-        """
-
-        """
+        """ """
         self.state = EntityState.FINISHED
         # Remove all alterations that are finished
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
@@ -245,8 +266,9 @@ class Movable(Destroyable):
         :return:
         """
         # Check if character as a bonus due to alteration
-        return sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_up'))) - \
-               sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + '_down')))
+        return sum(
+            map(lambda alt: alt.power, self.get_alterations_effect(stat + "_up"))
+        ) - sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + "_down")))
 
     def get_formatted_stat_change(self, stat: str) -> str:
         """
@@ -256,10 +278,10 @@ class Movable(Destroyable):
         """
         change: int = self.get_stat_change(stat)
         if change > 0:
-            return ' (+' + str(change) + ')'
+            return " (+" + str(change) + ")"
         if change < 0:
-            return ' (' + str(change) + ')'
-        return ''
+            return " (" + str(change) + ")"
+        return ""
 
     # The return value is a boolean indicating if the target gained a level
     def earn_xp(self, xp: int) -> bool:
@@ -282,9 +304,7 @@ class Movable(Destroyable):
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
 
     def lvl_up(self) -> None:
-        """
-
-        """
+        """ """
         self.lvl += 1
         self.experience -= self.experience_to_lvl_up
         self.experience_to_lvl_up = self.determine_xp_goal()
@@ -335,9 +355,7 @@ class Movable(Destroyable):
         return item.use(self)
 
     def move(self) -> None:
-        """
-
-        """
+        """ """
         self.timer -= Movable.move_speed
         if self.timer <= 0:
             self.position = self.on_move.pop(0)
@@ -352,12 +370,13 @@ class Movable(Destroyable):
         """
         # Check if no alteration forbids the entity to attack
         for alt in self.alterations:
-            if 'no_attack' in alt.specificities:
+            if "no_attack" in alt.specificities:
                 return False
         return True
 
-    def act(self, possible_moves: Sequence[tuple[int, int]], targets: Sequence[Entity]) \
-            -> Union[tuple[int, int], None]:
+    def act(
+        self, possible_moves: Sequence[tuple[int, int]], targets: Sequence[Entity]
+    ) -> Union[tuple[int, int], None]:
         """
 
         :param possible_moves:
@@ -384,8 +403,11 @@ class Movable(Destroyable):
         temporary_attack: Union[tuple[int, int], None] = None
         for distance in self.reach:
             for target in targets:
-                if abs(self.position[0] - target.position[0]) + \
-                        abs(self.position[1] - target.position[1]) == TILE_SIZE * distance:
+                if (
+                    abs(self.position[0] - target.position[0])
+                    + abs(self.position[1] - target.position[1])
+                    == TILE_SIZE * distance
+                ):
                     if self.target and target == self.target:
                         return target.position
                     temporary_attack = target.position
@@ -404,8 +426,11 @@ class Movable(Destroyable):
                 for distance in self.reach:
                     for move in possible_moves:
                         # Try to find move next to one target
-                        if abs(move[0] - target.position[0]) + \
-                                abs(move[1] - target.position[1]) == TILE_SIZE * distance:
+                        if (
+                            abs(move[0] - target.position[0])
+                            + abs(move[1] - target.position[1])
+                            == TILE_SIZE * distance
+                        ):
                             self.target = target
                             return move
         elif self.strategy is EntityStrategy.ACTIVE:
@@ -416,8 +441,11 @@ class Movable(Destroyable):
             for distance in self.reach:
                 for move in possible_moves:
                     # Search for the nearest move to target
-                    dist = abs(move[0] - self.target.position[0]) + \
-                           abs(move[1] - self.target.position[1]) - (TILE_SIZE * distance)
+                    dist = (
+                        abs(move[0] - self.target.position[0])
+                        + abs(move[1] - self.target.position[1])
+                        - (TILE_SIZE * distance)
+                    )
                     if 0 <= dist < min_dist:
                         best_move = move
                         min_dist = dist
@@ -434,9 +462,7 @@ class Movable(Destroyable):
         return self.strength
 
     def new_turn(self) -> None:
-        """
-
-        """
+        """ """
         self.state = EntityState.HAVE_TO_ACT
         # Increment alterations turns passed
         for alteration in self.alterations:
@@ -454,39 +480,39 @@ class Movable(Destroyable):
         tree: etree.Element = super().save(tree_name)
 
         # Save level
-        level: etree.SubElement = etree.SubElement(tree, 'level')
+        level: etree.SubElement = etree.SubElement(tree, "level")
         level.text = str(self.lvl)
 
         # Save exp
-        experience: etree.SubElement = etree.SubElement(tree, 'exp')
+        experience: etree.SubElement = etree.SubElement(tree, "exp")
         experience.text = str(self.experience)
 
         # Save strategy
-        strategy: etree.SubElement = etree.SubElement(tree, 'strategy')
+        strategy: etree.SubElement = etree.SubElement(tree, "strategy")
         strategy.text = self.strategy.name
 
         # Save skills
-        skills: etree.SubElement = etree.SubElement(tree, 'skills')
+        skills: etree.SubElement = etree.SubElement(tree, "skills")
         for skill in self.skills:
-            skill_el: etree.SubElement = etree.SubElement(skills, 'skill')
-            skill_name = etree.SubElement(skill_el, 'name')
+            skill_el: etree.SubElement = etree.SubElement(skills, "skill")
+            skill_name = etree.SubElement(skill_el, "name")
             skill_name.text = str(skill)
 
         # Save alterations
-        alterations: etree.SubElement = etree.SubElement(tree, 'alterations')
+        alterations: etree.SubElement = etree.SubElement(tree, "alterations")
         for alteration in self.alterations:
-            alterations.append(alteration.save('alteration'))
+            alterations.append(alteration.save("alteration"))
 
         # Save stats
-        hit_points_max: etree.SubElement = etree.SubElement(tree, 'hp')
+        hit_points_max: etree.SubElement = etree.SubElement(tree, "hp")
         hit_points_max.text = str(self.hit_points_max)
-        atk: etree.SubElement = etree.SubElement(tree, 'strength')
+        atk: etree.SubElement = etree.SubElement(tree, "strength")
         atk.text = str(self.strength)
-        defense: etree.SubElement = etree.SubElement(tree, 'defense')
+        defense: etree.SubElement = etree.SubElement(tree, "defense")
         defense.text = str(self.defense)
-        res: etree.SubElement = etree.SubElement(tree, 'resistance')
+        res: etree.SubElement = etree.SubElement(tree, "resistance")
         res.text = str(self.resistance)
-        move: etree.SubElement = etree.SubElement(tree, 'move')
+        move: etree.SubElement = etree.SubElement(tree, "move")
         move.text = str(self._max_moves)
 
         return tree

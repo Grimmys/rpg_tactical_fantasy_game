@@ -28,12 +28,20 @@ class Consumable(Item):
     effects -- the sequence of effects that will happen when using the consumable
     drink_sfx -- the sound that should be started when someone use the consumable
     """
-    def __init__(self, name: str, sprite: str, description: str,
-                 price: int, effects: Sequence[Effect]) -> None:
+
+    def __init__(
+        self,
+        name: str,
+        sprite: str,
+        description: str,
+        price: int,
+        effects: Sequence[Effect],
+    ) -> None:
         super().__init__(name, sprite, description, price)
         self.effects: Sequence[Effect] = effects
-        self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
-                                                                             'potion.ogg'))
+        self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join("sound_fx", "potion.ogg")
+        )
 
     def use(self, entity: Movable) -> tuple[bool, Sequence[str]]:  # NOQA
         """

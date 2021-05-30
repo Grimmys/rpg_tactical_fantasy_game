@@ -36,10 +36,17 @@ class Button(BoxElement):
     linked_object -- the game entity linked to the button if there is one,
     would be returned on click
     """
-    def __init__(self, callback: Union[Enum, Callable],
-                 size: tuple[int, int], position: Position,
-                 sprite: pygame.Surface, sprite_hover: pygame.Surface,
-                 margin: Margin, linked_object: any = None) -> None:
+
+    def __init__(
+        self,
+        callback: Union[Enum, Callable],
+        size: tuple[int, int],
+        position: Position,
+        sprite: pygame.Surface,
+        sprite_hover: pygame.Surface,
+        margin: Margin,
+        linked_object: any = None,
+    ) -> None:
         super().__init__(position, None, margin)
         self.callback: Union[Enum, Callable] = callback
         self.size: tuple[int, int] = size

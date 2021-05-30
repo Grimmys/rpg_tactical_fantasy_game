@@ -30,57 +30,67 @@ class BoxElement:
     margin -- a dict containing all the values for margins TOP, BOTTOM, LEFT and RIGHT
     """
 
-    def __init__(self, position: Position, content: Union[pygame.Surface, None],
-                 margin: Margin = (0, 0, 0, 0)) -> None:
+    def __init__(
+        self,
+        position: Position,
+        content: Union[pygame.Surface, None],
+        margin: Margin = (0, 0, 0, 0),
+    ) -> None:
         self.position: Position = position
         self.content: pygame.Surface = content
         self.size: tuple[int, int] = (0, 0)
         if self.content:
             self.size = (self.content.get_width(), self.content.get_height())
-        self.margin: dict[str, int] = {'TOP': margin[0], 'BOTTOM': margin[2],
-                                       'LEFT': margin[3], 'RIGHT': margin[1]}
+        self.margin: dict[str, int] = {
+            "TOP": margin[0],
+            "BOTTOM": margin[2],
+            "LEFT": margin[3],
+            "RIGHT": margin[1],
+        }
 
     def get_width(self) -> int:
         """
         Return the width of the content more the left and right margins
         """
-        return self.margin['LEFT'] + self.size[0] + self.margin['RIGHT']
+        return self.margin["LEFT"] + self.size[0] + self.margin["RIGHT"]
 
     def get_height(self) -> int:
         """
         Return the height of the content more the top and bottom margins
         """
-        return self.margin['TOP'] + self.size[1] + self.margin['BOTTOM']
+        return self.margin["TOP"] + self.size[1] + self.margin["BOTTOM"]
 
     def get_margin_top(self) -> int:
         """
         Return top margin
         """
-        return self.margin['TOP']
+        return self.margin["TOP"]
 
     def get_margin_bottom(self) -> int:
         """
         Return bottom margin
         """
-        return self.margin['BOTTOM']
+        return self.margin["BOTTOM"]
 
     def get_margin_left(self) -> int:
         """
         Return left margin
         """
-        return self.margin['LEFT']
+        return self.margin["LEFT"]
 
     def get_margin_right(self) -> int:
         """
         Return right margin
         """
-        return self.margin['RIGHT']
+        return self.margin["RIGHT"]
 
     def get_rect(self) -> pygame.Rect:
         """
         Return a pygame rect containing the position of the element and its size
         """
-        return pygame.Rect(self.position[0], self.position[1], self.size[0], self.size[1])
+        return pygame.Rect(
+            self.position[0], self.position[1], self.size[0], self.size[1]
+        )
 
     def display(self, screen: pygame.Surface) -> None:
         """
@@ -89,4 +99,6 @@ class BoxElement:
         Keyword arguments:
         screen -- the screen on which the content of the box should be drawn
         """
-        screen.blit(self.content, (self.position[0] + self.margin['LEFT'], self.position[1]))
+        screen.blit(
+            self.content, (self.position[0] + self.margin["LEFT"], self.position[1])
+        )

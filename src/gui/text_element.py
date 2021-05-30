@@ -27,19 +27,30 @@ class TextElement(BoxElement):
     text_color -- the color of the rendered text
     """
 
-    def __init__(self, text: str, container_width: int, position: Position, font: pygame.font.Font,
-                 margin: Margin, text_color: pygame.Color = WHITE) -> None:
+    def __init__(
+        self,
+        text: str,
+        container_width: int,
+        position: Position,
+        font: pygame.font.Font,
+        margin: Margin,
+        text_color: pygame.Color = WHITE,
+    ) -> None:
         initial_text: pygame.Surface = font.render(text, True, text_color)
-        final_text: pygame.Surface = TextElement.verify_rendered_text_size(initial_text, text,
-                                                                           container_width, font,
-                                                                           text_color)
+        final_text: pygame.Surface = TextElement.verify_rendered_text_size(
+            initial_text, text, container_width, font, text_color
+        )
 
         super().__init__(position, final_text, margin)
 
     @staticmethod
-    def verify_rendered_text_size(rendered_text: pygame.Surface, text: str,
-                                  container_width: int, font: pygame.font.Font,
-                                  text_color: pygame.Color) -> pygame.Surface:
+    def verify_rendered_text_size(
+        rendered_text: pygame.Surface,
+        text: str,
+        container_width: int,
+        font: pygame.font.Font,
+        text_color: pygame.Color,
+    ) -> pygame.Surface:
         """
         Split a given text in multiple lines until it could fit properly in its container
 
@@ -57,19 +68,30 @@ class TextElement(BoxElement):
         if final_render.get_width() + 20 > container_width:
             first_part, second_part = TextElement.divide_text(text)
             first_part_render = font.render(first_part, 1, text_color)
-            first_part_render = TextElement.verify_rendered_text_size(first_part_render, first_part,
-                                                                      container_width, font,
-                                                                      text_color)
+            first_part_render = TextElement.verify_rendered_text_size(
+                first_part_render, first_part, container_width, font, text_color
+            )
             second_part_render = font.render(second_part, 1, text_color)
-            second_part_render = TextElement.verify_rendered_text_size(second_part_render,
-                                                                       second_part, container_width,
-                                                                       font, text_color)
-            final_render = pygame.Surface((container_width, first_part_render.get_height() +
-                                           second_part_render.get_height()), SRCALPHA)
-            first_part_x = final_render.get_width() // 2 - first_part_render.get_width() // 2
+            second_part_render = TextElement.verify_rendered_text_size(
+                second_part_render, second_part, container_width, font, text_color
+            )
+            final_render = pygame.Surface(
+                (
+                    container_width,
+                    first_part_render.get_height() + second_part_render.get_height(),
+                ),
+                SRCALPHA,
+            )
+            first_part_x = (
+                final_render.get_width() // 2 - first_part_render.get_width() // 2
+            )
             final_render.blit(first_part_render, (first_part_x, 0))
-            second_part_x = final_render.get_width() // 2 - second_part_render.get_width() // 2
-            final_render.blit(second_part_render, (second_part_x, first_part_render.get_height()))
+            second_part_x = (
+                final_render.get_width() // 2 - second_part_render.get_width() // 2
+            )
+            final_render.blit(
+                second_part_render, (second_part_x, first_part_render.get_height())
+            )
         return final_render
 
     @staticmethod
@@ -97,6 +119,6 @@ class TextElement(BoxElement):
         """
         absolute_middle = len(text) // 2
         for i in range(absolute_middle, len(text)):
-            if text[i] == ' ':
+            if text[i] == " ":
                 return i
         return -1

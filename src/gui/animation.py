@@ -24,13 +24,19 @@ class Animation:
     current_frame -- the current displayed frame with its position
     """
 
-    def __init__(self, sprites_positions: List[dict[str, Union[pygame.Surface, Position]]],
-                 timer: int) -> None:
-        self.sprites_positions: List[dict[str, Union[pygame.Surface, Position]]] = sprites_positions
+    def __init__(
+        self,
+        sprites_positions: List[dict[str, Union[pygame.Surface, Position]]],
+        timer: int,
+    ) -> None:
+        self.sprites_positions: List[
+            dict[str, Union[pygame.Surface, Position]]
+        ] = sprites_positions
         self.timer_max: int = timer
         self.timer: int = timer
-        self.current_frame: dict[str, Union[pygame.Surface, Position]] = \
-            self.sprites_positions.pop(0)
+        self.current_frame: dict[
+            str, Union[pygame.Surface, Position]
+        ] = self.sprites_positions.pop(0)
 
     def animate(self) -> bool:
         """
@@ -54,4 +60,4 @@ class Animation:
         Keyword arguments:
         screen -- the screen on which the current frame should be drawn
         """
-        screen.blit(self.current_frame['sprite'], self.current_frame['pos'])
+        screen.blit(self.current_frame["sprite"], self.current_frame["pos"])

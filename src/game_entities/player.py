@@ -25,25 +25,57 @@ class PlayerState(IntEnum):
 
 
 class Player(Character):
-    """
+    """ """
 
-    """
-    def __init__(self, name: str, sprite: Union[str, pygame.Surface], hit_points: int, defense: int,
-                 resistance: int, strength: int, classes: Sequence[str], equipments: list[Equipment],
-                 race: str, gold: int, lvl: int, skills: Sequence[Skill],
-                 alterations: list[Alteration], complementary_sprite_link: str = None):
-        super().__init__(name, (-1, -1), sprite, hit_points, defense, resistance, strength,
-                         classes, equipments, 'MANUAL', lvl, skills, alterations,
-                         race, gold, {}, complementary_sprite_link)
+    def __init__(
+        self,
+        name: str,
+        sprite: Union[str, pygame.Surface],
+        hit_points: int,
+        defense: int,
+        resistance: int,
+        strength: int,
+        classes: Sequence[str],
+        equipments: list[Equipment],
+        race: str,
+        gold: int,
+        lvl: int,
+        skills: Sequence[Skill],
+        alterations: list[Alteration],
+        complementary_sprite_link: str = None,
+    ):
+        super().__init__(
+            name,
+            (-1, -1),
+            sprite,
+            hit_points,
+            defense,
+            resistance,
+            strength,
+            classes,
+            equipments,
+            "MANUAL",
+            lvl,
+            skills,
+            alterations,
+            race,
+            gold,
+            {},
+            complementary_sprite_link,
+        )
         self.state: PlayerState = PlayerState.WAITING_SELECTION
         self.old_position: tuple[int, int] = (-1, -1)
         self._selected: bool = False
 
         # Sprite displayed when player cannot be selected
         self.sprite_unavailable: pygame.Surface = self.sprite.copy()
-        color_image: pygame.Surface = pygame.Surface(self.sprite.get_size()).convert_alpha()
+        color_image: pygame.Surface = pygame.Surface(
+            self.sprite.get_size()
+        ).convert_alpha()
         color_image.fill(LIGHT_GREY)
-        self.sprite_unavailable.blit(color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        self.sprite_unavailable.blit(
+            color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
+        )
 
         # Memorize normal state sprite
         self.normal_sprite: pygame.Surface = self.sprite
@@ -65,7 +97,9 @@ class Player(Character):
         :param screen:
         """
         Character.display(self, screen)
-        if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
+        if self.state in range(
+            PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1
+        ):
             screen.blit(Player.SELECTED_DISPLAY, self.position)
 
     @staticmethod
@@ -92,7 +126,9 @@ class Player(Character):
     @selected.setter
     def selected(self, is_selected: bool) -> None:
         self._selected = is_selected
-        self.state = PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
+        self.state = (
+            PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
+        )
 
     def set_move(self, position: Sequence[tuple[int, int]]) -> None:
         """
@@ -127,9 +163,7 @@ class Player(Character):
         return False
 
     def cancel_interaction(self) -> None:
-        """
-
-        """
+        """ """
         self.state = PlayerState.WAITING_POST_ACTION
 
     def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
@@ -176,9 +210,7 @@ class Player(Character):
         return damages
 
     def end_turn(self) -> None:
-        """
-
-        """
+        """ """
         self.state = PlayerState.FINISHED
         self._selected = False
         self.sprite = self.sprite_unavailable
@@ -188,9 +220,7 @@ class Player(Character):
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def new_turn(self) -> None:
-        """
-
-        """
+        """ """
         Character.new_turn(self)
         self.state = PlayerState.WAITING_SELECTION
         self.sprite = self.normal_sprite
@@ -205,9 +235,7 @@ class Player(Character):
         return self.state == PlayerState.FINISHED
 
     def choose_target(self) -> None:
-        """
-
-        """
+        """ """
         self.state = PlayerState.WAITING_TARGET
 
     def save(self, tree_name: str) -> etree.Element:
@@ -223,7 +251,7 @@ class Player(Character):
         tree: etree.Element = super().save(tree_name)
 
         # Save if turn is finished or not
-        state: etree.SubElement = etree.SubElement(tree, 'turnFinished')
+        state: etree.SubElement = etree.SubElement(tree, "turnFinished")
         state.text = str(self.turn_is_finished())
 
         return tree

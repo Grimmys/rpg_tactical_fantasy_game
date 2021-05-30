@@ -28,8 +28,16 @@ class Alteration:
     information to the player about the alteration
     specificities -- describes some specific data related to the alteration
     """
-    def __init__(self, name: str, abbreviated_name: str, power: int, duration: int,
-                 description: str, specificities: any = None) -> None:
+
+    def __init__(
+        self,
+        name: str,
+        abbreviated_name: str,
+        power: int,
+        duration: int,
+        description: str,
+        specificities: any = None,
+    ) -> None:
         if specificities is None:
             specificities = []
         self.name: str = name
@@ -59,7 +67,7 @@ class Alteration:
         return self.time >= self.duration
 
     def __str__(self) -> str:
-        return self.name.replace('_', ' ').capitalize()
+        return self.name.replace("_", " ").capitalize()
 
     def __eq__(self, name: str) -> bool:
         return self.name == name
@@ -75,20 +83,21 @@ class Alteration:
         """
         tree: etree.Element = etree.Element(tree_name)
 
-        alteration_name: etree.SubElement = etree.SubElement(tree, 'name')
+        alteration_name: etree.SubElement = etree.SubElement(tree, "name")
         alteration_name.text = self.name
-        alteration_abbreviation: etree.SubElement = etree.SubElement(tree, 'abbr')
+        alteration_abbreviation: etree.SubElement = etree.SubElement(tree, "abbr")
         alteration_abbreviation.text = self.abbreviated_name
-        alteration_power: etree.SubElement = etree.SubElement(tree, 'power')
+        alteration_power: etree.SubElement = etree.SubElement(tree, "power")
         alteration_power.text = str(self.power)
-        alteration_duration: etree.SubElement = etree.SubElement(tree, 'duration')
+        alteration_duration: etree.SubElement = etree.SubElement(tree, "duration")
         alteration_duration.text = str(self.duration)
-        alteration_description: etree.SubElement = etree.SubElement(tree, 'desc')
+        alteration_description: etree.SubElement = etree.SubElement(tree, "desc")
         alteration_description.text = self.description
-        alteration_specificities: etree.SubElement = etree.SubElement(tree, 'specs')
+        alteration_specificities: etree.SubElement = etree.SubElement(tree, "specs")
         for specificity in self.specificities:
-            specificity_element: etree.SubElement = etree.SubElement(alteration_specificities,
-                                                                     'spec')
+            specificity_element: etree.SubElement = etree.SubElement(
+                alteration_specificities, "spec"
+            )
             specificity_element.text = specificity
 
         return tree

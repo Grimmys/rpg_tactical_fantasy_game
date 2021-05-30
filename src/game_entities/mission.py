@@ -16,12 +16,19 @@ class MissionType(Enum):
 
 
 class Mission:
-    """
+    """ """
 
-    """
-    def __init__(self, is_main: bool, nature: MissionType, positions: Sequence[tuple[int, int]],
-                 description: str, nb_players: int, turn_limit: int = None, gold_reward: int = 0,
-                 items_reward: Sequence[Item] = None) -> None:
+    def __init__(
+        self,
+        is_main: bool,
+        nature: MissionType,
+        positions: Sequence[tuple[int, int]],
+        description: str,
+        nb_players: int,
+        turn_limit: int = None,
+        gold_reward: int = 0,
+        items_reward: Sequence[Item] = None,
+    ) -> None:
         if items_reward is None:
             items_reward = []
         self.main: bool = is_main
@@ -46,13 +53,20 @@ class Mission:
             return position in self.positions
         if self.type is MissionType.TOUCH_POSITION:
             for mission_pos in self.positions:
-                if abs(position[0] - mission_pos[0]) + abs(position[1] - mission_pos[1])\
-                        == TILE_SIZE:
+                if (
+                    abs(position[0] - mission_pos[0])
+                    + abs(position[1] - mission_pos[1])
+                    == TILE_SIZE
+                ):
                     return True
         return False
 
-    def update_state(self, player: Player = None, entities: dict[str, Sequence[Entity]] = None,
-                     turns: int = 0) -> bool:
+    def update_state(
+        self,
+        player: Player = None,
+        entities: dict[str, Sequence[Entity]] = None,
+        turns: int = 0,
+    ) -> bool:
         """
 
         :param player:
@@ -60,12 +74,13 @@ class Mission:
         :param turns:
         :return:
         """
-        if (self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION) \
-                and player is not None:
+        if (
+            self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION
+        ) and player is not None:
             self.succeeded_chars.append(player)
             self.ended = len(self.succeeded_chars) == self.min_chars
         elif self.type is MissionType.KILL_EVERYBODY:
-            self.ended = len(entities['foes']) == 0
+            self.ended = len(entities["foes"]) == 0
         elif self.type is MissionType.TURN_LIMIT:
             self.ended = turns <= self.turn_limit
         return True

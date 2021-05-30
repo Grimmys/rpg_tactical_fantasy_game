@@ -2,8 +2,13 @@ import unittest
 
 from src.game_entities.character import Character
 from src.game_entities.movable import DamageKind
-from tests.random_data_library import random_character_entity, random_shield, random_equipment, \
-    random_foe_entity, random_weapon
+from tests.random_data_library import (
+    random_character_entity,
+    random_shield,
+    random_equipment,
+    random_foe_entity,
+    random_weapon,
+)
 from tests.tools import minimal_setup_for_game
 
 
@@ -13,30 +18,47 @@ class TestCharacter(unittest.TestCase):
         minimal_setup_for_game()
 
     def test_init_character(self):
-        name = 'character_test'
+        name = "character_test"
         pos = (3, 2)
-        sprite = 'imgs/characs/jist.png'
+        sprite = "imgs/characs/jist.png"
         hp = 10
         defense = 4
         res = 3
         strength = 2
-        classes = ['innkeeper']
+        classes = ["innkeeper"]
         equipments = []
-        strategy = 'STATIC'
+        strategy = "STATIC"
         lvl = 3
         skills = []
         alterations = []
-        race = 'human'
+        race = "human"
         gold = 500
         interaction = {
-            'dialog': ["Hurry up ! Leave the village from the west, and enter the necropolis.",
-                       "The clock is ticking... The ogre's bones must be returned to their "
-                       "original place."],
-            'join_team': False
+            "dialog": [
+                "Hurry up ! Leave the village from the west, and enter the necropolis.",
+                "The clock is ticking... The ogre's bones must be returned to their "
+                "original place.",
+            ],
+            "join_team": False,
         }
-        character_test = Character(name, pos, sprite, hp, defense, res, strength, classes,
-                                   equipments, strategy, lvl, skills, alterations, race, gold,
-                                   interaction)
+        character_test = Character(
+            name,
+            pos,
+            sprite,
+            hp,
+            defense,
+            res,
+            strength,
+            classes,
+            equipments,
+            strategy,
+            lvl,
+            skills,
+            alterations,
+            race,
+            gold,
+            interaction,
+        )
         self.assertEqual(equipments, character_test.equipments)
         self.assertEqual(classes, character_test.classes)
         self.assertEqual(race, character_test.race)
@@ -46,10 +68,12 @@ class TestCharacter(unittest.TestCase):
 
     def test_talk_to_character(self):
         interaction = {
-            'dialog': ["Hurry up ! Leave the village from the west, and enter the necropolis.",
-                       "The clock is ticking... The ogre's bones must be returned to their "
-                       "original place."],
-            'join_team': False
+            "dialog": [
+                "Hurry up ! Leave the village from the west, and enter the necropolis.",
+                "The clock is ticking... The ogre's bones must be returned to their "
+                "original place.",
+            ],
+            "join_team": False,
         }
         actor = random_character_entity()
         character_test = random_character_entity(interaction=interaction)
@@ -58,10 +82,12 @@ class TestCharacter(unittest.TestCase):
 
     def test_talk_to_recruitable_character(self):
         interaction = {
-            'dialog': ["Hurry up ! Leave the village from the west, and enter the necropolis.",
-                       "The clock is ticking... The ogre's bones must be returned to their "
-                       "original place."],
-            'join_team': True
+            "dialog": [
+                "Hurry up ! Leave the village from the west, and enter the necropolis.",
+                "The clock is ticking... The ogre's bones must be returned to their "
+                "original place.",
+            ],
+            "join_team": True,
         }
         actor = random_character_entity()
         character_test = random_character_entity(interaction=interaction)
@@ -109,5 +135,7 @@ class TestCharacter(unittest.TestCase):
         equipments = [weapon]
         character_test = random_character_entity(equipments=equipments)
 
-        self.assertEqual(character_test.strength + weapon.attack,
-                         character_test.attack(random_foe_entity()))
+        self.assertEqual(
+            character_test.strength + weapon.attack,
+            character_test.attack(random_foe_entity()),
+        )
