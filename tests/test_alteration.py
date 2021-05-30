@@ -11,15 +11,15 @@ class TestAlteration(unittest.TestCase):
         minimal_setup_for_game()
 
     def test_init_alteration(self):
-        name = 'test_alteration'
-        abbr = 'ta'
+        name = "test_alteration"
+        abbr = "ta"
         power = 3
         duration = 2
-        description = 'This is a test description'
-        specificites = ['no_attack', 'defense_up']
+        description = "This is a test description"
+        specificites = ["no_attack", "defense_up"]
         alteration = Alteration(name, abbr, power, duration, description, specificites)
         self.assertEqual(name, alteration.name)
-        self.assertEqual('Test alteration', str(alteration))
+        self.assertEqual("Test alteration", str(alteration))
         self.assertEqual(abbr, alteration.abbreviated_name)
         self.assertEqual(power, alteration.power)
         self.assertEqual(duration, alteration.duration)

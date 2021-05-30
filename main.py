@@ -12,8 +12,9 @@ import pygame
 from src.scenes.start_screen import StartScreen
 
 
-def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock,
-             font: pygame.font.Font) -> None:
+def show_fps(
+    surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.font.Font
+) -> None:
     """
     Display at the top left corner of the screen the current frame rate.
 
@@ -22,12 +23,15 @@ def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock,
     inner_clock -- the pygame clock running and containing the current frame rate
     font -- the font used to display the frame rate
     """
-    fps_text: pygame.Surface = font.render("FPS: " + str(round(inner_clock.get_fps())),
-                                           True, (255, 255, 0))
+    fps_text: pygame.Surface = font.render(
+        "FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0)
+    )
     surface.blit(fps_text, (2, 2))
 
 
-def main_loop(scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clock) -> None:
+def main_loop(
+    scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clock
+) -> None:
     """
     Run the game until a quit request happened.
     Pygame events are catch and delegated to the scene.
@@ -53,7 +57,7 @@ def main_loop(scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clo
                     scene.button_down(event.button, event.pos)
         scene.update_state()
         scene.display()
-        show_fps(window, clock, fonts.fonts['FPS_FONT'])
+        show_fps(window, clock, fonts.fonts["FPS_FONT"])
         pygame.display.update()
         clock.tick(60)
 
@@ -88,7 +92,7 @@ if __name__ == "__main__":
     start_screen = StartScreen(main_window)
 
     # Load and start menu soundtrack
-    pygame.mixer.music.load(os.path.join('sound_fx', 'soundtrack.ogg'))
+    pygame.mixer.music.load(os.path.join("sound_fx", "soundtrack.ogg"))
     pygame.mixer.music.play(-1)
 
     # Let's the game start!

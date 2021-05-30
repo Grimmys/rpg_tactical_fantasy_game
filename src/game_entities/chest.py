@@ -40,19 +40,26 @@ class Chest(Entity):
     to pick lock the chest or not
     chest_sfx -- the sound that should be started when the chest is opening
     """
-    def __init__(self, position: tuple[int, int], sprite_close: str, sprite_open: str,
-                 potential_items: Sequence[tuple[Item, float]]) -> None:
+
+    def __init__(
+        self,
+        position: tuple[int, int],
+        sprite_close: str,
+        sprite_open: str,
+        potential_items: Sequence[tuple[Item, float]],
+    ) -> None:
         super().__init__("Chest", position, sprite_close)
         self.sprite_close_link: str = sprite_close
         self.sprite_open_link: str = sprite_open
         self.sprite_open: pygame.Surface = pygame.transform.scale(
-            pygame.image.load(sprite_open).convert_alpha(),
-            (TILE_SIZE, TILE_SIZE))
+            pygame.image.load(sprite_open).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        )
         self.item: Item = Chest.determine_item(potential_items)
         self.opened: bool = False
         self.pick_lock_initiated: bool = False
-        self.chest_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
-                                                                             'chest.ogg'))
+        self.chest_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join("sound_fx", "chest.ogg")
+        )
 
     @staticmethod
     def determine_item(potential_items: Sequence[tuple[Item, float]]) -> Item:
@@ -101,20 +108,20 @@ class Chest(Entity):
         tree: etree.Element = super().save(tree_name)
 
         # Save state
-        state: etree.SubElement = etree.SubElement(tree, 'state')
+        state: etree.SubElement = etree.SubElement(tree, "state")
         state.text = str(self.opened)
         # Save sprites
-        closed: etree.SubElement = etree.SubElement(tree, 'closed')
-        closed_sprite = etree.SubElement(closed, 'sprite')
+        closed: etree.SubElement = etree.SubElement(tree, "closed")
+        closed_sprite = etree.SubElement(closed, "sprite")
         closed_sprite.text = self.sprite_close_link
 
-        opened: etree.SubElement = etree.SubElement(tree, 'opened')
-        opened_sprite = etree.SubElement(opened, 'sprite')
+        opened: etree.SubElement = etree.SubElement(tree, "opened")
+        opened_sprite = etree.SubElement(opened, "sprite")
         opened_sprite.text = self.sprite_open_link
 
         # Save content
-        content: etree.SubElement = etree.SubElement(tree, 'contains')
-        item: etree.SubElement = etree.SubElement(content, 'item')
+        content: etree.SubElement = etree.SubElement(tree, "contains")
+        item: etree.SubElement = etree.SubElement(content, "item")
         item.text = self.item.name
 
         return tree

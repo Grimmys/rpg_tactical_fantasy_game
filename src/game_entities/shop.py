@@ -14,22 +14,28 @@ from src.services.menus import ShopMenu
 
 
 class Shop(Building):
-    """
-
-    """
+    """ """
 
     interaction_callback = None
     buy_interface_callback = None
     sell_interface_callback = None
 
-    def __init__(self, name: str, position: tuple[int, int], sprite: str,
-                 interaction: dict[str, any], stock: List[dict[str, any]]) -> None:
+    def __init__(
+        self,
+        name: str,
+        position: tuple[int, int],
+        sprite: str,
+        interaction: dict[str, any],
+        stock: List[dict[str, any]],
+    ) -> None:
         super().__init__(name, position, sprite, interaction)
         self.stock: List[dict[str, any]] = stock
-        self.menu: InfoBox = menu_creator_manager.create_shop_menu(Shop.interaction_callback,
-                                                                   self.stock, 0)
-        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
-                                                                            'trade.ogg'))
+        self.menu: InfoBox = menu_creator_manager.create_shop_menu(
+            Shop.interaction_callback, self.stock, 0
+        )
+        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+            os.path.join("sound_fx", "trade.ogg")
+        )
 
     def get_item_entry(self, item: Item) -> Union[dict[str, any], None]:
         """
@@ -38,7 +44,7 @@ class Shop(Building):
         :return:
         """
         for entry in self.stock:
-            if entry['item'].name == item.name:
+            if entry["item"].name == item.name:
                 return entry
         return None
 
@@ -49,16 +55,18 @@ class Shop(Building):
         """
         for row in self.menu.entries:
             for entry in row:
-                if entry['type'] == 'item_button':
-                    item: Union[dict[str, any], None] = self.get_item_entry(entry['item'])
+                if entry["type"] == "item_button":
+                    item: Union[dict[str, any], None] = self.get_item_entry(
+                        entry["item"]
+                    )
                     if item:
-                        entry['quantity'] = item['quantity']
+                        entry["quantity"] = item["quantity"]
                     else:
                         row.remove(entry)
                         if len(row) == 0:
                             self.menu.entries.remove(row)
-                if entry['type'] == 'text':
-                    entry['text'] = 'Your gold : ' + str(gold)
+                if entry["type"] == "text":
+                    entry["text"] = "Your gold : " + str(gold)
         self.menu.update_content(self.menu.entries)
 
     def interact(self, actor: Character) -> Sequence[Sequence[dict[str, str]]]:
@@ -69,12 +77,22 @@ class Shop(Building):
         """
         self.update_shop_menu(actor.gold)
 
-        entries: Sequence[Sequence[dict[str, str]]] = [[{'name': 'Buy',
-                                                         'callback': Shop.buy_interface_callback,
-                                                         'type': 'button'}],
-                                                       [{'name': 'Sell',
-                                                         'callback': Shop.sell_interface_callback,
-                                                         'type': 'button'}]]
+        entries: Sequence[Sequence[dict[str, str]]] = [
+            [
+                {
+                    "name": "Buy",
+                    "callback": Shop.buy_interface_callback,
+                    "type": "button",
+                }
+            ],
+            [
+                {
+                    "name": "Sell",
+                    "callback": Shop.sell_interface_callback,
+                    "type": "button",
+                }
+            ],
+        ]
         return entries
 
     # TODO: Return type of buy and sell methods should be coherent
@@ -93,8 +111,8 @@ class Shop(Building):
                 actor.set_item(copy(item))
 
                 entry: Union[dict[str, any], None] = self.get_item_entry(item)
-                entry['quantity'] -= 1
-                if entry['quantity'] <= 0:
+                entry["quantity"] -= 1
+                if entry["quantity"] <= 0:
                     self.stock.remove(entry)
 
                 # Gold total amount and stock have been decreased: the screen should be updated
@@ -133,18 +151,18 @@ class Shop(Building):
         tree: etree.Element = super().save(tree_name)
 
         # Specify nature
-        nature: etree.SubElement = etree.SubElement(tree, 'type')
-        nature.text = 'shop'
+        nature: etree.SubElement = etree.SubElement(tree, "type")
+        nature.text = "shop"
 
         # Specify content
-        items: etree.SubElement = etree.SubElement(tree, 'items')
+        items: etree.SubElement = etree.SubElement(tree, "items")
         for entry in self.stock:
-            item: etree.SubElement = etree.SubElement(items, 'item')
+            item: etree.SubElement = etree.SubElement(items, "item")
 
-            name: etree.SubElement = etree.SubElement(item, 'name')
-            name.text = entry['item'].name
+            name: etree.SubElement = etree.SubElement(item, "name")
+            name.text = entry["item"].name
 
-            quantity: etree.SubElement = etree.SubElement(item, 'quantity')
-            quantity.text = str(entry['quantity'])
+            quantity: etree.SubElement = etree.SubElement(item, "quantity")
+            quantity.text = str(entry["quantity"])
 
         return tree

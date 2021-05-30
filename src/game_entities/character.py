@@ -20,14 +20,15 @@ from src.gui.fonts import fonts
 
 
 class Character(Movable):
-    """
+    """ """
 
-    """
     races_data: dict[str, dict[str, Any]] = {}
     classes_data: dict[str, dict[str, Any]] = {}
 
     @staticmethod
-    def init_data(races: dict[str, dict[str, Any]], classes: dict[str, dict[str, Any]]) -> None:
+    def init_data(
+        races: dict[str, dict[str, Any]], classes: dict[str, dict[str, Any]]
+    ) -> None:
         """
 
         :param races:
@@ -36,17 +37,43 @@ class Character(Movable):
         Character.races_data = races
         Character.classes_data = classes
 
-    def __init__(self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface], hit_points: int,
-                 defense: int, resistance: int, strength: int, classes: Sequence[str],
-                 equipments: list[Equipment], strategy: str, lvl: int,
-                 skills: Sequence[Skill], alterations: list[Alteration], race: str,
-                 gold: int, interaction: dict[str, Any],
-                 complementary_sprite_link: str = None):
-        super().__init__(name, position, sprite, hit_points, defense, resistance,
-                         Character.races_data[race]['move'] +
-                         Character.classes_data[classes[0]]['move'],
-                         strength, 'PHYSICAL', strategy, lvl, skills, alterations,
-                         complementary_sprite_link)
+    def __init__(
+        self,
+        name: str,
+        position: tuple[int, int],
+        sprite: Union[str, pygame.Surface],
+        hit_points: int,
+        defense: int,
+        resistance: int,
+        strength: int,
+        classes: Sequence[str],
+        equipments: list[Equipment],
+        strategy: str,
+        lvl: int,
+        skills: Sequence[Skill],
+        alterations: list[Alteration],
+        race: str,
+        gold: int,
+        interaction: dict[str, Any],
+        complementary_sprite_link: str = None,
+    ):
+        super().__init__(
+            name,
+            position,
+            sprite,
+            hit_points,
+            defense,
+            resistance,
+            Character.races_data[race]["move"]
+            + Character.classes_data[classes[0]]["move"],
+            strength,
+            "PHYSICAL",
+            strategy,
+            lvl,
+            skills,
+            alterations,
+            complementary_sprite_link,
+        )
         self.equipments: list[Equipment] = equipments
         self.classes: Sequence[str] = classes
         self.race: str = race
@@ -54,8 +81,10 @@ class Character(Movable):
         self.interaction: dict[str, Any] = interaction
         self.join_team: bool = False
         self.reach_: Sequence[int] = [1]
-        self.constitution: int = Character.races_data[race]['constitution'] + \
-                                 Character.classes_data[classes[0]]['constitution']
+        self.constitution: int = (
+            Character.races_data[race]["constitution"]
+            + Character.classes_data[classes[0]]["constitution"]
+        )
 
     def talk(self, actor: Entity) -> Entries:
         """
@@ -63,11 +92,12 @@ class Character(Movable):
         :param actor:
         :return:
         """
-        self.join_team = self.interaction['join_team']
+        self.join_team = self.interaction["join_team"]
         entries: Entries = []
-        for line in self.interaction['dialog']:
+        for line in self.interaction["dialog"]:
             entry_line: list[Entry] = [
-                {'type': 'text', 'text': line, 'font': fonts['ITEM_DESC_FONT']}]
+                {"type": "text", "text": line, "font": fonts["ITEM_DESC_FONT"]}
+            ]
             entries.append(entry_line)
         return entries
 
@@ -81,9 +111,7 @@ class Character(Movable):
             equipment.display(screen, self.position, True)
 
     def lvl_up(self) -> None:
-        """
-
-        """
+        """ """
         Movable.lvl_up(self)
         self.stats_up()
 
@@ -102,8 +130,9 @@ class Character(Movable):
                 return parried
         return False
 
-    def attacked(self, entity: Entity, damage: int, kind: DamageKind,
-                 allies: Sequence[Entity]) -> int:
+    def attacked(
+        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
+    ) -> int:
         """
 
         :param entity:
@@ -125,7 +154,7 @@ class Character(Movable):
         :param entity:
         :return:
         """
-        damages: int = self.strength + self.get_stat_change('strength')
+        damages: int = self.strength + self.get_stat_change("strength")
         weapon: Weapon = self.get_weapon()
         if weapon:
             damages += weapon.hit(self, entity)
@@ -139,10 +168,18 @@ class Character(Movable):
         :param nb_lvl:
         """
         for _ in range(nb_lvl):
-            hp_increased: int = random.choice(self.classes_data[self.classes[0]]['stats_up']['hp'])
-            self.defense += random.choice(self.classes_data[self.classes[0]]['stats_up']['def'])
-            self.resistance += random.choice(self.classes_data[self.classes[0]]['stats_up']['res'])
-            self.strength += random.choice(self.classes_data[self.classes[0]]['stats_up']['str'])
+            hp_increased: int = random.choice(
+                self.classes_data[self.classes[0]]["stats_up"]["hp"]
+            )
+            self.defense += random.choice(
+                self.classes_data[self.classes[0]]["stats_up"]["def"]
+            )
+            self.resistance += random.choice(
+                self.classes_data[self.classes[0]]["stats_up"]["res"]
+            )
+            self.strength += random.choice(
+                self.classes_data[self.classes[0]]["stats_up"]["str"]
+            )
             self.hit_points_max += hp_increased
             self.hit_points += hp_increased
 
@@ -152,7 +189,7 @@ class Character(Movable):
         :return:
         """
         for equipment in self.equipments:
-            if equipment.body_part == 'right_hand':
+            if equipment.body_part == "right_hand":
                 return equipment
         return None
 
@@ -222,7 +259,7 @@ class Character(Movable):
 
         :return:
         """
-        return ', '.join([str(reach) for reach in self.reach])
+        return ", ".join([str(reach) for reach in self.reach])
 
     # TODO : Refactor me ; I'm too long and return type looks too generic
     def equip(self, equipment: Equipment) -> int:
@@ -233,18 +270,19 @@ class Character(Movable):
         """
         # Verify if player could wear this equipment
         allowed: bool = True
-        if self.race == 'centaur' and not isinstance(equipment, (Shield, Weapon)):
+        if self.race == "centaur" and not isinstance(equipment, (Shield, Weapon)):
             allowed = False
         if equipment.restrictions != {}:
             allowed = False
-            if 'classes' in equipment.restrictions and \
-                    (self.race != 'centaur' or isinstance(equipment, (Shield, Weapon))):
-                for cls in equipment.restrictions['classes']:
+            if "classes" in equipment.restrictions and (
+                self.race != "centaur" or isinstance(equipment, (Shield, Weapon))
+            ):
+                for cls in equipment.restrictions["classes"]:
                     if cls in self.classes:
                         allowed = True
                         break
-            if 'races' in equipment.restrictions:
-                for race in equipment.restrictions['races']:
+            if "races" in equipment.restrictions:
+                for race in equipment.restrictions["races"]:
                     if race == self.race:
                         allowed = True
                         break
@@ -292,17 +330,15 @@ class Character(Movable):
         :return:
         """
         malus: int = 0
-        if stat == 'speed':
+        if stat == "speed":
             # Check if character as a malus due to equipment weight exceeding constitution
             total_weight: int = sum([equipment.weight for equipment in self.equipments])
             difference: int = total_weight - self.constitution
-            malus: int = 0 if difference < 0 else - math.ceil(difference / 2)
+            malus: int = 0 if difference < 0 else -math.ceil(difference / 2)
         return malus + Movable.get_stat_change(self, stat)
 
     def remove_chest_key(self) -> None:
-        """
-
-        """
+        """ """
         best_candidate: Union[Item, None] = None
         for item in self.items:
             if isinstance(item, Key) and item.for_chest:
@@ -314,9 +350,7 @@ class Character(Movable):
         self.items.remove(best_candidate)
 
     def remove_door_key(self) -> None:
-        """
-
-        """
+        """ """
         best_candidate: Union[Item, None] = None
         for item in self.items:
             if isinstance(item, Key) and item.for_door:
@@ -340,24 +374,26 @@ class Character(Movable):
 
         # Save class (if possible)
         if len(self.classes) > 0:
-            class_el: etree.Element = etree.SubElement(tree, 'class')
-            class_el.text = self.classes[0]  # Currently, only first class is saved if any
+            class_el: etree.Element = etree.SubElement(tree, "class")
+            class_el.text = self.classes[
+                0
+            ]  # Currently, only first class is saved if any
 
         # Save race
-        race: etree.Element = etree.SubElement(tree, 'race')
+        race: etree.Element = etree.SubElement(tree, "race")
         race.text = self.race
 
         # Save gold
-        gold: etree.Element = etree.SubElement(tree, 'gold')
+        gold: etree.Element = etree.SubElement(tree, "gold")
         gold.text = str(self.gold)
 
         # Save inventory
-        inventory: etree.Element = etree.SubElement(tree, 'inventory')
+        inventory: etree.Element = etree.SubElement(tree, "inventory")
         for item in self.items:
-            inventory.append(item.save('item'))
+            inventory.append(item.save("item"))
 
         # Save equipment
-        equipments: etree.Element = etree.SubElement(tree, 'equipment')
+        equipments: etree.Element = etree.SubElement(tree, "equipment")
         for equipment in self.equipments:
             equipments.append(equipment.save(equipment.body_part))
 

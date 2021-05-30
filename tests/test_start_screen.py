@@ -33,14 +33,38 @@ class TestStartScreen(unittest.TestCase):
         cls.save_url = "saves/main_save.xml"
         cls.level_class = Level
         cls.buttons = []
-        cls.buttons.append(Rect(NEW_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
-                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        cls.buttons.append(Rect(LOAD_GAME_BUTTON_POS[0], LOAD_GAME_BUTTON_POS[1],
-                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        cls.buttons.append(Rect(OPTIONS_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
-                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
-        cls.buttons.append(Rect(EXIT_GAME_BUTTON_POS[0], NEW_GAME_BUTTON_POS[1],
-                                BUTTON_SIZE[0], BUTTON_SIZE[1]))
+        cls.buttons.append(
+            Rect(
+                NEW_GAME_BUTTON_POS[0],
+                NEW_GAME_BUTTON_POS[1],
+                BUTTON_SIZE[0],
+                BUTTON_SIZE[1],
+            )
+        )
+        cls.buttons.append(
+            Rect(
+                LOAD_GAME_BUTTON_POS[0],
+                LOAD_GAME_BUTTON_POS[1],
+                BUTTON_SIZE[0],
+                BUTTON_SIZE[1],
+            )
+        )
+        cls.buttons.append(
+            Rect(
+                OPTIONS_BUTTON_POS[0],
+                NEW_GAME_BUTTON_POS[1],
+                BUTTON_SIZE[0],
+                BUTTON_SIZE[1],
+            )
+        )
+        cls.buttons.append(
+            Rect(
+                EXIT_GAME_BUTTON_POS[0],
+                NEW_GAME_BUTTON_POS[1],
+                BUTTON_SIZE[0],
+                BUTTON_SIZE[1],
+            )
+        )
         races = loader.load_races()
         classes = loader.load_classes()
         Character.init_data(races, classes)
@@ -49,8 +73,10 @@ class TestStartScreen(unittest.TestCase):
     def generate_position(start_pos, end_pos):
         # Generate random pos in a rect having start_pos as top left corner
         # and end_pos as bottom right corner
-        position = (randrange(start_pos[0], end_pos[0] + 1),
-               randrange(start_pos[1], end_pos[1] + 1))
+        position = (
+            randrange(start_pos[0], end_pos[0] + 1),
+            randrange(start_pos[1], end_pos[1] + 1),
+        )
         # Print pos in case of test failure
         print("Generated position : " + str(position))
         return position
@@ -71,7 +97,9 @@ class TestStartScreen(unittest.TestCase):
         screen = self.start_screen.screen.copy()
 
         # Generate random pos on new game button
-        position = self.generate_position(NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE)
+        position = self.generate_position(
+            NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
@@ -91,7 +119,9 @@ class TestStartScreen(unittest.TestCase):
             os.remove(self.save_url)
 
         # Generate random pos on load game button
-        position = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        position = self.generate_position(
+            LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsNone(self.start_screen.level)
@@ -110,11 +140,14 @@ class TestStartScreen(unittest.TestCase):
         shutil.copyfile("tests/test_saves/simple_save.xml", self.save_url)
 
         # Generate random pos on load game buttons
-        position = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        position = self.generate_position(
+            LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(LEFT_BUTTON, position)
         self.start_screen.display()
-        position = self.generate_position(LOAD_FIRST_SLOT_BUTTON_POS,
-                                     LOAD_FIRST_SLOT_BUTTON_POS + BUTTON_SIZE)
+        position = self.generate_position(
+            LOAD_FIRST_SLOT_BUTTON_POS, LOAD_FIRST_SLOT_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
@@ -126,7 +159,9 @@ class TestStartScreen(unittest.TestCase):
         old_active_menu = self.start_screen.active_menu
 
         # Generate random pos on options button
-        pos = self.generate_position(OPTIONS_BUTTON_POS, OPTIONS_BUTTON_POS + BUTTON_SIZE)
+        pos = self.generate_position(
+            OPTIONS_BUTTON_POS, OPTIONS_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(LEFT_BUTTON, pos)
 
         self.assertEqual(self.start_screen.background_menus[0][0], old_active_menu)
@@ -134,7 +169,9 @@ class TestStartScreen(unittest.TestCase):
 
     def test_exit_game(self):
         # Generate random pos on exit game button
-        position = self.generate_position(EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE)
+        position = self.generate_position(
+            EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.assertEqual(self.start_screen.click(LEFT_BUTTON, position), True)
 
     def test_click_on_nothing(self):
@@ -148,8 +185,10 @@ class TestStartScreen(unittest.TestCase):
         valid_pos = False
         pos = (0, 0)
         while not valid_pos:
-            pos = (randrange(0, self.start_screen.screen.get_size()[0]),
-                   randrange(0, self.start_screen.screen.get_size()[1]))
+            pos = (
+                randrange(0, self.start_screen.screen.get_size()[0]),
+                randrange(0, self.start_screen.screen.get_size()[1]),
+            )
             valid_pos = True
             for button in self.buttons:
                 if button.collidepoint(pos):
@@ -173,7 +212,9 @@ class TestStartScreen(unittest.TestCase):
         old_active_menu = self.start_screen.active_menu
 
         # Generate random pos on new game button
-        pos = self.generate_position(NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE)
+        pos = self.generate_position(
+            NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(RIGHT_BUTTON, pos)
 
         # Verify state is unchanged
@@ -183,7 +224,9 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
         # Generate random pos on load game button
-        pos = self.generate_position(LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE)
+        pos = self.generate_position(
+            LOAD_GAME_BUTTON_POS, LOAD_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(RIGHT_BUTTON, pos)
 
         # Verify state is unchanged
@@ -193,7 +236,9 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
         # Generate random pos on options button
-        pos = self.generate_position(OPTIONS_BUTTON_POS, OPTIONS_BUTTON_POS + BUTTON_SIZE)
+        pos = self.generate_position(
+            OPTIONS_BUTTON_POS, OPTIONS_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(RIGHT_BUTTON, pos)
 
         # Verify state is unchanged
@@ -203,7 +248,9 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
         # Generate random pos on exit game button
-        pos = self.generate_position(EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE)
+        pos = self.generate_position(
+            EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE
+        )
         self.start_screen.click(RIGHT_BUTTON, pos)
 
         # Verify state is unchanged
@@ -213,5 +260,5 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.active_menu, old_active_menu)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -7,8 +7,11 @@ import pygame as pg
 from src.scenes.start_screen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from src.services import menu_creator_manager
-from src.services.menus import ItemMenu, GenericActions, TradeMenu
-from tests.test_start_screen import LOAD_GAME_BUTTON_POS, LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS
+from tests.test_start_screen import (
+    LOAD_GAME_BUTTON_POS,
+    LEFT_BUTTON,
+    LOAD_FIRST_SLOT_BUTTON_POS,
+)
 from tests.tools import minimal_setup_for_game
 
 
@@ -35,7 +38,9 @@ class TestLevel(unittest.TestCase):
         self.start_screen.click(LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS)
         self.level = self.start_screen.level
 
-    def simulate_trade_item(self, item, active_player, other_player, is_active_the_sender):
+    def simulate_trade_item(
+        self, item, active_player, other_player, is_active_the_sender
+    ):
         """
 
         :param item:
@@ -46,18 +51,19 @@ class TestLevel(unittest.TestCase):
         # Store the current menu before making trade
         self.level.background_menus.append((self.level.active_menu, False))
         self.level.interact(active_player, other_player, ())
-        self.level.execute_trade_action(TradeMenu.INTERAC_ITEM, ((0, 0), item, (active_player, other_player)))
-        self.level.execute_item_action(ItemMenu.TRADE_ITEM,
-                                       ((), (), (active_player, other_player, 0 if is_active_the_sender else 1)))
-        self.level.execute_action((), (GenericActions.CLOSE, ()))
-        self.level.execute_action((), (GenericActions.CLOSE, ()))
+        self.level.interact_trade_item(
+            item, (0, 0), (active_player, other_player), is_active_the_sender
+        )
+        self.level.trade_item(active_player, other_player, is_active_the_sender)
+        self.level.execute_action(self.level.close_active_menu)
+        self.level.execute_action(self.level.close_active_menu)
 
     def test_distance_between_two_entities(self):
         # Import simple save file
         self.import_save_file("tests/test_saves/simple_save.xml")
 
         players = self.level.players
-        foe = self.level.entities['foes'][0]
+        foe = self.level.entities["foes"][0]
         entities_with_dist = self.level.distance_between_all(foe, players)
 
         self.assertEqual(5, entities_with_dist[players[0]])
@@ -67,7 +73,7 @@ class TestLevel(unittest.TestCase):
         self.import_save_file("tests/test_saves/complete_first_level_save.xml")
 
         players = self.level.players
-        foes = self.level.entities['foes']
+        foes = self.level.entities["foes"]
 
         raimund = None
         braern = None
@@ -95,7 +101,9 @@ class TestLevel(unittest.TestCase):
         self.assertEqual(4, entities_with_dist[braern])
         self.assertEqual(5, entities_with_dist[thokdrum])
 
-        entities_with_dist = self.level.distance_between_all(specific_necrophage, players)
+        entities_with_dist = self.level.distance_between_all(
+            specific_necrophage, players
+        )
         self.assertEqual(8, entities_with_dist[raimund])
         self.assertEqual(6, entities_with_dist[braern])
         self.assertEqual(7, entities_with_dist[thokdrum])
@@ -106,14 +114,21 @@ class TestLevel(unittest.TestCase):
 
         players = self.level.players
 
-        active_player = [player for player in players if player.name == 'raimund'][0]
-        receiver_player = [player for player in players if player.name == 'braern'][0]
+        active_player = [player for player in players if player.name == "raimund"][0]
+        receiver_player = [player for player in players if player.name == "braern"][0]
         self.level.selected_player = active_player
 
         item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.active_menu = menu_creator_manager.create_player_menu(active_player, [], [], [], [])
+        self.level.active_menu = menu_creator_manager.create_player_menu(
+            {"inventory": None, "equipment": None, "status": None, "wait": None},
+            active_player,
+            [],
+            [],
+            [],
+            [],
+        )
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, receiver_player, True)
@@ -133,14 +148,21 @@ class TestLevel(unittest.TestCase):
 
         players = self.level.players
 
-        active_player = [player for player in players if player.name == 'raimund'][0]
-        sender_player = [player for player in players if player.name == 'braern'][0]
+        active_player = [player for player in players if player.name == "raimund"][0]
+        sender_player = [player for player in players if player.name == "braern"][0]
         self.level.selected_player = active_player
 
         item = rd.choice(sender_player.items)
 
         # Open character menu
-        self.level.active_menu = menu_creator_manager.create_player_menu(active_player, [], [], [], [])
+        self.level.active_menu = menu_creator_manager.create_player_menu(
+            {"inventory": None, "equipment": None, "status": None, "wait": None},
+            active_player,
+            [],
+            [],
+            [],
+            [],
+        )
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, sender_player, False)
@@ -160,15 +182,24 @@ class TestLevel(unittest.TestCase):
 
         players = self.level.players
 
-        active_player = [player for player in players if player.name == 'raimund'][0]
-        trade_partner_player = [player for player in players if player.name == 'braern'][0]
+        active_player = [player for player in players if player.name == "raimund"][0]
+        trade_partner_player = [
+            player for player in players if player.name == "braern"
+        ][0]
         self.level.selected_player = active_player
 
         item = rd.choice(trade_partner_player.items)
         second_item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.active_menu = menu_creator_manager.create_player_menu(active_player, [], [], [], [])
+        self.level.active_menu = menu_creator_manager.create_player_menu(
+            {"inventory": None, "equipment": None, "status": None, "wait": None},
+            active_player,
+            [],
+            [],
+            [],
+            [],
+        )
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, trade_partner_player, False)
@@ -200,5 +231,5 @@ class TestLevel(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

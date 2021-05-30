@@ -47,12 +47,22 @@ class DynamicButton(Button):
     (it could be the name of the dynamic button in a way)
     """
 
-    def __init__(self, callback: Callable, size: tuple[int, int], position: Position,
-                 sprite: pygame.Surface, sprite_hover: pygame.Surface, margin: Margin,
-                 values: Sequence[any], current_value_index: int, base_title: str,
-                 linked_object: any = None) -> None:
-        super().__init__(callback, size, position, sprite, sprite_hover,
-                         margin, linked_object)
+    def __init__(
+        self,
+        callback: Callable,
+        size: tuple[int, int],
+        position: Position,
+        sprite: pygame.Surface,
+        sprite_hover: pygame.Surface,
+        margin: Margin,
+        values: Sequence[any],
+        current_value_index: int,
+        base_title: str,
+        linked_object: any = None,
+    ) -> None:
+        super().__init__(
+            callback, size, position, sprite, sprite_hover, margin, linked_object
+        )
         self.values: Sequence[any] = values
         self.current_value_index: int = current_value_index
         self.base_title: str = base_title
@@ -65,21 +75,32 @@ class DynamicButton(Button):
         Update the render of the button to display the updated dynamic value.
         Should be called after the current value changed.
         """
-        rendered_name: pygame.Surface = fonts['ITEM_FONT'].render(
-            f'{self.base_title} {self.values[self.current_value_index]["label"]}', 1, WHITE)
+        rendered_name: pygame.Surface = fonts["ITEM_FONT"].render(
+            f'{self.base_title} {self.values[self.current_value_index]["label"]}',
+            1,
+            WHITE,
+        )
 
         temporary_sprite: pygame.Surface = self.__base_sprite.copy()
-        temporary_sprite.blit(rendered_name,
-                              (temporary_sprite.get_width() // 2 - rendered_name.get_width() // 2,
-                               temporary_sprite.get_height() // 2 - rendered_name.get_height() // 2
-                               ))
+        temporary_sprite.blit(
+            rendered_name,
+            (
+                temporary_sprite.get_width() // 2 - rendered_name.get_width() // 2,
+                temporary_sprite.get_height() // 2 - rendered_name.get_height() // 2,
+            ),
+        )
         self.sprite = temporary_sprite
 
         temporary_sprite_hover: pygame.Surface = self.__base_sprite_hover.copy()
-        temporary_sprite_hover.blit(rendered_name, (temporary_sprite_hover.get_width() // 2 -
-                                                    rendered_name.get_width() // 2,
-                                                    temporary_sprite_hover.get_height() // 2 -
-                                                    rendered_name.get_height() // 2))
+        temporary_sprite_hover.blit(
+            rendered_name,
+            (
+                temporary_sprite_hover.get_width() // 2
+                - rendered_name.get_width() // 2,
+                temporary_sprite_hover.get_height() // 2
+                - rendered_name.get_height() // 2,
+            ),
+        )
         self.sprite_hover = temporary_sprite_hover
 
         # Force display update
@@ -99,6 +120,6 @@ class DynamicButton(Button):
         if self.current_value_index == len(self.values):
             self.current_value_index = 0
         self.__update_sprite()
-        current_value = self.values[self.current_value_index]['value']
+        current_value = self.values[self.current_value_index]["value"]
         function_to_call: Callable = super().action_triggered()
         return lambda: function_to_call(current_value)

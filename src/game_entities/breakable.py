@@ -26,8 +26,15 @@ class Breakable(Destroyable):
     Attributes:
     sprite_link -- the relative path to the visual representation of the element
     """
-    def __init__(self, position: tuple[int, int], sprite: str,
-                 hit_points: int, defense: int, resistance: int) -> None:
+
+    def __init__(
+        self,
+        position: tuple[int, int],
+        sprite: str,
+        hit_points: int,
+        defense: int,
+        resistance: int,
+    ) -> None:
         super().__init__("Breakable", position, sprite, hit_points, defense, resistance)
         # Useful in case of saving
         self.sprite_link: str = sprite
@@ -41,7 +48,7 @@ class Breakable(Destroyable):
         screen -- the screen on which the entity should be drawn
         """
         super().display(screen)
-        screen.blit(constant_sprites['cracked'], self.position)
+        screen.blit(constant_sprites["cracked"], self.position)
 
     def save(self, tree_name: str) -> etree.Element:
         """
@@ -55,7 +62,7 @@ class Breakable(Destroyable):
         tree: etree.Element = super().save(tree_name)
 
         # Save sprite
-        sprite: etree.SubElement = etree.SubElement(tree, 'sprite')
+        sprite: etree.SubElement = etree.SubElement(tree, "sprite")
         sprite.text = self.sprite_link
 
         return tree

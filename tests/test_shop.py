@@ -14,26 +14,30 @@ class TestShop(unittest.TestCase):
         minimal_setup_for_game()
 
     def test_init_shop(self):
-        name = 'tavern'
+        name = "tavern"
         pos = (3, 2)
-        sprite = 'imgs/houses/blue_house.png'
+        sprite = "imgs/houses/blue_house.png"
         interaction = None
-        items = [{'item': random_item(), 'quantity': rd.randint(1, 10)},
-                 {'item': random_item(), 'quantity': rd.randint(1, 10)}]
+        items = [
+            {"item": random_item(), "quantity": rd.randint(1, 10)},
+            {"item": random_item(), "quantity": rd.randint(1, 10)},
+        ]
         shop = Shop(name, pos, sprite, interaction, items)
         self.assertEqual(name, shop.name)
         self.assertEqual(pos, shop.position)
-        self.assertEqual('Tavern', str(shop))
+        self.assertEqual("Tavern", str(shop))
         self.assertTrue(items[0] in shop.stock)
         self.assertTrue(items[1] in shop.stock)
 
     def test_interact(self):
-        name = 'tavern'
+        name = "tavern"
         pos = (3, 2)
-        sprite = 'imgs/houses/blue_house.png'
+        sprite = "imgs/houses/blue_house.png"
         interaction = None
-        items = [{'item': random_item(), 'quantity': rd.randint(1, 10)},
-                 {'item': random_item(), 'quantity': rd.randint(1, 10)}]
+        items = [
+            {"item": random_item(), "quantity": rd.randint(1, 10)},
+            {"item": random_item(), "quantity": rd.randint(1, 10)},
+        ]
         shop = Shop(name, pos, sprite, interaction, items)
         actor = random_character_entity()
         shop.interact(actor)
@@ -52,5 +56,5 @@ class TestShop(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

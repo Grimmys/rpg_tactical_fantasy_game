@@ -10,6 +10,19 @@ from src.game_entities.item import Item
 
 Margin = tuple[int, int, int, int]
 # TODO: define precise dataclasses for entry and entries instead of only type aliases
-Entry = dict[str, Union[str, int, Margin, dict[str, dict[str, str]], List[any], Enum, Item, Callable, None]]
+Entry = dict[
+    str,
+    Union[
+        str,
+        int,
+        Margin,
+        dict[str, dict[str, str]],
+        List[any],
+        Enum,
+        Item,
+        Callable,
+        None,
+    ],
+]
 EntryLine = List[Entry]
 Entries = List[EntryLine]
