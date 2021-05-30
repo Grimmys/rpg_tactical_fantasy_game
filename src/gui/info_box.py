@@ -158,7 +158,7 @@ class InfoBox:
                                                            entry['color_hover'])
                     if 'obj' not in entry:
                         entry['obj'] = None
-                    element.append(Button(entry['id'], name.get_size(), (0, 0), name,
+                    element.append(Button(entry['callback'], name.get_size(), (0, 0), name,
                                           name_hover, entry['margin'], entry['obj']))
 
                 elif entry['type'] == 'item_button':
@@ -172,7 +172,7 @@ class InfoBox:
                         entry['price'] = 0
                     if 'quantity' not in entry:
                         entry['quantity'] = 0
-                    element.append(ItemButton(entry['id'], button_size,
+                    element.append(ItemButton(entry['callback'], button_size,
                                               (0, 0), entry['item'], entry['margin'],
                                               entry['price'], entry['quantity'], disabled))
                 elif entry['type'] == 'text':

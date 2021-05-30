@@ -1,6 +1,6 @@
 import os
 from enum import IntEnum, auto
-from typing import Callable
+from typing import Callable, Sequence
 
 import pygame
 from lxml import etree
@@ -28,6 +28,7 @@ from src.gui.constant_sprites import ATTACKABLE_OPACITY, LANDING_OPACITY, INTERA
     constant_sprites
 from src.gui.fonts import fonts
 from src.gui.info_box import InfoBox
+from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.services import load_from_xml_manager as Loader, menu_creator_manager
@@ -67,6 +68,10 @@ class Level:
                  players=None):
         if players is None:
             players = []
+
+        Shop.interaction_callback = self.interact_item_shop
+        Shop.buy_interface_callback = self.open_shop_interface
+        Shop.sell_interface_callback = self.open_sell_interface
 
         # Store directory path if player wants to save and exit game
         self.directory = directory
@@ -611,7 +616,7 @@ class Level:
 
         # TODO: move the creation of the pop-up in menu_creator_manager
         entry_item = {'type': 'item_button', 'item': item, 'index': -1, 'disabled': True,
-                      'id': InventoryMenu.INTERAC_ITEM}
+                      'callback': lambda button_position, item_reference=item: self.interact_item(item_reference, button_position, is_equipped=False)}
         entries = [[entry_item],
                    [{'type': 'text', 'text': "Item has been added to your inventory",
                      'font': fonts['ITEM_DESC_FONT']}]]
@@ -759,7 +764,10 @@ class Level:
             self.background_menus = []
         # Check if player tries to trade with another player
         elif isinstance(target, Player):
-            self.active_menu = menu_creator_manager.create_trade_menu(self.selected_player, target)
+            self.active_menu = menu_creator_manager.create_trade_menu({
+                'interact_item': self.interact_trade_item,
+                'send_gold': self.send_gold
+            }, self.selected_player, target)
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
             pygame.mixer.Sound.play(self.talk_sfx)
@@ -937,22 +945,18 @@ class Level:
                 self.duel(entity, ent_attacked, allies, targets, entity.attack_kind)
                 entity.end_turn()
 
-    def execute_buy_action(self, method_id, args):
+    def interact_item_shop(self, item: Item, button_position: Position) -> None:
         """
 
-        :param method_id:
-        :param args:
+        :param button_position:
+        :param item:
         """
-        if method_id is BuyMenu.INTERAC_BUY:
-            item_button_pos = args[0]
-            item = args[1]
-
-            self.selected_item = item
-
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_item_shop_menu(item_button_pos, item)
-        else:
-            print("Unknown action in buy menu... : " + str(method_id))
+        self.selected_item = item
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_item_shop_menu({
+            'buy_item': self.try_buy_selected_item,
+            'info_item': self.open_selected_item_description
+        }, button_position, item)
 
     def execute_sell_action(self, method_id, args):
         """
@@ -961,61 +965,43 @@ class Level:
         :param args:
         """
         if method_id is SellMenu.INTERAC_SELL:
-            item_button_position = args[0]
-            item = args[1]
-
-            self.selected_item = item
-
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_item_sell_menu(
-                item_button_position, item)
+            self.interact_sell_item(args)
         else:
             print("Unknown action in sell menu... : " + str(method_id))
 
-    def execute_shop_action(self, method_id, args):
+    def interact_sell_item(self, item: Item, button_position: Position) -> None:
         """
 
-        :param method_id:
-        :param args:
+        :param item:
+        :param button_position:
         """
-        if method_id is ShopMenu.BUY:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = self.active_shop.menu
-        elif method_id is ShopMenu.SELL:
-            items_max = self.selected_player.nb_items_max
+        self.selected_item = item
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_item_sell_menu({
+            'sell_item': self.try_sell_selected_item,
+            'info_item': self.open_selected_item_description
+        }, button_position, item)
 
-            items = list(self.selected_player.items)
-            free_spaces = items_max - len(items)
-            items += [None] * free_spaces
-
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = menu_creator_manager.create_inventory_menu(items,
-                                                                          self.selected_player.gold,
-                                                                          is_to_sell=True)
-        else:
-            print("Unknown action in shop menu... : " + str(method_id))
-
-    def execute_main_menu_action(self, method_id, args):
+    def open_sell_interface(self):
         """
 
-        :param method_id:
-        :param args:
         """
-        if method_id is MainMenu.START:
-            self.start_game()
-        elif method_id is MainMenu.SAVE:
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_save_menu(self.save_game)
-        elif method_id is MainMenu.SUSPEND:
-            # Because player choose to leave game before end, it's obviously a defeat
-            self.game_phase = LevelStatus.ENDED_DEFEAT
-            self.exit_game()
-        elif method_id is MainMenu.END_TURN:
-            self.end_turn()
-        elif method_id is MainMenu.DIARY:
-            self.open_diary()
-        else:
-            print("Unknown action in main menu... : " + str(method_id))
+        items_max = self.selected_player.nb_items_max
+        items = list(self.selected_player.items)
+        free_spaces = items_max - len(items)
+        items += [None] * free_spaces
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = menu_creator_manager.create_inventory_menu(self.interact_sell_item,
+                                                                      items,
+                                                                      self.selected_player.gold,
+                                                                      is_to_sell=True)
+
+    def open_shop_interface(self):
+        """
+
+        """
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = self.active_shop.menu
 
     def open_diary(self) -> None:
         """
@@ -1034,56 +1020,10 @@ class Level:
         self.side_turn = self.side_turn.get_next()
         self.begin_turn()
 
-    def execute_character_menu_action(self, method_id, args):
-        """
-
-        :param method_id:
-        :param args:
-        """
-        # Memorize current action
-        self.selected_player.current_action = method_id
-
-        # Attack action : Character has to choose a target
-        if method_id is CharacterMenu.ATTACK:
-            self.select_attack_target()
-        # Item action : Character's inventory is opened
-        elif method_id is CharacterMenu.INV:
-            self.open_inventory()
-        # Equipment action : open the equipment screen
-        elif method_id is CharacterMenu.EQUIPMENT:
-            self.open_equipment()
-        # Display player's status
-        elif method_id is CharacterMenu.STATUS:
-            self.open_status_interface()
-        # Wait action : Given Character's turn is finished
-        elif method_id is CharacterMenu.WAIT:
-            self.end_character_turn()
-        # Open a chest
-        elif method_id is CharacterMenu.OPEN_CHEST:
-            self.try_open_chest()
-        elif method_id is CharacterMenu.OPEN_DOOR:
-            self.try_open_door()
-        elif method_id is CharacterMenu.PICK_LOCK:
-            self.pick_lock()
-        # Use a portal
-        elif method_id is CharacterMenu.USE_PORTAL:
-            self.select_interaction_with(Portal)
-        # Drink into a fountain
-        elif method_id is CharacterMenu.DRINK:
-            self.select_interaction_with(Fountain)
-        # Talk with an ally
-        elif method_id is CharacterMenu.TALK:
-            self.talk()
-        elif method_id is CharacterMenu.TRADE:
-            self.select_interaction_with(Player)
-        # Visit a house
-        elif method_id is CharacterMenu.VISIT:
-            self.select_visit()
-        # Valid a mission position
-        elif method_id is CharacterMenu.TAKE:
-            self.take_objective()
-
     def select_visit(self):
+        """
+
+        """
         self.background_menus.append((self.active_menu, False))
         self.active_menu = None
         self.selected_player.choose_target()
@@ -1092,6 +1032,9 @@ class Level:
         self.possible_attacks = []
 
     def take_objective(self):
+        """
+
+        """
         for mission in self.missions:
             if mission.type is MissionType.POSITION or \
                     mission.type is MissionType.TOUCH_POSITION:
@@ -1112,6 +1055,9 @@ class Level:
                             break
 
     def talk(self):
+        """
+
+        """
         self.background_menus.append((self.active_menu, False))
         self.active_menu = None
         self.selected_player.choose_target()
@@ -1121,6 +1067,10 @@ class Level:
                 self.possible_interactions.append(ent.position)
 
     def pick_lock(self):
+        """
+
+        """
+        self.selected_player.current_action = CharacterMenu.PICK_LOCK
         self.background_menus.append((self.active_menu, False))
         self.active_menu = None
         self.selected_player.choose_target()
@@ -1130,6 +1080,9 @@ class Level:
                 self.possible_interactions.append(ent.position)
 
     def try_open_door(self):
+        """
+
+        """
         # Check if player has a key
         has_key = False
         for item in self.selected_player.items:
@@ -1143,9 +1096,13 @@ class Level:
                                        width=ITEM_MENU_WIDTH,
                                        close_button=lambda: self.close_active_menu(False))
         else:
+            self.selected_player.current_action = CharacterMenu.OPEN_DOOR
             self.select_interaction_with(Door)
 
     def try_open_chest(self):
+        """
+
+        """
         # Check if player has a key
         has_key = False
         for item in self.selected_player.items:
@@ -1159,6 +1116,7 @@ class Level:
                                        width=ITEM_MENU_WIDTH,
                                        close_button=lambda: self.close_active_menu(False))
         else:
+            self.selected_player.current_action = CharacterMenu.OPEN_CHEST
             self.background_menus.append((self.active_menu, False))
             self.active_menu = None
             self.selected_player.choose_target()
@@ -1168,6 +1126,9 @@ class Level:
                     self.possible_interactions.append(ent.position)
 
     def select_attack_target(self):
+        """
+
+        """
         self.background_menus.append((self.active_menu, False))
         self.selected_player.choose_target()
         self.possible_attacks = self.get_possible_attacks([self.selected_player.position],
@@ -1177,11 +1138,19 @@ class Level:
         self.active_menu = None
 
     def open_status_interface(self):
+        """
+
+        """
         self.background_menus.append((self.active_menu, True))
-        self.active_menu = menu_creator_manager.create_status_menu(
-            self.selected_player)
+        self.active_menu = menu_creator_manager.create_status_menu({
+            'info_alteration': self.open_alteration_description,
+            'info_skill': self.open_skill_description
+        }, self.selected_player)
 
     def end_character_turn(self):
+        """
+
+        """
         pygame.mixer.Sound.play(self.wait_sfx)
         self.active_menu = None
         self.selected_item = None
@@ -1193,11 +1162,14 @@ class Level:
         self.background_menus = []
 
     def open_equipment(self) -> None:
+        """
+
+        """
         pygame.mixer.Sound.play(self.armor_sfx)
         self.background_menus.append((self.active_menu, True))
         equipments = list(self.selected_player.equipments)
-        self.active_menu = menu_creator_manager.create_equipment_menu(
-            equipments)
+        self.active_menu = menu_creator_manager.create_equipment_menu(self.interact_item,
+                                                                      equipments)
 
     def open_inventory(self) -> None:
         """
@@ -1210,8 +1182,9 @@ class Level:
         items = list(self.selected_player.items)
         free_spaces = items_max - len(items)
         items += [None] * free_spaces
-        self.active_menu = menu_creator_manager.create_inventory_menu(
-            items, self.selected_player.gold)
+        self.active_menu = menu_creator_manager.create_inventory_menu(self.interact_item,
+                                                                      items,
+                                                                      self.selected_player.gold)
 
     def select_interaction_with(self, entity_kind):
         """
@@ -1226,21 +1199,22 @@ class Level:
             if isinstance(entity, entity_kind):
                 self.possible_interactions.append(entity.position)
 
-    def execute_inv_action(self, method_id, args):
+    def interact_item(self, item, button_position, is_equipped):
         """
 
-        :param method_id:
-        :param args:
+        :param is_equipped:
+        :param item:
+        :param button_position:
         """
-        # Watch item action : Open a menu to act with a given item
-        if method_id is InventoryMenu.INTERAC_ITEM:
-            item_button_position = args[0]
-            item = args[1]
-
-            self.selected_item = item
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_item_menu(
-                item_button_position, item)
+        self.selected_item = item
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_item_menu({
+            'info_item': self.open_selected_item_description,
+            'throw_item': self.throw_selected_item,
+            'use_item': self.use_selected_item,
+            'unequip_item': self.unequip_selected_item,
+            'equip_item': self.equip_selected_item
+        }, button_position, item, is_equipped=is_equipped)
 
     def execute_equipment_action(self, method_id, args):
         """
@@ -1266,169 +1240,212 @@ class Level:
         """
         # Get info about an item
         if method_id is ItemMenu.INFO_ITEM:
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = menu_creator_manager.create_item_description_menu(self.selected_item)
+            self.open_selected_item_description()
         # Remove an item
         elif method_id is ItemMenu.THROW_ITEM:
-            # Remove item from inventory/equipment according to the index
-            if self.selected_player.has_equipment(self.selected_item):
-                self.selected_player.remove_equipment(self.selected_item)
-                equipments = list(self.selected_player.equipments)
-                new_items_menu = menu_creator_manager.create_equipment_menu(equipments)
-            else:
-                self.selected_player.remove_item(self.selected_item)
-                items_max = self.selected_player.nb_items_max
-                items = list(self.selected_player.items)
-                free_spaces = items_max - len(items)
-                items += [None] * free_spaces
-
-                new_items_menu = menu_creator_manager.create_inventory_menu(
-                    items, self.selected_player.gold)
-
-            # Update the inventory menu (i.e. first menu backward)
-            self.background_menus[len(self.background_menus) - 1] = (new_items_menu, True)
-
-            remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.',
-                                    'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       remove_msg_entries, width=ITEM_DELETE_MENU_WIDTH,
-                                       close_button=lambda: self.close_active_menu(False))
+            self.throw_selected_item()
         # Use an item from the inventory
         elif method_id is ItemMenu.USE_ITEM:
-            self.background_menus.append((self.active_menu, False))
-
-            # Try to use the object
-            used, result_msgs = self.selected_player.use_item(self.selected_item)
-
-            # Inventory display is update if object has been used
-            if used:
-                self.refresh_inventory()
-
-            entries = [[{'type': 'text', 'text': msg,
-                         'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in
-                       result_msgs]
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       entries, width=ITEM_INFO_MENU_WIDTH,
-                                       close_button=lambda: self.close_active_menu(False))
+            self.use_selected_item()
         # Equip an item
         elif method_id is ItemMenu.EQUIP_ITEM:
-            self.background_menus.append((self.active_menu, False))
-
-            # Try to equip the item
-            return_equipped = self.selected_player.equip(self.selected_item)
-            if return_equipped == -1:
-                # Item can't be equipped by this player
-                result_msg = "This item can't be equipped : " \
-                             + str(self.selected_player) + " doesn't satisfy the requirements."
-            else:
-                # In this case returned value is > 0, item has been equipped
-                result_msg = "The item has been equipped."
-                if return_equipped == 1:
-                    result_msg += " Previous equipped item has been added to your inventory."
-
-                # Inventory has changed
-                self.refresh_inventory()
-
-            entries = [[{'type': 'text', 'text': result_msg,
-                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       entries, width=ITEM_INFO_MENU_WIDTH,
-                                       close_button=lambda: self.close_active_menu(False))
+            self.equip_selected_item()
         # Unequip an item
         elif method_id is ItemMenu.UNEQUIP_ITEM:
-            self.background_menus.append((self.active_menu, False))
-
-            # Try to unequip the item
-            unequipped = self.selected_player.unequip(self.selected_item)
-            result_msg = "The item can't be unequipped : Not enough space in your inventory."
-            if unequipped:
-                result_msg = "The item has been unequipped"
-
-                # Update equipment screen content
-                new_equipment_menu = menu_creator_manager.create_equipment_menu(
-                    self.selected_player.equipments)
-
-                # Cancel item menu
-                self.background_menus.pop()
-                # Update the inventory menu (i.e. first menu backward)
-                self.background_menus[len(self.background_menus) - 1] = (new_equipment_menu, True)
-
-            entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'],
-                         'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       entries, width=ITEM_INFO_MENU_WIDTH,
-                                       close_button=lambda: self.close_active_menu(False))
+            self.unequip_selected_item()
         # Buy an item
         elif method_id is ItemMenu.BUY_ITEM:
-            # Try to buy the item
-            result_msg = self.active_shop.buy(self.selected_player, self.selected_item)
-
-            entries = [[{'type': 'text', 'text': result_msg,
-                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       entries, width=ITEM_INFO_MENU_WIDTH,
-                                       close_button=lambda: self.close_active_menu(False))
+            self.try_buy_selected_item()
         # Sell an item
         elif method_id is ItemMenu.SELL_ITEM:
-            sold, result_msg = self.active_shop.sell(self.selected_player, self.selected_item)
-
-            if sold:
-                # Remove ref to item
-                self.selected_item = None
-
-                # Update shop screen content (item has been removed from inventory)
-                items_max = self.selected_player.nb_items_max
-
-                items = list(self.selected_player.items)
-                free_spaces = items_max - len(items)
-                items += [None] * free_spaces
-
-                new_sell_menu = menu_creator_manager.create_inventory_menu(
-                    items, self.selected_player.gold, is_to_sell=True)
-
-                # Update the inventory menu (i.e. first menu backward)
-                self.background_menus[len(self.background_menus) - 1] = (new_sell_menu, True)
-            else:
-                self.background_menus.append((self.active_menu, False))
-
-            entries = [[{'type': 'text', 'text': result_msg,
-                         'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       entries, width=ITEM_INFO_MENU_WIDTH,
-                                       close_button=lambda: self.close_active_menu(False))
+            self.try_sell_selected_item()
         # Trade an item from one player to another player
         elif method_id is ItemMenu.TRADE_ITEM:
-            pygame.mixer.Sound.play(self.inventory_sfx)
-
-            first_player = args[2][0]
-            second_player = args[2][1]
-            owner = first_player if args[2][2] == 0 else second_player
-            receiver = second_player if args[2][2] == 0 else first_player
-
-            # Add item if possible
-            added = receiver.set_item(self.selected_item)
-            if not added:
-                msg_entries = [
-                    [{'type': 'text', 'text': 'Item can\'t be traded : not enough place in'
-                                              + str(receiver) + '\'s inventory .',
-                      'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-
-                self.background_menus.append((self.active_menu, False))
-            else:
-                # Remove item from owner inventory according to index
-                owner.remove_item(self.selected_item)
-
-                new_trade_menu = menu_creator_manager.create_trade_menu(first_player, second_player)
-                # Update the inventory menu (i.e. first menu backward)
-                self.background_menus[len(self.background_menus) - 1] = (new_trade_menu, True)
-
-                msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
-                                 'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
-            self.turn_items.append([self.selected_item, owner, receiver])
-            self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
-                                       msg_entries, width=ITEM_DELETE_MENU_WIDTH)
+            self.trade_item(args)
         else:
             print(f"Unknown action in item menu : {method_id}")
+
+    def trade_item(self, first_player: Player, second_player: Player, is_first_player_owner: bool):
+        """
+
+        :param first_player:
+        :param second_player:
+        :param is_first_player_owner:
+        """
+        pygame.mixer.Sound.play(self.inventory_sfx)
+        owner = first_player if is_first_player_owner else second_player
+        receiver = second_player if is_first_player_owner else first_player
+        # Add item if possible
+        added = receiver.set_item(self.selected_item)
+        if not added:
+            msg_entries = [
+                [{'type': 'text', 'text': 'Item can\'t be traded : not enough place in'
+                                          + str(receiver) + '\'s inventory .',
+                  'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+
+            self.background_menus.append((self.active_menu, False))
+        else:
+            # Remove item from owner inventory according to index
+            owner.remove_item(self.selected_item)
+
+            new_trade_menu = menu_creator_manager.create_trade_menu({
+                'interact_item': self.interact_trade_item,
+                'send_gold': self.send_gold
+            }, first_player, second_player)
+            # Update the inventory menu (i.e. first menu backward)
+            self.background_menus[len(self.background_menus) - 1] = (new_trade_menu, True)
+
+            msg_entries = [[{'type': 'text', 'text': 'Item has been traded.',
+                             'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+        self.turn_items.append([self.selected_item, owner, receiver])
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   msg_entries, width=ITEM_DELETE_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def throw_selected_item(self):
+        """
+
+        """
+        # Remove item from inventory/equipment according to the index
+        if self.selected_player.has_equipment(self.selected_item):
+            self.selected_player.remove_equipment(self.selected_item)
+            equipments = list(self.selected_player.equipments)
+            new_items_menu = menu_creator_manager.create_equipment_menu(self.interact_item,
+                                                                        equipments)
+        else:
+            self.selected_player.remove_item(self.selected_item)
+            items_max = self.selected_player.nb_items_max
+            items = list(self.selected_player.items)
+            free_spaces = items_max - len(items)
+            items += [None] * free_spaces
+
+            new_items_menu = menu_creator_manager.create_inventory_menu(self.interact_item,
+                                                                        items,
+                                                                        self.selected_player.gold)
+        # Update the inventory menu (i.e. first menu backward)
+        self.background_menus[len(self.background_menus) - 1] = (new_items_menu, True)
+        remove_msg_entries = [[{'type': 'text', 'text': 'Item has been thrown away.',
+                                'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   remove_msg_entries, width=ITEM_DELETE_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def try_sell_selected_item(self):
+        """
+
+        """
+        sold, result_msg = self.active_shop.sell(self.selected_player, self.selected_item)
+        if sold:
+            # Remove ref to item
+            self.selected_item = None
+
+            # Update shop screen content (item has been removed from inventory)
+            items_max = self.selected_player.nb_items_max
+
+            items = list(self.selected_player.items)
+            free_spaces = items_max - len(items)
+            items += [None] * free_spaces
+
+            new_sell_menu = menu_creator_manager.create_inventory_menu(self.interact_sell_item,
+                                                                       items,
+                                                                       self.selected_player.gold,
+                                                                       is_to_sell=True)
+
+            # Update the inventory menu (i.e. first menu backward)
+            self.background_menus[len(self.background_menus) - 1] = (new_sell_menu, True)
+        else:
+            self.background_menus.append((self.active_menu, False))
+        entries = [[{'type': 'text', 'text': result_msg,
+                     'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   entries, width=ITEM_INFO_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def try_buy_selected_item(self):
+        """
+
+        """
+        # Try to buy the item
+        result_msg = self.active_shop.buy(self.selected_player, self.selected_item)
+        entries = [[{'type': 'text', 'text': result_msg,
+                     'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   entries, width=ITEM_INFO_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def unequip_selected_item(self):
+        """
+
+        """
+        self.background_menus.append((self.active_menu, False))
+        # Try to unequip the item
+        unequipped = self.selected_player.unequip(self.selected_item)
+        result_msg = "The item can't be unequipped : Not enough space in your inventory."
+        if unequipped:
+            result_msg = "The item has been unequipped"
+
+            # Update equipment screen content
+            new_equipment_menu = menu_creator_manager.create_equipment_menu(self.interact_item,
+                                                                            self.selected_player.equipments)
+
+            # Cancel item menu
+            self.background_menus.pop()
+            # Update the inventory menu (i.e. first menu backward)
+            self.background_menus[len(self.background_menus) - 1] = (new_equipment_menu, True)
+        entries = [[{'type': 'text', 'text': result_msg, 'font': fonts['ITEM_DESC_FONT'],
+                     'margin': (20, 0, 20, 0)}]]
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   entries, width=ITEM_INFO_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def equip_selected_item(self):
+        """
+
+        """
+        self.background_menus.append((self.active_menu, False))
+        # Try to equip the item
+        return_equipped = self.selected_player.equip(self.selected_item)
+        if return_equipped == -1:
+            # Item can't be equipped by this player
+            result_msg = "This item can't be equipped : " \
+                         + str(self.selected_player) + " doesn't satisfy the requirements."
+        else:
+            # In this case returned value is > 0, item has been equipped
+            result_msg = "The item has been equipped."
+            if return_equipped == 1:
+                result_msg += " Previous equipped item has been added to your inventory."
+
+            # Inventory has changed
+            self.refresh_inventory()
+        entries = [[{'type': 'text', 'text': result_msg,
+                     'font': fonts['ITEM_DESC_FONT'], 'margin': (20, 0, 20, 0)}]]
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   entries, width=ITEM_INFO_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def use_selected_item(self):
+        """
+
+        """
+        self.background_menus.append((self.active_menu, False))
+        # Try to use the object
+        used, result_msgs = self.selected_player.use_item(self.selected_item)
+        # Inventory display is update if object has been used
+        if used:
+            self.refresh_inventory()
+        entries = [[{'type': 'text', 'text': msg,
+                     'font': fonts['ITEM_DESC_FONT'], 'margin': (10, 0, 10, 0)}] for msg in
+                   result_msgs]
+        self.active_menu = InfoBox(str(self.selected_item), "imgs/interface/PopUpMenu.png",
+                                   entries, width=ITEM_INFO_MENU_WIDTH,
+                                   close_button=lambda: self.close_active_menu(False))
+
+    def open_selected_item_description(self):
+        """
+
+        """
+        self.background_menus.append((self.active_menu, False))
+        self.active_menu = menu_creator_manager.create_item_description_menu(self.selected_item)
 
     def refresh_inventory(self):
         """
@@ -1438,7 +1455,7 @@ class Level:
         items = list(self.selected_player.items)
         free_spaces = items_max - len(items)
         items += [None] * free_spaces
-        new_inventory_menu = menu_creator_manager.create_inventory_menu(items,
+        new_inventory_menu = menu_creator_manager.create_inventory_menu(self.interact_item, items,
                                                                         self.selected_player.gold)
         # Cancel item menu
         self.background_menus.pop()
@@ -1453,16 +1470,18 @@ class Level:
         """
         # Get infos about an alteration
         if method_id is StatusMenu.INFO_ALTERATION:
-            alteration = args[1]
-
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_alteration_info_menu(alteration)
+            self.open_alteration_description(args)
         # Get infos about a skill
         elif method_id is StatusMenu.INFO_SKILL:
-            skill = args[1]
+            self.open_skill_description(args)
 
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_skill_info_menu(skill)
+    def open_skill_description(self, skill):
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_skill_info_menu(skill)
+
+    def open_alteration_description(self, alteration):
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_alteration_info_menu(alteration)
 
     def execute_trade_action(self, method_id, args):
         """
@@ -1472,36 +1491,43 @@ class Level:
         """
         # Watch item action : Open a menu to act with a given item
         if method_id is TradeMenu.INTERAC_ITEM:
-            item_button_pos = args[0]
-            item = args[1]
-            players = args[2]
-
-            self.selected_item = item
-            self.background_menus.append((self.active_menu, True))
-            self.active_menu = menu_creator_manager.create_trade_item_menu(item_button_pos, item,
-                                                                           players)
+            self.interact_trade_item(args)
         elif method_id is TradeMenu.SEND_GOLD:
-            pygame.mixer.Sound.play(self.gold_sfx)
+            self.send_gold(args)
 
-            players = args[2][:2]
-            sender_id = args[2][2]
-            sender = players[sender_id]
-            gold_traded = args[2][3]
+    def send_gold(self, first_player: Player, second_player: Player, is_first_player_sender: bool,
+                  value: int) -> None:
+        pygame.mixer.Sound.play(self.gold_sfx)
+        sender = first_player if is_first_player_sender else second_player
+        receiver = second_player if is_first_player_sender else first_player
+        Player.trade_gold(sender, receiver, value)
+        self.active_menu = menu_creator_manager.create_trade_menu({
+            'interact_item': self.interact_trade_item,
+            'send_gold': self.send_gold
+        }, first_player, second_player)
 
-            Player.trade_gold(sender, players[(sender_id + 1) % 2], gold_traded)
-            self.active_menu = menu_creator_manager.create_trade_menu(players[0], players[1])
+    def interact_trade_item(self, item: Item, button_position: Position,
+                            players: Sequence[Player], is_first_player_owner: bool) -> None:
+        self.selected_item = item
+        self.background_menus.append((self.active_menu, True))
+        self.active_menu = menu_creator_manager.create_trade_item_menu({
+            'info_item': self.open_selected_item_description,
+            'trade_item': self.trade_item
+        }, button_position, item, players, is_first_player_owner)
 
-    def execute_action(self, action: Callable):
+    def execute_action(self, action: Callable) -> None:
         """
+        Manage actions related to a click on a button.
+        Simply execute the given callable.
 
-        :param action:
-        :return:
+        Keyword arguments:
+        action -- the callable associated to the clicked button
         """
         action()
 
-    def begin_turn(self):
+    def begin_turn(self) -> None:
         """
-
+        Begin next camp's turn
         """
         entities = []
         if self.side_turn is EntityTurn.PLAYER:
@@ -1515,9 +1541,9 @@ class Level:
         for ent in entities:
             ent.new_turn()
 
-    def new_turn(self):
+    def new_turn(self) -> None:
         """
-
+        Begin of a new turn
         """
         self.turn += 1
         self.animation = Animation(
@@ -1587,7 +1613,10 @@ class Level:
         for player in self.players:
             if player.is_on_position(position):
                 if player.turn_is_finished():
-                    self.active_menu = menu_creator_manager.create_status_menu(player)
+                    self.active_menu = menu_creator_manager.create_status_menu({
+                        'info_alteration': self.open_alteration_description,
+                        'info_skill': self.open_skill_description
+                    }, player)
                 else:
                     player.selected = True
                     self.selected_player = player
@@ -1601,7 +1630,8 @@ class Level:
                 return
         for entity in self.entities['foes'] + self.entities['allies']:
             if entity.is_on_position(position):
-                self.active_menu = menu_creator_manager.create_status_entity_menu(entity)
+                self.active_menu = menu_creator_manager.create_status_entity_menu(
+                    self.open_alteration_description, entity)
                 return
 
         is_initialization = self.game_phase is LevelStatus.INITIALIZATION
