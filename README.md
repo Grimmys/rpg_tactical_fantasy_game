@@ -1,8 +1,8 @@
 # RPG Tactical Fantasy Game
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-![GitHub](https://img.shields.io/github/license/Grimmys/rpg_tactical_fantasy_game)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)
+[![licence](https://img.shields.io/github/license/Grimmys/rpg_tactical_fantasy_game)](https://github.com/Grimmys/rpg_tactical_fantasy_game/blob/master/LICENSE)
+[![latest release](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)](https://github.com/Grimmys/rpg_tactical_fantasy_game/releases/latest)
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/Grimmys/rpg_tactical_fantasy_game/latest/total)
 
 
