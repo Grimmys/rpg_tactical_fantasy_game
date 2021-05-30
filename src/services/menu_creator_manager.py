@@ -45,7 +45,8 @@ MAP_HEIGHT = TILE_SIZE * 10
 close_function: Union[Callable, None] = None
 
 
-def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) -> InfoBox:
+def create_shop_menu(interaction_callback: Callable,
+                     stock: Sequence[dict[str, Union[Item, int]]], gold: int) -> InfoBox:
     """
     Return the interface of a shop menu with user as the buyer.
 
@@ -57,7 +58,10 @@ def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) ->
     row = []
     for item in stock:
         entry = {'type': 'item_button', 'item': item['item'], 'price': item['item'].price,
-                 'quantity': item['quantity'], 'id': BuyMenu.INTERAC_BUY}
+                 'quantity': item['quantity'],
+                 'callback': lambda button_position,
+                                    item_reference=item['item']: interaction_callback(
+                     item_reference, button_position)}
         row.append(entry)
         if len(row) == 2:
             entries.append(row)
@@ -67,7 +71,7 @@ def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) ->
         entries.append(row)
 
     # Gold at end
-    entry = [{'type': 'text', 'text': 'Your gold : ' + str(gold), 'font': fonts['ITEM_DESC_FONT']}]
+    entry = [{'type': 'text', 'text': f'Your gold : {gold}', 'font': fonts['ITEM_DESC_FONT']}]
     entries.append(entry)
 
     return InfoBox("Shop - Buying", "imgs/interface/PopUpMenu.png", entries, id_type=BuyMenu,
@@ -75,7 +79,7 @@ def create_shop_menu(stock: Sequence[dict[str, Union[Item, int]]], gold: int) ->
                    title_color=ORANGE)
 
 
-def create_inventory_menu(items: Sequence[Item], gold: int,
+def create_inventory_menu(interaction_callback: Callable, items: Sequence[Item], gold: int,
                           is_to_sell: bool = False) -> InfoBox:
     """
     Return the interface of a player inventory.
@@ -89,11 +93,18 @@ def create_inventory_menu(items: Sequence[Item], gold: int,
     entries = []
     row = []
     method_id = SellMenu.INTERAC_SELL if is_to_sell else InventoryMenu.INTERAC_ITEM
-    for i, it in enumerate(items):
-        entry = {'type': 'item_button', 'item': it, 'index': i, 'id': method_id}
+    for i, item in enumerate(items):
+        if is_to_sell:
+            callback = lambda button_position, item_reference=item: interaction_callback(
+                item_reference, button_position)
+        else:
+            callback = lambda button_position, item_reference=item: interaction_callback(
+                item_reference, button_position, is_equipped=False)
+        entry = {'type': 'item_button', 'item': item, 'index': i,
+                 'callback': callback}
         # Test if price should appeared
-        if is_to_sell and it:
-            entry['price'] = it.resell_price
+        if is_to_sell and item:
+            entry['price'] = item.resell_price
         row.append(entry)
         if len(row) == 2:
             entries.append(row)
@@ -113,7 +124,8 @@ def create_inventory_menu(items: Sequence[Item], gold: int,
                    title_color=title_color)
 
 
-def create_equipment_menu(equipments: Sequence[Equipment]) -> InfoBox:
+def create_equipment_menu(interaction_callback: Callable,
+                          equipments: Sequence[Equipment]) -> InfoBox:
     """
     Return the interface of a player equipment.
 
@@ -133,15 +145,18 @@ def create_equipment_menu(equipments: Sequence[Equipment]) -> InfoBox:
                     index = i
                     break
             entry = {'type': 'item_button', 'item': equipment,
-                     'index': index, 'size': ITEM_BUTTON_SIZE_EQ, 'id':
-                         EquipmentMenu.INTERAC_EQUIPMENT}
+                     'index': index, 'size': ITEM_BUTTON_SIZE_EQ, 'callback':
+                         lambda button_position, equipment_reference=equipment:
+                         interaction_callback(equipment_reference, button_position, is_equipped=True
+                                              )}
             row.append(entry)
         entries.append(row)
     return InfoBox("Equipment", "imgs/interface/PopUpMenu.png", entries, id_type=EquipmentMenu,
                    width=EQUIPMENT_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
-def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
+def create_trade_menu(buttons_callback: dict[str, Callable],
+                      first_player: Player, second_player: Player) -> InfoBox:
     """
     Return the interface for a trade between two players
 
@@ -168,8 +183,12 @@ def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
         for owner_i, items in enumerate([items_first, items_second]):
             for j in range(2):
                 entry = {'type': 'item_button', 'item': items[i * 2 + j],
-                         'index': i, 'subtype': 'trade', 'id': method_id,
-                         'args': [first_player, second_player, owner_i]}
+                         'index': i, 'subtype': 'trade',
+                         'callback': lambda button_position, item_reference=items[i * 2 + j],
+                                            owner=owner_i: buttons_callback['interact_item'](
+                             item_reference, button_position,
+                             [first_player, second_player], owner == 0)
+                         }
                 row.append(entry)
         entries.append(row)
 
@@ -178,22 +197,25 @@ def create_trade_menu(first_player: Player, second_player: Player) -> InfoBox:
     entry = [
         {'type': 'button', 'name': '50G ->', 'size': (90, 30),
          'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
-         'id': method_id, 'args': [first_player, second_player, 0, 50]},
+         'callback': lambda: buttons_callback['send_gold'](first_player, second_player, True, 50)},
         {'type': 'button', 'name': '200G ->', 'size': (90, 30),
          'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
-         'id': method_id, 'args': [first_player, second_player, 0, 200]},
+         'callback': lambda: buttons_callback['send_gold'](first_player, second_player, True, 200)},
         {'type': 'button', 'name': 'All ->', 'size': (90, 30),
          'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
-         'id': method_id, 'args': [first_player, second_player, 0, first_player.gold]},
+         'callback': lambda: buttons_callback['send_gold'](first_player, second_player, True,
+                                                           first_player.gold)},
         {'type': 'button', 'name': '<- 50G', 'size': (90, 30),
          'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
-         'id': method_id, 'args': [first_player, second_player, 1, 50]},
+         'callback': lambda: buttons_callback['send_gold'](first_player, second_player, False, 50)},
         {'type': 'button', 'name': '<- 200G', 'size': (90, 30),
          'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
-         'id': method_id, 'args': [first_player, second_player, 1, 200]},
+         'callback': lambda: buttons_callback['send_gold'](first_player, second_player, False,
+                                                           200)},
         {'type': 'button', 'name': '<- All', 'size': (90, 30),
          'margin': (30, 0, 0, 0), 'font': fonts['ITEM_DESC_FONT'],
-         'id': method_id, 'args': [first_player, second_player, 1, second_player.gold]}]
+         'callback': lambda: buttons_callback['send_gold'](first_player, second_player, False,
+                                                           second_player.gold)}]
     entries.append(entry)
 
     # Gold at end
@@ -231,7 +253,7 @@ def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
     return RED
 
 
-def create_status_menu(player: Player) -> InfoBox:
+def create_status_menu(buttons_callback: dict[str, Callable], player: Player) -> InfoBox:
     """
     Return the interface resuming the status of a player.
 
@@ -274,18 +296,20 @@ def create_status_menu(player: Player) -> InfoBox:
           'font': fonts['MENU_SUB_TITLE_FONT'],
           'margin': (10, 0, 10, 0)}]]
 
-    alts = player.alterations
-    if not alts:
+    if not player.alterations:
         entries.append([{'type': 'text', 'color': WHITE, 'text': 'None'}])
-    for alt in alts:
-        entries.append([{'type': 'text_button', 'name': str(alt), 'id': StatusMenu.INFO_ALTERATION,
-                         'color': WHITE, 'color_hover': TURQUOISE, 'obj': alt}])
+    for alteration in player.alterations:
+        entries.append([{'type': 'text_button', 'name': str(alteration),
+                         'callback': lambda alteration_reference=alteration: buttons_callback[
+                             'info_alteration'](alteration_reference),
+                         'color': WHITE, 'color_hover': TURQUOISE, 'obj': alteration}])
 
     # Display skills
     i = 2
     for skill in player.skills:
         skill_displayed = {'type': 'text_button', 'name': skill.formatted_name,
-                           'id': StatusMenu.INFO_SKILL,
+                           'callback': lambda skill_reference=skill: buttons_callback['info_skill'](
+                               skill_reference),
                            'color': WHITE, 'color_hover': TURQUOISE, 'obj': skill}
         entries[i].append(skill_displayed)
         i += 1
@@ -340,22 +364,27 @@ def create_player_menu(buttons_callback: dict[str, Callable], player: Player,
                     trade_option = True
             elif isinstance(entity, Chest):
                 if not entity.opened and not chest_option:
-                    entries.insert(0, [{'name': 'Open Chest', 'callback': buttons_callback['open_chest']}]
+                    entries.insert(0, [
+                        {'name': 'Open Chest', 'callback': buttons_callback['open_chest']}]
                                    )
                     chest_option = True
                 if 'lock_picking' in player.skills and not pick_lock_option:
-                    entries.insert(0, [{'name': 'Pick Lock', 'callback': buttons_callback['pick_lock']}])
+                    entries.insert(0, [
+                        {'name': 'Pick Lock', 'callback': buttons_callback['pick_lock']}])
                     pick_lock_option = True
             elif isinstance(entity, Door):
                 if not door_option:
-                    entries.insert(0, [{'name': 'Open Door', 'callback': buttons_callback['open_door']}])
+                    entries.insert(0, [
+                        {'name': 'Open Door', 'callback': buttons_callback['open_door']}])
                     door_option = True
                 if 'lock_picking' in player.skills and not pick_lock_option:
-                    entries.insert(0, [{'name': 'Pick Lock', 'callback': buttons_callback['pick_lock']}])
+                    entries.insert(0, [
+                        {'name': 'Pick Lock', 'callback': buttons_callback['pick_lock']}])
                     pick_lock_option = True
             elif isinstance(entity, Portal):
                 if not portal_option:
-                    entries.insert(0, [{'name': 'Use Portal', 'callback': buttons_callback['use_portal']}]
+                    entries.insert(0, [
+                        {'name': 'Use Portal', 'callback': buttons_callback['use_portal']}]
                                    )
                     portal_option = True
             elif isinstance(entity, Fountain):
@@ -435,7 +464,8 @@ def create_main_menu(buttons_callback: dict[str, Callable],
                    width=ACTION_MENU_WIDTH, element_linked=tile)
 
 
-def create_item_shop_menu(item_button_position: Position, item: Item) -> InfoBox:
+def create_item_shop_menu(buttons_callback: dict[str, Callable],
+                          item_button_position: Position, item: Item) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
 
@@ -444,18 +474,20 @@ def create_item_shop_menu(item_button_position: Position, item: Item) -> InfoBox
     item -- the concerned item
     """
     entries = [
-        [{'name': 'Buy', 'id': ItemMenu.BUY_ITEM, 'type': 'button'}],
-        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
+        [{'name': 'Buy', 'callback': buttons_callback['buy_item'], 'type': 'button'}],
+        [{'name': 'Info', 'callback': buttons_callback['info_item'], 'type': 'button'}]
     ]
     formatted_item_name = str(item)
     item_rect = pygame.Rect(item_button_position[0] - 20, item_button_position[1],
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect,
+                   close_button=lambda: close_function(False))
 
 
-def create_item_sell_menu(item_button_position: Position, item: Item) -> InfoBox:
+def create_item_sell_menu(buttons_callback: dict[str, Callable],
+                          item_button_position: Position, item: Item) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory and can be sold in a shop.
 
@@ -464,19 +496,22 @@ def create_item_sell_menu(item_button_position: Position, item: Item) -> InfoBox
     item -- the concerned item
     """
     entries = [
-        [{'name': 'Sell', 'id': ItemMenu.SELL_ITEM, 'type': 'button'}],
-        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM, 'type': 'button'}]
+        [{'name': 'Sell', 'callback': buttons_callback['sell_item'], 'type': 'button'}],
+        [{'name': 'Info', 'callback': buttons_callback['info_item'], 'type': 'button'}]
     ]
     formatted_item_name = str(item)
     item_rect = pygame.Rect(item_button_position[0] - 20, item_button_position[1],
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect,
+                   close_button=lambda: close_function(False))
 
 
-def create_trade_item_menu(item_button_position: Position,
-                           item: Item, players: Sequence[Player]) -> InfoBox:
+def create_trade_item_menu(buttons_callback: dict[str, Callable],
+                           item_button_position: Position,
+                           item: Item, players: Sequence[Player],
+                           is_first_player_owner: bool) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory
     and can be trade to another player.
@@ -487,8 +522,10 @@ def create_trade_item_menu(item_button_position: Position,
     players -- the two players that are currently involve in the trade
     """
     entries = [
-        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
-        [{'name': 'Trade', 'id': ItemMenu.TRADE_ITEM, 'args': players}]
+        [{'name': 'Info', 'callback': buttons_callback['info_item']}],
+        [{'name': 'Trade',
+          'callback': lambda: buttons_callback['trade_item'](players[0], players[1],
+                                                             is_first_player_owner)}]
     ]
     formatted_item_name = str(item)
 
@@ -500,10 +537,12 @@ def create_trade_item_menu(item_button_position: Position,
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect,
+                   close_button=lambda: close_function(False))
 
 
-def create_item_menu(item_button_position: Position, item: Item,
+def create_item_menu(buttons_callback: dict[str, Callable], item_button_position: Position,
+                     item: Item,
                      is_equipped: bool = False) -> InfoBox:
     """
     Return the interface of an item of a player.
@@ -514,18 +553,18 @@ def create_item_menu(item_button_position: Position, item: Item,
     is_equipped -- a boolean value indicating whether the item is currently equipped or not
     """
     entries = [
-        [{'name': 'Info', 'id': ItemMenu.INFO_ITEM}],
-        [{'name': 'Throw', 'id': ItemMenu.THROW_ITEM}]
+        [{'name': 'Info', 'callback': buttons_callback['info_item']}],
+        [{'name': 'Throw', 'callback': buttons_callback['throw_item']}]
     ]
     formatted_item_name = str(item)
 
     if isinstance(item, Consumable):
-        entries.insert(0, [{'name': 'Use', 'id': ItemMenu.USE_ITEM}])
+        entries.insert(0, [{'name': 'Use', 'callback': buttons_callback['use_item']}])
     elif isinstance(item, Equipment):
         if is_equipped:
-            entries.insert(0, [{'name': 'Unequip', 'id': ItemMenu.UNEQUIP_ITEM}])
+            entries.insert(0, [{'name': 'Unequip', 'callback': buttons_callback['unequip_item']}])
         else:
-            entries.insert(0, [{'name': 'Equip', 'id': ItemMenu.EQUIP_ITEM}])
+            entries.insert(0, [{'name': 'Equip', 'callback': buttons_callback['equip_item']}])
 
     for row in entries:
         for entry in row:
@@ -535,7 +574,8 @@ def create_item_menu(item_button_position: Position, item: Item,
                             ITEM_BUTTON_SIZE[0], ITEM_BUTTON_SIZE[1])
 
     return InfoBox(formatted_item_name, "imgs/interface/PopUpMenu.png", entries, id_type=ItemMenu,
-                   width=ACTION_MENU_WIDTH, element_linked=item_rect, close_button=lambda: close_function(False))
+                   width=ACTION_MENU_WIDTH, element_linked=item_rect,
+                   close_button=lambda: close_function(False))
 
 
 def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
@@ -636,7 +676,7 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
                    width=STATUS_INFO_MENU_WIDTH, close_button=lambda: close_function(False))
 
 
-def create_status_entity_menu(entity: Entity) -> InfoBox:
+def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> InfoBox:
     """
     Return the interface for the status screen of an entity.
 
@@ -683,13 +723,14 @@ def create_status_entity_menu(entity: Entity) -> InfoBox:
                  'font': fonts['MENU_SUB_TITLE_FONT'], 'color': DARK_GREEN,
                  'margin': (10, 0, 10, 0)}]]
 
-    alts = entity.alterations
-    if not alts:
+    if not entity.alterations:
         entries.append([{'type': 'text', 'text': 'None'}])
-    for alt in alts:
-        entries.append([{'type': 'text_button', 'name': str(alt), 'id': StatusMenu.INFO_ALTERATION,
+    for alteration in entity.alterations:
+        entries.append([{'type': 'text_button', 'name': str(alteration),
+                         'callback': lambda alteration_reference=alteration:
+                         alteration_callback(alteration_reference),
                          'color': WHITE,
-                         'color_hover': TURQUOISE, 'obj': alt}])
+                         'color_hover': TURQUOISE, 'obj': alteration}])
 
     if isinstance(entity, Foe):
         loot = entity.potential_loot

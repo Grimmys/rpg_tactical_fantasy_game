@@ -204,26 +204,26 @@ def load_entities(ent_nature, data, from_save, gap_x, gap_y):
 
     for element in data:
         if ent_nature == 'character':
-            ent = load_ally(element, from_save, gap_x, gap_y)
+            entity = load_ally(element, from_save, gap_x, gap_y)
         elif ent_nature == 'foe':
-            ent = load_foe(element, from_save, gap_x, gap_y)
+            entity = load_foe(element, from_save, gap_x, gap_y)
         elif ent_nature == 'chest':
-            ent = load_chest(element, from_save, gap_x, gap_y)
+            entity = load_chest(element, from_save, gap_x, gap_y)
         elif ent_nature == 'door':
-            ent = load_door(element, from_save, gap_x, gap_y)
+            entity = load_door(element, from_save, gap_x, gap_y)
         elif ent_nature == 'building':
-            ent = load_building(element, from_save, gap_x, gap_y)
+            entity = load_building(element, from_save, gap_x, gap_y)
         elif ent_nature == 'portal':
-            ent, ent2 = load_portal(element, gap_x, gap_y)
+            entity, ent2 = load_portal(element, gap_x, gap_y)
             collection.append(ent2)
         elif ent_nature == 'fountain':
-            ent = load_fountain(element, from_save, gap_x, gap_y)
+            entity = load_fountain(element, from_save, gap_x, gap_y)
         elif ent_nature == 'breakable':
-            ent = load_breakable(element, gap_x, gap_y)
+            entity = load_breakable(element, gap_x, gap_y)
         else:
             print("Unrecognized nature : " + str(ent_nature))
-            ent = None
-        collection.append(ent)
+            entity = None
+        collection.append(entity)
     return collection
 
 

@@ -135,4 +135,5 @@ class ItemButton(Button):
         """
         if not self.item or self.disabled:
             return lambda: None
-        return super().action_triggered()
+        callback = super().action_triggered()
+        return lambda: callback(self.position)

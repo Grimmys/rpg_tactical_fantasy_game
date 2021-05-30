@@ -1,6 +1,6 @@
 from copy import copy
 import os
-from typing import Sequence, Union, List
+from typing import Sequence, Union, List, Callable
 
 import pygame.mixer
 from lxml import etree
@@ -17,11 +17,17 @@ class Shop(Building):
     """
 
     """
+
+    interaction_callback = None
+    buy_interface_callback = None
+    sell_interface_callback = None
+
     def __init__(self, name: str, position: tuple[int, int], sprite: str,
                  interaction: dict[str, any], stock: List[dict[str, any]]) -> None:
         super().__init__(name, position, sprite, interaction)
         self.stock: List[dict[str, any]] = stock
-        self.menu: InfoBox = menu_creator_manager.create_shop_menu(self.stock, 0)
+        self.menu: InfoBox = menu_creator_manager.create_shop_menu(Shop.interaction_callback,
+                                                                   self.stock, 0)
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join('sound_fx',
                                                                             'trade.ogg'))
 
@@ -63,9 +69,11 @@ class Shop(Building):
         """
         self.update_shop_menu(actor.gold)
 
-        entries: Sequence[Sequence[dict[str, str]]] = [[{'name': 'Buy', 'id': ShopMenu.BUY,
-                                                         'type': 'button', 'args': [self]}],
-                                                       [{'name': 'Sell', 'id': ShopMenu.SELL,
+        entries: Sequence[Sequence[dict[str, str]]] = [[{'name': 'Buy',
+                                                         'callback': Shop.buy_interface_callback,
+                                                         'type': 'button'}],
+                                                       [{'name': 'Sell',
+                                                         'callback': Shop.sell_interface_callback,
                                                          'type': 'button'}]]
         return entries
 

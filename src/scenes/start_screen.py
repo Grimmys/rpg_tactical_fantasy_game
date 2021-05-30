@@ -281,7 +281,7 @@ class StartScreen:
     def execute_action(action: Callable) -> None:
         """
         Manage actions related to a click on a button.
-        Simply execute the given callable
+        Simply execute the given callable.
 
         Keyword arguments:
         action -- the callable associated to the clicked button
