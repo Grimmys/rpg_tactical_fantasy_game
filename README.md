@@ -1,9 +1,15 @@
 # RPG Tactical Fantasy Game
 
-__WARNING__ : This game is entirely under construction.
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+![GitHub](https://img.shields.io/github/license/Grimmys/rpg_tactical_fantasy_game)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/Grimmys/rpg_tactical_fantasy_game/latest/total)
+
+
+
+__WARNING__ : This game is under construction.
 
 The game is an RPG Tactical Fantasy game, turn-based and is in 2D.
-I'm currently looking for a good name.
 
 ## How to help development
 
