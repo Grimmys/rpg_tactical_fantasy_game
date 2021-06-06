@@ -64,6 +64,7 @@ def main_loop(
 
 if __name__ == "__main__":
     import os
+    import platform
 
     from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, GAME_TITLE
     from src.gui import constant_sprites, fonts
@@ -79,6 +80,14 @@ if __name__ == "__main__":
     # Window parameters
     pygame.display.set_caption(GAME_TITLE)
     main_window = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+    
+    # Make sure the game will display correctly on high DPI monitors on Windows.
+    if platform.system() == 'Windows':
+        from ctypes import windll
+        try:
+            windll.user32.SetProcessDPIAware()
+        except AttributeError:
+            pass
 
     # Load constant sprites
     Movable.init_constant_sprites()
