@@ -76,6 +76,7 @@ class StartScreen:
 
         # Memorize if a game is currently being performed
         self.level: Union[Level, None] = None
+        self.level_screen: pygame.Surface = None
 
         self.levels: Sequence[int] = [0, 1, 2, 3]
         self.level_id: Union[int, None] = None
@@ -132,7 +133,7 @@ class StartScreen:
         """
         if self.level:
             self.screen.fill(BLACK)
-            self.level.display(self.screen)
+            self.level.display(self.level_screen)
         else:
             self.screen.blit(self.background, (0, 0))
             for menu in self.background_menus:
@@ -150,8 +151,19 @@ class StartScreen:
         level -- the ongoing level
         """
         # Modify screen
-        flags = pygame.FULLSCREEN if StartScreen.screen_size == 2 else 0
-        self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), flags)
+        flags = 0
+        size = (WIN_WIDTH, WIN_HEIGHT)
+        if StartScreen.screen_size == 2:
+            flags = pygame.FULLSCREEN
+            size = (0, 0)
+        self.screen = pygame.display.set_mode(size, flags)
+        level_width = min(self.screen.get_width(), WIN_WIDTH)
+        level_height = min(self.screen.get_height(), WIN_HEIGHT)
+        self.level_screen = self.screen.subsurface(
+            pygame.Rect(self.screen.get_width() // 2 - level_width // 2,
+                        self.screen.get_height() // 2 - level_height // 2,
+                        level_width, level_height)
+        )
         self.level = level
         menu_creator_manager.close_function = self.level.close_active_menu
 
@@ -342,7 +354,9 @@ class StartScreen:
         if self.level is None:
             self.active_menu.motion(position)
         else:
-            self.level.motion(position)
+            relative_position: Position = self._compute_relative_position(position)
+            if relative_position >= (0, 0):
+                self.level.motion(relative_position)
 
     def click(self, button: int, position: Position) -> bool:
         """
@@ -361,7 +375,9 @@ class StartScreen:
             if button == 1:
                 StartScreen.execute_action(self.active_menu.click(position))
         else:
-            self.level.click(button, position)
+            relative_position: Position = self._compute_relative_position(position)
+            if relative_position >= (0, 0):
+                self.level.click(button, relative_position)
         return self.exit
 
     def button_down(self, button: int, position: Position) -> None:
@@ -375,4 +391,16 @@ class StartScreen:
         position -- the position of the mouse
         """
         if self.level is not None:
-            self.level.button_down(button, position)
+            relative_position: Position = self._compute_relative_position(position)
+            if relative_position >= (0, 0):
+                self.level.button_down(button, relative_position)
+
+    def _compute_relative_position(self, position: Position) -> Position:
+        """
+        Compute and return a position relative to the left top corner of the ongoing level screen
+
+        Keyword arguments:
+        position -- the absolute position to be converted
+        """
+        return position[0] - (self.screen.get_width() // 2 - self.level_screen.get_width() // 2), \
+               position[1] - (self.screen.get_height() // 2 - self.level_screen.get_height() // 2)
