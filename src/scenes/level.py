@@ -192,6 +192,7 @@ class Level:
         self.active_menu: Union[InfoBox, None] = None
         self.background_menus: List[tuple[InfoBox, bool]] = []
         self.players: List[Player] = players
+        self.entities: dict[str, List[Entity]] = {"players": self.players}
         if data is None:
             # Game is new
             from_save: bool = False
@@ -236,7 +237,7 @@ class Level:
         )
 
         # Load and store all entities
-        self.entities: dict[str, List[Entity]] = loader.load_all_entities(data_tree, from_save,
+        self.entities = loader.load_all_entities(data_tree, from_save,
                                                                           gap_x, gap_y)
         self.entities["players"] = self.players
 
