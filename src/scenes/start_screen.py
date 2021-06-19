@@ -13,7 +13,7 @@ from src.constants import (
     WIN_WIDTH,
     WIN_HEIGHT,
     MAIN_WIN_WIDTH,
-    MAIN_WIN_HEIGHT,
+    MAIN_WIN_HEIGHT
 )
 from src.game_entities.player import Player
 from src.gui.entries import Entries
@@ -46,7 +46,7 @@ class StartScreen:
     level -- the reference to the current running level
     levels -- the list of level ids
     level_id -- the id of the current level
-    exit -- the boolean value indicating if an exit request has been made
+    exit -- a boolean indicating if an exit request has been made
     """
 
     screen_size: int = SCREEN_SIZE
@@ -76,7 +76,7 @@ class StartScreen:
 
         # Memorize if a game is currently being performed
         self.level: Union[Level, None] = None
-        self.level_screen: pygame.Surface = None
+        self.level_screen: Union[pygame.Surface, None] = None
 
         self.levels: Sequence[int] = [0, 1, 2, 3]
         self.level_id: Union[int, None] = None
@@ -121,8 +121,8 @@ class StartScreen:
         element_to_edit -- a name corresponding to the option that should be edited
         new_value -- the new value of the option
         """
-        tree = etree.parse("saves/options.xml")
-        element = tree.find(".//" + element_to_edit)
+        tree: etree.ElementTree = etree.parse("saves/options.xml")
+        element: etree.Element = tree.find(".//" + element_to_edit)
         element.text = new_value
         tree.write("saves/options.xml")
 
@@ -151,14 +151,14 @@ class StartScreen:
         level -- the ongoing level
         """
         # Modify screen
-        flags = 0
-        size = (WIN_WIDTH, WIN_HEIGHT)
+        flags: int = 0
+        size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
         if StartScreen.screen_size == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
         self.screen = pygame.display.set_mode(size, flags)
-        level_width = min(self.screen.get_width(), WIN_WIDTH)
-        level_height = min(self.screen.get_height(), WIN_HEIGHT)
+        level_width: int = min(self.screen.get_width(), WIN_WIDTH)
+        level_height: int = min(self.screen.get_height(), WIN_HEIGHT)
         self.level_screen = self.screen.subsurface(
             pygame.Rect(self.screen.get_width() // 2 - level_width // 2,
                         self.screen.get_height() // 2 - level_height // 2,
@@ -178,8 +178,8 @@ class StartScreen:
         if self.level:
             status: int = self.level.update_state()
             if (
-                status is LevelStatus.ENDED_VICTORY
-                and (self.level_id + 1) in self.levels
+                    status is LevelStatus.ENDED_VICTORY
+                    and (self.level_id + 1) in self.levels
             ):
                 self.level_id += 1
                 team: Sequence[Player] = self.level.passed_players + self.level.players
@@ -190,8 +190,8 @@ class StartScreen:
                     player.new_turn()
                 self.play(StartScreen.load_level(self.level_id, team))
             elif (
-                status is LevelStatus.ENDED_VICTORY
-                or status is LevelStatus.ENDED_DEFEAT
+                    status is LevelStatus.ENDED_VICTORY
+                    or status is LevelStatus.ENDED_DEFEAT
             ):
                 # TODO: Game win dialog?
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
@@ -236,7 +236,6 @@ class StartScreen:
         Keyword arguments:
         game_id -- the id of the saved file that should be load
         """
-        print(game_id)
         try:
             save: TextIO = open(f"saves/save_{game_id}.xml", "r")
 

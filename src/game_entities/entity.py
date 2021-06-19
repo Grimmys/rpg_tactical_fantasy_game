@@ -31,7 +31,7 @@ class Entity:
     """
 
     def __init__(
-        self, name: str, position: tuple[int, int], sprite: Union[str, pygame.Surface]
+        self, name: str, position: Position, sprite: Union[str, pygame.Surface]
     ) -> None:
         self.name: str = name
         self.position: tuple[int, int] = position

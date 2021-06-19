@@ -5,7 +5,7 @@ or items.
 
 import os
 import random
-from typing import Sequence, List, Union
+from typing import Sequence, List, Union, Optional
 
 import pygame
 from lxml import etree
@@ -80,7 +80,7 @@ class Chest(Entity):
 
         return random.choice(bag)
 
-    def open(self) -> Union[Item, None]:
+    def open(self) -> Optional[Item]:
         """
         Open the chest if it's not already opened.
         The current sprite is changed to the one where the chest is opened.
