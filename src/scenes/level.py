@@ -300,7 +300,7 @@ class Level:
             self.selected_player = None
         else:
             self.active_menu = (
-                self.background_menus.pop()[0] if self.background_menus else None
+                self.background_menus.pop()[0] if len(self.background_menus) else None
             )
             # Test if active menu is main character's menu, in this case, it should be reloaded
             if self.active_menu and self.active_menu.type is CharacterMenu:
@@ -1349,7 +1349,8 @@ class Level:
         """
         if sound is not None:
             pygame.mixer.Sound.play(sound)
-        self.background_menus.append((self.active_menu, is_visible_on_background))
+        if self.active_menu is not None:
+            self.background_menus.append((self.active_menu, is_visible_on_background))
         self.active_menu = menu
 
     def end_turn(self) -> None:
@@ -1958,11 +1959,11 @@ class Level:
             self.interact_item, items, self.selected_player.gold
         )
         # Cancel item menu
-        self.background_menus.pop()
+        self.active_menu = None
         # Update the inventory menu (i.e. first menu backward)
         self.background_menus[len(self.background_menus) - 1] = (
             new_inventory_menu,
-            True,
+            True
         )
 
     def open_selected_item_description(self) -> None:
