@@ -5,9 +5,7 @@
 [![latest release](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)](https://github.com/Grimmys/rpg_tactical_fantasy_game/releases/latest)
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/Grimmys/rpg_tactical_fantasy_game/latest/total)
 
-
-
-__WARNING__ : This game is under construction.
+**Collaborative development.**
 
 The game is an RPG Tactical Fantasy game, turn-based and is in 2D.
 
@@ -15,12 +13,14 @@ The game is an RPG Tactical Fantasy game, turn-based and is in 2D.
 
 You can submit any request you want, or notify me about any bug you encountered, by sending an e-mail to grimmys.programming@gmail.com or by opening an issue.
 
-Please, don't hesitate about suggesting ideas : it's my first " serious " game project. ;)
+Alternatively, you can join the newly created community discord: https://discord.gg/CwFdXNs9Wt.
 
-* Help with balancing would be greatly appreciated... I'm not really good in this kind of games even if I love them !
+Feel free to come up with ideas whether it is about coding practices or game mechanics, this project is far from being perfect!
+
+* Help with balancing would be greatly appreciated... I'm not really good in this kind of games even if I love them.
   All values could be found in the XML files wrapped in the data folder.
 * Since I'm not a designer, some elements may be oddly placed in the UI. You can try to correct the ones you see or simply notify me.
-* Contributions for sound effects / soundtracks would be really appreciated !
+* Contributions for sound effects / soundtracks would be really appreciated.
 * Ideas about future levels could be submitted, however, I'm currently working on a scenario.
 
 __Version__ : 1.0.4
