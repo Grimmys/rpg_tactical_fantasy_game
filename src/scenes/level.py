@@ -189,7 +189,7 @@ class Level:
             tree.findall("placementArea/position"), self.map["x"], self.map["y"]
         )
 
-        self.active_menu: Union[InfoBox, None] = None
+        self.active_menu: Optional[InfoBox] = None
         self.background_menus: List[tuple[InfoBox, bool]] = []
         self.players: List[Player] = players
         self.entities: dict[str, List[Entity]] = {"players": self.players}
@@ -347,7 +347,6 @@ class Level:
         """
         # At next update, level will be destroyed
         self.quit_request = True
-        # If current level is not finish, end it as a defeat
         if (
                 self.game_phase != LevelStatus.ENDED_VICTORY
                 and self.game_phase != LevelStatus.ENDED_DEFEAT
@@ -398,7 +397,7 @@ class Level:
             [{"sprite": animation_surface, "pos": position}], 180
         )
 
-    def update_state(self) -> Union[LevelStatus, None]:
+    def update_state(self) -> Optional[LevelStatus]:
         """
         Update the state of the game.
         Let the animation progress if there is any.
@@ -800,7 +799,7 @@ class Level:
         chest -- the chest that is being open
         """
         # Get object inside the chest
-        item: Item = chest.open()
+        item = chest.open()
 
         if isinstance(item, Gold):
             # If it was some gold, it should be added to the total amount of the player
@@ -921,10 +920,7 @@ class Level:
         elif isinstance(target, Chest):
             if actor.has_free_space():
                 if self.selected_player.current_action is CharacterMenu.OPEN_CHEST:
-                    # Key is used to open the chest
                     actor.remove_chest_key()
-
-                    # Get content
                     self.open_chest(actor, target)
                 elif self.selected_player.current_action is CharacterMenu.PICK_LOCK:
                     if not target.pick_lock_initiated:
@@ -963,12 +959,8 @@ class Level:
         # Check if player tries to open a door
         elif isinstance(target, Door):
             if self.selected_player.current_action is CharacterMenu.OPEN_DOOR:
-                # Key is used to open the door
                 actor.remove_door_key()
-
-                # Remove door
                 self.open_door(target)
-
                 # No more menu : turn is finished
                 self.background_menus = []
             elif self.selected_player.current_action is CharacterMenu.PICK_LOCK:
@@ -1057,7 +1049,6 @@ class Level:
         # Check if player tries to visit a building
         elif isinstance(target, Building):
             kind: Union[Type[Enum], str] = ""
-            # Check if player tries to visit a shop
             if isinstance(target, Shop):
                 self.active_shop = target
                 kind = ShopMenu
@@ -1123,7 +1114,6 @@ class Level:
                 self.diary_entries.append(
                     [{"type": "text", "text": message, "font": fonts["ITEM_DESC_FONT"]}]
                 )
-                # Current attack is ended
                 continue
 
             damage: int = attacker.attack(target)
@@ -1455,7 +1445,6 @@ class Level:
         """
         Handle the tentative of opening a chest
         """
-        # Check if player has a key
         has_key = False
         for item in self.selected_player.items:
             if isinstance(item, Key) and item.for_chest:
@@ -1810,7 +1799,6 @@ class Level:
         """
         Handle the purchase of the selected item if possible
         """
-        # Try to buy the item
         result_message = self.active_shop.buy(self.selected_player, self.selected_item)
         entries = [
             [
@@ -1835,7 +1823,6 @@ class Level:
         Unequip the selected item of the active character if possible
         """
         self.background_menus.append((self.active_menu, False))
-        # Try to unequip the item
         unequipped = self.selected_player.unequip(self.selected_item)
         result_message = (
             "The item can't be unequipped : Not enough space in your inventory."
@@ -2021,8 +2008,8 @@ class Level:
         elif self.side_turn is EntityTurn.FOES:
             entities = self.entities["foes"]
 
-        for ent in entities:
-            ent.new_turn()
+        for entity in entities:
+            entity.new_turn()
 
     def new_turn(self) -> None:
         """
@@ -2236,7 +2223,6 @@ class Level:
         (1 for left button, 2 for middle button, 3 for right button)
         position -- the position of the mouse
         """
-        # 3 is equals to right button
         if button == 3:
             if (
                     not self.active_menu
@@ -2274,7 +2260,7 @@ class Level:
         else:
             self.hovered_entity = None
             for collection in self.entities.values():
-                for ent in collection:
-                    if ent.get_rect().collidepoint(position):
-                        self.hovered_entity = ent
+                for entity in collection:
+                    if entity.get_rect().collidepoint(position):
+                        self.hovered_entity = entity
                         return
