@@ -6,6 +6,7 @@ from typing import Sequence, List, Union, TextIO, Callable
 
 import pygame
 from lxml import etree
+from lxml.etree import XMLSyntaxError
 
 from src.constants import (
     SCREEN_SIZE,
@@ -261,6 +262,30 @@ class StartScreen:
                 self.play(level)
                 save.close()
                 return
+
+        except XMLSyntaxError:
+            # File does not contain expected values and may be corrupt
+            self.background_menus.append((self.active_menu, True))
+
+            name: str = "Load Game"
+            entries: Entries = [
+                [
+                    {
+                        "type": "text",
+                        "text": "Unable to load saved game. Save file appears corrupt.",
+                        "font": fonts["MENU_SUB_TITLE_FONT"],
+                    }
+                ]
+            ]
+            width: int = self.screen.get_width() // 2
+            self.active_menu = InfoBox(
+                name,
+                "imgs/interface/PopUpMenu.png",
+                entries,
+                width=width,
+                close_button=self.close_active_menu,
+            )
+
         except FileNotFoundError:
             # No saved game
             self.background_menus.append((self.active_menu, True))
