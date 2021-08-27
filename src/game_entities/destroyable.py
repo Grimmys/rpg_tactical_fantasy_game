@@ -1,5 +1,5 @@
 """
-Defines Destroyable class, an entity that could be destroyed
+Defines Destroyable class, an entity that could be destroyed.
 """
 
 from enum import Enum
@@ -15,7 +15,7 @@ from src.gui.constant_sprites import constant_sprites
 
 class DamageKind(Enum):
     """
-    Defines the different kind of damage that could be done to a destroyable entity
+    Defines the different kind of damage that could be done to a destroyable entity.
     """
 
     PHYSICAL = "Physical"
@@ -115,7 +115,7 @@ class Destroyable(Entity):
             real_damage = damage - self.defense
             pygame.mixer.Sound.play(self.attack_sfx)
         else:
-            print("Error : Invalid kind of attack : " + str(kind))
+            print(f"Error : Invalid kind of attack : {kind}")
             raise SystemError
         if real_damage < 0:
             real_damage = 0

@@ -1,3 +1,7 @@
+"""
+Defines Character class, the class defining allied entities or even playable entities
+"""
+
 import math
 import random
 from typing import Union, Sequence, Any

@@ -72,13 +72,15 @@ class Foe(Movable):
         self.potential_loot: Sequence[tuple[Item, float]] = loot
         self.keywords: Sequence[Keyword] = [] if keywords is None else keywords
 
-    def stats_up(self, nb_lvl: int = 1) -> None:
+    def stats_up(self, levels_earned: int = 1) -> None:
         """
+        Randomly upgrade each stat for each level earned by the foe
 
-        :param nb_lvl:
+        Keyword arguments:
+        levels_earned -- the number of times the stats should be upgraded
         """
         grow_rates: dict[str, Sequence[int]] = Foe.grow_rates[self.name]
-        for _ in range(nb_lvl):
+        for _ in range(levels_earned):
             self.hit_points_max += rd.choice(grow_rates["hp"])
             self.defense += rd.choice(grow_rates["def"])
             self.resistance += rd.choice(grow_rates["res"])
@@ -87,8 +89,9 @@ class Foe(Movable):
 
     def roll_for_loot(self) -> Sequence[Item]:
         """
+        Roll the list of items that would be loot by the entity killing the foe
 
-        :return:
+        Return the loot list
         """
         loot: list[Item] = []
         for (item, probability) in self.potential_loot:
@@ -97,18 +100,15 @@ class Foe(Movable):
         return loot
 
     def get_formatted_keywords(self) -> str:
-        """
-
-        :return:
-        """
+        """Return the list of keywords of the foe in a formatted version"""
         return ", ".join(
             [keyword.name.lower().capitalize() for keyword in self.keywords]
         )
 
     def get_formatted_reach(self) -> str:
         """
-
-        :return:
+        Return range of the reach of the foe in a formatted
+        version
         """
         return ", ".join([str(reach) for reach in self.reach])
 

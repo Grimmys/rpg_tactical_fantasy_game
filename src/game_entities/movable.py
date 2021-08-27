@@ -114,8 +114,11 @@ class Movable(Destroyable):
 
     def display(self, screen: pygame.Surface) -> None:
         """
+        Display the movable entity on the given screen.
+        Also display an indicator if the entity is currently active.
 
-        :param screen:
+        Keyword arguments:
+        screen -- the screen on which the movable entity should be drawn
         """
         Destroyable.display(self, screen)
         if self.state in range(EntityState.ON_MOVE, EntityState.HAVE_TO_ATTACK + 1):

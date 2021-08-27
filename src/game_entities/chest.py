@@ -5,7 +5,7 @@ or items.
 
 import os
 import random
-from typing import Sequence, List, Union, Optional
+from typing import Sequence, List, Optional
 
 import pygame
 from lxml import etree

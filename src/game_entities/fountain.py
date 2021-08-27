@@ -1,4 +1,4 @@
-from typing import Sequence, List
+from typing import List
 
 import pygame
 import pygame as pg
@@ -34,8 +34,8 @@ class Fountain(Entity):
     def drink(self, entity: Destroyable) -> Entries:
         """
 
-        :param entity:
-        :return:
+        Keyword arguments:
+        entity --
         """
         entries: List[List[dict[str, str]]] = []
         if self.times > 0:
@@ -71,7 +71,8 @@ class Fountain(Entity):
     def set_times(self, times: int) -> None:
         """
 
-        :param times:
+        Keyword arguments:
+        times --
         """
         self.times = times
         if self.times == 0:

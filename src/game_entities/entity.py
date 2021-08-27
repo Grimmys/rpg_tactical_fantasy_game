@@ -1,5 +1,5 @@
 """
-Defines Entity class, the base class of all game objects that could be display on the level map
+Defines Entity class, the base class of all game objects that could be display on the level map.
 """
 
 import re
@@ -54,7 +54,7 @@ class Entity:
 
     def get_rect(self) -> pygame.Rect:
         """
-        Return the pygame Rect of the sprite of the entity
+        Return the pygame Rect of the sprite of the entity.
         """
         return self.sprite.get_rect(topleft=self.position)
 

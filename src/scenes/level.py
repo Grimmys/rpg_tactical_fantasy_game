@@ -1192,7 +1192,7 @@ class Level:
                 if isinstance(attacker, Character):
                     weapon: Weapon = attacker.get_weapon()
                     if weapon:
-                        applied_effects: Sequence[Effect] = weapon.applied_effects(attacker, target)
+                        applied_effects: Sequence[Effect] = weapon.apply_effects(attacker, target)
                         for effect in applied_effects:
                             _, message = effect.apply_on_ent(target)
                             self.diary_entries.append(

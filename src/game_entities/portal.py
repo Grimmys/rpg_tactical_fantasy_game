@@ -14,9 +14,11 @@ class Portal(Entity):
     @staticmethod
     def link_portals(first_portal: Portal, second_portal: Portal) -> None:
         """
+        Link two portals between them in both ways.
 
-        :param first_portal:
-        :param second_portal:
+        Keyword arguments:
+        first_portal -- the first concerned portal
+        second_portal -- the other concerned portal
         """
         first_portal.linked_to = second_portal
         second_portal.linked_to = first_portal

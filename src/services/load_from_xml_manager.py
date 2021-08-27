@@ -1081,20 +1081,20 @@ def parse_item_file(name):
     :return:
     """
     # Retrieve data root for item
-    it_tree_root = etree.parse("data/items.xml").getroot().find(".//" + name)
+    item_tree_root = etree.parse("data/items.xml").getroot().find(".//" + name)
 
-    sprite = "imgs/dungeon_crawl/item/" + it_tree_root.find("sprite").text.strip()
-    info = it_tree_root.find("info").text.strip()
-    price = it_tree_root.find("price")
+    sprite = "imgs/dungeon_crawl/item/" + item_tree_root.find("sprite").text.strip()
+    info = item_tree_root.find("info").text.strip()
+    price = item_tree_root.find("price")
     if price is not None:
         price = int(price.text.strip())
     else:
         price = 0
-    category = it_tree_root.find("category").text.strip()
+    category = item_tree_root.find("category").text.strip()
 
     if category == "potion" or category == "consumable":
         effects = []
-        for eff in it_tree_root.findall(".//effect"):
+        for eff in item_tree_root.findall(".//effect"):
             effect_name = eff.find("type").text.strip()
             pow_el = eff.find("power")
             power = int(pow_el.text.strip()) if pow_el is not None else 0
@@ -1107,11 +1107,11 @@ def parse_item_file(name):
             else Consumable(name, sprite, info, price, effects)
         )
     elif category == "armor":
-        body_part = it_tree_root.find("bodypart").text.strip()
-        defense_el = it_tree_root.find("def")
+        body_part = item_tree_root.find("bodypart").text.strip()
+        defense_el = item_tree_root.find("def")
         defense = int(defense_el.text.strip()) if defense_el is not None else 0
-        weight = int(it_tree_root.find("weight").text.strip())
-        eq_sprites = it_tree_root.find("equipped_sprites")
+        weight = int(item_tree_root.find("weight").text.strip())
+        eq_sprites = item_tree_root.find("equipped_sprites")
         if eq_sprites is not None:
             equipped_sprites = []
             for eq_sprite in eq_sprites.findall("sprite"):
@@ -1121,9 +1121,9 @@ def parse_item_file(name):
         else:
             equipped_sprites = [
                 "imgs/dungeon_crawl/player/"
-                + it_tree_root.find("equipped_sprite").text.strip()
+                + item_tree_root.find("equipped_sprite").text.strip()
             ]
-        restrictions = load_restrictions(it_tree_root.find("restrictions"))
+        restrictions = load_restrictions(item_tree_root.find("restrictions"))
         item = Equipment(
             name,
             sprite,
@@ -1138,16 +1138,16 @@ def parse_item_file(name):
             restrictions,
         )
     elif category == "shield":
-        parry = int(float(it_tree_root.find("parry_rate").text.strip()) * 100)
-        defense_el = it_tree_root.find("def")
+        parry = int(float(item_tree_root.find("parry_rate").text.strip()) * 100)
+        defense_el = item_tree_root.find("def")
         defense = int(defense_el.text.strip()) if defense_el is not None else 0
-        fragility = int(it_tree_root.find("fragility").text.strip())
-        weight = int(it_tree_root.find("weight").text.strip())
+        fragility = int(item_tree_root.find("fragility").text.strip())
+        weight = int(item_tree_root.find("weight").text.strip())
         equipped_sprite = [
             "imgs/dungeon_crawl/player/hand_left/"
-            + it_tree_root.find("equipped_sprite").text.strip()
+            + item_tree_root.find("equipped_sprite").text.strip()
         ]
-        restrictions = load_restrictions(it_tree_root.find("restrictions"))
+        restrictions = load_restrictions(item_tree_root.find("restrictions"))
         item = Shield(
             name,
             sprite,
@@ -1161,32 +1161,32 @@ def parse_item_file(name):
             restrictions,
         )
     elif category == "weapon":
-        power = int(it_tree_root.find("power").text.strip())
-        attack_kind = it_tree_root.find("kind").text.strip()
-        weight = int(it_tree_root.find("weight").text.strip())
-        fragility = int(it_tree_root.find("fragility").text.strip())
-        w_range = [
-            int(reach) for reach in it_tree_root.find("range").text.strip().split(",")
+        power = int(item_tree_root.find("power").text.strip())
+        attack_kind = item_tree_root.find("kind").text.strip()
+        weight = int(item_tree_root.find("weight").text.strip())
+        fragility = int(item_tree_root.find("fragility").text.strip())
+        weapon_range = [
+            int(reach) for reach in item_tree_root.find("range").text.strip().split(",")
         ]
         equipped_sprite = [
             "imgs/dungeon_crawl/player/hand_right/"
-            + it_tree_root.find("equipped_sprite").text.strip()
+            + item_tree_root.find("equipped_sprite").text.strip()
         ]
-        restrictions = load_restrictions(it_tree_root.find("restrictions"))
-        effects = it_tree_root.find("effects")
+        restrictions = load_restrictions(item_tree_root.find("restrictions"))
+        effects = item_tree_root.find("effects")
         possible_effects = []
         if effects is not None:
             possible_effects = [
                 load_weapon_effect(eff) for eff in effects.findall("effect")
             ]
 
-        keywords_el = it_tree_root.find("strong_against/keywords")
+        keywords_element = item_tree_root.find("strong_against/keywords")
         strong_against = (
             [
                 Keyword[keyword.upper()]
-                for keyword in keywords_el.text.strip().split(",")
+                for keyword in keywords_element.text.strip().split(",")
             ]
-            if keywords_el is not None
+            if keywords_element is not None
             else []
         )
 
@@ -1200,17 +1200,17 @@ def parse_item_file(name):
             attack_kind,
             weight,
             fragility,
-            w_range,
+            weapon_range,
             restrictions,
             possible_effects,
             strong_against,
         )
     elif category == "key":
-        for_chest = it_tree_root.find("open_chest") is not None
-        for_door = it_tree_root.find("open_door") is not None
+        for_chest = item_tree_root.find("open_chest") is not None
+        for_door = item_tree_root.find("open_door") is not None
         item = Key(name, sprite, info, price, for_chest, for_door)
     elif category == "spellbook":
-        spell = it_tree_root.find("effect").text.strip()
+        spell = item_tree_root.find("effect").text.strip()
         item = Spellbook(name, sprite, info, price, spell)
     else:
         # No special category

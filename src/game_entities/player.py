@@ -85,8 +85,10 @@ class Player(Character):
 
     def set_initial_pos(self, position: tuple[int, int]) -> None:
         """
+        Set the initial position of the player.
 
-        :param position:
+        Keyword arguments:
+        position -- the position that should be set
         """
         self.position = position
         self.old_position = position
@@ -105,10 +107,12 @@ class Player(Character):
     @staticmethod
     def trade_gold(sender: Character, receiver: Character, amount: int) -> None:
         """
+        Handle the trading of a specific amount of gold between two characters.
 
-        :param sender:
-        :param receiver:
-        :param amount:
+        Keyword arguments:
+        sender -- the character sending the gold
+        receiver -- the character that should receive the gold
+        amount -- the amount of gold traded
         """
         if amount > sender.gold:
             amount = sender.gold
@@ -117,14 +121,18 @@ class Player(Character):
 
     @property
     def selected(self) -> bool:
-        """
-
-        :return:
-        """
+        """Return whether the player is selected or not"""
         return self._selected
 
     @selected.setter
     def selected(self, is_selected: bool) -> None:
+        """
+        Set whether the player is selected or not.
+        Change the current state of the player to match its selection status.
+
+        Keyword arguments:
+        is_selected -- whether the player is selected or not
+        """
         self._selected = is_selected
         self.state = (
             PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
@@ -132,8 +140,10 @@ class Player(Character):
 
     def set_move(self, position: Sequence[tuple[int, int]]) -> None:
         """
+        Set the movement of the player to the given position
 
-        :param position:
+        Keyword arguments:
+        position -- the target position of the movement
         """
         Character.set_move(self, position)
         self.state = PlayerState.ON_MOVE
@@ -141,8 +151,10 @@ class Player(Character):
 
     def move(self) -> bool:
         """
+        Move the player by one tile.
+        If the target position is reached, change the current state of the player
 
-        :return:
+        Return whether the movement is finished or not.
         """
         if self.state is PlayerState.ON_MOVE:
             Character.move(self)
@@ -153,8 +165,9 @@ class Player(Character):
 
     def cancel_move(self) -> bool:
         """
+        Try to cancel the last move action of the player.
 
-        :return:
+        Return whether the move has been cancelled or not.
         """
         if self.state is not PlayerState.WAITING_POST_ACTION_UNCANCELLABLE:
             self.state = PlayerState.WAITING_SELECTION
@@ -163,14 +176,20 @@ class Player(Character):
         return False
 
     def cancel_interaction(self) -> None:
-        """ """
+        """
+        Cancel interaction selection.
+        """
         self.state = PlayerState.WAITING_POST_ACTION
 
     def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
         """
+        Use the given consumable item.
+        Change the player state if the item has successfully been used.
 
-        :param item:
-        :return:
+        Return whether the item has been used or not and the messages that should be sent to the player.
+
+        Keyword arguments:
+        item -- the item that should be consumed
         """
         used, result_msgs = Character.use_item(self, item)
         if used:
@@ -179,20 +198,26 @@ class Player(Character):
 
     def equip(self, equipment: Equipment) -> int:
         """
+        Equip the given equipment.
 
-        :param equipment:
-        :return:
+        Return whether the equipment has been equipped or not and if it replaced an another equipment.
+
+        Keyword arguments:
+        equipment -- the equipment that should be equipped
         """
         equipped: int = Character.equip(self, equipment)
         if equipped > -1:
             self.state = PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
         return equipped
 
-    def unequip(self, equipment: Equipment) -> int:
+    def unequip(self, equipment: Equipment) -> bool:
         """
+        Unequip the given equipment.
 
-        :param equipment:
-        :return:
+        Return whether the equipment has been unequipped or not.
+
+        Keyword arguments:
+        equipment -- the equipment that should be equipped
         """
         unequipped = Character.unequip(self, equipment)
         if unequipped:
@@ -210,17 +235,17 @@ class Player(Character):
         return damages
 
     def end_turn(self) -> None:
-        """ """
+        """Handle the end of the turn of the player"""
         self.state = PlayerState.FINISHED
         self._selected = False
         self.sprite = self.sprite_unavailable
-        for eq in self.equipments:
-            eq.set_grey()
+        for equipment in self.equipments:
+            equipment.set_grey()
         # Remove all alterations that are finished
-        self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
+        self.alterations = [alteration for alteration in self.alterations if not alteration.is_finished()]
 
     def new_turn(self) -> None:
-        """ """
+        """Handle the start of a new turn for the player"""
         Character.new_turn(self)
         self.state = PlayerState.WAITING_SELECTION
         self.sprite = self.normal_sprite
@@ -228,14 +253,11 @@ class Player(Character):
             equipment.unset_grey()
 
     def turn_is_finished(self) -> bool:
-        """
-
-        :return:
-        """
+        """Return whether the player turn is ended or not"""
         return self.state == PlayerState.FINISHED
 
     def choose_target(self) -> None:
-        """ """
+        """Handle the selection of a target for an attack"""
         self.state = PlayerState.WAITING_TARGET
 
     def save(self, tree_name: str) -> etree.Element:

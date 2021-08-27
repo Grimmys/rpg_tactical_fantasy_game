@@ -1,15 +1,21 @@
+"""
+Defines Effect class, corresponding to the application of a specific effect to a destroyable entity.
+"""
+
+
 from lxml import etree
 
 from src.game_entities.alteration import Alteration
+from src.game_entities.destroyable import Destroyable
 
 
 class Effect:
     """ """
 
-    def __init__(self, name, power, duration):
-        self.name = name
-        self.power = power
-        self.duration = duration
+    def __init__(self, name: str, power: int, duration: int):
+        self.name: str = name
+        self.power: int = power
+        self.duration: int = duration
         if (
             self.name == "speed_up"
             or self.name == "strength_up"
@@ -37,7 +43,7 @@ class Effect:
                 self.name, abbr, self.power, self.duration, desc, durable_effects
             )
 
-    def apply_on_ent(self, entity):
+    def apply_on_ent(self, entity: Destroyable) -> tuple[bool, str]:
         """
 
         :param entity:
@@ -74,7 +80,7 @@ class Effect:
             msg = f"{entity} has been stunned for {self.duration} turns"
         return success, msg
 
-    def get_formatted_desc(self):
+    def get_formatted_desc(self) -> str:
         """
 
         :return:
@@ -85,5 +91,5 @@ class Effect:
             return f"Earn {self.power} XP"
         return self.alteration.description
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name.replace("_", " ").title()

@@ -1,5 +1,10 @@
+"""
+Defines Mission class and MissionType enum, data structures representing the different missions that could or should be
+accomplished by the player during a level.
+"""
+
 from enum import Enum, auto
-from typing import Sequence, Union, List
+from typing import Sequence, Union, List, Optional
 
 from src.constants import TILE_SIZE
 from src.game_entities.entity import Entity
@@ -16,7 +21,33 @@ class MissionType(Enum):
 
 
 class Mission:
-    """ """
+    """
+    A Mission is an objective that can be accomplished by the player during a level.
+    It can be a primary objective (i.e. mandatory) or only a secondary objective.
+
+    Keyword Arguments:
+    is_main -- whether the mission is primary or not
+    nature -- the kind of the mission
+    positions -- the positions of the key elements of the mission
+    description -- the description of the mission
+    nb_players -- the number of player characters that should validate the mission
+    turn_limit -- the limit of turns until the mission would be considered as failed
+    gold_reward -- the quantity of gold given to the player in case of success
+    items_reward -- the items given to the player in case of success
+
+    Attributes:
+    main -- whether the mission is primary or not
+    type -- the kind of the mission
+    positions -- the positions of the key elements of the mission
+    description -- the description of the mission
+    ended -- whether the mission is ended or not
+    turn_limit -- the limit of turns until the mission would be considered as failed
+    restrictions -- the list of restrictions regarding the accomplishment of the mission
+    gold -- the quantity of gold given to the player in case of success
+    items -- the items given to the player in case of success
+    min_players -- the minimal number of player characters that should validate the mission
+    succeeded_chars -- the player characters which have validated the mission
+    """
 
     def __init__(
         self,
@@ -37,7 +68,7 @@ class Mission:
         self.description: str = description
         self.ended: bool = self.type is MissionType.TURN_LIMIT
         self.turn_limit: int = turn_limit
-        self.restrictions: Union[Sequence[str], None] = None
+        self.restrictions: Optional[Sequence[str]] = None
         self.gold: int = gold_reward
         self.items: Sequence[Item] = items_reward
         self.min_chars: int = nb_players
@@ -45,9 +76,11 @@ class Mission:
 
     def is_position_valid(self, position: tuple[int, int]) -> bool:
         """
+        Determine whether the mission can be accomplished from the given position or not.
+        Return the result of the computation.
 
-        :param position:
-        :return:
+        Keyword Arguments:
+        position -- the position that should be checked
         """
         if self.type is MissionType.POSITION:
             return position in self.positions
@@ -68,11 +101,14 @@ class Mission:
         turns: int = 0,
     ) -> bool:
         """
+        Update the state of the mission.
+        Verify whether it's ended or not.
+        Return always True.
 
-        :param player:
-        :param entities:
-        :param turns:
-        :return:
+        Keyword Arguments:
+        player -- the player character who have validated the mission if any
+        entities -- the list of entities related to the mission
+        turns -- the number of turns elapsed since the beginning of the current level
         """
         if (
             self.type is MissionType.POSITION or self.type is MissionType.TOUCH_POSITION

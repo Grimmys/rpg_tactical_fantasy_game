@@ -1,3 +1,7 @@
+"""
+Defines Door class, a non-living entity that eventually could be opened by the living entities
+"""
+
 from lxml import etree
 
 from src.game_entities.entity import Entity
