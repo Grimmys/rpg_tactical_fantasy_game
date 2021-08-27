@@ -4,7 +4,7 @@ Defines Character class, the class defining allied entities or even playable ent
 
 import math
 import random
-from typing import Union, Sequence, Any
+from typing import Union, Sequence, Any, Optional
 
 import pygame
 from lxml import etree
@@ -159,7 +159,7 @@ class Character(Movable):
         :return:
         """
         damages: int = self.strength + self.get_stat_change("strength")
-        weapon: Weapon = self.get_weapon()
+        weapon = self.get_weapon()
         if weapon:
             damages += weapon.hit(self, entity)
             if weapon.used() == 0:
@@ -187,7 +187,7 @@ class Character(Movable):
             self.hit_points_max += hp_increased
             self.hit_points += hp_increased
 
-    def get_weapon(self) -> Union[Weapon, None]:
+    def get_weapon(self) -> Optional[Weapon]:
         """
 
         :return:
@@ -216,7 +216,7 @@ class Character(Movable):
         :return:
         """
         attack_kind: DamageKind = self._attack_kind
-        weapon: Weapon = self.get_weapon()
+        weapon = self.get_weapon()
         if weapon is not None:
             attack_kind = weapon.attack_kind
         return attack_kind
