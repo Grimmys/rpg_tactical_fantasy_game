@@ -1,5 +1,9 @@
+"""
+Defines Player class, the class defining characters controlled by the player
+"""
+
 from enum import IntEnum, auto
-from typing import Union, Sequence
+from typing import Union, Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -11,6 +15,7 @@ from src.game_entities.consumable import Consumable
 from src.game_entities.entity import Entity
 from src.game_entities.equipment import Equipment
 from src.game_entities.skill import Skill
+from src.gui.position import Position
 from src.services.menus import CharacterMenu
 
 
@@ -25,7 +30,34 @@ class PlayerState(IntEnum):
 
 
 class Player(Character):
-    """ """
+    """
+    A Player is a Character controlled by the player.
+    Each Player is part of the player's characters team.
+
+    Keyword Arguments:
+    name -- the name of the entity
+    sprite -- the pygame Surface corresponding to the appearance of the entity on screen or
+    the relative path to the visual representation of the entity
+    hit_points -- the total of damage that the entity can take before disappearing
+    defense -- the resistance of the entity from physical attacks
+    resistance -- the resistance of the entity from spiritual attacks
+    strength -- the raw strength of the entity
+    classes -- the sequence of classes of the character
+    equipments -- the list of equipment worn by the character
+    race -- the character's race
+    gold -- the amount of gold the character has
+    lvl -- the current level of the entity
+    skills -- the list of skills of the entity
+    alterations -- the list of ongoing alterations affecting the entity
+    complementary_sprite_link -- the relative path to the sprite that should be blitted on top of the base sprite
+
+    Attributes:
+    old_position -- the reference to the previous position of the player to be able to revert the last move if requested
+    _selected -- whether the player is selected or not
+    sprite_unavailable -- the sprite to be displayed when the player's turn is finished
+    normal_sprite -- the reference to the default sprite
+    current_action -- the ongoing action of the player if there is any
+    """
 
     def __init__(
         self,
@@ -81,9 +113,9 @@ class Player(Character):
         self.normal_sprite: pygame.Surface = self.sprite
 
         # Memorize the current action performed by the player, it must be a value of CharacterMenu
-        self.current_action: Union[CharacterMenu, None] = None
+        self.current_action: Optional[CharacterMenu] = None
 
-    def set_initial_pos(self, position: tuple[int, int]) -> None:
+    def set_initial_pos(self, position: Position) -> None:
         """
         Set the initial position of the player.
 
@@ -95,8 +127,11 @@ class Player(Character):
 
     def display(self, screen: pygame.Surface) -> None:
         """
+        Display the player on the given screen.
+        Also display on top of it the selected indicator if the player is currently active.
 
-        :param screen:
+        Keyword arguments:
+        screen -- the screen on which the player should be drawn
         """
         Character.display(self, screen)
         if self.state in range(
@@ -217,7 +252,7 @@ class Player(Character):
         Return whether the equipment has been unequipped or not.
 
         Keyword arguments:
-        equipment -- the equipment that should be equipped
+        equipment -- the equipment that should be unequipped
         """
         unequipped = Character.unequip(self, equipment)
         if unequipped:
@@ -226,9 +261,11 @@ class Player(Character):
 
     def attack(self, entity: Entity) -> int:
         """
+        Return the damage that should be dealt to the given entity during an attack.
+        Change the state of the player to the last one (turn finished)
 
-        :param entity:
-        :return:
+        Keyword arguments:
+        entity -- the target of the attack
         """
         damages: int = Character.attack(self, entity)
         self.state = PlayerState.FINISHED
