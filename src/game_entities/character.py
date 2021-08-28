@@ -24,7 +24,41 @@ from src.gui.fonts import fonts
 
 
 class Character(Movable):
-    """ """
+    """
+    A Character is a living entity that can be controlled by the player (but that could also be controlled by the AI
+    and then be an ally).
+    Each Character has specificities like classes or race, and can equip items.
+
+    Keyword Arguments:
+    name -- the name of the entity
+    position -- the current position of the entity on screen
+    sprite -- the pygame Surface corresponding to the appearance of the entity on screen or
+    the relative path to the visual representation of the entity
+    hit_points -- the total of damage that the entity can take before disappearing
+    defense -- the resistance of the entity from physical attacks
+    resistance -- the resistance of the entity from spiritual attacks
+    strength -- the raw strength of the entity
+    classes -- the sequence of classes of the character
+    equipments -- the list of equipment worn by the character
+    strategy -- the strategy of the entity if it's controlled by the AI
+    lvl -- the current level of the entity
+    skills -- the list of skills of the entity
+    alterations -- the list of ongoing alterations affecting the entity
+    race -- the character's race
+    gold -- the amount of gold the character has
+    interaction -- the event that should be triggered when the player try to interact with the entity
+    complementary_sprite_link -- the relative path to the sprite that should be blitted on top of the base sprite
+
+    Attributes:
+    equipments -- the list of equipment worn by the character
+    classes -- the sequence of classes of the character
+    race -- the character's race
+    gold -- the amount of gold the character has
+    interaction -- the event that should be triggered when the player try to interact with the entity
+    join_team -- whether the character can join the team or not
+    reach_ -- the range of reach of the entity
+    constitution -- the global constitution of the character used to know its capacity to bear items
+    """
 
     races_data: dict[str, dict[str, Any]] = {}
     classes_data: dict[str, dict[str, Any]] = {}
@@ -34,9 +68,12 @@ class Character(Movable):
         races: dict[str, dict[str, Any]], classes: dict[str, dict[str, Any]]
     ) -> None:
         """
+        Initialize the generic data collections for Character.
+        This method should be called only once and before any use of this class.
 
-        :param races:
-        :param classes:
+        Keyword arguments:
+        races -- the data structure containing all the data about existing races
+        classes -- the data structure containing all the data about existing classes
         """
         Character.races_data = races
         Character.classes_data = classes
@@ -59,7 +96,7 @@ class Character(Movable):
         race: str,
         gold: int,
         interaction: dict[str, Any],
-        complementary_sprite_link: str = None,
+        complementary_sprite_link: Optional[str] = None,
     ):
         super().__init__(
             name,
@@ -92,9 +129,12 @@ class Character(Movable):
 
     def talk(self, actor: Entity) -> Entries:
         """
+        Compute the dialog that should be displayed to the player when trying to interact with the entity.
 
-        :param actor:
-        :return:
+        Return the computed dialog.
+
+        Keyword arguments:
+        actor -- the player character which initiated the interaction
         """
         self.join_team = self.interaction["join_team"]
         entries: Entries = []
@@ -107,23 +147,28 @@ class Character(Movable):
 
     def display(self, screen: pygame.Surface) -> None:
         """
+        Display the character on the given screen.
+        Also display on top of it its equipment.
 
-        :param screen:
+        Keyword arguments:
+        screen -- the screen on which the movable entity should be drawn
         """
         Movable.display(self, screen)
         for equipment in self.equipments:
             equipment.display(screen, self.position, True)
 
     def lvl_up(self) -> None:
-        """ """
+        """
+        Handle the up of the level by one.
+        Increase the statistics.
+        """
         Movable.lvl_up(self)
         self.stats_up()
 
     # TODO : refactor part of this code in Shield class
     def parried(self) -> bool:
         """
-
-        :return:
+        Compute and return whether the character parried the ongoing attack or not.
         """
         for equipment in self.equipments:
             if isinstance(equipment, Shield):
@@ -138,12 +183,16 @@ class Character(Movable):
         self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
     ) -> int:
         """
+        Compute how much the entity should take and reduce the hit points of
+        the entity by this value.
 
-        :param entity:
-        :param damage:
-        :param kind:
-        :param allies:
-        :return:
+        Return the current hit points of the entity after applying the damage.
+
+        Keyword arguments:
+        entity -- the other entity that is attacking the entity
+        damage -- the attack's power
+        kind -- the nature of the attack
+        allies -- the allies of the entity
         """
         for equipment in self.equipments:
             if kind is DamageKind.PHYSICAL:
@@ -154,22 +203,25 @@ class Character(Movable):
 
     def attack(self, entity: Entity) -> int:
         """
+        Return the damage that should be dealt to the given entity during an attack.
 
-        :param entity:
-        :return:
+        Keyword arguments:
+        entity -- the target of the attack
         """
-        damages: int = self.strength + self.get_stat_change("strength")
+        damage: int = self.strength + self.get_stat_change("strength")
         weapon = self.get_weapon()
         if weapon:
-            damages += weapon.hit(self, entity)
+            damage += weapon.hit(self, entity)
             if weapon.used() == 0:
                 self.remove_equipment(weapon)
-        return damages
+        return damage
 
     def stats_up(self, nb_lvl: int = 1) -> None:
         """
+        Compute the increasing of each statistics for each level up.
 
-        :param nb_lvl:
+        Keyword arguments:
+        nb_lvl -- the number of levels earned
         """
         for _ in range(nb_lvl):
             hp_increased: int = random.choice(
@@ -189,8 +241,7 @@ class Character(Movable):
 
     def get_weapon(self) -> Optional[Weapon]:
         """
-
-        :return:
+        Return the weapon born by the character.
         """
         for equipment in self.equipments:
             if equipment.body_part == "right_hand":
@@ -200,8 +251,7 @@ class Character(Movable):
     @property
     def reach(self) -> Sequence[int]:
         """
-
-        :return:
+        Return the range of reach of the character.
         """
         reach: Sequence[int] = self.reach_
         weapon: Weapon = self.get_weapon()
@@ -212,8 +262,7 @@ class Character(Movable):
     @property
     def attack_kind(self) -> DamageKind:
         """
-
-        :return:
+        Return the kind of damage dealt by the character.
         """
         attack_kind: DamageKind = self._attack_kind
         weapon = self.get_weapon()
@@ -223,9 +272,11 @@ class Character(Movable):
 
     def get_equipment(self, index: int) -> Union[Equipment, bool]:
         """
+        Return the equipment located at the given index.
+        Return False if there is no equipment at this index.
 
-        :param index:
-        :return:
+        Keyword argument:
+        index -- the index to look for
         """
         if index not in range(len(self.equipments)):
             return False
@@ -233,16 +284,17 @@ class Character(Movable):
 
     def has_equipment(self, equipment: Equipment) -> bool:
         """
+        Return whether the character wears the given equipment or not
 
-        :param equipment:
-        :return:
+        Keyword argument:
+        equipment -- the equipment to look for
         """
         return equipment in self.equipments
 
     def get_formatted_classes(self) -> str:
         """
-
-        :return:
+        Return the list of classes in a formatted
+        way
         """
         formatted_string: str = ""
         for cls in self.classes:
@@ -253,24 +305,26 @@ class Character(Movable):
 
     def get_formatted_race(self) -> str:
         """
-
-        :return:
+        Return the race in a formatted
+        way
         """
         return self.race.capitalize()
 
     def get_formatted_reach(self) -> str:
         """
-
-        :return:
+        Return the reach in a formatted
+        way
         """
         return ", ".join([str(reach) for reach in self.reach])
 
     # TODO : Refactor me ; I'm too long and return type looks too generic
     def equip(self, equipment: Equipment) -> int:
         """
+        Handle the equipment of the given equipment.
+        Return whether the equipment has been successfully equipped or not, and if it replaced another equipment.
 
-        :param equipment:
-        :return:
+        Keyword argument:
+        equipment -- the equipment to be equipped
         """
         # Verify if player could wear this equipment
         allowed: bool = True
@@ -306,9 +360,11 @@ class Character(Movable):
 
     def unequip(self, equipment: Equipment) -> bool:
         """
+        Handle the unequipment of the given equipment.
+        Return whether the equipment has been successfully unequipped or not.
 
-        :param equipment:
-        :return:
+        Keyword argument:
+        equipment -- the equipment to be unequipped
         """
         # If the item has been appended to the inventory
         if self.set_item(equipment):
@@ -316,11 +372,9 @@ class Character(Movable):
             return True
         return False
 
-    def remove_equipment(self, equipment: Equipment) -> Union[Equipment, None]:
+    def remove_equipment(self, equipment: Equipment) -> Optional[Equipment]:
         """
-
-        :param equipment:
-        :return:
+        Remove the given equipment from the list of equipments of the character and return it.
         """
         for index, equip in enumerate(self.equipments):
             if equip.identifier == equipment.identifier:
@@ -329,9 +383,10 @@ class Character(Movable):
 
     def get_stat_change(self, stat: str) -> int:
         """
+        Return the current modifier for the given statistic.
 
-        :param stat:
-        :return:
+        Keyword argument:
+        stat -- the name of the state for which the modifier should be returned
         """
         malus: int = 0
         if stat == "speed":
@@ -342,8 +397,10 @@ class Character(Movable):
         return malus + Movable.get_stat_change(self, stat)
 
     def remove_chest_key(self) -> None:
-        """ """
-        best_candidate: Union[Item, None] = None
+        """
+        Remove the first chest key found in the inventory if there is any
+        """
+        best_candidate: Optional[Item] = None
         for item in self.items:
             if isinstance(item, Key) and item.for_chest:
                 if not best_candidate:
@@ -354,7 +411,9 @@ class Character(Movable):
         self.items.remove(best_candidate)
 
     def remove_door_key(self) -> None:
-        """ """
+        """
+        Remove the first door key found in the inventory if there is any
+        """
         best_candidate: Union[Item, None] = None
         for item in self.items:
             if isinstance(item, Key) and item.for_door:

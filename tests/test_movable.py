@@ -72,7 +72,7 @@ class TestMovable(unittest.TestCase):
             movable_entity.position[1] + rd.randint(1, 20),
         )
         movable_entity.set_move([new_pos])
-        movable_entity.timer = 0
+        movable_entity._timer = 0
         movable_entity.move()
 
         self.assertTrue(movable_entity.is_on_position(new_pos))

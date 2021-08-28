@@ -1,6 +1,11 @@
+"""
+Defines Movable class and enum classes for representing entity states and entity strategies,
+different classes handling the management of entities that can move, only living entities as for now.
+"""
+
 from enum import IntEnum, auto, Enum
 import os
-from typing import Union, Sequence
+from typing import Union, Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -12,12 +17,17 @@ from src.game_entities.destroyable import Destroyable, DamageKind
 from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.skill import SkillNature, Skill
+from src.gui.position import Position
 
 TIMER = 60
 NB_ITEMS_MAX = 8
 
 
 class EntityState(IntEnum):
+    """
+    Defines the cycle of states for a movable entity.
+    """
+
     HAVE_TO_ACT = auto()
     ON_MOVE = auto()
     HAVE_TO_ATTACK = auto()
@@ -25,6 +35,10 @@ class EntityState(IntEnum):
 
 
 class EntityStrategy(Enum):
+    """
+    Defines the different possible strategies of a movable entity controlled by the artificial intelligence.
+    """
+
     # Entity will never move, just attack if possible
     STATIC = auto()
     # Entity will react to attacks, and pursue opponent if it's trying to flee
@@ -38,7 +52,48 @@ class EntityStrategy(Enum):
 
 
 class Movable(Destroyable):
-    """ """
+    """
+    A Movable is simply a Destroyable entity that can move.
+    It is the basic class for all living entities.
+
+    Keyword arguments:
+    name -- the name of the entity
+    position -- the current position of the entity on screen
+    sprite -- the pygame Surface corresponding to the appearance of the entity on screen or
+    the relative path to the visual representation of the entity
+    hit_points -- the total of damage that the entity can take before disappearing
+    defense -- the resistance of the entity from physical attacks
+    resistance -- the resistance of the entity from spiritual attacks
+    max_moves -- the max number of tiles that could be crossed by the entity during one movement
+    strength -- the raw strength of the entity
+    attack_kind -- the kind of damage dealt by the entity
+    strategy -- the strategy of the entity if it's controlled by the AI
+    lvl -- the current level of the entity
+    skills -- the list of skills of the entity
+    alterations -- the list of ongoing alterations affecting the entity
+    complementary_sprite_link -- the relative path to the sprite that should be blitted on top of the base sprite
+
+    Attributes:
+    _max_moves -- the max number of tiles that could be crossed by the entity during one movement
+    on_move -- the stack of the different positions through which the entity should pass for the current movement
+    _timer -- the time until the entity move to the next tile during a movement
+    strength -- the raw strength of the entity
+    alterations -- the list of ongoing alterations affecting the entity
+    lvl -- the current level of the entity
+    experience -- the current amount of experience earned
+    experience_to_lvl_up -- the amount of experience left to earn before next level
+    items -- the list of items in the inventory
+    nb_items_max -- the size of the inventory
+    state -- the current state of the entity
+    target -- the target of the current attack if there is any
+    _attack_kind -- the kind of damage dealt by the entity
+    strategy -- the strategy of the entity if it's controlled by the AI
+    skills -- the list of skills of the entity
+    walk_sfx -- the sound started when the entity is moving
+    skeleton_sfx -- the sound started when a skeleton is moving
+    necrophage_sfx -- the sound started when a necrophage is moving
+    centaur_sfx -- the sound started when a centaur is moving
+    """
 
     SELECTED_DISPLAY: pygame.Surface = None
     XP_NEXT_LVL_BASE: int = 15
@@ -46,7 +101,10 @@ class Movable(Destroyable):
 
     @staticmethod
     def init_constant_sprites() -> None:
-        """ """
+        """
+        Initialize the generic sprites.
+        This operation should be called after the initialization of a pygame window.
+        """
         selected_sprite: str = "imgs/dungeon_crawl/misc/cursor.png"
         Movable.SELECTED_DISPLAY = pygame.transform.scale(
             pygame.image.load(selected_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)
@@ -65,9 +123,9 @@ class Movable(Destroyable):
         attack_kind: str,
         strategy: str,
         lvl: int = 1,
-        skills: Sequence[Skill] = None,
-        alterations: Sequence[Alteration] = None,
-        complementary_sprite_link: str = None,
+        skills: Optional[Sequence[Skill]] = None,
+        alterations: Optional[Sequence[Alteration]] = None,
+        complementary_sprite_link: Optional[str] = None,
     ) -> None:
         super().__init__(name, position, sprite, hit_points, defense, resistance)
         if skills is None:
@@ -76,7 +134,7 @@ class Movable(Destroyable):
             alterations = []
         self._max_moves: int = max_moves
         self.on_move: list[tuple[int, int]] = []
-        self.timer: int = TIMER
+        self._timer: int = TIMER
         self.strength: int = strength
         self.alterations: list[Alteration] = alterations
         self.lvl: int = lvl
@@ -127,8 +185,7 @@ class Movable(Destroyable):
     @property
     def attack_kind(self) -> DamageKind:
         """
-
-        :return:
+        Return the kind of damage dealt by the entity
         """
         return self._attack_kind
 
@@ -136,12 +193,16 @@ class Movable(Destroyable):
         self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
     ) -> int:
         """
+        Compute how much the entity should take and reduce the hit points of
+        the entity by this value.
 
-        :param entity:
-        :param damage:
-        :param kind:
-        :param allies:
-        :return:
+        Return the current hit points of the entity after applying the damage.
+
+        Keyword arguments:
+        entity -- the other entity that is attacking the entity
+        damage -- the attack's power
+        kind -- the nature of the attack
+        allies -- the allies of the entity
         """
         # Compute distance of all allies
         allies_dist: Sequence[tuple[Entity, int]] = [
@@ -182,34 +243,40 @@ class Movable(Destroyable):
         return self.hit_points
 
     def end_turn(self) -> None:
-        """ """
+        """
+        Handle the end of the turn of the entity
+        """
         self.state = EntityState.FINISHED
         # Remove all alterations that are finished
         self.alterations = [alt for alt in self.alterations if not alt.is_finished()]
 
     def turn_is_finished(self) -> bool:
         """
-
-        :return:
+        Return whether entity's turn is finished or not
         """
         return self.state == EntityState.FINISHED
 
     @property
     def max_moves(self) -> int:
         """
-
-        :return:
+        Return the max amount of tiles that can be crossed by the entity.
         """
         return self._max_moves
 
     def set_move(self, path: Sequence[tuple[int, int]]) -> None:
         """
+        Set the current movement of the entity to the one given
 
-        :param path:
+        Play a walking sound according to the nature of the entity.
+
+        Keyword arguments:
+        path -- the ordered sequence of tiles that should be crossed by the entity
         """
         self.on_move = path
         self.state = EntityState.ON_MOVE
 
+        # TODO: the determination of which sound should be started shouldn't be done according to the entity's name
+        #  but rather according to specific attribute like the race
         if self.strategy == EntityStrategy.MANUAL:
             if self.name == "chrisemon":
                 pygame.mixer.Sound.play(self.centaur_sfx)
@@ -225,8 +292,8 @@ class Movable(Destroyable):
 
     def get_formatted_alterations(self) -> str:
         """
-
-        :return:
+        Return the list of alterations in a formatted
+        way
         """
         formatted_string: str = ""
         for alteration in self.alterations:
@@ -237,8 +304,8 @@ class Movable(Destroyable):
 
     def get_abbreviated_alterations(self) -> str:
         """
-
-        :return:
+        Return the list of alterations in a abbreviated
+        way
         """
         formatted_string: str = ""
         for alteration in self.alterations:
@@ -249,24 +316,25 @@ class Movable(Destroyable):
 
     def set_alteration(self, alteration: Alteration) -> None:
         """
+        Add a new alteration to the list of alterations.
 
-        :param alteration:
+        Keyword arguments:
+        alteration -- the alteration that should be added
         """
         self.alterations.append(alteration)
 
     def get_alterations_effect(self, eff: str) -> list[Alteration]:
         """
-
-        :param eff:
-        :return:
+        Return the list of effects suffered by the entity.
         """
         return list(filter(lambda alteration: alteration.name == eff, self.alterations))
 
     def get_stat_change(self, stat: str) -> int:
         """
+        Return the current modifier for the given statistic.
 
-        :param stat:
-        :return:
+        Keyword argument:
+        stat -- the name of the state for which the modifier should be returned
         """
         # Check if character as a bonus due to alteration
         return sum(
@@ -275,23 +343,26 @@ class Movable(Destroyable):
 
     def get_formatted_stat_change(self, stat: str) -> str:
         """
+        Return the current modifier for the given statistic in a formatted way.
 
-        :param stat:
-        :return:
+        Keyword argument:
+        stat -- the name of the state for which the modifier should be returned
         """
         change: int = self.get_stat_change(stat)
         if change > 0:
-            return " (+" + str(change) + ")"
+            return f" (+{change})"
         if change < 0:
-            return " (" + str(change) + ")"
+            return f" ({change})"
         return ""
 
-    # The return value is a boolean indicating if the target gained a level
     def earn_xp(self, xp: int) -> bool:
         """
+        Handle the earning of experience.
 
-        :param xp:
-        :return:
+        Return whether the entity level up or not.
+
+        Keyword arguments:
+        xp -- the amount of earned xp
         """
         self.experience += xp
         if self.experience >= self.experience_to_lvl_up:
@@ -301,48 +372,55 @@ class Movable(Destroyable):
 
     def determine_xp_goal(self) -> int:
         """
-
-        :return:
+        Compute and return the amount of experience that should be earned until next level.
         """
         return int(Movable.XP_NEXT_LVL_BASE * pow(1.5, self.lvl - 1))
 
     def lvl_up(self) -> None:
-        """ """
+        """
+        Handle the up of the level by one.
+        """
         self.lvl += 1
         self.experience -= self.experience_to_lvl_up
         self.experience_to_lvl_up = self.determine_xp_goal()
 
-    def get_item(self, index: int) -> Item:
+    # TODO: should return None if there is no Item found instead of False
+    def get_item(self, index: int) -> Union[Item, bool]:
         """
+        Return the item located at the given index of the inventory.
+        Return False if no item is found at this index.
 
-        :param index:
-        :return:
+        Keyword argument:
+        index -- the index of the item that should be retrieved
         """
         return self.items[index] if 0 <= index < len(self.items) else False
 
     def has_free_space(self) -> bool:
         """
-
-        :return:
+        Return whether there is place for more items or not.
         """
         return len(self.items) < NB_ITEMS_MAX
 
     def set_item(self, item: Item) -> bool:
         """
+        Add a new item to the inventory if there is enough place.
+        Return whether the item has been added or not.
 
-        :param item:
-        :return:
+        Keyword arguments:
+        item -- the item that should be added
         """
         if self.has_free_space():
             self.items.append(item)
             return True
         return False
 
-    def remove_item(self, item_to_remove: Item) -> Item:
+    # TODO: should return None if there is no Item found instead of -1
+    def remove_item(self, item_to_remove: Item) -> Union[Item, int]:
         """
+        Remove the given item from the entity's inventory and return it.
 
-        :param item_to_remove:
-        :return:
+        Keyword argument:
+        item_to_remove -- the item that should be removed
         """
         for index, item in enumerate(self.items):
             if item.identifier == item_to_remove.identifier:
@@ -351,25 +429,30 @@ class Movable(Destroyable):
 
     def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
         """
+        Consume the given item.
+        Return whether the item has been used or not and
+        the sequence of messages that should be displayed to the player.
 
-        :param item:
-        :return:
+        Keyword arguments:
+        item -- the item that should be consumed
         """
         return item.use(self)
 
     def move(self) -> None:
-        """ """
-        self.timer -= Movable.move_speed
-        if self.timer <= 0:
+        """
+        Decrease the current timer according to move speed and move the entity by one tile if it's time for.
+        Change the state of the entity if the movement is finished.
+        """
+        self._timer -= Movable.move_speed
+        if self._timer <= 0:
             self.position = self.on_move.pop(0)
-            self.timer = TIMER
+            self._timer = TIMER
         if not self.on_move:
             self.state = EntityState.HAVE_TO_ATTACK
 
     def can_attack(self) -> bool:
         """
-
-        :return:
+        Return whether the entity can attack or not
         """
         # Check if no alteration forbids the entity to attack
         for alt in self.alterations:
@@ -378,13 +461,18 @@ class Movable(Destroyable):
         return True
 
     def act(
-        self, possible_moves: Sequence[tuple[int, int]], targets: Sequence[Entity]
-    ) -> Union[tuple[int, int], None]:
+        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
+    ) -> Optional[Position]:
         """
+        Determine what action should be done by the entity controlled by AI.
+        The action is determined according to the current state of the entity.
 
-        :param possible_moves:
-        :param targets:
-        :return:
+        Return the selected tile for the move / attack if any should be selected.
+
+        Keyword arguments:
+        possible_moves -- the collection of tiles that could be reached by the entity
+        with their associated distance from the entity
+        targets -- the collection of entities that could be attacked with their associated distance from the entity
         """
         if self.state is EntityState.HAVE_TO_ACT:
             return self.determine_move(possible_moves, targets)
@@ -397,13 +485,16 @@ class Movable(Destroyable):
             self.end_turn()
         return None
 
-    def determine_attack(self, targets: Sequence[Entity]) -> tuple[int, int]:
+    def determine_attack(self, targets: Sequence[Entity]) -> Optional[tuple[int, int]]:
         """
+        Determine which entity should be attacked by the entity controlled by AI.
 
-        :param targets:
-        :return:
+        Return the position of the attacked entity if any.
+
+        Keyword arguments:
+        targets -- the sequence of entities that could be attacked
         """
-        temporary_attack: Union[tuple[int, int], None] = None
+        temporary_attack: Optional[tuple[int, int]] = None
         for distance in self.reach:
             for target in targets:
                 if (
@@ -416,14 +507,19 @@ class Movable(Destroyable):
                     temporary_attack = target.position
         return temporary_attack
 
-    def determine_move(self, possible_moves, targets) -> tuple[int, int]:
+    def determine_move(self, possible_moves: dict[Position, int], targets: dict[Entity, int]) -> Position:
         """
+        Determine which movement should be selected by the entity controlled by AI.
+        Change the current target of the entity if needed.
 
-        :param possible_moves:
-        :param targets:
-        :return:
+        Return the selected tile for the move.
+
+        Keyword arguments:
+        possible_moves -- the collection of tiles that could be reached by the entity
+        with their associated distance from the entity
+        targets -- the collection of entities that could be attacked with their associated distance from the entity
         """
-        self.target: Union[tuple[int, int], None] = None
+        self.target: Optional[tuple[int, int]] = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target, dist in targets.items():
                 for distance in self.reach:
@@ -439,7 +535,7 @@ class Movable(Destroyable):
         elif self.strategy is EntityStrategy.ACTIVE:
             # Targets the nearest opponent
             self.target = min(targets.keys(), key=(lambda k: targets[k]))
-            best_move = possible_moves[self.position]
+            best_move = self.position
             min_dist = INITIAL_MAX
             for distance in self.reach:
                 for move in possible_moves:
@@ -455,17 +551,19 @@ class Movable(Destroyable):
             return best_move
         return self.position
 
-    # Should return damage dealt
     def attack(self, entity: Entity) -> int:
         """
+        Return the damage that should be dealt to the given entity during an attack.
 
-        :param entity:
-        :return:
+        Keyword arguments:
+        entity -- the target of the attack
         """
         return self.strength
 
     def new_turn(self) -> None:
-        """ """
+        """
+        Handle the beginning of a new turn for the entity
+        """
         self.state = EntityState.HAVE_TO_ACT
         # Increment alterations turns passed
         for alteration in self.alterations:

@@ -1,3 +1,7 @@
+"""
+Defines Fountain class, a passive entity with which characters can interact to eventually earn bonus.
+"""
+
 from typing import List
 
 import pygame
