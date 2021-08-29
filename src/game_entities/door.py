@@ -5,13 +5,25 @@ Defines Door class, a non-living entity that eventually could be opened by the l
 from lxml import etree
 
 from src.game_entities.entity import Entity
+from src.gui.position import Position
 
 
 class Door(Entity):
-    """ """
+    """
+    A Door is an entity that could be opened by using pick-locking or keys.
+
+    Keyword arguments:
+    position -- the position of the door on screen
+    sprite -- the relative path to the visual representation of the door
+    pick_lock_initiated -- whether the door is currently being pick-locked or not
+
+    Attributes:
+    sprite_name -- the relative path to the visual representation of the door
+    pick_lock_initiated -- whether the door is currently being pick-locked or not
+    """
 
     def __init__(
-        self, position: tuple[int, int], sprite: str, pick_lock_initiated: bool
+        self, position: Position, sprite: str, pick_lock_initiated: bool
     ) -> None:
         super().__init__("Door", position, sprite)
         self.sprite_name: str = sprite

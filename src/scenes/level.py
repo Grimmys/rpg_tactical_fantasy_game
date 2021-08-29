@@ -2,6 +2,7 @@
 Defines Level class, the main scene of the game,
 corresponding to an ongoing level.
 """
+
 from __future__ import annotations
 
 import os

@@ -4,7 +4,7 @@ Defines Foe class, an hostile entity which targets players and allies.
 
 import random as rd
 from enum import Enum, auto
-from typing import Union, Sequence
+from typing import Union, Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -13,6 +13,7 @@ from src.game_entities.alteration import Alteration
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
+from src.gui.position import Position
 
 
 class Keyword(Enum):
@@ -30,14 +31,41 @@ class Keyword(Enum):
 
 
 class Foe(Movable):
-    """ """
+    """
+    A Foe is any kind of movable entity that is on the opposite side of the player.
+
+    Keyword arguments:
+    name -- the name of the foe
+    position -- the current position of the entity on screen
+    sprite -- the pygame Surface corresponding to the appearance of the entity on screen or
+    the relative path to the visual representation of the entity
+    hit_points -- the total of damage that the entity can take before disappearing
+    defense -- the resistance of the entity from physical attacks
+    resistance -- the resistance of the entity from spiritual attacks
+    max_moves -- the max number of tiles that could be crossed by the entity during one movement
+    strength -- the raw strength of the entity
+    attack_kind -- the kind of damage dealt by the entity
+    strategy -- the strategy of the entity if it's controlled by the AI
+    reach -- the range of reach of the entity
+    xp_gain -- the amount of experience earned by the player character killing the foe
+    loot -- the sequence of items looted when the foe is killed
+    keywords -- the sequence of keywords designating the foe
+    lvl -- the current level of the entity
+    alterations -- the sequence of alterations affecting the foe
+
+    Attributes:
+    reach -- the range of reach of the entity
+    xp_gain -- the amount of experience earned by the player character killing the foe
+    potential_loot -- the sequence of items that might be looted when the foe is killed
+    keywords -- the sequence of keywords designating the foe
+    """
 
     grow_rates: dict[str, dict[str, Sequence[int]]] = {}
 
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: Position,
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,
@@ -49,9 +77,9 @@ class Foe(Movable):
         reach: Sequence[int],
         xp_gain: int,
         loot: Sequence[tuple[Item, float]],
-        keywords: Sequence[Keyword] = None,
+        keywords: Optional[Sequence[Keyword]] = None,
         lvl: int = 1,
-        alterations: Sequence[Alteration] = None,
+        alterations: Optional[Sequence[Alteration]] = None,
     ) -> None:
         super().__init__(
             name,

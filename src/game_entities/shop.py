@@ -1,20 +1,38 @@
+"""
+Defines Shop class, a Building in which a player character can buy or sell stuff.
+"""
+
 from copy import copy
 import os
-from typing import Sequence, Union, List, Callable
+from typing import Sequence, Union, List
 
 import pygame.mixer
 from lxml import etree
 
 from src.game_entities.character import Character
 from src.game_entities.item import Item
+from src.gui.entries import Entries
 from src.gui.info_box import InfoBox
 from src.services import menu_creator_manager
 from src.game_entities.building import Building
-from src.services.menus import ShopMenu
 
 
 class Shop(Building):
-    """ """
+    """
+    A Shop is a Building in which items can be sold or bought.
+
+    Keyword arguments:
+    name -- the name of the shop
+    position -- the current position of the shop on screen
+    sprite -- the relative path to the visual representation of the shop
+    interaction -- the interaction that should be triggered when a character player try to interact with the shop
+    stock -- the data structure containing all the available items to be bought with their associated quantity
+
+    Attributes:
+    stock -- the data structure containing all the available items to be bought with their associated quantity
+    menu -- the shop menu displaying all the items that could be bought
+    gold_sfx -- the sound that should be started when an item is sold or bought
+    """
 
     interaction_callback = None
     buy_interface_callback = None
@@ -39,9 +57,10 @@ class Shop(Building):
 
     def get_item_entry(self, item: Item) -> Union[dict[str, any], None]:
         """
+        Return the entry corresponding to one item
 
-        :param item:
-        :return:
+        Keyword arguments:
+        item -- the concerned item
         """
         for entry in self.stock:
             if entry["item"].name == item.name:
@@ -50,8 +69,10 @@ class Shop(Building):
 
     def update_shop_menu(self, gold: int) -> None:
         """
+        Update the shop menu with the actual stock and the new gold amount provided
 
-        :param gold:
+        Keyword arguments:
+        gold -- the new gold amount for the player that should be displayed
         """
         for row in self.menu.entries:
             for entry in row:
@@ -66,14 +87,18 @@ class Shop(Building):
                         if len(row) == 0:
                             self.menu.entries.remove(row)
                 if entry["type"] == "text":
-                    entry["text"] = "Your gold : " + str(gold)
+                    entry["text"] = f"Your gold : {gold}"
         self.menu.update_content(self.menu.entries)
 
-    def interact(self, actor: Character) -> Sequence[Sequence[dict[str, str]]]:
+    def interact(self, actor: Character) -> Entries:
         """
+        Manage the interaction of a character with the shop.
 
-        :param actor:
-        :return:
+        Return the list of entries corresponding to the data that should be displayed on
+        the player interface
+
+        Keyword argument:
+        actor -- the character visiting the shop
         """
         self.update_shop_menu(actor.gold)
 
@@ -98,10 +123,13 @@ class Shop(Building):
     # TODO: Return type of buy and sell methods should be coherent
     def buy(self, actor: Character, item: Item) -> str:
         """
+        Handle the wish of purchase an item by a player character.
 
-        :param actor:
-        :param item:
-        :return:
+        Return the message that should be displayed to the player after the purchase tentative.
+
+        Keyword arguments:
+        actor -- the actor buying the item
+        item -- the item that is being bought
         """
         if actor.gold >= item.price:
             if len(actor.items) < actor.nb_items_max:
@@ -124,10 +152,13 @@ class Shop(Building):
 
     def sell(self, actor: Character, item: Item) -> tuple[bool, str]:
         """
+        Handle the tentative of selling an item by a player character.
 
-        :param actor:
-        :param item:
-        :return:
+        Return whether the item has been sold or not and the message that should be displayed to the player.
+
+        Keyword arguments:
+        actor -- the actor selling the item
+        item -- the item that is being sold
         """
         if item.resell_price > 0:
             actor.remove_item(item)

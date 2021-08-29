@@ -2,8 +2,6 @@
 Defines Fountain class, a passive entity with which characters can interact to eventually earn bonus.
 """
 
-from typing import List
-
 import pygame
 import pygame as pg
 from lxml import etree
@@ -14,15 +12,32 @@ from src.game_entities.entity import Entity
 from src.constants import TILE_SIZE
 from src.gui.entries import Entries
 from src.gui.fonts import fonts
+from src.gui.position import Position
 
 
 class Fountain(Entity):
-    """ """
+    """
+    A Fountain is a static entity where player characters can drink to earn a specific effect or a random one.
+
+    Keyword arguments:
+    name -- the name of the fountain
+    position -- the current position of the fountain on screen
+    sprite --  the relative path to the visual representation of the entity
+    sprite_empty -- the relative path to the visual representation of the fountain when it couldn't be used anymore
+    effect -- the effect that should be applied to the character interacting with the fountain
+    times -- the number of times the fountain could be used until being empty
+
+    Attributes:
+    effect -- the effect that should be applied to the character interacting with the fountain
+    times -- the number of times the fountain could be used until being empty
+    sprite_empty -- the pygame Surface corresponding to the appearance of the fountain on screen when it is empty,
+    it should match the size of a tile
+    """
 
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: Position,
         sprite: str,
         sprite_empty: str,
         effect: Effect,
@@ -37,11 +52,13 @@ class Fountain(Entity):
 
     def drink(self, entity: Destroyable) -> Entries:
         """
+        Handle the interaction of an entity with the fountain.
+        Return the dialog that should be displayed to the player.
 
         Keyword arguments:
-        entity --
+        entity -- the entity drinking the content of the fountain
         """
-        entries: List[List[dict[str, str]]] = []
+        entries: Entries = []
         if self.times > 0:
             result = self.effect.apply_on_ent(entity)
             if result[0]:
@@ -55,7 +72,7 @@ class Fountain(Entity):
                 [
                     {
                         "type": "text",
-                        "text": str(self.times) + " remaining uses.",
+                        "text": f"{self.times} remaining uses.",
                         "font": fonts["ITEM_DESC_FONT"],
                     }
                 ]
@@ -74,9 +91,10 @@ class Fountain(Entity):
 
     def set_times(self, times: int) -> None:
         """
+        Set the number of uses left to the one given.
 
         Keyword arguments:
-        times --
+        times -- the number of uses left to be set
         """
         self.times = times
         if self.times == 0:

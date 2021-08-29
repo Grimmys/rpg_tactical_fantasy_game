@@ -1075,7 +1075,7 @@ def create_item_description_menu(item: Item) -> InfoBox:
     elif isinstance(item, Consumable):
         for effect in item.effects:
             entries.append(
-                create_item_description_stat("EFFECT", effect.get_formatted_desc())
+                create_item_description_stat("EFFECT", effect.get_formatted_description())
             )
 
     return InfoBox(

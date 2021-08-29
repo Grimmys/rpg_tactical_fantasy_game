@@ -2,7 +2,6 @@
 Defines Effect class, corresponding to the application of a specific effect to a destroyable entity.
 """
 
-
 from lxml import etree
 
 from src.game_entities.alteration import Alteration
@@ -10,7 +9,20 @@ from src.game_entities.destroyable import Destroyable
 
 
 class Effect:
-    """ """
+    """
+    An Effect represents anything which could altering the state of an entity.
+
+    Keyword arguments:
+    name -- the name of the effect
+    power -- the strength of the effect
+    duration -- the duration of the effect in turns if it's not an instant effect
+
+    Attributes:
+    name -- the name of the effect
+    power -- the strength of the effect
+    duration -- the duration of the effect in turns if it's not an instant effect
+    alteration -- the alteration wrapping the effect if it's not an instant effect
+    """
 
     def __init__(self, name: str, power: int, duration: int):
         self.name: str = name
@@ -45,9 +57,12 @@ class Effect:
 
     def apply_on_ent(self, entity: Destroyable) -> tuple[bool, str]:
         """
+        Apply the effect to the given entity.
+        Return whether the effect has correctly been applied or not and the message that should be displayed to the
+        player.
 
-        :param entity:
-        :return:
+        Keyword arguments:
+        entity -- the entity which should receive the effect
         """
         msg = ""
         success = True
@@ -80,10 +95,9 @@ class Effect:
             msg = f"{entity} has been stunned for {self.duration} turns"
         return success, msg
 
-    def get_formatted_desc(self) -> str:
+    def get_formatted_description(self) -> str:
         """
-
-        :return:
+        Return the description of the effect in a formatted way
         """
         if self.name == "heal":
             return f"Recover {self.power} HP"

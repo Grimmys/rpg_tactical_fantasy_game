@@ -18,7 +18,7 @@ class Item:
     Keyword arguments:
     name -- the name of the item
     sprite -- the relative path to the visual representation of the item
-    description -- the description of the item that might be displayed on an interface
+    description -- the description of the item that may be displayed on an interface
     price -- the standard price of the item in a shop, optional if the item can't be sold or bought
 
     Attributes:
