@@ -20,6 +20,10 @@ from src.services.menus import CharacterMenu
 
 
 class PlayerState(IntEnum):
+    """
+    Defines the cycle of states for a player.
+    """
+
     WAITING_SELECTION = auto()
     WAITING_MOVE = auto()
     ON_MOVE = auto()

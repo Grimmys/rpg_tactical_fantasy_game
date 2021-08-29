@@ -2,7 +2,7 @@
 Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
-from typing import Sequence, List, Union, TextIO, Callable
+from typing import Sequence, List, TextIO, Callable, Optional
 
 import pygame
 from lxml import etree
@@ -76,11 +76,11 @@ class StartScreen:
         self.background_menus: List[tuple[InfoBox, bool]] = []
 
         # Memorize if a game is currently being performed
-        self.level: Union[Level, None] = None
-        self.level_screen: Union[pygame.Surface, None] = None
+        self.level: Optional[Level] = None
+        self.level_screen: Optional[pygame.Surface] = None
 
         self.levels: Sequence[int] = [0, 1, 2, 3]
-        self.level_id: Union[int, None] = None
+        self.level_id: Optional[int] = None
 
         # Load current saved parameters
         StartScreen.load_options()
@@ -208,7 +208,7 @@ class StartScreen:
         )
 
     @staticmethod
-    def load_level(level: int, team: Sequence[Player] = None) -> Level:
+    def load_level(level: int, team: Optional[Sequence[Player]] = None) -> Level:
         """
         Load a specific level.
 
