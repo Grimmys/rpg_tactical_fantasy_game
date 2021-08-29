@@ -119,7 +119,7 @@ class Level:
     main_mission -- the main mission that is the winning condition for players
     victory -- a boolean indicating whether the game is finished by a victory or not
     defeat -- a boolean indicating whether the game is finished by a defeat or not
-    possible_moves -- the collection of moves that can be done by the active player 
+    possible_moves -- the collection of moves that can be done by the active player
     possible_attacks -- the collection of attacks that can be made by the active player
     possible_interactions -- the collection of interactions that can be made by the active player
     selected_player -- the active player

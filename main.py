@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # Window parameters
     pygame.display.set_caption(GAME_TITLE)
     main_window = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-    
+
     # Make sure the game will display correctly on high DPI monitors on Windows.
     if platform.system() == 'Windows':
         from ctypes import windll

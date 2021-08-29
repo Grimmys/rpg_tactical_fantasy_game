@@ -3,7 +3,6 @@ Defines Fountain class, a passive entity with which characters can interact to e
 """
 
 import pygame
-import pygame as pg
 from lxml import etree
 
 from src.game_entities.destroyable import Destroyable
@@ -46,8 +45,8 @@ class Fountain(Entity):
         super().__init__(name, position, sprite)
         self.effect: Effect = effect
         self.times: int = times
-        self.sprite_empty: pygame.Surface = pg.transform.scale(
-            pg.image.load(sprite_empty).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        self.sprite_empty: pygame.Surface = pygame.transform.scale(
+            pygame.image.load(sprite_empty).convert_alpha(), (TILE_SIZE, TILE_SIZE)
         )
 
     def drink(self, entity: Destroyable) -> Entries:

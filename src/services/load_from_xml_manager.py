@@ -40,20 +40,20 @@ def load_races():
     """
     races = {}
     races_file = etree.parse(RACES_PATH).getroot()
-    for race_el in races_file.findall("*"):
+    for race_element in races_file.findall("*"):
         race = {}
-        cons = race_el.find("constitution")
+        cons = race_element.find("constitution")
         race["constitution"] = int(cons.text.strip()) if cons is not None else 0
-        race["move"] = int(race_el.find("move").text.strip())
+        race["move"] = int(race_element.find("move").text.strip())
         race["skills"] = [
             (
                 load_skill(skill.text.strip())
                 if skill not in skills_infos
                 else skills_infos[skill]
             )
-            for skill in race_el.findall("skills/skill/name")
+            for skill in race_element.findall("skills/skill/name")
         ]
-        races[race_el.tag] = race
+        races[race_element.tag] = race
     return races
 
 
@@ -64,22 +64,22 @@ def load_classes():
     """
     classes = {}
     classes_file = etree.parse(CLASSES_PATH).getroot()
-    for cl_el in classes_file.findall("*"):
-        cls = {}
-        cons = cl_el.find("constitution")
-        cls["constitution"] = int(cons.text.strip()) if cons is not None else 0
-        move = cl_el.find("move")
-        cls["move"] = int(move.text.strip()) if move is not None else 0
-        cls["stats_up"] = load_stats_up(cl_el)
-        cls["skills"] = [
+    for class_element in classes_file.findall("*"):
+        class_data = {}
+        cons = class_element.find("constitution")
+        class_data["constitution"] = int(cons.text.strip()) if cons is not None else 0
+        move = class_element.find("move")
+        class_data["move"] = int(move.text.strip()) if move is not None else 0
+        class_data["stats_up"] = load_stats_up(class_element)
+        class_data["skills"] = [
             (
                 load_skill(skill.text.strip())
                 if skill not in skills_infos
                 else skills_infos[skill]
             )
-            for skill in cl_el.findall("skills/skill/name")
+            for skill in class_element.findall("skills/skill/name")
         ]
-        classes[cl_el.tag] = cls
+        classes[class_element.tag] = class_data
     return classes
 
 
@@ -91,22 +91,22 @@ def load_stat_up(element, stat_name):
     :return:
     """
     return [
-        int(val)
-        for val in element.find("stats_up/" + stat_name).text.strip().split(",")
+        int(value)
+        for value in element.find("stats_up/" + stat_name).text.strip().split(",")
     ]
 
 
-def load_stats_up(el):
+def load_stats_up(element):
     """
 
-    :param el:
+    :param element:
     :return:
     """
     return {
-        "hp": load_stat_up(el, "hp"),
-        "def": load_stat_up(el, "defense"),
-        "res": load_stat_up(el, "resistance"),
-        "str": load_stat_up(el, "strength"),
+        "hp": load_stat_up(element, "hp"),
+        "def": load_stat_up(element, "defense"),
+        "res": load_stat_up(element, "resistance"),
+        "str": load_stat_up(element, "strength"),
     }
 
 
@@ -118,25 +118,25 @@ def load_skill(name):
     """
     if name not in skills_infos:
         # Required dat
-        skill_el = etree.parse("data/skills.xml").find(name)
-        formatted_name = skill_el.find("name").text.strip()
-        nature = skill_el.find("type").text.strip()
-        desc = skill_el.find("info").text.strip()
+        skill_element = etree.parse("data/skills.xml").find(name)
+        formatted_name = skill_element.find("name").text.strip()
+        nature = skill_element.find("type").text.strip()
+        desc = skill_element.find("info").text.strip()
 
         # Not required elements
         power = 0
-        power_el = skill_el.find("power")
-        if power_el is not None:
-            power = int(power_el.text.strip())
+        power_element = skill_element.find("power")
+        if power_element is not None:
+            power = int(power_element.text.strip())
         stats = []
-        stats_el = skill_el.find("stats")
-        if stats_el is not None:
-            stats = [stat for stat in stats_el.text.replace(" ", "").split(",")]
+        stats_element = skill_element.find("stats")
+        if stats_element is not None:
+            stats = [stat for stat in stats_element.text.replace(" ", "").split(",")]
         alterations = []
-        alterations_el = skill_el.find("alteration")
-        if alterations_el is not None:
+        alterations_element = skill_element.find("alteration")
+        if alterations_element is not None:
             alterations = [
-                alt for alt in alterations_el.text.replace(" ", "").split(",")
+                alt for alt in alterations_element.text.replace(" ", "").split(",")
             ]
 
         skills_infos[name] = Skill(
@@ -212,10 +212,10 @@ def load_all_entities(data, from_save, gap_x, gap_y):
     }
 
 
-def load_entities(ent_nature, data, from_save, gap_x, gap_y):
+def load_entities(entity_nature, data, from_save, gap_x, gap_y):
     """
 
-    :param ent_nature:
+    :param entity_nature:
     :param data:
     :param from_save:
     :param gap_x:
@@ -225,25 +225,25 @@ def load_entities(ent_nature, data, from_save, gap_x, gap_y):
     collection = []
 
     for element in data:
-        if ent_nature == "character":
+        if entity_nature == "character":
             entity = load_ally(element, from_save, gap_x, gap_y)
-        elif ent_nature == "foe":
+        elif entity_nature == "foe":
             entity = load_foe(element, from_save, gap_x, gap_y)
-        elif ent_nature == "chest":
+        elif entity_nature == "chest":
             entity = load_chest(element, from_save, gap_x, gap_y)
-        elif ent_nature == "door":
+        elif entity_nature == "door":
             entity = load_door(element, from_save, gap_x, gap_y)
-        elif ent_nature == "building":
+        elif entity_nature == "building":
             entity = load_building(element, from_save, gap_x, gap_y)
-        elif ent_nature == "portal":
+        elif entity_nature == "portal":
             entity, ent2 = load_portal(element, gap_x, gap_y)
             collection.append(ent2)
-        elif ent_nature == "fountain":
+        elif entity_nature == "fountain":
             entity = load_fountain(element, from_save, gap_x, gap_y)
-        elif ent_nature == "breakable":
+        elif entity_nature == "breakable":
             entity = load_breakable(element, gap_x, gap_y)
         else:
-            print("Unrecognized nature : " + str(ent_nature))
+            print(f"Unrecognized nature : {entity_nature}")
             entity = None
         collection.append(entity)
     return collection
@@ -269,14 +269,14 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     # Dynamic data
     x_coordinate = int(entity.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(entity.find("position/y").text) * TILE_SIZE + gap_y
-    pos = (x_coordinate, y_coordinate)
+    position = (x_coordinate, y_coordinate)
 
-    lvl_el = (
+    level_element = (
         entity.find("level")
         if entity.find("level") is not None
         else infos.find("level")
     )
-    lvl = int(lvl_el.text.strip())
+    lvl = int(level_element.text.strip())
     specific_strategy = entity.find("strategy")
     if specific_strategy is not None:
         strategy = specific_strategy.text.strip()
@@ -287,7 +287,7 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     hit_points = int(dynamic_data.find("hp").text.strip())
     strength = int(dynamic_data.find("strength").text.strip())
     defense = int(dynamic_data.find("defense").text.strip())
-    res = int(dynamic_data.find("resistance").text.strip())
+    resistance = int(dynamic_data.find("resistance").text.strip())
     alterations = []
     for alteration in dynamic_data.findall("alterations/alteration"):
         alterations.append(load_alteration(alteration))
@@ -296,12 +296,12 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
         "name": name,
         "sprite": sprite,
         "strategy": strategy,
-        "position": pos,
+        "position": position,
         "level": lvl,
         "hp": hit_points,
         "strength": strength,
         "defense": defense,
-        "resistance": res,
+        "resistance": resistance,
         "alterations": alterations,
     }
 
@@ -323,13 +323,13 @@ def load_ally(ally, from_save, gap_x, gap_y):
     # Static data character
     race = infos.find("race").text.strip()
     classes = [infos.find("class").text.strip()]
-    interaction_el = infos.find("interaction")
+    interaction_element = infos.find("interaction")
     dialog = []
-    for talk in interaction_el.findall("talk"):
+    for talk in interaction_element.findall("talk"):
         dialog.append(talk.text.strip())
     interaction = {
         "dialog": dialog,
-        "join_team": interaction_el.find("join_team") is not None,
+        "join_team": interaction_element.find("join_team") is not None,
     }
 
     # Dynamic data character
@@ -447,10 +447,10 @@ def load_foe(foe, from_save, gap_x, gap_y):
                 float(gold_looted.find("probability").text),
             )
         )
-    keywords_el = foes_infos[name].find("keywords")
+    keywords_element = foes_infos[name].find("keywords")
     keywords = (
-        [Keyword[keyword.upper()] for keyword in keywords_el.text.strip().split(",")]
-        if keywords_el is not None
+        [Keyword[keyword.upper()] for keyword in keywords_element.text.strip().split(",")]
+        if keywords_element is not None
         else []
     )
 
@@ -507,8 +507,8 @@ def load_foe(foe, from_save, gap_x, gap_y):
         current_hp = int(foe.find("current_hp").text.strip())
         loaded_foe.hit_points = current_hp
 
-        xp = int(foe.find("exp").text.strip())
-        loaded_foe.earn_xp(xp)
+        experience = int(foe.find("exp").text.strip())
+        loaded_foe.earn_xp(experience)
     else:
         # Up stats according to current lvl
         loaded_foe.stats_up(attributes["level"] - 1)
@@ -604,21 +604,21 @@ def load_building(building, from_save, gap_x, gap_y):
     pos = (x_coordinate, y_coordinate)
     sprite = building.find("sprite").text.strip()
     interaction = building.find("interaction")
-    interaction_el = {}
+    interaction_element = {}
     if interaction is not None:
         talks = interaction.find("talks")
         if talks is not None:
-            interaction_el["talks"] = []
+            interaction_element["talks"] = []
             for talk in talks.findall("talk"):
-                interaction_el["talks"].append(talk.text.strip())
+                interaction_element["talks"].append(talk.text.strip())
         else:
-            interaction_el["talks"] = []
-        interaction_el["gold"] = (
+            interaction_element["talks"] = []
+        interaction_element["gold"] = (
             int(interaction.find("gold").text.strip())
             if interaction.find("gold") is not None
             else 0
         )
-        interaction_el["item"] = (
+        interaction_element["item"] = (
             parse_item_file(interaction.find("item").text.strip())
             if interaction.find("item") is not None
             else None
@@ -640,7 +640,7 @@ def load_building(building, from_save, gap_x, gap_y):
             print("Error : building type isn't recognized : ", type)
             raise SystemError
     else:
-        loaded_building = Building(name, pos, sprite, interaction_el)
+        loaded_building = Building(name, pos, sprite, interaction_element)
 
     # Dynamic data
     if from_save:
@@ -831,20 +831,20 @@ def load_breakable(breakable, gap_x, gap_y):
     return Breakable(pos, sprite, hit_points, 0, 0)
 
 
-def load_restrictions(restrictions_el):
+def load_restrictions(restrictions_element):
     """
 
-    :param restrictions_el:
+    :param restrictions_element:
     :return:
     """
     restrictions = {}
-    if restrictions_el is None:
+    if restrictions_element is None:
         return restrictions
 
-    classes = restrictions_el.find("classes")
+    classes = restrictions_element.find("classes")
     if classes is not None:
         restrictions["classes"] = classes.text.strip().split(",")
-    races = restrictions_el.find("races")
+    races = restrictions_element.find("races")
     if races is not None:
         restrictions["races"] = races.text.strip().split(",")
 
@@ -865,30 +865,30 @@ def load_events(events_el, gap_x, gap_y):
         dialog_els = event.findall("dialog")
         if dialog_els:
             events[event.tag]["dialogs"] = []
-            for dialog_el in dialog_els:
-                title_el = dialog_el.find("title")
+            for dialog_element in dialog_els:
+                title_element = dialog_element.find("title")
                 events[event.tag]["dialogs"].append(
                     {
-                        "title": title_el.text.strip() if title_el is not None else "",
+                        "title": title_element.text.strip() if title_element is not None else "",
                         "talks": [
                             talk.text.strip()
-                            for talk in dialog_el.find("talks").findall("talk")
+                            for talk in dialog_element.find("talks").findall("talk")
                         ],
                     }
                 )
-        new_players_els = event.findall("new_player")
-        if new_players_els:
+        new_players_elements = event.findall("new_player")
+        if new_players_elements:
             events[event.tag]["new_players"] = [
                 {
-                    "name": player_el.find("name").text.strip(),
+                    "name": player_element.find("name").text.strip(),
                     "position": (
-                        int(player_el.find("position/x").text.strip()) * TILE_SIZE
+                        int(player_element.find("position/x").text.strip()) * TILE_SIZE
                         + gap_x,
-                        int(player_el.find("position/y").text.strip()) * TILE_SIZE
+                        int(player_element.find("position/y").text.strip()) * TILE_SIZE
                         + gap_y,
                     ),
                 }
-                for player_el in new_players_els
+                for player_element in new_players_elements
             ]
 
     return events
@@ -1006,8 +1006,8 @@ def load_players(data):
     :return:
     """
     players = []
-    for player_el in data.findall("players/player"):
-        players.append(load_player(player_el, True))
+    for player_element in data.findall("players/player"):
+        players.append(load_player(player_element, True))
     return players
 
 
@@ -1018,8 +1018,8 @@ def load_escaped_players(data):
     :return:
     """
     players = []
-    for player_el in data.findall("escaped_players/player"):
-        players.append(load_player(player_el, True))
+    for player_element in data.findall("escaped_players/player"):
+        players.append(load_player(player_element, True))
     return players
 
 
@@ -1041,20 +1041,20 @@ def load_weapon_effect(eff):
     :param eff:
     :return:
     """
-    loaded_eff = {}
+    loaded_effect = {}
 
     # Load effect
     name = eff.find("name").text.strip()
-    power_el = eff.find("power")
-    power = int(power_el.text.strip()) if power_el is not None else 0
-    duration_el = eff.find("duration")
-    duration = int(duration_el.text.strip()) if duration_el is not None else 0
-    loaded_eff["effect"] = Effect(name, power, duration)
+    power_element = eff.find("power")
+    power = int(power_element.text.strip()) if power_element is not None else 0
+    duration_element = eff.find("duration")
+    duration = int(duration_element.text.strip()) if duration_element is not None else 0
+    loaded_effect["effect"] = Effect(name, power, duration)
 
     # Load probability
-    loaded_eff["probability"] = int(float(eff.find("probability").text.strip()) * 100)
+    loaded_effect["probability"] = int(float(eff.find("probability").text.strip()) * 100)
 
-    return loaded_eff
+    return loaded_effect
 
 
 def load_item(data):
@@ -1094,12 +1094,12 @@ def parse_item_file(name):
 
     if category == "potion" or category == "consumable":
         effects = []
-        for eff in item_tree_root.findall(".//effect"):
-            effect_name = eff.find("type").text.strip()
-            pow_el = eff.find("power")
-            power = int(pow_el.text.strip()) if pow_el is not None else 0
-            duration_el = eff.find("duration")
-            duration = int(duration_el.text.strip()) if duration_el is not None else 0
+        for effect in item_tree_root.findall(".//effect"):
+            effect_name = effect.find("type").text.strip()
+            power_element = effect.find("power")
+            power = int(power_element.text.strip()) if power_element is not None else 0
+            duration_element = effect.find("duration")
+            duration = int(duration_element.text.strip()) if duration_element is not None else 0
             effects.append(Effect(effect_name, power, duration))
         item = (
             Potion(name, sprite, info, price, effects)
@@ -1108,13 +1108,13 @@ def parse_item_file(name):
         )
     elif category == "armor":
         body_part = item_tree_root.find("bodypart").text.strip()
-        defense_el = item_tree_root.find("def")
-        defense = int(defense_el.text.strip()) if defense_el is not None else 0
+        defense_element = item_tree_root.find("def")
+        defense = int(defense_element.text.strip()) if defense_element is not None else 0
         weight = int(item_tree_root.find("weight").text.strip())
-        eq_sprites = item_tree_root.find("equipped_sprites")
-        if eq_sprites is not None:
+        equipment_sprites = item_tree_root.find("equipped_sprites")
+        if equipment_sprites is not None:
             equipped_sprites = []
-            for eq_sprite in eq_sprites.findall("sprite"):
+            for eq_sprite in equipment_sprites.findall("sprite"):
                 equipped_sprites.append(
                     "imgs/dungeon_crawl/player/" + eq_sprite.text.strip()
                 )
@@ -1139,8 +1139,8 @@ def parse_item_file(name):
         )
     elif category == "shield":
         parry = int(float(item_tree_root.find("parry_rate").text.strip()) * 100)
-        defense_el = item_tree_root.find("def")
-        defense = int(defense_el.text.strip()) if defense_el is not None else 0
+        defense_element = item_tree_root.find("def")
+        defense = int(defense_element.text.strip()) if defense_element is not None else 0
         fragility = int(item_tree_root.find("fragility").text.strip())
         weight = int(item_tree_root.find("weight").text.strip())
         equipped_sprite = [
