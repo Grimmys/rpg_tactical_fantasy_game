@@ -2,9 +2,10 @@
 Define functions creating a specific menu enveloping data from parameters.
 """
 
-from typing import Sequence, Union, Callable
+from typing import Sequence, Union, Callable, Optional
 
 import pygame
+from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton
 
 from src.constants import (
     TILE_SIZE,
@@ -74,13 +75,13 @@ from src.services.menus import (
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 
-close_function: Union[Callable, None] = None
+close_function: Optional[Callable] = None
 
 
 def create_shop_menu(
-    interaction_callback: Callable,
-    stock: Sequence[dict[str, Union[Item, int]]],
-    gold: int,
+        interaction_callback: Callable,
+        stock: Sequence[dict[str, Union[Item, int]]],
+        gold: int,
 ) -> InfoBox:
     """
     Return the interface of a shop menu with user as the buyer.
@@ -127,10 +128,10 @@ def create_shop_menu(
 
 
 def create_inventory_menu(
-    interaction_callback: Callable,
-    items: Sequence[Item],
-    gold: int,
-    is_to_sell: bool = False,
+        interaction_callback: Callable,
+        items: Sequence[Item],
+        gold: int,
+        is_to_sell: bool = False,
 ) -> InfoBox:
     """
     Return the interface of a player inventory.
@@ -193,7 +194,7 @@ def create_inventory_menu(
 
 
 def create_equipment_menu(
-    interaction_callback: Callable, equipments: Sequence[Equipment]
+        interaction_callback: Callable, equipments: Sequence[Equipment]
 ) -> InfoBox:
     """
     Return the interface of a player equipment.
@@ -235,7 +236,7 @@ def create_equipment_menu(
 
 
 def create_trade_menu(
-    buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
+        buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
 ) -> InfoBox:
     """
     Return the interface for a trade between two players
@@ -269,7 +270,7 @@ def create_trade_menu(
                     "subtype": "trade",
                     "callback": lambda button_position, item_reference=items[
                         i * 2 + j
-                    ], owner=owner_i: buttons_callback["interact_item"](
+                        ], owner=owner_i: buttons_callback["interact_item"](
                         item_reference,
                         button_position,
                         [first_player, second_player],
@@ -396,7 +397,7 @@ def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
 
 
 def create_status_menu(
-    buttons_callback: dict[str, Callable], player: Player
+        buttons_callback: dict[str, Callable], player: Player
 ) -> InfoBox:
     """
     Return the interface resuming the status of a player.
@@ -488,7 +489,7 @@ def create_status_menu(
             {
                 "type": "text",
                 "text": str(player.max_moves)
-                + player.get_formatted_stat_change("speed"),
+                        + player.get_formatted_stat_change("speed"),
             },
         ],
         [
@@ -500,7 +501,7 @@ def create_status_menu(
             {
                 "type": "text",
                 "text": str(player.strength)
-                + player.get_formatted_stat_change("strength"),
+                        + player.get_formatted_stat_change("strength"),
             },
         ],
         [
@@ -508,7 +509,7 @@ def create_status_menu(
             {
                 "type": "text",
                 "text": str(player.defense)
-                + player.get_formatted_stat_change("defense"),
+                        + player.get_formatted_stat_change("defense"),
             },
         ],
         [
@@ -516,7 +517,7 @@ def create_status_menu(
             {
                 "type": "text",
                 "text": str(player.resistance)
-                + player.get_formatted_stat_change("resistance"),
+                        + player.get_formatted_stat_change("resistance"),
             },
         ],
         [
@@ -579,12 +580,12 @@ def create_status_menu(
 
 
 def create_player_menu(
-    buttons_callback: dict[str, Callable],
-    player: Player,
-    buildings: Sequence[Building],
-    interactable_entities: Sequence[Entity],
-    missions: Sequence[Mission],
-    foes: Sequence[Foe],
+        buttons_callback: dict[str, Callable],
+        player: Player,
+        buildings: Sequence[Building],
+        interactable_entities: Sequence[Entity],
+        missions: Sequence[Mission],
+        foes: Sequence[Foe],
 ) -> InfoBox:
     """
     Return the interface of a player menu.
@@ -624,9 +625,9 @@ def create_player_menu(
 
     for entity in interactable_entities:
         if (
-            abs(entity.position[0] - player.position[0])
-            + abs(entity.position[1] - player.position[1])
-            == TILE_SIZE
+                abs(entity.position[0] - player.position[0])
+                + abs(entity.position[1] - player.position[1])
+                == TILE_SIZE
         ):
             if isinstance(entity, Player):
                 if not trade_option:
@@ -708,8 +709,8 @@ def create_player_menu(
     # Check if player is on mission position
     for mission in missions:
         if (
-            mission.type is MissionType.POSITION
-            or mission.type is MissionType.TOUCH_POSITION
+                mission.type is MissionType.POSITION
+                or mission.type is MissionType.TOUCH_POSITION
         ):
             if mission.is_position_valid(player.position):
                 entries.insert(
@@ -723,9 +724,9 @@ def create_player_menu(
         for foe in foes:
             for reach in w_range:
                 if (
-                    abs(foe.position[0] - player.position[0])
-                    + abs(foe.position[1] - player.position[1])
-                    == TILE_SIZE * reach
+                        abs(foe.position[0] - player.position[0])
+                        + abs(foe.position[1] - player.position[1])
+                        == TILE_SIZE * reach
                 ):
                     entries.insert(
                         0, [{"name": "Attack", "callback": buttons_callback["attack"]}]
@@ -766,9 +767,9 @@ def create_diary_menu(entries: Entries) -> InfoBox:
 
 
 def create_main_menu(
-    buttons_callback: dict[str, Callable],
-    is_initialization_phase: bool,
-    position: Position,
+        buttons_callback: dict[str, Callable],
+        is_initialization_phase: bool,
+        position: Position,
 ) -> InfoBox:
     """
     Return the interface of the main level menu.
@@ -806,7 +807,7 @@ def create_main_menu(
 
 
 def create_item_shop_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
@@ -839,7 +840,7 @@ def create_item_shop_menu(
 
 
 def create_item_sell_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory and can be sold in a shop.
@@ -872,11 +873,11 @@ def create_item_sell_menu(
 
 
 def create_trade_item_menu(
-    buttons_callback: dict[str, Callable],
-    item_button_position: Position,
-    item: Item,
-    players: Sequence[Player],
-    is_first_player_owner: bool,
+        buttons_callback: dict[str, Callable],
+        item_button_position: Position,
+        item: Item,
+        players: Sequence[Player],
+        is_first_player_owner: bool,
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory
@@ -923,10 +924,10 @@ def create_trade_item_menu(
 
 
 def create_item_menu(
-    buttons_callback: dict[str, Callable],
-    item_button_position: Position,
-    item: Item,
-    is_equipped: bool = False,
+        buttons_callback: dict[str, Callable],
+        item_button_position: Position,
+        item: Item,
+        is_equipped: bool = False,
 ) -> InfoBox:
     """
     Return the interface of an item of a player.
@@ -1377,34 +1378,48 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
     """
     Return the interface of the main menu of the game (in the start screen).
     """
-    entries = [
-        [{"name": "New game", "callback": buttons_callback["new_game"]}],
-        [{"name": "Load game", "callback": buttons_callback["load_menu"]}],
-        [{"name": "Options", "callback": buttons_callback["options_menu"]}],
-        [{"name": "Exit game", "callback": buttons_callback["exit_game"]}],
-    ]
-
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
-    return InfoBox(
+    return new_InfoBox(
         "In the name of the Five Cats",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=StartMenu,
+        [
+            [
+                Button(
+                    title="New game",
+                    callback=buttons_callback["new_game"]
+                ),
+            ],
+            [
+                Button(
+                    title="Load game",
+                    callback=buttons_callback["load_menu"]
+                ),
+            ],
+            [
+                Button(
+                    title="Options",
+                    callback=buttons_callback["options_menu"]
+                ),
+            ],
+            [
+                Button(
+                    title="Exit game",
+                    callback=buttons_callback["exit_game"]
+                ),
+            ],
+        ],
+        background_path="imgs/interface/PopUpMenu.png",
         width=START_MENU_WIDTH,
+        has_close_button=False,
     )
 
 
-def load_parameter_entry(
-    formatted_name: str,
-    values: Sequence[dict[str, int]],
-    current_value: int,
-    edit_parameter_callback: Callable,
-) -> Entry:
+def load_parameter_button(
+        formatted_name: str,
+        values: Sequence[dict[str, int]],
+        current_value: int,
+        edit_parameter_callback: Callable,
+) -> DynamicButton:
     """
-    Return an entry corresponding to the data of a specific game parameter.
+    Return a DynamicButton permitting to handle the tweaking of a specific game parameter.
 
     Keyword arguments:
     formatted_name -- the formatted name of the parameter
@@ -1412,23 +1427,22 @@ def load_parameter_entry(
     current_value -- the current value of the parameter
     identifier -- the identifier of the parameter
     """
-    entry = {
-        "type": "parameter_button",
-        "name": formatted_name,
-        "values": values,
-        "callback": edit_parameter_callback,
-        "current_value_ind": 0,
-    }
+    current_value_index: int = 0
 
-    for i in range(len(entry["values"])):
-        if entry["values"][i]["value"] == current_value:
-            entry["current_value_ind"] = i
+    for i in range(len(values)):
+        if values[i]["value"] == current_value:
+            current_value_index = i
 
-    return entry
+    return DynamicButton(
+        base_title=formatted_name,
+        values=values,
+        callback=edit_parameter_callback,
+        current_value_index=current_value_index
+    )
 
 
 def create_options_menu(
-    parameters: dict[str, int], modify_option_function: Callable
+        parameters: dict[str, int], modify_option_function: Callable
 ) -> InfoBox:
     """
     Return the interface of the game options menu.
@@ -1436,39 +1450,36 @@ def create_options_menu(
     Keyword arguments:
     parameters -- the dictionary containing all parameters with their current value
     """
-    entries = [
-        [
-            load_parameter_entry(
-                "Move speed :",
-                [
-                    {"label": "Slow", "value": ANIMATION_SPEED // 2},
-                    {"label": "Normal", "value": ANIMATION_SPEED},
-                    {"label": "Fast", "value": ANIMATION_SPEED * 2},
-                ],
-                parameters["move_speed"],
-                lambda value: modify_option_function("move_speed", value),
-            )
-        ],
-        [
-            load_parameter_entry(
-                "Screen mode :",
-                [
-                    {"label": "Window", "value": SCREEN_SIZE // 2},
-                    {"label": "Full", "value": SCREEN_SIZE},
-                ],
-                parameters["screen_size"],
-                lambda value: modify_option_function("screen_size", value),
-            )
-        ],
-    ]
 
-    return InfoBox(
+    return new_InfoBox(
         "Options",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=OptionsMenu,
+        [
+            [
+                load_parameter_button(
+                    "Move speed :",
+                    [
+                        {"label": "Slow", "value": ANIMATION_SPEED // 2},
+                        {"label": "Normal", "value": ANIMATION_SPEED},
+                        {"label": "Fast", "value": ANIMATION_SPEED * 2},
+                    ],
+                    parameters["move_speed"],
+                    lambda value: modify_option_function("move_speed", value),
+                ),
+            ],
+            [
+                load_parameter_button(
+                    "Screen mode :",
+                    [
+                        {"label": "Window", "value": SCREEN_SIZE // 2},
+                        {"label": "Full", "value": SCREEN_SIZE},
+                    ],
+                    parameters["screen_size"],
+                    lambda value: modify_option_function("screen_size", value),
+                ),
+            ],
+        ],
         width=START_MENU_WIDTH,
-        close_button=close_function,
+        background_path="imgs/interface/PopUpMenu.png",
     )
 
 
@@ -1476,26 +1487,23 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
     """
     Return the interface of the load game menu.
     """
-    entries = []
+    element_grid = []
 
     for i in range(SAVE_SLOTS):
-        entries.append(
+        element_grid.append(
             [
-                {
-                    "type": "button",
-                    "name": "Save " + str(i + 1),
-                    "callback": lambda slot_id=i: load_game_function(slot_id),
-                }
+                Button(
+                    title=f"Save {i+1}",
+                    callback=lambda slot_id=i: load_game_function(slot_id)
+                )
             ]
         )
 
-    return InfoBox(
+    return new_InfoBox(
         "Load Game",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=LoadMenu,
+        element_grid,
         width=START_MENU_WIDTH,
-        close_button=close_function,
+        background_path="imgs/interface/PopUpMenu.png",
     )
 
 

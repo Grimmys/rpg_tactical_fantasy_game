@@ -1,5 +1,6 @@
 """
 Define Position data structure, corresponding to a 2D coordinate on a pygame Surface.
 """
+import pygame
 
-Position = tuple[int, int]
+Position = pygame.Vector2

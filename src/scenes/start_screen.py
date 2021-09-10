@@ -2,11 +2,12 @@
 Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
-from typing import Sequence, List, TextIO, Callable, Optional
+from typing import Sequence, TextIO, Callable, Optional
 
 import pygame
 from lxml import etree
 from lxml.etree import XMLSyntaxError
+from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
     SCREEN_SIZE,
@@ -64,16 +65,17 @@ class StartScreen:
             background_image, screen.get_size()
         )
 
-        # Creating menu
-        self.active_menu: InfoBox = menu_creator_manager.create_start_menu(
+        self.menu_manager = MenuManager(screen)
+
+        # Creating main menu
+        self.menu_manager.open_menu(menu_creator_manager.create_start_menu(
             {
                 "new_game": self.new_game,
                 "load_menu": self.load_menu,
                 "options_menu": self.options_menu,
                 "exit_game": self.exit_game,
             }
-        )
-        self.background_menus: List[tuple[InfoBox, bool]] = []
+        ))
 
         # Memorize if a game is currently being performed
         self.level: Optional[Level] = None
@@ -87,7 +89,7 @@ class StartScreen:
 
         self.exit: bool = False
 
-        menu_creator_manager.close_function = self.close_active_menu
+        # menu_creator_manager.close_function = self.close_active_menu
 
     @staticmethod
     def load_options():
@@ -137,11 +139,7 @@ class StartScreen:
             self.level.display(self.level_screen)
         else:
             self.screen.blit(self.background, (0, 0))
-            for menu in self.background_menus:
-                if menu[1]:
-                    menu[0].display(self.screen)
-            if self.active_menu:
-                self.active_menu.display(self.screen)
+            self.menu_manager.display()
 
     def play(self, level: Level) -> None:
         """
@@ -314,8 +312,7 @@ class StartScreen:
         Move current active menu to the background and set a freshly created load game menu
         as the new active menu.
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_load_menu(self.load_game)
+        self.menu_manager.open_menu(menu_creator_manager.create_load_menu(self.load_game))
 
     def options_menu(self) -> None:
         """
@@ -323,14 +320,13 @@ class StartScreen:
         as the new active menu.
         Current option values are read from the local configuration file.
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_options_menu(
+        self.menu_manager.open_menu(menu_creator_manager.create_options_menu(
             {
                 "move_speed": int(self.read_options_file("move_speed")),
                 "screen_size": int(self.read_options_file("screen_size")),
             },
             self.modify_option_value,
-        )
+        ))
 
     def exit_game(self) -> None:
         """
@@ -376,10 +372,10 @@ class StartScreen:
         position -- the position of the mouse
         """
         if self.level is None:
-            self.active_menu.motion(position)
+            self.menu_manager.motion(position)
         else:
             relative_position: Position = self._compute_relative_position(position)
-            if relative_position >= (0, 0):
+            if relative_position.length() >= 0:
                 self.level.motion(relative_position)
 
     def click(self, button: int, position: Position) -> bool:
@@ -396,11 +392,10 @@ class StartScreen:
         position -- the position of the mouse
         """
         if self.level is None:
-            if button == 1:
-                StartScreen.execute_action(self.active_menu.click(position))
+            self.menu_manager.click(button, position)
         else:
             relative_position: Position = self._compute_relative_position(position)
-            if relative_position >= (0, 0):
+            if relative_position.length() >= 0:
                 self.level.click(button, relative_position)
         return self.exit
 
@@ -416,7 +411,7 @@ class StartScreen:
         """
         if self.level is not None:
             relative_position: Position = self._compute_relative_position(position)
-            if relative_position >= (0, 0):
+            if relative_position.length() >= 0:
                 self.level.button_down(button, relative_position)
 
     def _compute_relative_position(self, position: Position) -> Position:
@@ -426,5 +421,5 @@ class StartScreen:
         Keyword arguments:
         position -- the absolute position to be converted
         """
-        return position[0] - (self.screen.get_width() // 2 - self.level_screen.get_width() // 2), \
-               position[1] - (self.screen.get_height() // 2 - self.level_screen.get_height() // 2)
+        return position - pygame.Vector2(self.screen.get_width() // 2 - self.level_screen.get_width() // 2,
+                                         self.screen.get_height() // 2 - self.level_screen.get_height() // 2)

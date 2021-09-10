@@ -10,7 +10,7 @@ import pygame
 fonts_description: dict[str, dict[str, Union[str, int]]] = {
     "BUTTON_FONT": {
         "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
-        "size": 16,
+        "size": 20,
     },
     "ITEM_FONT": {
         "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
