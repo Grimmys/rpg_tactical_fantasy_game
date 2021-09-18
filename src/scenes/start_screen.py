@@ -5,8 +5,10 @@ corresponding to the main menu.
 from typing import Sequence, TextIO, Callable, Optional
 
 import pygame
+import pygamepopup
 from lxml import etree
 from lxml.etree import XMLSyntaxError
+from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
@@ -23,7 +25,6 @@ from src.gui.position import Position
 from src.services import menu_creator_manager
 from src.gui.fonts import fonts
 from src.scenes.level import Level, LevelStatus
-from src.gui.info_box import InfoBox
 from src.game_entities.movable import Movable
 
 
@@ -88,8 +89,6 @@ class StartScreen:
         StartScreen.load_options()
 
         self.exit: bool = False
-
-        # menu_creator_manager.close_function = self.close_active_menu
 
     @staticmethod
     def load_options():
@@ -195,15 +194,6 @@ class StartScreen:
                 # TODO: Game win dialog?
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
-                menu_creator_manager.close_function = self.close_active_menu
-
-    def close_active_menu(self) -> None:
-        """
-        Replace the active menu by the first menu in background if there is any.
-        """
-        self.active_menu = (
-            self.background_menus.pop()[0] if self.background_menus else None
-        )
 
     @staticmethod
     def load_level(level: int, team: Optional[Sequence[Player]] = None) -> Level:
@@ -263,49 +253,39 @@ class StartScreen:
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt
-            self.background_menus.append((self.active_menu, True))
-
             name: str = "Load Game"
-            entries: Entries = [
-                [
-                    {
-                        "type": "text",
-                        "text": "Unable to load saved game. Save file appears corrupt.",
-                        "font": fonts["MENU_SUB_TITLE_FONT"],
-                    }
-                ]
-            ]
             width: int = self.screen.get_width() // 2
-            self.active_menu = InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 name,
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                [
+                    [
+                        TextElement(
+                            "Unable to load saved game. Save file appears corrupt.",
+                            font=fonts["MENU_SUB_TITLE_FONT"]
+                        )
+                    ]
+                ],
                 width=width,
-                close_button=self.close_active_menu,
-            )
+                background_path="imgs/interface/PopUpMenu.png",
+            ))
 
         except FileNotFoundError:
             # No saved game
-            self.background_menus.append((self.active_menu, True))
-
             name: str = "Load Game"
-            entries: Entries = [
-                [
-                    {
-                        "type": "text",
-                        "text": "No saved game.",
-                        "font": fonts["MENU_SUB_TITLE_FONT"],
-                    }
-                ]
-            ]
             width: int = self.screen.get_width() // 2
-            self.active_menu = InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 name,
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                [
+                    [
+                        TextElement(
+                            "No saved game.",
+                            font=fonts["MENU_SUB_TITLE_FONT"]
+                        )
+                    ]
+                ],
                 width=width,
-                close_button=self.close_active_menu,
-            )
+                background_path="imgs/interface/PopUpMenu.png",
+            ))
 
     def load_menu(self) -> None:
         """
