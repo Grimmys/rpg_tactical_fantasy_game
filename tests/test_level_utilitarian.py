@@ -2,6 +2,7 @@ import shutil
 import unittest
 import random as rd
 
+import pygame
 import pygame as pg
 
 from src.scenes.start_screen import StartScreen
@@ -28,14 +29,9 @@ class TestLevel(unittest.TestCase):
         self.start_screen.display()
 
     def import_save_file(self, import_path):
-        """
-
-        :param import_path:
-        """
         shutil.copyfile(import_path, self.save_path)
-        self.start_screen.click(LEFT_BUTTON, LOAD_GAME_BUTTON_POS)
-        self.start_screen.display()
-        self.start_screen.click(LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS)
+        self.start_screen.load_menu()
+        self.start_screen.load_game(0)
         self.level = self.start_screen.level
 
     def simulate_trade_item(
@@ -52,7 +48,7 @@ class TestLevel(unittest.TestCase):
         self.level.background_menus.append((self.level.active_menu, False))
         self.level.interact(active_player, other_player, ())
         self.level.interact_trade_item(
-            item, (0, 0), (active_player, other_player), is_active_the_sender
+            item, pygame.Vector2(0, 0), (active_player, other_player), is_active_the_sender
         )
         self.level.trade_item(active_player, other_player, is_active_the_sender)
         self.level.execute_action(self.level.close_active_menu)
