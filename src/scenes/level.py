@@ -2085,9 +2085,9 @@ class Level:
                 return
         for entity in self.entities["foes"] + self.entities["allies"]:
             if entity.is_on_position(position):
-                self.active_menu = menu_creator_manager.create_status_entity_menu(
+                self.menu_manager.open_menu(menu_creator_manager.create_status_entity_menu(
                     self.open_alteration_description, entity
-                )
+                ))
                 return
 
         is_initialization = self.game_phase is LevelStatus.INITIALIZATION

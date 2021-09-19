@@ -5,7 +5,7 @@ Define functions creating a specific menu enveloping data from parameters.
 from typing import Sequence, Union, Callable, Optional
 
 import pygame
-from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton, TextElement
+from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton, TextElement, BoxElement
 
 from src.constants import (
     TILE_SIZE,
@@ -1158,136 +1158,101 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     keywords_display = (
         entity.get_formatted_keywords() if isinstance(entity, Foe) else ""
     )
-    entries = [
-        [{"type": "text", "text": keywords_display, "font": fonts["ITALIC_ITEM_FONT"]}],
+    elements: list[list[BoxElement]] = [
         [
-            {
-                "type": "text",
-                "text": f"LEVEL : {entity.lvl}",
-                "font": fonts["ITEM_DESC_FONT"],
-            }
+            TextElement(keywords_display, font=fonts["ITALIC_ITEM_FONT"])
         ],
         [
-            {
-                "type": "text",
-                "text": "ATTACK",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (20, 0, 20, 0),
-            },
-            {},
-            {},
-            {
-                "type": "text",
-                "text": "LOOT",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (20, 0, 20, 0),
-            }
-            if isinstance(entity, Foe)
-            else {},
-            {},
+            TextElement(f"LEVEL : {entity.lvl}", font=fonts["ITEM_DESC_FONT"])
         ],
         [
-            {"type": "text", "text": "TYPE :"},
-            {"type": "text", "text": str(entity.attack_kind.value)},
-            {},
-            {},
-            {},
+            TextElement("ATTACK", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(20, 0, 20, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("LOOT", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(20, 0, 20, 0)) if isinstance(entity, Foe) else {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "REACH :"},
-            {"type": "text", "text": entity.get_formatted_reach()},
-            {},
-            {},
-            {},
-        ],
-        [{}, {}, {}, {}, {}],
-        [{}, {}, {}, {}, {}],
-        [
-            {
-                "type": "text",
-                "text": "STATS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (10, 0, 10, 0),
-            },
-            {},
-            {},
-            {
-                "type": "text",
-                "text": "SKILLS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (10, 0, 10, 0),
-            },
-            {},
+            TextElement("TYPE :"),
+            TextElement(str(entity.attack_kind.value)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "HP :"},
-            {
-                "type": "text",
-                "text": f"{entity.hit_points} / {entity.hit_points_max}",
-                "color": determine_hp_color(entity.hit_points, entity.hit_points_max),
-            },
-            {},
-            {},
-            {},
+            TextElement("REACH :"),
+            TextElement(entity.get_formatted_reach()),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "MOVE :"},
-            {"type": "text", "text": str(entity.max_moves)},
-            {},
-            {},
-            {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "ATTACK :"},
-            {"type": "text", "text": str(entity.strength)},
-            {},
-            {},
-            {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "DEFENSE :"},
-            {"type": "text", "text": str(entity.defense)},
-            {},
-            {},
-            {},
+            TextElement("STATS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(10, 0, 10, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("SKILLS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(10, 0, 10, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "MAGICAL RES :"},
-            {"type": "text", "text": str(entity.resistance)},
-            {},
-            {},
-            {},
+            TextElement("HP :"),
+            TextElement(f"{entity.hit_points} / {entity.hit_points_max}", text_color=determine_hp_color(entity.hit_points, entity.hit_points_max)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {
-                "type": "text",
-                "text": "ALTERATIONS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (10, 0, 10, 0),
-            }
+            TextElement("MOVE :"),
+            TextElement(str(entity.max_moves)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("ATTACK :"),
+            TextElement(str(entity.strength)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("DEFENSE :"),
+            TextElement(str(entity.defense)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("MAGICAL RES :"),
+            TextElement(str(entity.resistance)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("ALTERATIONS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(10, 0, 10, 0)),
         ],
     ]
 
     if not entity.alterations:
-        entries.append([{"type": "text", "text": "None"}])
+        elements.append([TextElement("None")])
     for alteration in entity.alterations:
-        entries.append(
+        elements.append(
             [
-                {
-                    "type": "text_button",
-                    "name": str(alteration),
-                    "callback": lambda alteration_reference=alteration: alteration_callback(
-                        alteration_reference
-                    ),
-                    "color": WHITE,
-                    "color_hover": TURQUOISE,
-                    "obj": alteration,
-                }
+                TextElement(str(alteration), text_color=WHITE),
             ]
         )
 
@@ -1296,23 +1261,20 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         i = 3
         for (item, probability) in loot:
             name = str(item)
-            entries[i][3] = {"type": "text", "text": name}
-            entries[i][4] = {"type": "text", "text": f" ({probability * 100} %)"}
+            elements[i][3] = TextElement(name)
+            elements[i][4] = TextElement(f" ({probability * 100} %)")
             i += 1
 
     # Display skills
     i = 7
     for skill in entity.skills:
-        entries[i][3] = {"type": "text", "text": "> " + skill.formatted_name}
+        elements[i][3] = TextElement(f"> {skill.formatted_name}")
         i += 1
 
-    return InfoBox(
+    return new_InfoBox(
         str(entity),
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        StatusMenu,
-        FOE_STATUS_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        elements,
+        width=FOE_STATUS_MENU_WIDTH,
     )
 
 

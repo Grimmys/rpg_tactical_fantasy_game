@@ -86,6 +86,7 @@ if __name__ == "__main__":
     pygamepopup.configuration.set_dynamic_button_title_font(fonts.fonts["BUTTON_FONT"])
     pygamepopup.configuration.set_button_background("imgs/interface/MenuButtonInactiv.png",
                                                     "imgs/interface/MenuButtonPreLight.png")
+    pygamepopup.configuration.set_text_element_font(fonts.fonts["ITEM_FONT"])
 
     # Window parameters
     pygame.display.set_caption(GAME_TITLE)
