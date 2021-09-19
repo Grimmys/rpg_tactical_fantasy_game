@@ -2213,9 +2213,10 @@ class Level:
         """
         self.menu_manager.motion(position)
 
-        self.hovered_entity = None
-        for collection in self.entities.values():
-            for entity in collection:
-                if entity.get_rect().collidepoint(position):
-                    self.hovered_entity = entity
-                    return
+        if not self.menu_manager.active_menu:
+            self.hovered_entity = None
+            for collection in self.entities.values():
+                for entity in collection:
+                    if entity.get_rect().collidepoint(position):
+                        self.hovered_entity = entity
+                        return
