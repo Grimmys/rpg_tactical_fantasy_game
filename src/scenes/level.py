@@ -11,6 +11,7 @@ from typing import Callable, Sequence, Union, List, Optional, Set, Type
 
 import pygame
 from lxml import etree
+from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
     MAX_MAP_WIDTH,
@@ -95,6 +96,7 @@ class Level:
     directory -- the relative path to the directory where all static data
     concerning the level are stored
     nb_level -- the number identifying the level
+    screen -- the pygame Surface related to the level
     status -- the status of the game for this level
     turn -- the value of the current turn (0 by default for new game)
     data -- saved data in XML format in case where the game is loaded from a save
@@ -108,8 +110,8 @@ class Level:
     obstacles -- the list of obstacles on the level
     events -- a structure containing the data about all the events that could occur
     possible_placements -- the list of available initial positions for players
-    active_menu -- the reference to the menu in the foreground: it's always the active one
-    background_menus -- the stack of menus in the background,
+    screen -- the pygame Surface related to the level
+    menu_manager -- the reference to the menu manager entity
     a boolean value is associated to each menu in the background to know
     if it should be displayed or not
     players -- the list of players that are still actives on the level
@@ -148,6 +150,7 @@ class Level:
             self,
             directory: str,
             nb_level: int,
+            screen: pygame.Surface,
             status: LevelStatus = LevelStatus.INITIALIZATION,
             turn: int = 0,
             data: etree.Element = None,
@@ -190,8 +193,8 @@ class Level:
             tree.findall("placementArea/position"), self.map["x"], self.map["y"]
         )
 
-        self.active_menu: Optional[InfoBox] = None
-        self.background_menus: List[tuple[InfoBox, bool]] = []
+        self.screen = screen
+        self.menu_manager = MenuManager(self.screen)
         self.players: List[Player] = players
         self.entities: dict[str, List[Entity]] = {"players": self.players}
         if data is None:
@@ -203,12 +206,9 @@ class Level:
             if "before_init" in self.events:
                 if "dialogs" in self.events["before_init"]:
                     for dialog in self.events["before_init"]["dialogs"]:
-                        self.background_menus.append(
-                            (create_event_dialog(dialog), False)
+                        self.menu_manager.open_menu(
+                            create_event_dialog(dialog)
                         )
-                self.active_menu = (
-                    self.background_menus.pop(0)[0] if self.background_menus else None
-                )
                 if "new_players" in self.events["before_init"]:
                     for player_el in self.events["before_init"]["new_players"]:
                         player = loader.init_player(player_el["name"])
@@ -238,8 +238,7 @@ class Level:
         )
 
         # Load and store all entities
-        self.entities = loader.load_all_entities(data_tree, from_save,
-                                                                          gap_x, gap_y)
+        self.entities = loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
         self.entities["players"] = self.players
 
         # Booleans for end game
@@ -419,7 +418,7 @@ class Level:
             return None
 
         # Game can't evolve if there is an active menu
-        if self.active_menu:
+        if self.menu_manager.active_menu is not None:
             return None
 
         # Game should be left if it's ended and there is no more animation nor menu
@@ -513,49 +512,42 @@ class Level:
             self.entities["foes"],
         )
 
-    def display(self, screen: pygame.Surface) -> None:
+    def display(self) -> None:
         """
         Display all the elements of the level.
         Display the ongoing animation if there is any.
         Display also all the menus in the background (that should be visible)
         and lastly the active menu.
-
-        Keyword arguments:
-        screen -- the screen on which the content should be drawn
         """
-        screen.blit(self.map["img"], (self.map["x"], self.map["y"]))
-        self.sidebar.display(screen, self.turn, self.hovered_entity)
+        self.screen.blit(self.map["img"], (self.map["x"], self.map["y"]))
+        self.sidebar.display(self.screen, self.turn, self.hovered_entity)
 
         for collection in self.entities.values():
             for ent in collection:
-                ent.display(screen)
+                ent.display(self.screen)
                 if isinstance(ent, Destroyable):
-                    ent.display_hit_points(screen)
+                    ent.display_hit_points(self.screen)
 
         if self.watched_entity:
-            self.show_possible_actions(self.watched_entity, screen)
+            self.show_possible_actions(self.watched_entity, self.screen)
 
         # If the game hasn't yet started
         if self.game_phase is LevelStatus.INITIALIZATION:
-            self.show_possible_placements(screen)
+            self.show_possible_placements(self.screen)
         else:
             if self.selected_player:
                 # If player is waiting to move
                 if self.possible_moves:
-                    self.show_possible_actions(self.selected_player, screen)
+                    self.show_possible_actions(self.selected_player, self.screen)
                 elif self.possible_attacks:
-                    self.show_possible_attacks(self.selected_player, screen)
+                    self.show_possible_attacks(self.selected_player, self.screen)
                 elif self.possible_interactions:
-                    self.show_possible_interactions(screen)
+                    self.show_possible_interactions(self.screen)
 
         if self.animation:
-            self.animation.display(screen)
+            self.animation.display(self.screen)
         else:
-            for menu in self.background_menus:
-                if menu[1]:
-                    menu[0].display(screen)
-            if self.active_menu:
-                self.active_menu.display(screen)
+            self.menu_manager.display()
 
     def show_possible_actions(self, movable: Movable, screen: pygame.Surface) -> None:
         """
@@ -620,7 +612,7 @@ class Level:
         Begin a new turn (the first one).
         Trigger the events that should happen after the initialization phase if any.
         """
-        self.active_menu = None
+        self.menu_manager.close_menu()
         self.game_phase = LevelStatus.IN_PROGRESS
         self.new_turn()
         if "after_init" in self.events:
@@ -715,8 +707,8 @@ class Level:
         Keyword arguments:
         tile -- the position of the tile
         """
-        min_case: Position = (self.map["x"], self.map["y"])
-        max_case: Position = (
+        min_case: Position = pygame.Vector2(self.map["x"], self.map["y"])
+        max_case: Position = pygame.Vector2(
             self.map["x"] + self.map["width"],
             self.map["y"] + self.map["height"],
         )
@@ -1323,32 +1315,11 @@ class Level:
             )
         )
 
-    def open_menu(
-            self,
-            menu: InfoBox,
-            is_visible_on_background: bool = False,
-            sound: pygame.mixer.Sound = None,
-    ) -> None:
-        """
-        Handle the opening of any menu
-
-        Keyword arguments:
-        menu -- the interface of the menu
-        is_visible_on_background -- a boolean indicating whether the menu should be visible if it is
-        on background or not
-        sound -- the sound that should be played at the opening of the menu if there should be any
-        """
-        if sound is not None:
-            pygame.mixer.Sound.play(sound)
-        if self.active_menu is not None:
-            self.background_menus.append((self.active_menu, is_visible_on_background))
-        self.active_menu = menu
-
     def end_turn(self) -> None:
         """
         End the current turn
         """
-        self.active_menu = None
+        self.menu_manager.close_menu()
         for player in self.players:
             player.end_turn()
         self.side_turn = self.side_turn.get_next()
@@ -1388,8 +1359,8 @@ class Level:
                             if mission.main and mission.ended:
                                 self.victory = True
                             # Turn is finished
-                            self.active_menu = None
-                            self.background_menus = []
+                            self.menu_manager.close_menu()
+                            self.menu_manager.background_menus.clear()
                             self.selected_player.end_turn()
                             self.selected_player = None
                             break
@@ -1985,17 +1956,6 @@ class Level:
             is_visible_on_background=True,
         )
 
-    @staticmethod
-    def execute_action(action: Callable) -> None:
-        """
-        Manage actions related to a click on a button.
-        Simply execute the given callable.
-
-        Keyword arguments:
-        action -- the callable associated to the clicked button
-        """
-        action()
-
     def begin_turn(self) -> None:
         """
         Begin next camp's turn
@@ -2034,8 +1994,8 @@ class Level:
         Keyword arguments:
         position -- the position of the mouse
         """
-        if self.active_menu:
-            self.execute_action(self.active_menu.click(position))
+        if self.menu_manager.active_menu:
+            self.menu_manager.click(1, position)
             return
 
         # Player can only react to active menu if it is not his turn
@@ -2131,7 +2091,7 @@ class Level:
                 return
 
         is_initialization = self.game_phase is LevelStatus.INITIALIZATION
-        self.active_menu = menu_creator_manager.create_main_menu(
+        self.menu_manager.open_menu(menu_creator_manager.create_main_menu(
             {
                 "save": self.open_save_menu,
                 "suspend": self.exit_game,
@@ -2144,7 +2104,7 @@ class Level:
             },
             is_initialization,
             position,
-        )
+        ))
 
     def right_click(self) -> None:
         """
@@ -2156,10 +2116,10 @@ class Level:
                 self.selected_player.selected = False
                 self.selected_player = None
                 self.possible_moves = {}
-            elif self.active_menu is not None:
+            elif self.menu_manager.active_menu is not None:
                 # Test if player is on character's main menu, in this case,
                 # current move should be cancelled if possible
-                if self.active_menu.type is CharacterMenu:
+                if self.menu_manager.active_menu.type == "character_menu":
                     if self.selected_player.cancel_move():
                         if self.turn_items is not None:
                             for item in self.turn_items:
@@ -2175,21 +2135,16 @@ class Level:
                         self.possible_moves = {}
                         self.active_menu = None
                     return
-                self.execute_action(
-                    self.active_menu.buttons[
-                        len(self.active_menu.buttons) - 1
-                        ].action_triggered()
-                )
+                self.menu_manager.close_menu()
             # Want to cancel an interaction (not already performed)
             elif self.possible_interactions or self.possible_attacks:
                 self.selected_player.cancel_interaction()
                 self.possible_interactions = []
                 self.possible_attacks = []
-                self.active_menu = self.background_menus.pop()[0]
+                self.menu_manager.close_menu()
             return
-        # Test if player is on main menu
-        if self.active_menu is not None:
-            self.execute_action(lambda: self.close_active_menu(False))
+        if self.menu_manager.active_menu is not None:
+            self.menu_manager.close_menu()
         if self.watched_entity:
             self.watched_entity = None
             self.possible_moves = {}
@@ -2226,7 +2181,7 @@ class Level:
         """
         if button == 3:
             if (
-                    not self.active_menu
+                    not self.menu_manager.active_menu
                     and not self.selected_player
                     and self.side_turn is EntityTurn.PLAYER
             ):
@@ -2256,12 +2211,11 @@ class Level:
         Keyword arguments:
         position -- the position of the mouse
         """
-        if self.active_menu:
-            self.active_menu.motion(position)
-        else:
-            self.hovered_entity = None
-            for collection in self.entities.values():
-                for entity in collection:
-                    if entity.get_rect().collidepoint(position):
-                        self.hovered_entity = entity
-                        return
+        self.menu_manager.motion(position)
+
+        self.hovered_entity = None
+        for collection in self.entities.values():
+            for entity in collection:
+                if entity.get_rect().collidepoint(position):
+                    self.hovered_entity = entity
+                    return

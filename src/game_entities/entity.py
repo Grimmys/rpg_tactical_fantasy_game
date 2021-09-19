@@ -34,7 +34,7 @@ class Entity:
         self, name: str, position: Position, sprite: Union[str, pygame.Surface]
     ) -> None:
         self.name: str = name
-        self.position: tuple[int, int] = position
+        self.position: Position = position
         self.sprite: pygame.Surface = (
             sprite
             if isinstance(sprite, pygame.Surface)

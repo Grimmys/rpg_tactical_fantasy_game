@@ -5,7 +5,7 @@ Define functions creating a specific menu enveloping data from parameters.
 from typing import Sequence, Union, Callable, Optional
 
 import pygame
-from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton
+from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton, TextElement
 
 from src.constants import (
     TILE_SIZE,
@@ -770,7 +770,7 @@ def create_main_menu(
         buttons_callback: dict[str, Callable],
         is_initialization_phase: bool,
         position: Position,
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of the main level menu.
 
@@ -781,28 +781,23 @@ def create_main_menu(
     """
     # Transform pos tuple into rect
     tile = pygame.Rect(position[0], position[1], 1, 1)
-    entries = [
-        [{"name": "Save", "callback": buttons_callback["save"]}],
-        [{"name": "Suspend", "callback": buttons_callback["suspend"]}],
+    elements = [
+        [Button(title="Save", callback=buttons_callback["save"])],
+        [Button(title="Suspend", callback=buttons_callback["suspend"])],
     ]
 
     if is_initialization_phase:
-        entries.append([{"name": "Start", "callback": buttons_callback["start"]}])
+        elements.append([Button(title="Start", callback=buttons_callback["start"])])
     else:
-        entries.append([{"name": "Diary", "callback": buttons_callback["diary"]}]),
-        entries.append([{"name": "End Turn", "callback": buttons_callback["end_turn"]}])
+        elements.append([Button(title="Diary", callback=buttons_callback["diary"])]),
+        elements.append([Button(title="End Turn", callback=buttons_callback["end_turn"])])
 
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
-    return InfoBox(
+    return new_InfoBox(
         "Main Menu",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=MainMenu,
+        elements,
         width=ACTION_MENU_WIDTH,
         element_linked=tile,
+        has_close_button=False
     )
 
 
@@ -1321,24 +1316,24 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     )
 
 
-def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
+def create_event_dialog(dialog_element: dict[str, any]) -> new_InfoBox:
     """
     Return the interface of a dialog.
 
     Keyword arguments:
     dialog_element -- a data structure containing the title and the content of the dialog
     """
-    entries = [
-        [{"type": "text", "text": talk, "font": fonts["ITEM_DESC_FONT"]}]
+    elements = [
+        [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
         for talk in dialog_element["talks"]
     ]
-    return InfoBox(
+    return new_InfoBox(
         dialog_element["title"],
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        elements,
         width=DIALOG_WIDTH,
-        close_button=lambda: close_function(False),
+        background_path="imgs/interface/PopUpMenu.png",
         title_color=ORANGE,
+        visible_on_background=False
     )
 
 
@@ -1406,7 +1401,6 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
                 ),
             ],
         ],
-        background_path="imgs/interface/PopUpMenu.png",
         width=START_MENU_WIDTH,
         has_close_button=False,
     )

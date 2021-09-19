@@ -5,7 +5,6 @@ corresponding to the main menu.
 from typing import Sequence, TextIO, Callable, Optional
 
 import pygame
-import pygamepopup
 from lxml import etree
 from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
@@ -20,7 +19,6 @@ from src.constants import (
     MAIN_WIN_HEIGHT
 )
 from src.game_entities.player import Player
-from src.gui.entries import Entries
 from src.gui.position import Position
 from src.services import menu_creator_manager
 from src.gui.fonts import fonts
@@ -42,10 +40,7 @@ class StartScreen:
     screen -- the pygame Surface corresponding to the active scene
     menu_screen -- copy of the main menu screen to keep it in memory if the scene change
     background -- the background pygame Surface of the scene
-    active_menu -- the reference to the menu in the foreground: it's always the active one
-    background_menus -- the stack of menus in the background,
-    a boolean value is associated to each menu in the background to know
-    if it should be displayed or not
+    menu_manager -- the reference to the menu manager entity
     level -- the reference to the current running level
     levels -- the list of level ids
     level_id -- the id of the current level
@@ -135,18 +130,15 @@ class StartScreen:
         """
         if self.level:
             self.screen.fill(BLACK)
-            self.level.display(self.level_screen)
+            self.level.display()
         else:
             self.screen.blit(self.background, (0, 0))
             self.menu_manager.display()
 
-    def play(self, level: Level) -> None:
+    def generate_level_window(self) -> None:
         """
-        Replace the current screen by the appropriate one for playing the game.
-        Set the current level too.
-
-        Keyword arguments:
-        level -- the ongoing level
+        Handle the generation of the part of the screen dedicated to the ongoing level and change the screen according
+        to the set parameters
         """
         # Modify screen
         flags: int = 0
@@ -162,8 +154,6 @@ class StartScreen:
                         self.screen.get_height() // 2 - level_height // 2,
                         level_width, level_height)
         )
-        self.level = level
-        menu_creator_manager.close_function = self.level.close_active_menu
 
     def update_state(self) -> None:
         """
@@ -186,7 +176,8 @@ class StartScreen:
                     player.healed(player.hit_points_max)
                     # Reset player's state
                     player.new_turn()
-                self.play(StartScreen.load_level(self.level_id, team))
+                self.generate_level_window()
+                self.play(StartScreen.load_level(self.level_id, self.level_screen, team))
             elif (
                     status is LevelStatus.ENDED_VICTORY
                     or status is LevelStatus.ENDED_DEFEAT
@@ -196,7 +187,7 @@ class StartScreen:
                 self.level = None
 
     @staticmethod
-    def load_level(level: int, team: Optional[Sequence[Player]] = None) -> Level:
+    def load_level(level: int, level_screen: pygame.Surface, team: Optional[Sequence[Player]] = None) -> Level:
         """
         Load a specific level.
 
@@ -208,7 +199,7 @@ class StartScreen:
         """
         if team is None:
             team = []
-        return Level("maps/level_" + str(level) + "/", level, players=team)
+        return Level("maps/level_" + str(level) + "/", level, level_screen, players=team)
 
     def new_game(self) -> None:
         """
@@ -216,7 +207,8 @@ class StartScreen:
         """
         # Init the first level
         self.level_id = 0
-        self.play(StartScreen.load_level(self.level_id))
+        self.generate_level_window()
+        self.level = StartScreen.load_level(self.level_id, self.level_screen)
 
     def load_game(self, game_id: int) -> None:
         """
@@ -240,14 +232,15 @@ class StartScreen:
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level: Level = Level(
+                self.generate_level_window()
+                self.level = Level(
                     level_name,
                     self.level_id,
+                    self.level_screen,
                     LevelStatus[game_status],
                     turn_nb,
                     tree_root.find("level/entities"),
                 )
-                self.play(level)
                 save.close()
                 return
 

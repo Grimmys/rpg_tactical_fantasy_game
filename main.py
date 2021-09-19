@@ -81,6 +81,7 @@ if __name__ == "__main__":
 
     # Configure pygame-popup manager : set default assets to be used
     pygamepopup.configuration.set_info_box_title_font(fonts.fonts["MENU_TITLE_FONT"])
+    pygamepopup.configuration.set_info_box_background("imgs/interface/PopUpMenu.png")
     pygamepopup.configuration.set_button_title_font(fonts.fonts["BUTTON_FONT"])
     pygamepopup.configuration.set_dynamic_button_title_font(fonts.fonts["BUTTON_FONT"])
     pygamepopup.configuration.set_button_background("imgs/interface/MenuButtonInactiv.png",
