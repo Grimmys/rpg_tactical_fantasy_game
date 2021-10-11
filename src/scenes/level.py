@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import os
 from enum import IntEnum, auto, Enum
-from typing import Callable, Sequence, Union, List, Optional, Set, Type
+from typing import Sequence, Union, List, Optional, Set, Type
 
 import pygame
 from lxml import etree
 from pygamepopup.menu_manager import MenuManager
+from pygamepopup.components import InfoBox as new_InfoBox, TextElement
 
 from src.constants import (
     MAX_MAP_WIDTH,
@@ -310,8 +311,7 @@ class Level:
         """
         Replace the current active menu by the a freshly created save game interface
         """
-        self.background_menus.append((self.active_menu, True))
-        self.active_menu = menu_creator_manager.create_save_menu(self.save_game)
+        self.menu_manager.open_menu(menu_creator_manager.create_save_menu(self.save_game))
 
     def save_game(self, slot_id: int) -> None:
         """
@@ -322,24 +322,11 @@ class Level:
         """
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
-        self.background_menus.append((self.active_menu, True))
-        # TODO: Check if it is possible to set the message as the title of the InfoBox
-        #  instead of in the body
-        self.active_menu = InfoBox(
-            "",
-            "imgs/interface/PopUpMenu.png",
-            [
-                [
-                    {
-                        "type": "text",
-                        "text": "Game has been saved",
-                        "font": fonts["ITEM_DESC_FONT"],
-                    }
-                ]
-            ],
-            width=ITEM_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(False),
-        )
+        self.menu_manager.open_menu(new_InfoBox(
+            "Game has been saved",
+            [[]],
+            width=ITEM_MENU_WIDTH
+        ))
 
     def exit_game(self) -> None:
         """

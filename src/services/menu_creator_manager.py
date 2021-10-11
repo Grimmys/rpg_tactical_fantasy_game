@@ -1247,6 +1247,7 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         ],
     ]
 
+    # TODO: Add Alteration callbacks
     if not entity.alterations:
         elements.append([TextElement("None")])
     for alteration in entity.alterations:
@@ -1458,8 +1459,7 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
     return new_InfoBox(
         "Load Game",
         element_grid,
-        width=START_MENU_WIDTH,
-        background_path="imgs/interface/PopUpMenu.png",
+        width=START_MENU_WIDTH
     )
 
 
@@ -1467,24 +1467,20 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
     """
     Return the interface of the save game menu
     """
-    entries = []
+    element_grid = []
 
     for i in range(SAVE_SLOTS):
-        entries.append(
+        element_grid.append(
             [
-                {
-                    "type": "button",
-                    "name": "Save " + str(i + 1),
-                    "callback": lambda slot_id=i: save_game_function(slot_id),
-                }
+                Button(
+                    title=f"Save {i+1}",
+                    callback=lambda slot_id=i: save_game_function(slot_id),
+                )
             ]
         )
 
-    return InfoBox(
+    return new_InfoBox(
         "Save Game",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=SaveMenu,
-        width=START_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        element_grid,
+        width=START_MENU_WIDTH
     )
