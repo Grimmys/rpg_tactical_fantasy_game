@@ -750,19 +750,17 @@ def create_player_menu(
     )
 
 
-def create_diary_menu(entries: Entries) -> InfoBox:
+def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
     """
     Return the interface of the diary resuming the last battle logs of a specific player.
 
     Keyword arguments:
     entries -- the entries data structure containing all the data needed to build the interface
     """
-    return InfoBox(
+    return new_InfoBox(
         "Diary",
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        grid_elements,
         width=BATTLE_SUMMARY_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 
@@ -1294,7 +1292,6 @@ def create_event_dialog(dialog_element: dict[str, any]) -> new_InfoBox:
         dialog_element["title"],
         elements,
         width=DIALOG_WIDTH,
-        background_path="imgs/interface/PopUpMenu.png",
         title_color=ORANGE,
         visible_on_background=False
     )
@@ -1436,7 +1433,6 @@ def create_options_menu(
             ],
         ],
         width=START_MENU_WIDTH,
-        background_path="imgs/interface/PopUpMenu.png",
     )
 
 

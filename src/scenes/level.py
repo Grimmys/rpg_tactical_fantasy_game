@@ -12,7 +12,7 @@ from typing import Sequence, Union, List, Optional, Set, Type
 import pygame
 from lxml import etree
 from pygamepopup.menu_manager import MenuManager
-from pygamepopup.components import InfoBox as new_InfoBox, TextElement
+from pygamepopup.components import InfoBox as new_InfoBox, TextElement, BoxElement
 
 from src.constants import (
     MAX_MAP_WIDTH,
@@ -270,7 +270,7 @@ class Level:
             (MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions, self.nb_level
         )
         self.wait_for_teleportation_destination: bool = False
-        self.diary_entries: List[any] = []
+        self.diary_entries: List[List[BoxElement]] = []
         self.turn_items: List[List[Union[Item, Player]]] = []
 
         self.wait_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
@@ -2083,9 +2083,8 @@ class Level:
                 "save": self.open_save_menu,
                 "suspend": self.exit_game,
                 "start": self.start_game,
-                "diary": lambda: self.open_menu(
+                "diary": lambda: self.menu_manager.open_menu(
                     menu_creator_manager.create_diary_menu(self.diary_entries),
-                    is_visible_on_background=True,
                 ),
                 "end_turn": self.end_turn,
             },
