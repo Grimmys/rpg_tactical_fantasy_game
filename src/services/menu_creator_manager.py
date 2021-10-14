@@ -398,184 +398,98 @@ def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
 
 def create_status_menu(
         buttons_callback: dict[str, Callable], player: Player
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface resuming the status of a player.
 
     Keyword arguments:
     player -- the concerned player
     """
-    entries = [
+    grid_elements = [
         [
-            {},
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Name :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": str(player)},
-            {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("Name :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(str(player)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {},
-            {},
-            {
-                "type": "text",
-                "color": DARK_GREEN,
-                "text": "SKILLS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "margin": (10, 0, 10, 0),
-            },
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("SKILLS", text_color=DARK_GREEN, font=fonts["MENU_SUB_TITLE_FONT"], margin=(10, 0, 10, 0)),
         ],
         [
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Class :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": player.get_formatted_classes()},
+            TextElement("Class :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(player.get_formatted_classes()),
         ],
         [
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Race :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": player.get_formatted_race()},
+            TextElement("Race :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(player.get_formatted_race()),
         ],
         [
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Level :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": str(player.lvl)},
+            TextElement("Level :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(str(player.lvl))
         ],
         [
-            {
-                "type": "text",
-                "color": GOLD,
-                "text": "   XP :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {
-                "type": "text",
-                "text": f"{player.experience} / {player.experience_to_lvl_up}",
-            },
+            TextElement("  XP :", text_color=GOLD, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(f"{player.experience} / {player.experience_to_lvl_up}")
         ],
         [
-            {
-                "type": "text",
-                "color": DARK_GREEN,
-                "text": "STATS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "margin": (10, 0, 10, 0),
-            }
+            TextElement("STATS", text_color=DARK_GREEN, font=fonts["MENU_SUB_TITLE_FONT"], margin=(10, 0, 10, 0)),
         ],
         [
-            {"type": "text", "color": WHITE, "text": "HP :"},
-            {
-                "type": "text",
-                "text": f"{player.hit_points} / {player.hit_points_max}",
-                "color": determine_hp_color(player.hit_points, player.hit_points_max),
-            },
+            TextElement("HP :", text_color=WHITE),
+            TextElement(f"{player.hit_points} / {player.hit_points_max}",
+                        text_color=determine_hp_color(player.hit_points, player.hit_points_max)),
         ],
         [
-            {"type": "text", "color": WHITE, "text": "MOVE :"},
-            {
-                "type": "text",
-                "text": str(player.max_moves)
-                        + player.get_formatted_stat_change("speed"),
-            },
+            TextElement("MOVE :", text_color=WHITE),
+            TextElement(str(player.max_moves) + player.get_formatted_stat_change("speed"))
         ],
         [
-            {"type": "text", "color": WHITE, "text": "CONSTITUTION :"},
-            {"type": "text", "text": str(player.constitution)},
+            TextElement("CONSTITUTION :", text_color=WHITE),
+            TextElement(str(player.constitution))
         ],
         [
-            {"type": "text", "color": WHITE, "text": "ATTACK :"},
-            {
-                "type": "text",
-                "text": str(player.strength)
-                        + player.get_formatted_stat_change("strength"),
-            },
+            TextElement("ATTACK :", text_color=WHITE),
+            TextElement(str(player.strength) + player.get_formatted_stat_change("strength")),
         ],
         [
-            {"type": "text", "color": WHITE, "text": "DEFENSE :"},
-            {
-                "type": "text",
-                "text": str(player.defense)
-                        + player.get_formatted_stat_change("defense"),
-            },
+            TextElement("DEFENSE :", text_color=WHITE),
+            TextElement(str(player.defense) + player.get_formatted_stat_change("defense"))
         ],
         [
-            {"type": "text", "color": WHITE, "text": "MAGICAL RES :"},
-            {
-                "type": "text",
-                "text": str(player.resistance)
-                        + player.get_formatted_stat_change("resistance"),
-            },
+            TextElement("MAGICAL RES :", text_color=WHITE),
+            TextElement(str(player.resistance) + player.get_formatted_stat_change("resistance"))
         ],
         [
-            {
-                "type": "text",
-                "color": DARK_GREEN,
-                "text": "ALTERATIONS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "margin": (10, 0, 10, 0),
-            }
+            TextElement("ALTERATIONS", text_color=DARK_GREEN, font=fonts["MENU_SUB_TITLE_FONT"], margin=(10, 0, 10, 0))
         ],
     ]
 
+    # TODO: Add Alteration callbacks
     if not player.alterations:
-        entries.append([{"type": "text", "color": WHITE, "text": "None"}])
+        grid_elements.append([TextElement("None", text_color=WHITE)])
     for alteration in player.alterations:
-        entries.append(
+        grid_elements.append(
             [
-                {
-                    "type": "text_button",
-                    "name": str(alteration),
-                    "callback": lambda alteration_reference=alteration: buttons_callback[
-                        "info_alteration"
-                    ](
-                        alteration_reference
-                    ),
-                    "color": WHITE,
-                    "color_hover": TURQUOISE,
-                    "obj": alteration,
-                }
+                TextElement(str(alteration), text_color=WHITE)
             ]
         )
 
     # Display skills
+    # TODO: Add Skill callbacks
     i = 2
     for skill in player.skills:
-        skill_displayed = {
-            "type": "text_button",
-            "name": skill.formatted_name,
-            "callback": lambda skill_reference=skill: buttons_callback["info_skill"](
-                skill_reference
-            ),
-            "color": WHITE,
-            "color_hover": TURQUOISE,
-            "obj": skill,
-        }
-        entries[i].append(skill_displayed)
+        skill_displayed = TextElement(skill.formatted_name, text_color=WHITE)
+        grid_elements[i].append(skill_displayed)
         i += 1
-    for j in range(i, len(entries)):
-        entries[j].append({})
+    for j in range(i, len(grid_elements)):
+        grid_elements[j].append(BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)))
 
-    return InfoBox(
+    return new_InfoBox(
         "Status",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=StatusMenu,
+        grid_elements,
         width=STATUS_MENU_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 

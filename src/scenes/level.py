@@ -1444,15 +1444,14 @@ class Level:
         """
         Handle the opening of the status interface for the active character
         """
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_status_menu(
                 {
                     "info_alteration": self.open_alteration_description,
                     "info_skill": self.open_skill_description,
                 },
                 self.selected_player,
-            ),
-            is_visible_on_background=True,
+            )
         )
 
     def end_character_turn(self) -> None:
