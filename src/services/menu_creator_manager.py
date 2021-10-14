@@ -586,7 +586,7 @@ def create_player_menu(
         interactable_entities: Sequence[Entity],
         missions: Sequence[Mission],
         foes: Sequence[Foe],
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of a player menu.
 
@@ -598,11 +598,11 @@ def create_player_menu(
     missions -- the missions of the current level
     foes -- the foes that are still alive on the current level
     """
-    entries = [
-        [{"name": "Inventory", "callback": buttons_callback["inventory"]}],
-        [{"name": "Equipment", "callback": buttons_callback["equipment"]}],
-        [{"name": "Status", "callback": buttons_callback["status"]}],
-        [{"name": "Wait", "callback": buttons_callback["wait"]}],
+    grid_elements = [
+        [Button(title="Inventory", callback=buttons_callback["inventory"])],
+        [Button(title="Equipment", callback=buttons_callback["equipment"])],
+        [Button(title="Status", callback=buttons_callback["status"])],
+        [Button(title="Wait", callback=buttons_callback["wait"])],
     ]
 
     # Options flags
@@ -618,8 +618,8 @@ def create_player_menu(
     if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
         for building in buildings:
             if building.position == case_pos:
-                entries.insert(
-                    0, [{"name": "Visit", "callback": buttons_callback["visit"]}]
+                grid_elements.insert(
+                    0, [Button(title="Visit", callback=buttons_callback["visit"])]
                 )
                 break
 
@@ -631,78 +631,63 @@ def create_player_menu(
         ):
             if isinstance(entity, Player):
                 if not trade_option:
-                    entries.insert(
-                        0, [{"name": "Trade", "callback": buttons_callback["trade"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Trade", callback=buttons_callback["trade"])]
                     )
                     trade_option = True
             elif isinstance(entity, Chest):
                 if not entity.opened and not chest_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Open Chest",
-                                "callback": buttons_callback["open_chest"],
-                            }
+                            Button(title="Open Chest", callback=buttons_callback["open_chest"])
                         ],
                     )
                     chest_option = True
                 if "lock_picking" in player.skills and not pick_lock_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Pick Lock",
-                                "callback": buttons_callback["pick_lock"],
-                            }
+                            Button(title="Pick Lock", callback=buttons_callback["pick_lock"])
                         ],
                     )
                     pick_lock_option = True
             elif isinstance(entity, Door):
                 if not door_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Open Door",
-                                "callback": buttons_callback["open_door"],
-                            }
+                            Button(title="Open Door", callback=buttons_callback["open_door"])
                         ],
                     )
                     door_option = True
                 if "lock_picking" in player.skills and not pick_lock_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Pick Lock",
-                                "callback": buttons_callback["pick_lock"],
-                            }
+                            Button(title="Pick Lock", callback=buttons_callback["pick_lock"])
                         ],
                     )
                     pick_lock_option = True
             elif isinstance(entity, Portal):
                 if not portal_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Use Portal",
-                                "callback": buttons_callback["use_portal"],
-                            }
+                            Button(title="Use Portal", callback=buttons_callback["use_portal"])
                         ],
                     )
                     portal_option = True
             elif isinstance(entity, Fountain):
                 if not fountain_option:
-                    entries.insert(
-                        0, [{"name": "Drink", "callback": buttons_callback["drink"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Drink", callback=buttons_callback["drink"])]
                     )
                     fountain_option = True
             elif isinstance(entity, Character):
                 if not talk_option:
-                    entries.insert(
-                        0, [{"name": "Talk", "callback": buttons_callback["talk"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Talk", callback=buttons_callback["talk"])]
                     )
                     talk_option = True
 
@@ -713,8 +698,8 @@ def create_player_menu(
                 or mission.type is MissionType.TOUCH_POSITION
         ):
             if mission.is_position_valid(player.position):
-                entries.insert(
-                    0, [{"name": "Take", "callback": buttons_callback["take"]}]
+                grid_elements.insert(
+                    0, [Button(title="Take", callback=buttons_callback["take"])]
                 )
 
     # Check if player could attack something, according to weapon range
@@ -728,23 +713,17 @@ def create_player_menu(
                         + abs(foe.position[1] - player.position[1])
                         == TILE_SIZE * reach
                 ):
-                    entries.insert(
-                        0, [{"name": "Attack", "callback": buttons_callback["attack"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Attack", callback=buttons_callback["attack"])]
                     )
                     end = True
                     break
             if end:
                 break
 
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
-    return InfoBox(
+    return new_InfoBox(
         "Select an action",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=CharacterMenu,
+        grid_elements,
         width=ACTION_MENU_WIDTH,
         element_linked=player.get_rect(),
     )

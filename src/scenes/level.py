@@ -475,7 +475,7 @@ class Level:
                 + self.entities["allies"]
                 + self.players
         )
-        self.active_menu = menu_creator_manager.create_player_menu(
+        self.menu_manager.open_menu(menu_creator_manager.create_player_menu(
             {
                 "inventory": self.open_inventory,
                 "equipment": self.open_equipment,
@@ -497,7 +497,7 @@ class Level:
             interactable_entities,
             self.missions,
             self.entities["foes"],
-        )
+        ))
 
     def display(self) -> None:
         """
