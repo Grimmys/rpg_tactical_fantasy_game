@@ -11,8 +11,8 @@ from typing import Sequence, Union, List, Optional, Set, Type
 
 import pygame
 from lxml import etree
+from pygamepopup.components import InfoBox as new_InfoBox, BoxElement
 from pygamepopup.menu_manager import MenuManager
-from pygamepopup.components import InfoBox as new_InfoBox, TextElement, BoxElement
 
 from src.constants import (
     MAX_MAP_WIDTH,
@@ -599,7 +599,7 @@ class Level:
         Begin a new turn (the first one).
         Trigger the events that should happen after the initialization phase if any.
         """
-        self.menu_manager.close_menu()
+        self.menu_manager.close_active_menu()
         self.game_phase = LevelStatus.IN_PROGRESS
         self.new_turn()
         if "after_init" in self.events:
@@ -1926,8 +1926,8 @@ class Level:
         Keyword arguments:
         skill -- the concerned skill
         """
-        self.open_menu(
-            menu_creator_manager.create_skill_info_menu(skill), is_visible_on_background=True
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_skill_info_menu(skill)
         )
 
     def open_alteration_description(self, alteration: Alteration) -> None:
@@ -2120,16 +2120,16 @@ class Level:
                         self.possible_moves = {}
                         self.active_menu = None
                     return
-                self.menu_manager.close_menu()
+                self.menu_manager.close_active_menu()
             # Want to cancel an interaction (not already performed)
             elif self.possible_interactions or self.possible_attacks:
                 self.selected_player.cancel_interaction()
                 self.possible_interactions = []
                 self.possible_attacks = []
-                self.menu_manager.close_menu()
+                self.menu_manager.close_active_menu()
             return
         if self.menu_manager.active_menu is not None:
-            self.menu_manager.close_menu()
+            self.menu_manager.close_active_menu()
         if self.watched_entity:
             self.watched_entity = None
             self.possible_moves = {}

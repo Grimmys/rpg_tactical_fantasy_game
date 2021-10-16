@@ -20,7 +20,6 @@ from src.constants import (
     RED,
     DARK_GREEN,
     GOLD,
-    TURQUOISE,
     STATUS_MENU_WIDTH,
     ACTION_MENU_WIDTH,
     BATTLE_SUMMARY_WIDTH,
@@ -33,12 +32,12 @@ from src.constants import (
     START_MENU_WIDTH,
     ANIMATION_SPEED,
     SCREEN_SIZE,
-    SAVE_SLOTS,
+    SAVE_SLOTS, TURQUOISE,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
-from src.game_entities.chest import Chest
 from src.game_entities.character import Character
+from src.game_entities.chest import Chest
 from src.game_entities.consumable import Consumable
 from src.game_entities.door import Door
 from src.game_entities.entity import Entity
@@ -46,15 +45,15 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe
 from src.game_entities.fountain import Fountain
 from src.game_entities.item import Item
-from src.game_entities.skill import Skill
-from src.gui.entries import Entries, Entry, EntryLine
-from src.gui.fonts import fonts
-from src.gui.info_box import InfoBox
 from src.game_entities.mission import MissionType, Mission
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
+from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
+from src.gui.entries import EntryLine
+from src.gui.fonts import fonts
+from src.gui.info_box import InfoBox
 from src.gui.position import Position
 from src.services.menus import (
     BuyMenu,
@@ -62,14 +61,7 @@ from src.services.menus import (
     InventoryMenu,
     EquipmentMenu,
     TradeMenu,
-    StatusMenu,
-    CharacterMenu,
-    MainMenu,
     ItemMenu,
-    StartMenu,
-    OptionsMenu,
-    SaveMenu,
-    LoadMenu,
 )
 
 MAP_WIDTH = TILE_SIZE * 20
@@ -466,21 +458,27 @@ def create_status_menu(
         ],
     ]
 
-    # TODO: Add Alteration callbacks
     if not player.alterations:
         grid_elements.append([TextElement("None", text_color=WHITE)])
     for alteration in player.alterations:
         grid_elements.append(
             [
-                TextElement(str(alteration), text_color=WHITE)
+                Button(title=alteration.name,
+                       callback=lambda alteration_reference=alteration: buttons_callback["info_alteration"](
+                           alteration_reference),
+                       no_background=True,
+                       text_hover_color=TURQUOISE),
             ]
         )
 
     # Display skills
-    # TODO: Add Skill callbacks
     i = 2
     for skill in player.skills:
-        skill_displayed = TextElement(skill.formatted_name, text_color=WHITE)
+        skill_displayed = Button(title=skill.formatted_name,
+                                 margin=(0, 0, 0, 0),
+                                 callback=lambda skill_reference=skill: buttons_callback["info_skill"](skill_reference),
+                                 no_background=True,
+                                 text_hover_color=TURQUOISE)
         grid_elements[i].append(skill_displayed)
         i += 1
     for j in range(i, len(grid_elements)):
@@ -1018,28 +1016,23 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
     Keyword arguments:
     skill -- the concerned skill
     """
-    entries = [
+    grid_elements = [
         [
-            {
-                "type": "text",
-                "text": skill.description,
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (20, 0, 20, 0),
-            }
+            TextElement(skill.description,
+                        font=fonts["ITEM_DESC_FONT"],
+                        margin=(20, 0, 20, 0))
         ],
-        [{"type": "text", "text": "", "margin": (0, 0, 10, 0)}],
+        [BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), margin=(0, 0, 10, 0))],
     ]
 
-    return InfoBox(
+    return new_InfoBox(
         skill.formatted_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 
-def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> InfoBox:
+def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> new_InfoBox:
     """
     Return the interface for the status screen of an entity.
 
@@ -1060,7 +1053,8 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
             TextElement("ATTACK", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(20, 0, 20, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            TextElement("LOOT", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(20, 0, 20, 0)) if isinstance(entity, Foe) else {},
+            TextElement("LOOT", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN,
+                        margin=(20, 0, 20, 0)) if isinstance(entity, Foe) else {},
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
@@ -1100,7 +1094,8 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         ],
         [
             TextElement("HP :"),
-            TextElement(f"{entity.hit_points} / {entity.hit_points_max}", text_color=determine_hp_color(entity.hit_points, entity.hit_points_max)),
+            TextElement(f"{entity.hit_points} / {entity.hit_points_max}",
+                        text_color=determine_hp_color(entity.hit_points, entity.hit_points_max)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
@@ -1138,13 +1133,15 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         ],
     ]
 
-    # TODO: Add Alteration callbacks
     if not entity.alterations:
         elements.append([TextElement("None")])
     for alteration in entity.alterations:
         elements.append(
             [
-                TextElement(str(alteration), text_color=WHITE),
+                Button(title=alteration.name,
+                       callback=lambda alteration_reference=alteration: alteration_callback(alteration_reference),
+                       no_background=True,
+                       text_hover_color=TURQUOISE),
             ]
         )
 
@@ -1339,7 +1336,7 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
         element_grid.append(
             [
                 Button(
-                    title=f"Save {i+1}",
+                    title=f"Save {i + 1}",
                     callback=lambda slot_id=i: load_game_function(slot_id)
                 )
             ]
@@ -1362,7 +1359,7 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         element_grid.append(
             [
                 Button(
-                    title=f"Save {i+1}",
+                    title=f"Save {i + 1}",
                     callback=lambda slot_id=i: save_game_function(slot_id),
                 )
             ]
