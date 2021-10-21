@@ -1910,7 +1910,7 @@ class Level:
         """
         Handle the opening of the selected item description pop-up
         """
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_item_description_menu(self.selected_item)
         )
 

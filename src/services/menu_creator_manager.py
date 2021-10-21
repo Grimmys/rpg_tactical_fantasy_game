@@ -51,7 +51,6 @@ from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
-from src.gui.entries import EntryLine
 from src.gui.fonts import fonts
 from src.gui.info_box import InfoBox
 from src.gui.position import Position
@@ -839,7 +838,7 @@ def create_item_menu(
     )
 
 
-def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
+def create_item_description_stat(stat_name: str, stat_value: str) -> Sequence[BoxElement]:
     """
     Return the entry line for the formatted display of an item stat description.
 
@@ -848,22 +847,12 @@ def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
     stat_value -- the value of the statistic
     """
     return [
-        {
-            "type": "text",
-            "text": f"{stat_name} : ",
-            "font": fonts["ITEM_DESC_FONT"],
-            "margin": (0, 0, 0, 100),
-        },
-        {
-            "type": "text",
-            "text": stat_value,
-            "font": fonts["ITEM_DESC_FONT"],
-            "margin": (0, 100, 0, 0),
-        },
+        TextElement(f"{stat_name}: ", font=fonts["ITEM_DESC_FONT"], margin=(0, 0, 0, 100)),
+        TextElement(stat_value, font=fonts["ITEM_DESC_FONT"], margin=(0, 100, 0, 0)),
     ]
 
 
-def create_item_description_menu(item: Item) -> InfoBox:
+def create_item_description_menu(item: Item) -> new_InfoBox:
     """
     Return the interface for the full description of an item.
 
@@ -872,30 +861,25 @@ def create_item_description_menu(item: Item) -> InfoBox:
     """
     item_title = str(item)
 
-    entries = [
+    grid_elements = [
         [
-            {
-                "type": "text",
-                "text": item.description,
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (20, 0, 20, 0),
-            }
+            TextElement(item.description, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
         ]
     ]
 
     if isinstance(item, Equipment):
         if item.restrictions != {}:
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat(
                     "RESERVED TO", item.get_formatted_restrictions()
                 )
             )
         if item.attack > 0:
-            entries.append(create_item_description_stat("POWER", str(item.attack)))
+            grid_elements.append(create_item_description_stat("POWER", str(item.attack)))
         if item.defense > 0:
-            entries.append(create_item_description_stat("DEFENSE", str(item.defense)))
+            grid_elements.append(create_item_description_stat("DEFENSE", str(item.defense)))
         if item.resistance > 0:
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat("MAGICAL RES", str(item.resistance))
             )
         if isinstance(item, Weapon):
@@ -904,14 +888,14 @@ def create_item_description_menu(item: Item) -> InfoBox:
             for distance in item.reach:
                 reach_txt += str(distance) + ", "
             reach_txt = reach_txt[: len(reach_txt) - 2]
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat(
                     "TYPE OF DAMAGE", str(item.attack_kind.value)
                 )
             )
-            entries.append(create_item_description_stat("REACH", reach_txt))
+            grid_elements.append(create_item_description_stat("REACH", reach_txt))
             for possible_effect in item.effects:
-                entries.append(
+                grid_elements.append(
                     create_item_description_stat(
                         "EFFECT",
                         f'{possible_effect["effect"]} ({possible_effect["probability"]}%)',
@@ -919,34 +903,32 @@ def create_item_description_menu(item: Item) -> InfoBox:
                 )
             strong_against_formatted = item.get_formatted_strong_against()
             if strong_against_formatted:
-                entries.append(
+                grid_elements.append(
                     create_item_description_stat(
                         "STRONG AGAINST", strong_against_formatted
                     )
                 )
         if isinstance(item, Shield):
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat("PARRY RATE", str(item.parry) + "%")
             )
         if isinstance(item, (Shield, Weapon)):
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat(
                     "DURABILITY", f"{item.durability} / {item.durability_max}"
                 )
             )
-        entries.append(create_item_description_stat("WEIGHT", str(item.weight)))
+        grid_elements.append(create_item_description_stat("WEIGHT", str(item.weight)))
     elif isinstance(item, Consumable):
         for effect in item.effects:
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat("EFFECT", effect.get_formatted_description())
             )
 
-    return InfoBox(
+    return new_InfoBox(
         item_title,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        width=ITEM_INFO_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        grid_elements,
+        width=ITEM_INFO_MENU_WIDTH
     )
 
 
