@@ -6,13 +6,13 @@ from typing import Sequence, Union, Callable, Optional
 
 import pygame
 from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton, TextElement, BoxElement
+from pygamepopup.components.image_button import ImageButton
 
 from src.constants import (
     TILE_SIZE,
     ITEM_MENU_WIDTH,
     ORANGE,
     WHITE,
-    ITEM_BUTTON_SIZE_EQ,
     EQUIPMENT_MENU_WIDTH,
     TRADE_MENU_WIDTH,
     GREEN,
@@ -32,7 +32,7 @@ from src.constants import (
     START_MENU_WIDTH,
     ANIMATION_SPEED,
     SCREEN_SIZE,
-    SAVE_SLOTS, TURQUOISE,
+    SAVE_SLOTS, TURQUOISE, ITEM_BUTTON_SIZE_EQ,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
@@ -59,7 +59,6 @@ from src.services.menus import (
     BuyMenu,
     SellMenu,
     InventoryMenu,
-    EquipmentMenu,
     TradeMenu,
     ItemMenu,
 )
@@ -187,43 +186,37 @@ def create_inventory_menu(
 
 def create_equipment_menu(
         interaction_callback: Callable, equipments: Sequence[Equipment]
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of a player equipment.
 
     Keyword arguments:
     equipments -- the collection of equipments currently equipped by the player
     """
-    entries = []
+    grid_elements = []
     body_parts = [["head"], ["body"], ["right_hand", "left_hand"], ["feet"]]
     for part in body_parts:
         row = []
         for member in part:
             equipment = None
-            index = -1
-            for i, potential_equipment in enumerate(equipments):
+            for potential_equipment in equipments:
                 if member == potential_equipment.body_part:
                     equipment = potential_equipment
-                    index = i
                     break
-            entry = {
-                "type": "item_button",
-                "item": equipment,
-                "index": index,
-                "size": ITEM_BUTTON_SIZE_EQ,
-                "callback": lambda button_position, equipment_reference=equipment: interaction_callback(
-                    equipment_reference, button_position, is_equipped=True
-                ),
-            }
-            row.append(entry)
-        entries.append(row)
-    return InfoBox(
+            element = ImageButton(image_path=equipment.sprite_path if equipment else None,
+                                  title=str(equipment), size=ITEM_BUTTON_SIZE_EQ,
+                                  disabled=not equipment,
+                                  frame_background_path="imgs/interface/blue_frame.png",
+                                  frame_background_hover_path="imgs/interface/blue_frame.png",
+                                  background_path="imgs/interface/item_frame.png")
+            element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(
+                equipment_reference, button_linked, is_equipped=True)
+            row.append(element)
+            grid_elements.append(row)
+    return new_InfoBox(
         "Equipment",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=EquipmentMenu,
-        width=EQUIPMENT_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        grid_elements,
+        width=EQUIPMENT_MENU_WIDTH
     )
 
 
@@ -809,10 +802,10 @@ def create_trade_item_menu(
 
 def create_item_menu(
         buttons_callback: dict[str, Callable],
-        item_button_position: Position,
+        item_button_rect: pygame.Rect,
         item: Item,
         is_equipped: bool = False,
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of an item of a player.
 
@@ -821,43 +814,29 @@ def create_item_menu(
     item -- the concerned item
     is_equipped -- a boolean value indicating whether the item is currently equipped or not
     """
-    entries = [
-        [{"name": "Info", "callback": buttons_callback["info_item"]}],
-        [{"name": "Throw", "callback": buttons_callback["throw_item"]}],
+    element_grid = [
+        [Button(title="Info", callback=buttons_callback["info_item"])],
+        [Button(title="Throw", callback=buttons_callback["throw_item"])],
     ]
     formatted_item_name = str(item)
 
     if isinstance(item, Consumable):
-        entries.insert(0, [{"name": "Use", "callback": buttons_callback["use_item"]}])
+        element_grid.insert(0, [Button(title="Use", callback=buttons_callback["use_item"])])
     elif isinstance(item, Equipment):
         if is_equipped:
-            entries.insert(
-                0, [{"name": "Unequip", "callback": buttons_callback["unequip_item"]}]
+            element_grid.insert(
+                0, [Button(title="Unequip", callback=buttons_callback["unequip_item"])]
             )
         else:
-            entries.insert(
-                0, [{"name": "Equip", "callback": buttons_callback["equip_item"]}]
+            element_grid.insert(
+                0, [Button(title="Equip", callback=buttons_callback["equip_item"])]
             )
 
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
-    item_rect = pygame.Rect(
-        item_button_position[0] - 20,
-        item_button_position[1],
-        ITEM_BUTTON_SIZE[0],
-        ITEM_BUTTON_SIZE[1],
-    )
-
-    return InfoBox(
+    return new_InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        element_grid,
         width=ACTION_MENU_WIDTH,
-        element_linked=item_rect,
-        close_button=lambda: close_function(False),
+        element_linked=item_button_rect
     )
 
 
@@ -1129,7 +1108,8 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            TextElement("ALTERATIONS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(10, 0, 10, 0)),
+            TextElement("ALTERATIONS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN,
+                        margin=(10, 0, 10, 0)),
         ],
     ]
 

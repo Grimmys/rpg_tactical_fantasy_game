@@ -11,7 +11,7 @@ from typing import Sequence, Union, List, Optional, Set, Type
 
 import pygame
 from lxml import etree
-from pygamepopup.components import InfoBox as new_InfoBox, BoxElement
+from pygamepopup.components import InfoBox as new_InfoBox, BoxElement, Button
 from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
@@ -1459,25 +1459,22 @@ class Level:
         End the turn of the active character
         """
         pygame.mixer.Sound.play(self.wait_sfx)
-        self.active_menu = None
         self.selected_item = None
         self.selected_player.end_turn()
         self.selected_player = None
         self.possible_moves = []
         self.possible_attacks = []
         self.possible_interactions = []
-        self.background_menus = []
 
     def open_equipment(self) -> None:
         """
         Handle the opening of the player equipment interface
         """
         equipments = list(self.selected_player.equipments)
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_equipment_menu(self.interact_item, equipments),
-            is_visible_on_background=True,
-            sound=self.armor_sfx,
         )
+        pygame.mixer.Sound.play(self.armor_sfx)
 
     def open_inventory(self) -> None:
         """
@@ -1511,7 +1508,7 @@ class Level:
             if isinstance(entity, entity_kind):
                 self.possible_interactions.append(entity.position)
 
-    def interact_item(self, item: Item, button_position: Position, is_equipped: bool) -> None:
+    def interact_item(self, item: Item, item_button: Button, is_equipped: bool) -> None:
         """
         Handle the interaction with an item from player inventory or equipment
 
@@ -1521,7 +1518,7 @@ class Level:
         is_equipped -- a boolean indicating if the item is equipped or not
         """
         self.selected_item = item
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_item_menu(
                 {
                     "info_item": self.open_selected_item_description,
@@ -1530,11 +1527,10 @@ class Level:
                     "unequip_item": self.unequip_selected_item,
                     "equip_item": self.equip_selected_item,
                 },
-                button_position,
+                item_button.get_rect(),
                 item,
                 is_equipped=is_equipped,
-            ),
-            is_visible_on_background=True,
+            )
         )
 
     def interact_trade_item(
