@@ -1485,13 +1485,12 @@ class Level:
             self.selected_player.items
         )
         items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
-            ),
-            is_visible_on_background=True,
-            sound=self.inventory_sfx,
+            )
         )
+        pygame.mixer.Sound.play(self.inventory_sfx)
 
     def select_interaction_with(self, entity_kind: Type[Entity]) -> None:
         """

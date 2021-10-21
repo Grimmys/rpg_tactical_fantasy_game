@@ -32,7 +32,7 @@ from src.constants import (
     START_MENU_WIDTH,
     ANIMATION_SPEED,
     SCREEN_SIZE,
-    SAVE_SLOTS, TURQUOISE, ITEM_BUTTON_SIZE_EQ,
+    SAVE_SLOTS, TURQUOISE, ITEM_BUTTON_SIZE_EQ, BLACK,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
@@ -57,8 +57,6 @@ from src.gui.info_box import InfoBox
 from src.gui.position import Position
 from src.services.menus import (
     BuyMenu,
-    SellMenu,
-    InventoryMenu,
     TradeMenu,
     ItemMenu,
 )
@@ -123,7 +121,7 @@ def create_inventory_menu(
         items: Sequence[Item],
         gold: int,
         is_to_sell: bool = False,
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of a player inventory.
 
@@ -133,53 +131,53 @@ def create_inventory_menu(
     is_to_sell -- a boolean value indicating if this interface should be for potentially sell items
     to the active shop or if it's only for looking at them
     """
-    entries = []
+    grid_elements = []
     row = []
-    method_id = SellMenu.INTERAC_SELL if is_to_sell else InventoryMenu.INTERAC_ITEM
     for i, item in enumerate(items):
+        additional_lines = []
+        # Test if price should appeared
+        if is_to_sell and item:
+            additional_lines.append(f"Price: {item.resell_price}")
+        item_button = ImageButton(image_path=item.sprite_path if item else None,
+                                  title=str(item) if item else "", size=ITEM_BUTTON_SIZE_EQ,
+                                  disabled=not item,
+                                  frame_background_path="imgs/interface/blue_frame.png",
+                                  frame_background_hover_path="imgs/interface/blue_frame.png",
+                                  background_path="imgs/interface/item_frame.png",
+                                  text_color=BLACK,
+                                  complementary_text_lines=additional_lines)
         if is_to_sell:
-            callback = (
-                lambda button_position, item_reference=item: interaction_callback(
-                    item_reference, button_position
+            item_button.callback = (
+                lambda button=item_button, item_reference=item: interaction_callback(
+                    item_reference, button
                 )
             )
         else:
-            callback = (
-                lambda button_position, item_reference=item: interaction_callback(
-                    item_reference, button_position, is_equipped=False
+            item_button.callback = (
+                lambda button=item_button, item_reference=item: interaction_callback(
+                    item_reference, button, is_equipped=False
                 )
             )
-        entry = {"type": "item_button", "item": item, "index": i, "callback": callback}
-        # Test if price should appeared
-        if is_to_sell and item:
-            entry["price"] = item.resell_price
-        row.append(entry)
+
+        row.append(item_button)
         if len(row) == 2:
-            entries.append(row)
+            grid_elements.append(row)
             row = []
     if row:
-        entries.append(row)
+        grid_elements.append(row)
 
     # Gold at end
-    entry = [
-        {
-            "type": "text",
-            "text": "Your gold : " + str(gold),
-            "font": fonts["ITEM_DESC_FONT"],
-        }
+    gold_text = [
+        TextElement(text=f"Your gold: {gold}", font=fonts["ITEM_DESC_FONT"])
     ]
-    entries.append(entry)
+    grid_elements.append(gold_text)
 
     title = "Shop - Selling" if is_to_sell else "Inventory"
-    menu_id = SellMenu if is_to_sell else InventoryMenu
     title_color = ORANGE if is_to_sell else WHITE
-    return InfoBox(
+    return new_InfoBox(
         title,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=menu_id,
+        grid_elements,
         width=ITEM_MENU_WIDTH,
-        close_button=lambda: close_function(False),
         title_color=title_color,
     )
 
@@ -204,11 +202,12 @@ def create_equipment_menu(
                     equipment = potential_equipment
                     break
             element = ImageButton(image_path=equipment.sprite_path if equipment else None,
-                                  title=str(equipment), size=ITEM_BUTTON_SIZE_EQ,
+                                  title=str(equipment) if equipment else "", size=ITEM_BUTTON_SIZE_EQ,
                                   disabled=not equipment,
                                   frame_background_path="imgs/interface/blue_frame.png",
                                   frame_background_hover_path="imgs/interface/blue_frame.png",
-                                  background_path="imgs/interface/item_frame.png")
+                                  background_path="imgs/interface/item_frame.png",
+                                  text_color=BLACK)
             element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(
                 equipment_reference, button_linked, is_equipped=True)
             row.append(element)
