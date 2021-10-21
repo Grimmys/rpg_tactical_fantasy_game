@@ -1459,6 +1459,7 @@ class Level:
         End the turn of the active character
         """
         pygame.mixer.Sound.play(self.wait_sfx)
+        self.menu_manager.clear_menus()
         self.selected_item = None
         self.selected_player.end_turn()
         self.selected_player = None
