@@ -635,7 +635,7 @@ def load_building(building, from_save, gap_x, gap_y):
                     "quantity": int(item.find("quantity").text.strip()),
                 }
                 stock.append(entry)
-            loaded_building = Shop(name, pos, sprite, None, stock)
+            loaded_building = Shop(name, pos, sprite, interaction_element, stock)
         else:
             print("Error : building type isn't recognized : ", type)
             raise SystemError

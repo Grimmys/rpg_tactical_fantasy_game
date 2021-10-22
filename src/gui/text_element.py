@@ -5,6 +5,7 @@ be centered on an interface.
 
 import pygame
 from pygame.constants import SRCALPHA
+from typing import Tuple
 
 from src.constants import WHITE
 from src.gui.box_element import BoxElement
@@ -95,7 +96,7 @@ class TextElement(BoxElement):
         return final_render
 
     @staticmethod
-    def divide_text(text: str) -> tuple[str, str]:
+    def divide_text(text: str) -> Tuple[str, str]:
         """
         Divide a text in two parts of a similar size, avoiding to cut a word in two.
 

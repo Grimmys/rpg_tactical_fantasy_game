@@ -3,7 +3,7 @@ Defines InfoBox class, an helper to draw any kind of pop-up (menu or informative
 """
 
 from enum import Enum
-from typing import Union, Sequence, List, Type, Callable
+from typing import Union, Sequence, List, Type, Callable, Tuple, Dict
 
 import pygame
 
@@ -90,7 +90,7 @@ class InfoBox:
         self.element_linked: pygame.Rect = element_linked
         self.close_button: Callable = close_button
         self.title_color: pygame.Color = title_color
-        self.separator: dict[str, Union[bool, int]] = {
+        self.separator: Dict[str, Union[bool, int]] = {
             "display": separator,
             "posY": 0,
             "height": 0,
@@ -100,8 +100,8 @@ class InfoBox:
             self.entries, width
         )
         height: int = self.determine_height(close_button)
-        self.size: tuple[int, int] = (width, height)
-        self.position: Union[tuple[int, int], tuple] = self.determine_position()
+        self.size: Tuple[int, int] = (width, height)
+        self.position: Union[Tuple[int, int], tuple] = self.determine_position()
         self.separator["height"] += self.size[1]
         if self.position:
             self.determine_elements_position()
@@ -356,7 +356,7 @@ class InfoBox:
             )
         return height
 
-    def determine_position(self) -> Union[tuple[int, int], tuple]:
+    def determine_position(self) -> Union[Tuple[int, int], tuple]:
         """
         Compute the position of the infoBox to be beside the linked element.
         If no element is linked to the infoBox, the position will be determine at display time
@@ -364,7 +364,7 @@ class InfoBox:
         Return the computed position.
         """
         if self.element_linked:
-            position: list[int, int] = [
+            position: List[int, int] = [
                 self.element_linked.x + self.element_linked.width,
                 self.element_linked.y + self.element_linked.height - self.size[1] // 2,
             ]
@@ -462,7 +462,7 @@ class InfoBox:
                 2,
             )
 
-    def motion(self, position: tuple[int, int]) -> None:
+    def motion(self, position: Tuple[int, int]) -> None:
         """
         Handle the triggering of a motion event.
         Test if the mouse entered in a button or quited one.
@@ -473,7 +473,7 @@ class InfoBox:
         for button in self.buttons:
             button.set_hover(button.get_rect().collidepoint(position))
 
-    def click(self, position: tuple[int, int]) -> Callable:
+    def click(self, position: Tuple[int, int]) -> Callable:
         """
         Handle the triggering of a click event.
         Return the data corresponding of the action that should be done if the click was done

@@ -3,7 +3,7 @@ Defines Equipment class, an item that can be worn
 by specific entities at a specific body part.
 """
 
-from typing import Sequence
+from typing import Sequence, Dict, Tuple
 
 import pygame
 
@@ -55,14 +55,14 @@ class Equipment(Item):
         resistance: int,
         attack: int,
         weight: int,
-        restrictions: dict[str, Sequence[str]],
+        restrictions: Dict[str, Sequence[str]],
     ) -> None:
         super().__init__(name, sprite, description, price)
         self.defense: int = defense
         self.resistance: int = resistance
         self.attack: int = attack
         self.weight: int = weight
-        self.restrictions: dict[str, Sequence[str]] = restrictions
+        self.restrictions: Dict[str, Sequence[str]] = restrictions
         self.body_part: str = body_part
         raw_equipped_sprite: pygame.Surface = pygame.image.load(
             equipped_sprites[0]
@@ -112,7 +112,7 @@ class Equipment(Item):
         return formatted_string[:-2]
 
     def display(
-        self, screen: pygame.Surface, position: tuple[int, int], equipped: bool = False
+        self, screen: pygame.Surface, position: Tuple[int, int], equipped: bool = False
     ) -> None:
         """
         Display the equipment on the given screen.

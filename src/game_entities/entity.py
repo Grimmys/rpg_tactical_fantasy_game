@@ -3,7 +3,7 @@ Defines Entity class, the base class of all game objects that could be display o
 """
 
 import re
-from typing import Union
+from typing import Union, Tuple
 
 import pygame
 from lxml import etree
@@ -34,7 +34,7 @@ class Entity:
         self, name: str, position: Position, sprite: Union[str, pygame.Surface]
     ) -> None:
         self.name: str = name
-        self.position: tuple[int, int] = position
+        self.position: Tuple[int, int] = position
         self.sprite: pygame.Surface = (
             sprite
             if isinstance(sprite, pygame.Surface)

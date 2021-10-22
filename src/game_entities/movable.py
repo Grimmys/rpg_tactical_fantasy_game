@@ -5,7 +5,7 @@ different classes handling the management of entities that can move, only living
 
 from enum import IntEnum, auto, Enum
 import os
-from typing import Union, Sequence, Optional
+from typing import Union, Sequence, Optional, Tuple, List, Dict
 
 import pygame
 from lxml import etree
@@ -113,7 +113,7 @@ class Movable(Destroyable):
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: [int, int],
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,
@@ -263,7 +263,7 @@ class Movable(Destroyable):
         """
         return self._max_moves
 
-    def set_move(self, path: Sequence[tuple[int, int]]) -> None:
+    def set_move(self, path: Sequence[Tuple[int, int]]) -> None:
         """
         Set the current movement of the entity to the one given
 
@@ -323,7 +323,7 @@ class Movable(Destroyable):
         """
         self.alterations.append(alteration)
 
-    def get_alterations_effect(self, eff: str) -> list[Alteration]:
+    def get_alterations_effect(self, eff: str) -> List[Alteration]:
         """
         Return the list of effects suffered by the entity.
         """
@@ -427,7 +427,7 @@ class Movable(Destroyable):
                 return self.items.pop(index)
         return -1
 
-    def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
+    def use_item(self, item: Consumable) -> Tuple[bool, Sequence[str]]:
         """
         Consume the given item.
         Return whether the item has been used or not and
@@ -461,7 +461,7 @@ class Movable(Destroyable):
         return True
 
     def act(
-        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
+        self, possible_moves: Dict[Position, int], targets: Dict[Entity, int]
     ) -> Optional[Position]:
         """
         Determine what action should be done by the entity controlled by AI.
@@ -485,7 +485,7 @@ class Movable(Destroyable):
             self.end_turn()
         return None
 
-    def determine_attack(self, targets: Sequence[Entity]) -> Optional[tuple[int, int]]:
+    def determine_attack(self, targets: Sequence[Entity]) -> Optional[Tuple[int, int]]:
         """
         Determine which entity should be attacked by the entity controlled by AI.
 
@@ -494,7 +494,7 @@ class Movable(Destroyable):
         Keyword arguments:
         targets -- the sequence of entities that could be attacked
         """
-        temporary_attack: Optional[tuple[int, int]] = None
+        temporary_attack: Optional[Tuple[int, int]] = None
         for distance in self.reach:
             for target in targets:
                 if (
@@ -507,7 +507,7 @@ class Movable(Destroyable):
                     temporary_attack = target.position
         return temporary_attack
 
-    def determine_move(self, possible_moves: dict[Position, int], targets: dict[Entity, int]) -> Position:
+    def determine_move(self, possible_moves: Dict[Position, int], targets: Dict[Entity, int]) -> Position:
         """
         Determine which movement should be selected by the entity controlled by AI.
         Change the current target of the entity if needed.
@@ -519,7 +519,7 @@ class Movable(Destroyable):
         with their associated distance from the entity
         targets -- the collection of entities that could be attacked with their associated distance from the entity
         """
-        self.target: Optional[tuple[int, int]] = None
+        self.target: Optional[Tuple[int, int]] = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target, dist in targets.items():
                 for distance in self.reach:
