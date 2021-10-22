@@ -4,7 +4,7 @@ Defines Foe class, an hostile entity which targets players and allies.
 
 import random as rd
 from enum import Enum, auto
-from typing import Union, Sequence, Optional
+from typing import Union, Sequence, Optional, Dict, Tuple, List
 
 import pygame
 from lxml import etree
@@ -60,7 +60,7 @@ class Foe(Movable):
     keywords -- the sequence of keywords designating the foe
     """
 
-    grow_rates: dict[str, dict[str, Sequence[int]]] = {}
+    grow_rates: Dict[str, Dict[str, Sequence[int]]] = {}
 
     def __init__(
         self,
@@ -76,7 +76,7 @@ class Foe(Movable):
         strategy: str,
         reach: Sequence[int],
         xp_gain: int,
-        loot: Sequence[tuple[Item, float]],
+        loot: Sequence[Tuple[Item, float]],
         keywords: Optional[Sequence[Keyword]] = None,
         lvl: int = 1,
         alterations: Optional[Sequence[Alteration]] = None,
@@ -97,7 +97,7 @@ class Foe(Movable):
         )
         self.reach: Sequence[int] = reach
         self.xp_gain: int = int(xp_gain * (1.1 ** (lvl - 1)))
-        self.potential_loot: Sequence[tuple[Item, float]] = loot
+        self.potential_loot: Sequence[Tuple[Item, float]] = loot
         self.keywords: Sequence[Keyword] = [] if keywords is None else keywords
 
     def stats_up(self, levels_earned: int = 1) -> None:
@@ -107,7 +107,7 @@ class Foe(Movable):
         Keyword arguments:
         levels_earned -- the number of times the stats should be upgraded
         """
-        grow_rates: dict[str, Sequence[int]] = Foe.grow_rates[self.name]
+        grow_rates: Dict[str, Sequence[int]] = Foe.grow_rates[self.name]
         for _ in range(levels_earned):
             self.hit_points_max += rd.choice(grow_rates["hp"])
             self.defense += rd.choice(grow_rates["def"])
@@ -121,7 +121,7 @@ class Foe(Movable):
 
         Return the loot list
         """
-        loot: list[Item] = []
+        loot: List[Item] = []
         for (item, probability) in self.potential_loot:
             if rd.random() < probability:
                 loot.append(item)

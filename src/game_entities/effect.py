@@ -3,6 +3,7 @@ Defines Effect class, corresponding to the application of a specific effect to a
 """
 
 from lxml import etree
+from typing import Tuple
 
 from src.game_entities.alteration import Alteration
 from src.game_entities.destroyable import Destroyable
@@ -55,7 +56,7 @@ class Effect:
                 self.name, abbr, self.power, self.duration, desc, durable_effects
             )
 
-    def apply_on_ent(self, entity: Destroyable) -> tuple[bool, str]:
+    def apply_on_ent(self, entity: Destroyable) -> Tuple[bool, str]:
         """
         Apply the effect to the given entity.
         Return whether the effect has correctly been applied or not and the message that should be displayed to the

@@ -4,7 +4,7 @@ accomplished by the player during a level.
 """
 
 from enum import Enum, auto
-from typing import Sequence, Union, List, Optional
+from typing import Sequence, Union, List, Optional, Tuple, Dict
 
 from src.constants import TILE_SIZE
 from src.game_entities.entity import Entity
@@ -53,7 +53,7 @@ class Mission:
         self,
         is_main: bool,
         nature: MissionType,
-        positions: Sequence[tuple[int, int]],
+        positions: Sequence[Tuple[int, int]],
         description: str,
         nb_players: int,
         turn_limit: int = None,
@@ -64,7 +64,7 @@ class Mission:
             items_reward = []
         self.main: bool = is_main
         self.type: MissionType = nature
-        self.positions: Sequence[tuple[int, int]] = positions
+        self.positions: Sequence[Tuple[int, int]] = positions
         self.description: str = description
         self.ended: bool = self.type is MissionType.TURN_LIMIT
         self.turn_limit: int = turn_limit
@@ -74,7 +74,7 @@ class Mission:
         self.min_chars: int = nb_players
         self.succeeded_chars: List[Player] = []
 
-    def is_position_valid(self, position: tuple[int, int]) -> bool:
+    def is_position_valid(self, position: Tuple[int, int]) -> bool:
         """
         Determine whether the mission can be accomplished from the given position or not.
         Return the result of the computation.
@@ -97,7 +97,7 @@ class Mission:
     def update_state(
         self,
         player: Player = None,
-        entities: dict[str, Sequence[Entity]] = None,
+        entities: Dict[str, Sequence[Entity]] = None,
         turns: int = 0,
     ) -> bool:
         """

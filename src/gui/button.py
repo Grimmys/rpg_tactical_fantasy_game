@@ -2,7 +2,7 @@
 Defines Button class, a BoxElement able to react to user actions.
 """
 from enum import Enum
-from typing import List, Union, Callable
+from typing import List, Union, Callable, Tuple
 
 import pygame
 
@@ -40,7 +40,7 @@ class Button(BoxElement):
     def __init__(
         self,
         callback: Union[Enum, Callable],
-        size: tuple[int, int],
+        size: Tuple[int, int],
         position: Position,
         sprite: pygame.Surface,
         sprite_hover: pygame.Surface,
@@ -49,7 +49,7 @@ class Button(BoxElement):
     ) -> None:
         super().__init__(position, None, margin)
         self.callback: Union[Enum, Callable] = callback
-        self.size: tuple[int, int] = size
+        self.size: Tuple[int, int] = size
         self.sprite = sprite
         self.sprite_hover = sprite_hover
         self.content = self.sprite

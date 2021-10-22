@@ -2,7 +2,7 @@
 Define functions creating a specific menu enveloping data from parameters.
 """
 
-from typing import Sequence, Union, Callable
+from typing import Sequence, Union, Callable, Dict
 
 import pygame
 
@@ -79,7 +79,7 @@ close_function: Union[Callable, None] = None
 
 def create_shop_menu(
     interaction_callback: Callable,
-    stock: Sequence[dict[str, Union[Item, int]]],
+    stock: Sequence[Dict[str, Union[Item, int]]],
     gold: int,
 ) -> InfoBox:
     """
@@ -235,7 +235,7 @@ def create_equipment_menu(
 
 
 def create_trade_menu(
-    buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
+    buttons_callback: Dict[str, Callable], first_player: Player, second_player: Player
 ) -> InfoBox:
     """
     Return the interface for a trade between two players
@@ -396,7 +396,7 @@ def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
 
 
 def create_status_menu(
-    buttons_callback: dict[str, Callable], player: Player
+    buttons_callback: Dict[str, Callable], player: Player
 ) -> InfoBox:
     """
     Return the interface resuming the status of a player.
@@ -579,7 +579,7 @@ def create_status_menu(
 
 
 def create_player_menu(
-    buttons_callback: dict[str, Callable],
+    buttons_callback: Dict[str, Callable],
     player: Player,
     buildings: Sequence[Building],
     interactable_entities: Sequence[Entity],
@@ -766,7 +766,7 @@ def create_diary_menu(entries: Entries) -> InfoBox:
 
 
 def create_main_menu(
-    buttons_callback: dict[str, Callable],
+    buttons_callback: Dict[str, Callable],
     is_initialization_phase: bool,
     position: Position,
 ) -> InfoBox:
@@ -806,7 +806,7 @@ def create_main_menu(
 
 
 def create_item_shop_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+    buttons_callback: Dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
@@ -839,7 +839,7 @@ def create_item_shop_menu(
 
 
 def create_item_sell_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+    buttons_callback: Dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory and can be sold in a shop.
@@ -872,7 +872,7 @@ def create_item_sell_menu(
 
 
 def create_trade_item_menu(
-    buttons_callback: dict[str, Callable],
+    buttons_callback: Dict[str, Callable],
     item_button_position: Position,
     item: Item,
     players: Sequence[Player],
@@ -923,7 +923,7 @@ def create_trade_item_menu(
 
 
 def create_item_menu(
-    buttons_callback: dict[str, Callable],
+    buttons_callback: Dict[str, Callable],
     item_button_position: Position,
     item: Item,
     is_equipped: bool = False,
@@ -1320,7 +1320,7 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     )
 
 
-def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
+def create_event_dialog(dialog_element: Dict[str, any]) -> InfoBox:
     """
     Return the interface of a dialog.
 
@@ -1373,7 +1373,7 @@ def create_reward_menu(mission: Mission) -> InfoBox:
     )
 
 
-def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
+def create_start_menu(buttons_callback: Dict[str, Callable]) -> InfoBox:
     """
     Return the interface of the main menu of the game (in the start screen).
     """
@@ -1399,7 +1399,7 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
 
 def load_parameter_entry(
     formatted_name: str,
-    values: Sequence[dict[str, int]],
+    values: Sequence[Dict[str, int]],
     current_value: int,
     edit_parameter_callback: Callable,
 ) -> Entry:
@@ -1428,7 +1428,7 @@ def load_parameter_entry(
 
 
 def create_options_menu(
-    parameters: dict[str, int], modify_option_function: Callable
+    parameters: Dict[str, int], modify_option_function: Callable
 ) -> InfoBox:
     """
     Return the interface of the game options menu.

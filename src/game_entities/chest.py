@@ -5,7 +5,7 @@ or items.
 
 import os
 import random
-from typing import Sequence, List, Optional
+from typing import Sequence, List, Optional, Tuple
 
 import pygame
 from lxml import etree
@@ -43,10 +43,10 @@ class Chest(Entity):
 
     def __init__(
         self,
-        position: tuple[int, int],
+        position: Tuple[int, int],
         sprite_close: str,
         sprite_open: str,
-        potential_items: Sequence[tuple[Item, float]],
+        potential_items: Sequence[Tuple[Item, float]],
     ) -> None:
         super().__init__("Chest", position, sprite_close)
         self.sprite_close_link: str = sprite_close
@@ -62,7 +62,7 @@ class Chest(Entity):
         )
 
     @staticmethod
-    def determine_item(potential_items: Sequence[tuple[Item, float]]) -> Item:
+    def determine_item(potential_items: Sequence[Tuple[Item, float]]) -> Item:
         """
         Determine randomly which item will be contained by the chest
 

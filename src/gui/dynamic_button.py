@@ -5,7 +5,7 @@ Generally use as a parameter button.
 """
 
 from enum import Enum
-from typing import Sequence, List, Callable
+from typing import Sequence, List, Callable, Tuple
 
 import pygame
 
@@ -50,7 +50,7 @@ class DynamicButton(Button):
     def __init__(
         self,
         callback: Callable,
-        size: tuple[int, int],
+        size: Tuple[int, int],
         position: Position,
         sprite: pygame.Surface,
         sprite_hover: pygame.Surface,

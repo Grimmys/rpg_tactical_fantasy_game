@@ -2,7 +2,7 @@
 Defines ItemButton class, a special Button used to represent items on an interface.
 """
 
-from typing import Callable
+from typing import Callable, Tuple
 
 import pygame
 
@@ -44,7 +44,7 @@ class ItemButton(Button):
     def __init__(
         self,
         callback,
-        size: tuple[int, int],
+        size: Tuple[int, int],
         position: Position,
         item: Item,
         margin: Margin,
@@ -64,7 +64,7 @@ class ItemButton(Button):
 
         padding: int = size[1] // 10
         frame_position: Position = (padding, padding)
-        frame_size: tuple[int, int] = (size[1] - padding * 2, size[1] - padding * 2)
+        frame_size: Tuple[int, int] = (size[1] - padding * 2, size[1] - padding * 2)
         frame: pygame.Surface = pygame.transform.scale(
             pygame.image.load(FRAME_SPRITE).convert_alpha(), frame_size
         )
