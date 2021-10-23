@@ -6,6 +6,7 @@ import os
 
 import pygame
 from lxml import etree
+from typing import Tuple, Dict
 
 from src.constants import GREEN
 from src.game_entities.character import Character
@@ -43,13 +44,13 @@ class Building(Entity):
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: Tuple[int, int],
         sprite: str,
-        interaction: dict[str, any] = None,
+        interaction: Dict[str, any] = None,
     ) -> None:
         super().__init__(name, position, sprite)
         self.sprite_link: str = sprite
-        self.interaction: dict[str, any] = interaction
+        self.interaction: Dict[str, any] = interaction
         self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "door.ogg")
         )

@@ -3,13 +3,13 @@ Defines BoxElement class, useful for drawing elements.
 All other GUI elements inherit from this class.
 """
 
-from typing import Union
+from typing import Union, Tuple
 
 import pygame
 
 from src.gui.position import Position
 
-Margin = tuple[int, int, int, int]
+Margin = Tuple[int, int, int, int]
 
 
 class BoxElement:

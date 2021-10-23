@@ -5,6 +5,7 @@ Generally, this class helps to represent breakable walls.
 
 import pygame
 from lxml import etree
+from typing import Tuple
 
 from src.game_entities.destroyable import Destroyable
 from src.gui.constant_sprites import constant_sprites
@@ -29,7 +30,7 @@ class Breakable(Destroyable):
 
     def __init__(
         self,
-        position: tuple[int, int],
+        position: Tuple[int, int],
         sprite: str,
         hit_points: int,
         defense: int,
