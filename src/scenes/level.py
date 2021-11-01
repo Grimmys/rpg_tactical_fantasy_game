@@ -1432,13 +1432,12 @@ class Level:
         """
         Let the player select the foe to attack for the active character
         """
-        self.background_menus.append((self.active_menu, False))
+        self.menu_manager.close_active_menu()
         self.selected_player.choose_target()
         self.possible_attacks = self.get_possible_attacks(
             [self.selected_player.position], self.selected_player.reach, True
         )
         self.possible_interactions = []
-        self.active_menu = None
 
     def open_status_interface(self) -> None:
         """
