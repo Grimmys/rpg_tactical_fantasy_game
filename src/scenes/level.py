@@ -2093,8 +2093,9 @@ class Level:
                 self.possible_moves = {}
             elif self.menu_manager.active_menu is not None:
                 # Test if player is on character's main menu, in this case,
-                # current move should be cancelled if possible
-                if self.menu_manager.active_menu.type == "character_menu":
+                # current move should be cancelled if possible*
+                # TODO: Find a better way to test if active menu is the character's main menu
+                if self.menu_manager.active_menu.title == "Select an action":
                     if self.selected_player.cancel_move():
                         if self.turn_items is not None:
                             for item in self.turn_items:
@@ -2108,7 +2109,7 @@ class Level:
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
-                        self.active_menu = None
+                        self.menu_manager.clear_menus()
                     return
                 self.menu_manager.close_active_menu()
             # Want to cancel an interaction (not already performed)
