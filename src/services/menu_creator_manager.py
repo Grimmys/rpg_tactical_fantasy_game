@@ -876,7 +876,7 @@ def create_item_description_menu(item: Item) -> new_InfoBox:
     )
 
 
-def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
+def create_alteration_info_menu(alteration: Alteration) -> new_InfoBox:
     """
     Return the interface for the description of an alteration.
 
@@ -884,32 +884,20 @@ def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
     alteration -- the concerned alteration
     """
     turns_left = alteration.get_turns_left()
-    entries = [
+    grid_elements = [
         [
-            {
-                "type": "text",
-                "text": alteration.description,
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (20, 0, 20, 0),
-            }
+            TextElement(alteration.description, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0)),
         ],
         [
-            {
-                "type": "text",
-                "text": f"Turns left : {turns_left}",
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (0, 0, 10, 0),
-                "color": ORANGE,
-            }
+            TextElement(f"Turns left: {turns_left}", font=fonts["ITEM_DESC_FONT"], margin=(0, 0, 10, 0),
+                        text_color=ORANGE),
         ],
     ]
 
-    return InfoBox(
+    return new_InfoBox(
         str(alteration),
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 

@@ -1927,9 +1927,8 @@ class Level:
         Keyword arguments:
         alteration -- the concerned alteration
         """
-        self.open_menu(
-            menu_creator_manager.create_alteration_info_menu(alteration),
-            is_visible_on_background=True,
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_alteration_info_menu(alteration)
         )
 
     def begin_turn(self) -> None:
@@ -2009,7 +2008,6 @@ class Level:
                                 self.selected_player.attack_kind,
                             )
                             # Turn is finished
-                            self.background_menus = []
                             self.selected_player.end_turn()
                             self.selected_player = None
                             return
