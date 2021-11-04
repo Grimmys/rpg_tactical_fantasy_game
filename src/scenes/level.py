@@ -1671,6 +1671,7 @@ class Level:
                 self.interact_item, equipments
             )
         else:
+            self.selected_player.remove_item(self.selected_item)
             free_spaces: int = self.selected_player.nb_items_max - len(
                 self.selected_player.items
             )
@@ -1678,25 +1679,20 @@ class Level:
             new_items_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
             )
-        # Update the inventory menu (i.e. first menu backward)
-        self.background_menus[len(self.background_menus) - 1] = (new_items_menu, True)
-        entries = [
+        # Refresh the inventory menu (i.e. second menu backward)
+        self.menu_manager.close_active_menu()
+        self.menu_manager.close_active_menu()
+        self.menu_manager.open_menu(new_items_menu)
+        grid_elements = [
             [
-                {
-                    "type": "text",
-                    "text": "Item has been thrown away.",
-                    "font": fonts["ITEM_DESC_FONT"],
-                    "margin": (20, 0, 20, 0),
-                }
+                TextElement("Item has been thrown away", font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.active_menu = InfoBox(
+        self.menu_manager.open_menu(new_InfoBox(
             str(self.selected_item),
-            "imgs/interface/PopUpMenu.png",
-            entries,
+            grid_elements,
             width=ITEM_DELETE_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(False),
-        )
+        ))
 
     def try_sell_selected_item(self) -> None:
         """
