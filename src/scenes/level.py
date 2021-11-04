@@ -11,7 +11,7 @@ from typing import Sequence, Union, List, Optional, Set, Type
 
 import pygame
 from lxml import etree
-from pygamepopup.components import InfoBox as new_InfoBox, BoxElement, Button
+from pygamepopup.components import InfoBox as new_InfoBox, BoxElement, Button, TextElement
 from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
@@ -439,8 +439,17 @@ class Level:
             return None
 
         if self.selected_player:
-            if self.selected_player.move():
-                # If movement is finished
+            print("BEGIN LOGS")
+            print(self.possible_attacks)
+            print(self.possible_interactions)
+            print(self.selected_player.is_waiting_post_action())
+            print(self.selected_player.state)
+            print(self.selected_player.is_waiting_post_action() and not self.possible_attacks \
+                  and not self.possible_interactions)
+            print("END LOGS")
+            self.selected_player.move()
+            if self.selected_player.is_waiting_post_action() and not self.possible_attacks \
+                    and not self.possible_interactions:
                 self.open_player_menu()
             return None
 
@@ -886,6 +895,9 @@ class Level:
         # Since player chose his interaction, possible interactions should be reset
         self.possible_interactions = []
 
+        # The player is no longer waiting for a target
+        self.selected_player.target_selected()
+
         # Check if target is an empty pos
         if not target:
             if self.wait_for_teleportation_destination:
@@ -1000,14 +1012,14 @@ class Level:
             self.background_menus = []
         # Check if player tries to trade with another player
         elif isinstance(target, Player):
-            self.active_menu = menu_creator_manager.create_trade_menu(
+            self.menu_manager.open_menu(menu_creator_manager.create_trade_menu(
                 {
                     "interact_item": self.interact_trade_item,
                     "send_gold": self.send_gold,
                 },
                 self.selected_player,
                 target,
-            )
+            ))
         # Check if player tries to talk to a character
         elif isinstance(target, Character):
             pygame.mixer.Sound.play(self.talk_sfx)
@@ -1346,7 +1358,7 @@ class Level:
                             if mission.main and mission.ended:
                                 self.victory = True
                             # Turn is finished
-                            self.menu_manager.close_menu()
+                            self.menu_manager.close_active_menu()
                             self.menu_manager.background_menus.clear()
                             self.selected_player.end_turn()
                             self.selected_player = None
@@ -1499,8 +1511,7 @@ class Level:
         Keyword arguments:
         entity_kind -- the nature of entity for which the player should select an interaction
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = None
+        self.menu_manager.close_active_menu()
         self.selected_player.choose_target()
         self.possible_interactions = []
         for entity in self.get_next_cases(self.selected_player.position):
@@ -1535,7 +1546,7 @@ class Level:
     def interact_trade_item(
             self,
             item: Item,
-            button_position: Position,
+            button: Button,
             players: Sequence[Player],
             is_first_player_owner: bool,
     ) -> None:
@@ -1550,18 +1561,17 @@ class Level:
         owner of the item
         """
         self.selected_item = item
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_trade_item_menu(
                 {
                     "info_item": self.open_selected_item_description,
                     "trade_item": self.trade_item,
                 },
-                button_position,
+                button.position,
                 item,
                 players,
                 is_first_player_owner,
             ),
-            is_visible_on_background=True,
         )
 
     def trade_item(
@@ -1581,20 +1591,15 @@ class Level:
         receiver: Player = second_player if is_first_player_owner else first_player
         # Add item if possible
         added: bool = receiver.set_item(self.selected_item)
+        self.menu_manager.close_active_menu()
         if not added:
-            entries = [
+            grid_elements = [
                 [
-                    {
-                        "type": "text",
-                        "text": f"Item can't be traded : not enough place in {receiver}'s "
-                                f"inventory .",
-                        "font": fonts["ITEM_DESC_FONT"],
-                        "margin": (20, 0, 20, 0),
-                    }
+                    TextElement(f"Item can't be traded: not enough place in {receiver}'s inventory",
+                                font=fonts["ITEM_DESC_FONT"],
+                                margin=(20, 0, 20, 0))
                 ]
             ]
-
-            self.background_menus.append((self.active_menu, False))
         else:
             # Remove item from owner inventory according to index
             owner.remove_item(self.selected_item)
@@ -1608,29 +1613,22 @@ class Level:
                 second_player,
             )
             # Update the inventory menu (i.e. first menu backward)
-            self.background_menus[len(self.background_menus) - 1] = (
-                new_trade_menu,
-                True,
-            )
+            self.menu_manager.close_active_menu()
+            self.menu_manager.open_menu(new_trade_menu)
 
-            entries = [
+            grid_elements = [
                 [
-                    {
-                        "type": "text",
-                        "text": "Item has been traded.",
-                        "font": fonts["ITEM_DESC_FONT"],
-                        "margin": (20, 0, 20, 0),
-                    }
+                    TextElement("Item has been traded",
+                                font=fonts["ITEM_DESC_FONT"],
+                                margin=(20, 0, 20, 0)),
                 ]
             ]
         self.turn_items.append([self.selected_item, owner, receiver])
-        self.active_menu = InfoBox(
+        self.menu_manager.open_menu(new_InfoBox(
             str(self.selected_item),
-            "imgs/interface/PopUpMenu.png",
-            entries,
+            grid_elements,
             width=ITEM_DELETE_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(False),
-        )
+        ))
 
     def send_gold(
             self,
@@ -1653,11 +1651,12 @@ class Level:
         sender: Player = first_player if is_first_player_sender else second_player
         receiver: Player = second_player if is_first_player_sender else first_player
         Player.trade_gold(sender, receiver, value)
-        self.active_menu = menu_creator_manager.create_trade_menu(
+        self.menu_manager.close_active_menu()
+        self.menu_manager.open_menu(menu_creator_manager.create_trade_menu(
             {"interact_item": self.interact_trade_item, "send_gold": self.send_gold},
             first_player,
             second_player,
-        )
+        ))
 
     def throw_selected_item(self) -> None:
         """

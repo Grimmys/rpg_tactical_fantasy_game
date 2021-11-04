@@ -56,7 +56,6 @@ from src.gui.info_box import InfoBox
 from src.gui.position import Position
 from src.services.menus import (
     BuyMenu,
-    TradeMenu,
     ItemMenu,
 )
 
@@ -239,122 +238,76 @@ def create_trade_menu(
     free_spaces = items_max - len(items_second)
     items_second += [None] * free_spaces
 
-    entries = []
-    method_id = TradeMenu.INTERAC_ITEM
+    grid_elements = []
     # We assume that first player and second player items lists have the same size and are even
     for i in range(len(items_first) // 2):
         row = []
         for owner_i, items in enumerate([items_first, items_second]):
             for j in range(2):
-                entry = {
-                    "type": "item_button",
-                    "item": items[i * 2 + j],
-                    "index": i,
-                    "subtype": "trade",
-                    "callback": lambda button_position, item_reference=items[
-                        i * 2 + j
-                        ], owner=owner_i: buttons_callback["interact_item"](
-                        item_reference,
-                        button_position,
-                        [first_player, second_player],
-                        owner == 0,
-                    ),
-                }
-                row.append(entry)
-        entries.append(row)
+                item_button = ImageButton(
+                    image_path=items[i * 2 + j].sprite_path if items[i * 2 + j] else None,
+                    title=str(items[i * 2 + j]) if items[i * 2 + j] else "",
+                    size=ITEM_BUTTON_SIZE_EQ,
+                    disabled=not items[i * 2 + j],
+                    frame_background_path="imgs/interface/blue_frame.png",
+                    frame_background_hover_path="imgs/interface/blue_frame.png",
+                    background_path="imgs/interface/item_frame.png",
+                    text_color=BLACK,
+                )
+                item_button.callback = lambda button=item_button, item_reference=items[
+                    i * 2 + j
+                    ], owner=owner_i: buttons_callback["interact_item"](
+                    item_reference,
+                    button,
+                    [first_player, second_player],
+                    owner == 0,
+                )
+                row.append(item_button)
+        grid_elements.append(row)
 
     # Buttons to trade gold
-    method_id = TradeMenu.SEND_GOLD
-    entry = [
-        {
-            "type": "button",
-            "name": "50G ->",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, True, 50
-            ),
-        },
-        {
-            "type": "button",
-            "name": "200G ->",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, True, 200
-            ),
-        },
-        {
-            "type": "button",
-            "name": "All ->",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, True, first_player.gold
-            ),
-        },
-        {
-            "type": "button",
-            "name": "<- 50G",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, False, 50
-            ),
-        },
-        {
-            "type": "button",
-            "name": "<- 200G",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, False, 200
-            ),
-        },
-        {
-            "type": "button",
-            "name": "<- All",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, False, second_player.gold
-            ),
-        },
+    trade_gold_row = [
+        Button(title="50G ->", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, True, 50
+               )),
+        Button(title="200G ->", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, True, 200
+               )),
+        Button(title="All ->", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, True, first_player.gold
+               )),
+        Button(title="<- 50G", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, False, 50
+               )),
+        Button(title="<- 200G", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, False, 200
+               )),
+        Button(title="<- All", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, False, second_player.gold
+               )),
     ]
-    entries.append(entry)
+    grid_elements.append(trade_gold_row)
 
     # Gold at end
-    entry = [
-        {
-            "type": "text",
-            "text": str(first_player) + "'s gold : " + str(first_player.gold),
-            "font": fonts["ITEM_DESC_FONT"],
-        },
-        {
-            "type": "text",
-            "text": str(second_player) + "'s gold : " + str(second_player.gold),
-            "font": fonts["ITEM_DESC_FONT"],
-        },
+    gold_row = [
+        TextElement(f"{first_player}'s gold: {first_player.gold}", font=fonts["ITEM_DESC_FONT"]),
+        TextElement(f"{second_player}'s gold: {second_player.gold}", font=fonts["ITEM_DESC_FONT"]),
     ]
-    entries.append(entry)
+    grid_elements.append(gold_row)
 
     title = "Trade"
-    menu_id = TradeMenu
     title_color = WHITE
-    return InfoBox(
+    return new_InfoBox(
         title,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=menu_id,
+        grid_elements,
         width=TRADE_MENU_WIDTH,
-        close_button=lambda: close_function(False),
-        separator=True,
+        has_vertical_separator=True,
         title_color=title_color,
     )
 
@@ -753,7 +706,7 @@ def create_trade_item_menu(
         item: Item,
         players: Sequence[Player],
         is_first_player_owner: bool,
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of an item that is in a player inventory
     and can be trade to another player.
@@ -763,22 +716,16 @@ def create_trade_item_menu(
     item -- the concerned item
     players -- the two players that are currently involve in the trade
     """
-    entries = [
-        [{"name": "Info", "callback": buttons_callback["info_item"]}],
+    grid_elements = [
         [
-            {
-                "name": "Trade",
-                "callback": lambda: buttons_callback["trade_item"](
-                    players[0], players[1], is_first_player_owner
-                ),
-            }
-        ],
+            Button(title="Info",
+                   callback=buttons_callback["info_item"])
+        ], [
+            Button(title="Trade",
+                   callback=lambda: buttons_callback["trade_item"](players[0], players[1], is_first_player_owner))
+        ]
     ]
     formatted_item_name = str(item)
-
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
 
     item_rect = pygame.Rect(
         item_button_position[0] - 20,
@@ -787,14 +734,11 @@ def create_trade_item_menu(
         ITEM_BUTTON_SIZE[1],
     )
 
-    return InfoBox(
+    return new_InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        grid_elements,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button=lambda: close_function(False),
     )
 
 
