@@ -12,6 +12,7 @@ from typing import Sequence, Union, List, Optional, Set, Type
 import pygame
 from lxml import etree
 from pygamepopup.components import InfoBox as new_InfoBox, BoxElement, Button, TextElement
+from pygamepopup.components.image_button import ImageButton
 from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
@@ -23,7 +24,7 @@ from src.constants import (
     ORANGE,
     ITEM_DELETE_MENU_WIDTH,
     ITEM_INFO_MENU_WIDTH,
-    TILE_SIZE,
+    TILE_SIZE, BLACK,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
@@ -54,7 +55,6 @@ from src.gui.constant_sprites import (
     INTERACTION_OPACITY,
     constant_sprites,
 )
-from src.gui.entries import Entry, Entries
 from src.gui.fonts import fonts
 from src.gui.info_box import InfoBox
 from src.gui.position import Position
@@ -161,7 +161,7 @@ class Level:
             players = []
 
         Shop.interaction_callback = self.interact_item_shop
-        Shop.buy_interface_callback = lambda: self.open_menu(self.active_shop.menu)
+        Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(self.active_shop.menu)
         Shop.sell_interface_callback = self.open_sell_interface
 
         # Store directory path if player wants to save and exit game
@@ -768,32 +768,32 @@ class Level:
             actor.set_item(item)
 
         # TODO: move the creation of the pop-up in menu_creator_manager
-        entry_item: Entry = {
-            "type": "item_button",
-            "item": item,
-            "index": -1,
-            "disabled": True,
-            "callback": lambda button_position, item_reference=item: self.interact_item(
-                item_reference, button_position, is_equipped=False
-            ),
-        }
-        entries: Entries = [
-            [entry_item],
+        item_element = ImageButton(
+            image_path=item.sprite_path,
+            title=str(item),
+            disabled=True,
+            frame_background_path="imgs/interface/blue_frame.png",
+            frame_background_hover_path="imgs/interface/blue_frame.png",
+            background_path="imgs/interface/item_frame.png",
+            text_color=BLACK
+        )
+        item_element.callback = lambda button=item_element, item_reference=item: self.interact_item(
+            item_reference, button, is_equipped=False
+        )
+        element_grid = [
+            [item_element],
             [
-                {
-                    "type": "text",
-                    "text": "Item has been added to your inventory",
-                    "font": fonts["ITEM_DESC_FONT"],
-                }
+                TextElement("Item has been added to your inventory", font=fonts["ITEM_DESC_FONT"])
             ],
         ]
-        self.active_menu = InfoBox(
+
+        self.menu_manager.open_menu(new_InfoBox(
             "You found in the chest",
-            "imgs/interface/PopUpMenu.png",
-            entries,
+            element_grid,
             width=ITEM_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(True),
-        )
+        ))
+
+        self.end_active_character_turn(clear_menus=False)
 
     def open_door(self, door: Door) -> None:
         """
@@ -1352,23 +1352,20 @@ class Level:
                 has_key = True
                 break
         if not has_key:
-            info_box = InfoBox(
+            info_box = new_InfoBox(
                 "You have no key to open a chest",
-                "imgs/interface/PopUpMenu.png",
                 [],
                 width=ITEM_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(False),
             )
-            self.open_menu(info_box, is_visible_on_background=True)
+            self.menu_manager.open_menu(info_box)
         else:
+            self.menu_manager.clear_menus()
             self.selected_player.current_action = CharacterMenu.OPEN_CHEST
-            self.background_menus.append((self.active_menu, False))
-            self.active_menu = None
             self.selected_player.choose_target()
             self.possible_interactions = []
-            for ent in self.get_next_cases(self.selected_player.position):
-                if isinstance(ent, Chest) and not ent.opened:
-                    self.possible_interactions.append(ent.position)
+            for entity in self.get_next_cases(self.selected_player.position):
+                if isinstance(entity, Chest) and not entity.opened:
+                    self.possible_interactions.append(entity.position)
 
     def select_attack_target(self):
         """
