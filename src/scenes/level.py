@@ -1070,7 +1070,7 @@ class Level:
                         + " parried !"
                 )
                 self.diary_entries.append(
-                    [{"type": "text", "text": message, "font": fonts["ITEM_DESC_FONT"]}]
+                    [TextElement(message, font=fonts["ITEM_DESC_FONT"])]
                 )
                 continue
 
@@ -1080,15 +1080,11 @@ class Level:
             )
             self.diary_entries.append(
                 [
-                    {
-                        "type": "text",
-                        "text": str(attacker)
+                    TextElement(str(attacker)
                                 + " dealt "
                                 + str(real_damage)
                                 + " damage to "
-                                + str(target),
-                        "font": fonts["ITEM_DESC_FONT"],
-                    }
+                                + str(target), font=fonts["ITEM_DESC_FONT"])
                 ]
             )
             # XP gain for dealt damage
@@ -1101,11 +1097,7 @@ class Level:
 
                 self.diary_entries.append(
                     [
-                        {
-                            "type": "text",
-                            "text": str(target) + " died !",
-                            "font": fonts["ITEM_DESC_FONT"],
-                        }
+                        TextElement(str(target) + " died!", font=fonts["ITEM_DESC_FONT"])
                     ]
                 )
                 # Loot
@@ -1115,11 +1107,7 @@ class Level:
                     for item in loot:
                         self.diary_entries.append(
                             [
-                                {
-                                    "type": "text",
-                                    "text": f"{target} dropped {item}",
-                                    "font": fonts["ITEM_DESC_FONT"],
-                                }
+                                TextElement(f"{target} dropped {item}", font=fonts["ITEM_DESC_FONT"])
                             ]
                         )
                         if isinstance(item, Gold):
@@ -1127,23 +1115,15 @@ class Level:
                         elif not attacker.set_item(item):
                             self.diary_entries.append(
                                 [
-                                    {
-                                        "type": "text",
-                                        "text": "But there is not enough space "
-                                                "in inventory to take it !",
-                                        "font": fonts["ITEM_DESC_FONT"],
-                                    }
+                                    TextElement("But there is not enough space "
+                                                "in inventory to take it!", font=fonts["ITEM_DESC_FONT"])
                                 ]
                             )
                 self.remove_entity(target)
             else:
                 self.diary_entries.append(
                     [
-                        {
-                            "type": "text",
-                            "text": f"{target} now has {target.hit_points}  HP",
-                            "font": fonts["ITEM_DESC_FONT"],
-                        }
+                        TextElement(f"{target} has now {target.hit_points} HP", font=fonts["ITEM_DESC_FONT"])
                     ]
                 )
                 # Check if a side effect is applied to target
@@ -1155,11 +1135,7 @@ class Level:
                             _, message = effect.apply_on_ent(target)
                             self.diary_entries.append(
                                 [
-                                    {
-                                        "type": "text",
-                                        "text": message,
-                                        "font": fonts["ITEM_DESC_FONT"],
-                                    }
+                                    TextElement(message, font=fonts["ITEM_DESC_FONT"])
                                 ]
                             )
 
@@ -1167,25 +1143,17 @@ class Level:
             if isinstance(attacker, Player):
                 self.diary_entries.append(
                     [
-                        {
-                            "type": "text",
-                            "text": str(attacker)
+                        TextElement(str(attacker)
                                     + " earned "
                                     + str(experience)
-                                    + " XP",
-                            "font": fonts["ITEM_DESC_FONT"],
-                        }
+                                    + " XP", font=fonts["ITEM_DESC_FONT"])
                     ]
                 )
                 if attacker.earn_xp(experience):
                     # Attacker gained a level
                     self.diary_entries.append(
                         [
-                            {
-                                "type": "text",
-                                "text": str(attacker) + " gained a level !",
-                                "font": fonts["ITEM_DESC_FONT"],
-                            }
+                            TextElement(str(attacker) + " gained a level!", font=fonts["ITEM_DESC_FONT"])
                         ]
                     )
 
@@ -1324,10 +1292,7 @@ class Level:
                             if mission.main and mission.ended:
                                 self.victory = True
                             # Turn is finished
-                            self.menu_manager.close_active_menu()
-                            self.menu_manager.background_menus.clear()
-                            self.selected_player.end_turn()
-                            self.selected_player = None
+                            self.end_active_character_turn()
                             break
 
     def select_talk(self) -> None:
@@ -1975,7 +1940,7 @@ class Level:
                                 self.selected_player.attack_kind,
                             )
                             # Turn is finished
-                            self.end_active_character_turn()
+                            self.end_active_character_turn(clear_menus=False)
                             return
                 elif self.possible_interactions:
                     # Player is waiting to interact
