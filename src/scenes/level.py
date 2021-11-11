@@ -289,24 +289,6 @@ class Level:
             os.path.join("sound_fx", "trade.ogg")
         )
 
-    def close_active_menu(self, is_action_final: bool = False) -> None:
-        """
-        Replace the active menu by the first menu in background if there is any.
-        """
-        if is_action_final:
-            # Turn is finished
-            self.active_menu = None
-            self.background_menus = []
-            self.selected_player.end_turn()
-            self.selected_player = None
-        else:
-            self.active_menu = (
-                self.background_menus.pop()[0] if len(self.background_menus) else None
-            )
-            # Test if active menu is main character's menu, in this case, it should be reloaded
-            if self.active_menu and self.active_menu.type is CharacterMenu:
-                self.open_player_menu()
-
     def open_save_menu(self) -> None:
         """
         Replace the current active menu by the a freshly created save game interface
@@ -355,13 +337,13 @@ class Level:
         animation_surface -- the surface containing the final animation of the level
         position -- the position of the final animation
         """
-        self.background_menus = []
+        self.menu_manager.clear_menus()
         # Check if some optional objectives have been completed
         if self.main_mission.ended:
             for mission in self.missions:
                 if not mission.main and mission.ended:
-                    self.background_menus.append(
-                        (menu_creator_manager.create_reward_menu(mission), False)
+                    self.menu_manager.open_menu(
+                        menu_creator_manager.create_reward_menu(mission)
                     )
                     if mission.gold:
                         for player in self.players:
@@ -373,13 +355,9 @@ class Level:
             if "at_end" in self.events:
                 if "dialogs" in self.events["at_end"]:
                     for dialog in self.events["at_end"]["dialogs"]:
-                        self.background_menus.append(
-                            (create_event_dialog(dialog), False)
+                        self.menu_manager.open_menu(
+                            create_event_dialog(dialog)
                         )
-
-        self.active_menu = (
-            self.background_menus.pop(0)[0] if self.background_menus else None
-        )
         self.animation = Animation(
             [{"sprite": animation_surface, "pos": position}], 180
         )

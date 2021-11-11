@@ -582,6 +582,7 @@ def create_player_menu(
         grid_elements,
         width=ACTION_MENU_WIDTH,
         element_linked=player.get_rect(),
+        has_close_button=False
     )
 
 
