@@ -6,7 +6,7 @@ corresponding to an ongoing level.
 from __future__ import annotations
 
 import os
-from enum import IntEnum, auto, Enum
+from enum import IntEnum, auto
 from typing import Sequence, Union, List, Optional, Set, Type
 
 import pygame
@@ -62,7 +62,7 @@ from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.services import load_from_xml_manager as loader, menu_creator_manager
 from src.services.menu_creator_manager import create_event_dialog
-from src.services.menus import CharacterMenu, ShopMenu
+from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 
 
@@ -937,26 +937,21 @@ class Level:
                 self.possible_interactions = possible_positions_with_distance.keys()
                 self.wait_for_teleportation_destination = True
             else:
-                self.active_menu = InfoBox(
+                self.menu_manager.open_menu(new_InfoBox(
                     "There is no free square around the other portal",
-                    "imgs/interface/PopUpMenu.png",
                     [],
                     width=ITEM_MENU_WIDTH,
-                    close_button=lambda: self.close_active_menu(False),
-                )
+                ))
         # Check if player tries to drink in a fountain
         elif isinstance(target, Fountain):
-            entries = target.drink(actor)
-            self.active_menu = InfoBox(
+            element_grid = target.drink(actor)
+            self.menu_manager.open_menu(new_InfoBox(
                 str(target),
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                element_grid,
                 width=ITEM_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(True),
-            )
+            ))
 
-            # No more menu : turn is finished
-            self.background_menus = []
+            self.end_active_character_turn(clear_menus=False)
         # Check if player tries to trade with another player
         elif isinstance(target, Player):
             self.menu_manager.open_menu(menu_creator_manager.create_trade_menu(
@@ -985,24 +980,18 @@ class Level:
             self.end_active_character_turn(clear_menus=False)
         # Check if player tries to visit a building
         elif isinstance(target, Building):
-            kind: Union[Type[Enum], str] = ""
             if isinstance(target, Shop):
                 self.active_shop = target
-            kind = ShopMenu
 
-            entries = target.interact(actor)
-            self.active_menu = InfoBox(
+            element_grid = target.interact(actor)
+            self.menu_manager.open_menu(new_InfoBox(
                 str(target),
-                "imgs/interface/PopUpMenu.png",
-                entries,
-                id_type=kind,
+                element_grid,
                 width=ITEM_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(True),
                 title_color=ORANGE,
-            )
+            ))
 
-            # No more menu : turn is finished
-            self.background_menus = []
+            self.end_active_character_turn(clear_menus=False)
 
     def remove_entity(self, entity: Entity) -> None:
         """
@@ -1241,8 +1230,7 @@ class Level:
         """
         Let the player select the building to visit for the active character
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = None
+        self.menu_manager.clear_menus()
         self.selected_player.choose_target()
         self.possible_interactions = [
             (

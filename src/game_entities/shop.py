@@ -2,19 +2,19 @@
 Defines Shop class, a Building in which a player character can buy or sell stuff.
 """
 
-from copy import copy
 import os
-from typing import Sequence, Union, List
+from copy import copy
+from typing import Union, List
 
 import pygame.mixer
 from lxml import etree
+from pygamepopup.components import BoxElement, Button
 
+from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.item import Item
-from src.gui.entries import Entries
 from src.gui.info_box import InfoBox
 from src.services import menu_creator_manager
-from src.game_entities.building import Building
 
 
 class Shop(Building):
@@ -39,12 +39,12 @@ class Shop(Building):
     sell_interface_callback = None
 
     def __init__(
-        self,
-        name: str,
-        position: tuple[int, int],
-        sprite: str,
-        interaction: dict[str, any],
-        stock: List[dict[str, any]],
+            self,
+            name: str,
+            position: tuple[int, int],
+            sprite: str,
+            interaction: dict[str, any],
+            stock: List[dict[str, any]],
     ) -> None:
         super().__init__(name, position, sprite, interaction)
         self.stock: List[dict[str, any]] = stock
@@ -87,10 +87,10 @@ class Shop(Building):
                         if len(row) == 0:
                             self.menu.entries.remove(row)
                 if entry["type"] == "text":
-                    entry["text"] = f"Your gold : {gold}"
+                    entry["text"] = f"Your gold: {gold}"
         self.menu.update_content(self.menu.entries)
 
-    def interact(self, actor: Character) -> Entries:
+    def interact(self, actor: Character) -> list[list[BoxElement]]:
         """
         Manage the interaction of a character with the shop.
 
@@ -102,20 +102,12 @@ class Shop(Building):
         """
         self.update_shop_menu(actor.gold)
 
-        entries: Sequence[Sequence[dict[str, str]]] = [
+        entries: list[list[BoxElement]] = [
             [
-                {
-                    "name": "Buy",
-                    "callback": Shop.buy_interface_callback,
-                    "type": "button",
-                }
+                Button(title="Buy", callback=Shop.buy_interface_callback)
             ],
             [
-                {
-                    "name": "Sell",
-                    "callback": Shop.sell_interface_callback,
-                    "type": "button",
-                }
+                Button(title="Sell", callback=Shop.sell_interface_callback)
             ],
         ]
         return entries

@@ -4,12 +4,12 @@ Defines Fountain class, a passive entity with which characters can interact to e
 
 import pygame
 from lxml import etree
+from pygamepopup.components import BoxElement, TextElement
 
+from src.constants import TILE_SIZE
 from src.game_entities.destroyable import Destroyable
 from src.game_entities.effect import Effect
 from src.game_entities.entity import Entity
-from src.constants import TILE_SIZE
-from src.gui.entries import Entries
 from src.gui.fonts import fonts
 from src.gui.position import Position
 
@@ -34,13 +34,13 @@ class Fountain(Entity):
     """
 
     def __init__(
-        self,
-        name: str,
-        position: Position,
-        sprite: str,
-        sprite_empty: str,
-        effect: Effect,
-        times: int,
+            self,
+            name: str,
+            position: Position,
+            sprite: str,
+            sprite_empty: str,
+            effect: Effect,
+            times: int,
     ) -> None:
         super().__init__(name, position, sprite)
         self.effect: Effect = effect
@@ -49,7 +49,7 @@ class Fountain(Entity):
             pygame.image.load(sprite_empty).convert_alpha(), (TILE_SIZE, TILE_SIZE)
         )
 
-    def drink(self, entity: Destroyable) -> Entries:
+    def drink(self, entity: Destroyable) -> list[list[BoxElement]]:
         """
         Handle the interaction of an entity with the fountain.
         Return the dialog that should be displayed to the player.
@@ -57,7 +57,7 @@ class Fountain(Entity):
         Keyword arguments:
         entity -- the entity drinking the content of the fountain
         """
-        entries: Entries = []
+        entries: list[list[BoxElement]] = []
         if self.times > 0:
             result = self.effect.apply_on_ent(entity)
             if result[0]:
@@ -65,25 +65,17 @@ class Fountain(Entity):
                 if self.times == 0:
                     self.sprite = self.sprite_empty
             entries.append(
-                [{"type": "text", "text": result[1], "font": fonts["ITEM_DESC_FONT"]}]
+                [TextElement(result[1], font=fonts["ITEM_DESC_FONT"])]
             )
             entries.append(
                 [
-                    {
-                        "type": "text",
-                        "text": f"{self.times} remaining uses.",
-                        "font": fonts["ITEM_DESC_FONT"],
-                    }
+                    TextElement(f"{self.times} remaining uses", font=fonts["ITEM_DESC_FONT"])
                 ]
             )
         else:
             entries.append(
                 [
-                    {
-                        "type": "text",
-                        "text": "The fountain is empty...",
-                        "font": fonts["ITEM_DESC_FONT"],
-                    }
+                    TextElement("The fountain is empty...", font=fonts["ITEM_DESC_FONT"])
                 ]
             )
         return entries
