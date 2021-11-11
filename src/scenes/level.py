@@ -417,14 +417,6 @@ class Level:
             return None
 
         if self.selected_player:
-            print("BEGIN LOGS")
-            print(self.possible_attacks)
-            print(self.possible_interactions)
-            print(self.selected_player.is_waiting_post_action())
-            print(self.selected_player.state)
-            print(self.selected_player.is_waiting_post_action() and not self.possible_attacks \
-                  and not self.possible_interactions)
-            print("END LOGS")
             self.selected_player.move()
             if self.selected_player.is_waiting_post_action() and not self.possible_attacks \
                     and not self.possible_interactions:
@@ -467,7 +459,7 @@ class Level:
                 "inventory": self.open_inventory,
                 "equipment": self.open_equipment,
                 "status": self.open_status_interface,
-                "wait": self.end_character_turn,
+                "wait": self.end_active_character_turn,
                 "visit": self.select_visit,
                 "trade": lambda: self.select_interaction_with(Player),
                 "open_chest": self.try_open_chest,
@@ -883,9 +875,7 @@ class Level:
                 actor.position = target_position
 
                 # Turn is finished
-                self.background_menus = []
-                self.selected_player.end_turn()
-                self.selected_player = None
+                self.end_active_character_turn()
         # Check if player tries to open a chest
         elif isinstance(target, Chest):
             if actor.has_free_space():
@@ -1002,26 +992,24 @@ class Level:
         elif isinstance(target, Character):
             pygame.mixer.Sound.play(self.talk_sfx)
 
-            entries = target.talk(actor)
-            self.active_menu = InfoBox(
+            element_grid = target.talk(actor)
+            self.menu_manager.open_menu(new_InfoBox(
                 str(target),
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                element_grid,
                 width=ITEM_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(True),
                 title_color=ORANGE,
-            )
-            # No more menu : turn is finished
-            self.background_menus = []
+            ))
             # Check if character is now a player
             if target.join_team:
                 self.ally_to_player(target)
+
+            self.end_active_character_turn(clear_menus=False)
         # Check if player tries to visit a building
         elif isinstance(target, Building):
             kind: Union[Type[Enum], str] = ""
             if isinstance(target, Shop):
                 self.active_shop = target
-                kind = ShopMenu
+            kind = ShopMenu
 
             entries = target.interact(actor)
             self.active_menu = InfoBox(
@@ -1296,7 +1284,7 @@ class Level:
         """
         End the current turn
         """
-        self.menu_manager.close_menu()
+        self.menu_manager.clear_menus()
         for player in self.players:
             player.end_turn()
         self.side_turn = self.side_turn.get_next()
@@ -1346,8 +1334,7 @@ class Level:
         """
         Let the player select the character to talk with for the active character
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = None
+        self.menu_manager.clear_menus()
         self.selected_player.choose_target()
         self.possible_interactions = []
         for entity in self.get_next_cases(self.selected_player.position):
@@ -1422,7 +1409,7 @@ class Level:
         """
         Let the player select the foe to attack for the active character
         """
-        self.menu_manager.close_active_menu()
+        self.menu_manager.clear_menus()
         self.selected_player.choose_target()
         self.possible_attacks = self.get_possible_attacks(
             [self.selected_player.position], self.selected_player.reach, True
@@ -1443,18 +1430,19 @@ class Level:
             )
         )
 
-    def end_character_turn(self) -> None:
+    def end_active_character_turn(self, clear_menus=True) -> None:
         """
         End the turn of the active character
         """
         pygame.mixer.Sound.play(self.wait_sfx)
-        self.menu_manager.clear_menus()
         self.selected_item = None
         self.selected_player.end_turn()
         self.selected_player = None
         self.possible_moves = []
         self.possible_attacks = []
         self.possible_interactions = []
+        if clear_menus:
+            self.menu_manager.clear_menus()
 
     def open_equipment(self) -> None:
         """
@@ -1489,7 +1477,7 @@ class Level:
         Keyword arguments:
         entity_kind -- the nature of entity for which the player should select an interaction
         """
-        self.menu_manager.close_active_menu()
+        self.menu_manager.clear_menus()
         self.selected_player.choose_target()
         self.possible_interactions = []
         for entity in self.get_next_cases(self.selected_player.position):
@@ -1948,6 +1936,7 @@ class Level:
         position -- the position of the mouse
         """
         if self.menu_manager.active_menu:
+            # TODO: check if the raw value could be replaced by a meaningful constant
             self.menu_manager.click(1, position)
             return
 
@@ -1986,8 +1975,7 @@ class Level:
                                 self.selected_player.attack_kind,
                             )
                             # Turn is finished
-                            self.selected_player.end_turn()
-                            self.selected_player = None
+                            self.end_active_character_turn()
                             return
                 elif self.possible_interactions:
                     # Player is waiting to interact
