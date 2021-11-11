@@ -806,22 +806,16 @@ class Level:
         self.entities["doors"].remove(door)
 
         # TODO: move the creation of the pop-up in menu_creator_manager
-        entries = [
+        grid_element = [
             [
-                {
-                    "type": "text",
-                    "text": "Door has been opened.",
-                    "font": fonts["ITEM_DESC_FONT"],
-                }
+                TextElement("Door has been opened", font=fonts["ITEM_DESC_FONT"])
             ]
         ]
-        self.active_menu = InfoBox(
+        self.menu_manager.open_menu(new_InfoBox(
             str(door),
-            "imgs/interface/PopUpMenu.png",
-            entries,
+            grid_element,
             width=ITEM_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(True),
-        )
+        ))
 
     def ally_to_player(self, character: Character) -> None:
         """
@@ -887,63 +881,48 @@ class Level:
                         # Lock picking has not been already initiated
                         target.pick_lock_initiated = True
                         # TODO: move the creation of the pop-up in menu_creator_manager
-                        entries = [
+                        element_grid = [
                             [
-                                {
-                                    "type": "text",
-                                    "text": "Started picking, one more turn to go.",
-                                    "font": fonts["ITEM_DESC_FONT"],
-                                }
+                                TextElement("Started picking, one more turn to go", font=fonts["ITEM_DESC_FONT"])
                             ]
                         ]
-                        self.active_menu = InfoBox(
+                        self.menu_manager.open_menu(new_InfoBox(
                             "Chest",
-                            "imgs/interface/PopUpMenu.png",
-                            entries,
+                            element_grid,
                             width=ITEM_MENU_WIDTH,
-                            close_button=lambda: self.close_active_menu(True),
-                        )
+                        ))
                     else:
                         # Lock picking is finished, get content
                         self.open_chest(actor, target)
 
             else:
                 # TODO: move the creation of the pop-up in menu_creator_manager
-                self.active_menu = InfoBox(
+                self.menu_manager.open_menu(new_InfoBox(
                     "You have no free space in your inventory",
-                    "imgs/interface/PopUpMenu.png",
                     [],
                     width=ITEM_MENU_WIDTH,
-                    close_button=lambda: self.close_active_menu(False),
-                )
+                ))
         # Check if player tries to open a door
         elif isinstance(target, Door):
             if self.selected_player.current_action is CharacterMenu.OPEN_DOOR:
                 actor.remove_door_key()
                 self.open_door(target)
-                # No more menu : turn is finished
-                self.background_menus = []
+                self.end_active_character_turn(clear_menus=False)
             elif self.selected_player.current_action is CharacterMenu.PICK_LOCK:
                 if not target.pick_lock_initiated:
                     # Lock picking has not been already initiated
                     target.pick_lock_initiated = True
                     # TODO: move the creation of the pop-up in menu_creator_manager
-                    entries = [
+                    grid_element = [
                         [
-                            {
-                                "type": "text",
-                                "text": "Started picking, one more turn to go.",
-                                "font": fonts["ITEM_DESC_FONT"],
-                            }
+                            TextElement("Started picking, one more turn to go", font=fonts["ITEM_DESC_FONT"])
                         ]
                     ]
-                    self.active_menu = InfoBox(
+                    self.menu_manager.open_menu(new_InfoBox(
                         str(target),
-                        "imgs/interface/PopUpMenu.png",
-                        entries,
+                        grid_element,
                         width=ITEM_MENU_WIDTH,
-                        close_button=lambda: self.close_active_menu(True),
-                    )
+                    ))
                 else:
                     # Lock picking is finished, get content
                     self.open_door(target)
@@ -1310,9 +1289,8 @@ class Level:
         """
         Let the player select the chest or door to pick lock for the active character
         """
+        self.menu_manager.clear_menus()
         self.selected_player.current_action = CharacterMenu.PICK_LOCK
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = None
         self.selected_player.choose_target()
         self.possible_interactions = []
         for entity in self.get_next_cases(self.selected_player.position):
@@ -1330,14 +1308,12 @@ class Level:
                 has_key = True
                 break
         if not has_key:
-            info_box = InfoBox(
+            info_box = new_InfoBox(
                 "You have no key to open a door",
-                "imgs/interface/PopUpMenu.png",
                 [],
                 width=ITEM_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(False),
             )
-            self.open_menu(info_box, is_visible_on_background=True)
+            self.menu_manager.open_menu(info_box)
         else:
             self.selected_player.current_action = CharacterMenu.OPEN_DOOR
             self.select_interaction_with(Door)
