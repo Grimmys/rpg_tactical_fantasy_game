@@ -1674,7 +1674,7 @@ class Level:
         """
         Unequip the selected item of the active character if possible
         """
-        self.background_menus.append((self.active_menu, False))
+        self.menu_manager.close_active_menu()
         unequipped = self.selected_player.unequip(self.selected_item)
         result_message = (
             "The item can't be unequipped : Not enough space in your inventory."
@@ -1686,72 +1686,48 @@ class Level:
             new_equipment_menu = menu_creator_manager.create_equipment_menu(
                 self.interact_item, self.selected_player.equipments
             )
-
-            # Cancel item menu
-            self.background_menus.pop()
             # Update the inventory menu (i.e. first menu backward)
-            self.background_menus[len(self.background_menus) - 1] = (
-                new_equipment_menu,
-                True,
-            )
-        entries = [
+            self.menu_manager.close_active_menu()
+            self.menu_manager.open_menu(new_equipment_menu)
+        element_grid = [
             [
-                {
-                    "type": "text",
-                    "text": result_message,
-                    "font": fonts["ITEM_DESC_FONT"],
-                    "margin": (20, 0, 20, 0),
-                }
+                TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.active_menu = InfoBox(
+        self.menu_manager.open_menu(new_InfoBox(
             str(self.selected_item),
-            "imgs/interface/PopUpMenu.png",
-            entries,
+            element_grid,
             width=ITEM_INFO_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(False),
-        )
+        ))
 
     def equip_selected_item(self) -> None:
         """
         Equip the selected item of the active character if possible
         """
+        self.menu_manager.close_active_menu()
         # Try to equip the item
         return_equipped: int = self.selected_player.equip(self.selected_item)
         if return_equipped == -1:
             # Item can't be equipped by this player
-            result_message = (
-                    "This item can't be equipped : "
-                    + str(self.selected_player)
-                    + " doesn't satisfy the requirements."
-            )
+            result_message = f"This item can't be equipped: {self.selected_player} doesn't satisfy the requirements"
         else:
             # In this case returned value is > 0, item has been equipped
-            result_message = "The item has been equipped."
+            result_message = "The item has been equipped"
             if return_equipped == 1:
-                result_message += (
-                    " Previous equipped item has been added to your inventory."
-                )
+                result_message += "Previous equipped item has been added to your inventory"
 
             # Inventory has changed
             self.refresh_inventory()
-        entries = [
+        element_grid = [
             [
-                {
-                    "type": "text",
-                    "text": result_message,
-                    "font": fonts["ITEM_DESC_FONT"],
-                    "margin": (20, 0, 20, 0),
-                }
+                TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.open_menu(
-            InfoBox(
+        self.menu_manager.open_menu(
+            new_InfoBox(
                 str(self.selected_item),
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(False),
             )
         )
 
@@ -1797,13 +1773,9 @@ class Level:
         new_inventory_menu = menu_creator_manager.create_inventory_menu(
             self.interact_item, items, self.selected_player.gold
         )
-        # Cancel item menu
-        self.active_menu = None
         # Update the inventory menu (i.e. first menu backward)
-        self.background_menus[len(self.background_menus) - 1] = (
-            new_inventory_menu,
-            True
-        )
+        self.menu_manager.close_active_menu()
+        self.menu_manager.open_menu(new_inventory_menu)
 
     def open_selected_item_description(self) -> None:
         """
