@@ -4,17 +4,18 @@ Defines Shop class, a Building in which a player character can buy or sell stuff
 
 import os
 from copy import copy
-from typing import Union, List
+from typing import Union, List, Optional
 
 import pygame.mixer
 from lxml import etree
-from pygamepopup.components import BoxElement, Button
+from pygamepopup.components import BoxElement, Button, InfoBox
 
 from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.item import Item
-from src.gui.info_box import InfoBox
 from src.services import menu_creator_manager
+
+SHOP_MENU_ID = "shop"
 
 
 class Shop(Building):
@@ -55,7 +56,7 @@ class Shop(Building):
             os.path.join("sound_fx", "trade.ogg")
         )
 
-    def get_item_entry(self, item: Item) -> Union[dict[str, any], None]:
+    def get_item_entry(self, item: Item) -> Optional[dict[str, any]]:
         """
         Return the entry corresponding to one item
 
@@ -74,21 +75,9 @@ class Shop(Building):
         Keyword arguments:
         gold -- the new gold amount for the player that should be displayed
         """
-        for row in self.menu.entries:
-            for entry in row:
-                if entry["type"] == "item_button":
-                    item: Union[dict[str, any], None] = self.get_item_entry(
-                        entry["item"]
-                    )
-                    if item:
-                        entry["quantity"] = item["quantity"]
-                    else:
-                        row.remove(entry)
-                        if len(row) == 0:
-                            self.menu.entries.remove(row)
-                if entry["type"] == "text":
-                    entry["text"] = f"Your gold: {gold}"
-        self.menu.update_content(self.menu.entries)
+        self.menu = menu_creator_manager.create_shop_menu(
+            Shop.interaction_callback, self.stock, gold
+        )
 
     def interact(self, actor: Character) -> list[list[BoxElement]]:
         """
@@ -102,7 +91,7 @@ class Shop(Building):
         """
         self.update_shop_menu(actor.gold)
 
-        entries: list[list[BoxElement]] = [
+        grid_element: list[list[BoxElement]] = [
             [
                 Button(title="Buy", callback=Shop.buy_interface_callback)
             ],
@@ -110,7 +99,7 @@ class Shop(Building):
                 Button(title="Sell", callback=Shop.sell_interface_callback)
             ],
         ]
-        return entries
+        return grid_element
 
     # TODO: Return type of buy and sell methods should be coherent
     def buy(self, actor: Character, item: Item) -> str:

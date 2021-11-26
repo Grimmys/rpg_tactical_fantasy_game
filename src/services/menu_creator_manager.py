@@ -49,15 +49,12 @@ from src.game_entities.mission import MissionType, Mission
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
+from src.game_entities.shop import SHOP_MENU_ID
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
 from src.gui.info_box import InfoBox
 from src.gui.position import Position
-from src.services.menus import (
-    BuyMenu,
-    ItemMenu,
-)
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
@@ -77,40 +74,45 @@ def create_shop_menu(
     stock -- the collection of items that are available in the shop, with the quantity of each one
     gold -- the amount of gold that should be displayed at the bottom
     """
-    entries = []
+    element_grid = []
     row = []
     for item in stock:
-        entry = {
-            "type": "item_button",
-            "item": item["item"],
-            "price": item["item"].price,
-            "quantity": item["quantity"],
-            "callback": lambda button_position, item_reference=item[
-                "item"
-            ]: interaction_callback(item_reference, button_position),
-        }
-        row.append(entry)
+        item_text_data = [
+            f"Price: {item['item'].price}",
+            f"Quantity: {item['quantity']}"
+        ]
+        item_button = ImageButton(image_path=item["item"].sprite_path,
+                                  title=str(item["item"]),
+                                  size=ITEM_BUTTON_SIZE_EQ,
+                                  frame_background_path="imgs/interface/blue_frame.png",
+                                  frame_background_hover_path="imgs/interface/blue_frame.png",
+                                  background_path="imgs/interface/item_frame.png",
+                                  text_color=BLACK,
+                                  complementary_text_lines=item_text_data
+                                  )
+        item_button.callback = lambda button=item_button, item_reference=item[
+            "item"
+        ]: interaction_callback(item_reference, button)
+        row.append(item_button)
         if len(row) == 2:
-            entries.append(row)
+            element_grid.append(row)
             row = []
 
     if row:
-        entries.append(row)
+        element_grid.append(row)
 
     # Gold at end
-    entry = [
-        {"type": "text", "text": f"Your gold : {gold}", "font": fonts["ITEM_DESC_FONT"]}
+    player_gold_line = [
+        TextElement(f"Your gold: {gold}", font=fonts["ITEM_DESC_FONT"])
     ]
-    entries.append(entry)
+    element_grid.append(player_gold_line)
 
-    return InfoBox(
+    return new_InfoBox(
         "Shop - Buying",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=BuyMenu,
+        element_grid,
         width=ITEM_MENU_WIDTH,
-        close_button=lambda: close_function(False),
         title_color=ORANGE,
+        identifier=SHOP_MENU_ID
     )
 
 
@@ -137,7 +139,8 @@ def create_inventory_menu(
         if is_to_sell and item:
             additional_lines.append(f"Price: {item.resell_price}")
         item_button = ImageButton(image_path=item.sprite_path if item else None,
-                                  title=str(item) if item else "", size=ITEM_BUTTON_SIZE_EQ,
+                                  title=str(item) if item else "",
+                                  size=ITEM_BUTTON_SIZE_EQ,
                                   disabled=not item,
                                   frame_background_path="imgs/interface/blue_frame.png",
                                   frame_background_hover_path="imgs/interface/blue_frame.png",
@@ -170,13 +173,20 @@ def create_inventory_menu(
     ]
     grid_elements.append(gold_text)
 
-    title = "Shop - Selling" if is_to_sell else "Inventory"
-    title_color = ORANGE if is_to_sell else WHITE
+    if is_to_sell:
+        title = "Shop - Selling"
+        title_color = ORANGE
+        identifier = SHOP_MENU_ID
+    else:
+        title = "Inventory"
+        title_color = WHITE
+        identifier = ""
     return new_InfoBox(
         title,
         grid_elements,
         width=ITEM_MENU_WIDTH,
         title_color=title_color,
+        identifier=identifier,
     )
 
 
@@ -637,7 +647,7 @@ def create_main_menu(
 
 def create_item_shop_menu(
         buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
-) -> InfoBox:
+) -> new_InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
 
@@ -645,9 +655,9 @@ def create_item_shop_menu(
     item_button_position -- the position of the item (so the pop-up could be displayed beside it)
     item -- the concerned item
     """
-    entries = [
-        [{"name": "Buy", "callback": buttons_callback["buy_item"], "type": "button"}],
-        [{"name": "Info", "callback": buttons_callback["info_item"], "type": "button"}],
+    element_grid = [
+        [Button(title="Buy", callback=buttons_callback["buy_item"])],
+        [Button(title="Info", callback=buttons_callback["info_item"])],
     ]
     formatted_item_name = str(item)
     item_rect = pygame.Rect(
@@ -657,14 +667,11 @@ def create_item_shop_menu(
         ITEM_BUTTON_SIZE[1],
     )
 
-    return InfoBox(
+    return new_InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        element_grid,
         width=ACTION_MENU_WIDTH,
-        element_linked=item_rect,
-        close_button=lambda: close_function(False),
+        element_linked=item_rect
     )
 
 
@@ -678,9 +685,9 @@ def create_item_sell_menu(
     item_button_position -- the position of the item (so the pop-up could be displayed beside it)
     item -- the concerned item
     """
-    entries = [
-        [{"name": "Sell", "callback": buttons_callback["sell_item"], "type": "button"}],
-        [{"name": "Info", "callback": buttons_callback["info_item"], "type": "button"}],
+    element_grid = [
+        [Button(title="Sell", callback=buttons_callback["sell_item"])],
+        [Button(title="Info", callback=buttons_callback["info_item"])],
     ]
     formatted_item_name = str(item)
     item_rect = pygame.Rect(
@@ -690,14 +697,11 @@ def create_item_sell_menu(
         ITEM_BUTTON_SIZE[1],
     )
 
-    return InfoBox(
+    return new_InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        element_grid,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button=lambda: close_function(False),
     )
 
 
@@ -947,7 +951,9 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             TextElement("LOOT", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN,
-                        margin=(20, 0, 20, 0)) if isinstance(entity, Foe) else {},
+                        margin=(20, 0, 20, 0)) if isinstance(entity, Foe) else BoxElement(pygame.Vector2(0, 0),
+                                                                                          pygame.Surface((0, 0)),
+                                                                                          (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [

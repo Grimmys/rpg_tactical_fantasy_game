@@ -45,7 +45,7 @@ from src.game_entities.mission import MissionType
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
-from src.game_entities.shop import Shop
+from src.game_entities.shop import Shop, SHOP_MENU_ID
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.animation import Animation
@@ -584,10 +584,7 @@ class Level:
         if "after_init" in self.events:
             if "dialogs" in self.events["after_init"]:
                 for dialog in self.events["after_init"]["dialogs"]:
-                    self.background_menus.append((create_event_dialog(dialog), False))
-            self.active_menu = (
-                self.background_menus.pop(0)[0] if self.background_menus else None
-            )
+                    self.menu_manager.open_menu(create_event_dialog(dialog))
             if "new_players" in self.events["after_init"]:
                 for player_el in self.events["after_init"]["new_players"]:
                     player = loader.init_player(player_el["name"])
@@ -991,7 +988,7 @@ class Level:
                 title_color=ORANGE,
             ))
 
-            self.end_active_character_turn(clear_menus=False)
+            # self.end_active_character_turn(clear_menus=False)
 
     def remove_entity(self, entity: Entity) -> None:
         """
@@ -1029,14 +1026,7 @@ class Level:
 
             if isinstance(target, Character) and target.parried():
                 # Target parried attack
-                message: str = (
-                        str(attacker)
-                        + " attacked "
-                        + str(target)
-                        + "... But "
-                        + str(target)
-                        + " parried !"
-                )
+                message: str = f"{attacker} attacked {target}... But {target} parried!"
                 self.diary_entries.append(
                     [TextElement(message, font=fonts["ITEM_DESC_FONT"])]
                 )
@@ -1048,11 +1038,7 @@ class Level:
             )
             self.diary_entries.append(
                 [
-                    TextElement(str(attacker)
-                                + " dealt "
-                                + str(real_damage)
-                                + " damage to "
-                                + str(target), font=fonts["ITEM_DESC_FONT"])
+                    TextElement(f"{attacker} dealt {real_damage} damage to {target}", font=fonts["ITEM_DESC_FONT"])
                 ]
             )
             # XP gain for dealt damage
@@ -1065,7 +1051,7 @@ class Level:
 
                 self.diary_entries.append(
                     [
-                        TextElement(str(target) + " died!", font=fonts["ITEM_DESC_FONT"])
+                        TextElement(f"{target} died!", font=fonts["ITEM_DESC_FONT"])
                     ]
                 )
                 # Loot
@@ -1111,17 +1097,14 @@ class Level:
             if isinstance(attacker, Player):
                 self.diary_entries.append(
                     [
-                        TextElement(str(attacker)
-                                    + " earned "
-                                    + str(experience)
-                                    + " XP", font=fonts["ITEM_DESC_FONT"])
+                        TextElement(f"{attacker} earned {experience} XP", font=fonts["ITEM_DESC_FONT"])
                     ]
                 )
                 if attacker.earn_xp(experience):
                     # Attacker gained a level
                     self.diary_entries.append(
                         [
-                            TextElement(str(attacker) + " gained a level!", font=fonts["ITEM_DESC_FONT"])
+                            TextElement(f"{attacker} gained a level!", font=fonts["ITEM_DESC_FONT"])
                         ]
                     )
 
@@ -1161,7 +1144,7 @@ class Level:
                 self.duel(entity, entity_attacked, allies, targets, entity.attack_kind)
                 entity.end_turn()
 
-    def interact_item_shop(self, item: Item, button_position: Position) -> None:
+    def interact_item_shop(self, item: Item, item_button: Button) -> None:
         """
         Handle the interaction with an item in a shop
 
@@ -1170,17 +1153,16 @@ class Level:
         button_position -- the position of the button representing the item on interface
         """
         self.selected_item = item
-        self.background_menus.append((self.active_menu, True))
-        self.active_menu = menu_creator_manager.create_item_shop_menu(
+        self.menu_manager.open_menu(menu_creator_manager.create_item_shop_menu(
             {
                 "buy_item": self.try_buy_selected_item,
                 "info_item": self.open_selected_item_description,
             },
-            button_position,
+            item_button.position,
             item,
-        )
+        ))
 
-    def interact_sell_item(self, item: Item, button_position: Position) -> None:
+    def interact_sell_item(self, item: Item, item_button: Button) -> None:
         """
         Handle the interaction with an item from player inventory in a shop
 
@@ -1189,15 +1171,14 @@ class Level:
         button_position -- the position of the button representing the item on interface
         """
         self.selected_item = item
-        self.background_menus.append((self.active_menu, True))
-        self.active_menu = menu_creator_manager.create_item_sell_menu(
+        self.menu_manager.open_menu(menu_creator_manager.create_item_sell_menu(
             {
                 "sell_item": self.try_sell_selected_item,
                 "info_item": self.open_selected_item_description,
             },
-            button_position,
+            item_button.position,
             item,
-        )
+        ))
 
     def open_sell_interface(self) -> None:
         """
@@ -1207,7 +1188,7 @@ class Level:
             self.selected_player.items
         )
         items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
-        self.open_menu(
+        self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
                 self.interact_sell_item,
                 items,
@@ -1438,7 +1419,7 @@ class Level:
     def interact_trade_item(
             self,
             item: Item,
-            button: Button,
+            item_button: Button,
             players: Sequence[Player],
             is_first_player_owner: bool,
     ) -> None:
@@ -1459,7 +1440,7 @@ class Level:
                     "info_item": self.open_selected_item_description,
                     "trade_item": self.trade_item,
                 },
-                button.position,
+                item_button.position,
                 item,
                 players,
                 is_first_player_owner,
@@ -1590,9 +1571,11 @@ class Level:
         """
         Handle the sale of the selected item if possible
         """
+        self.menu_manager.close_active_menu()
         sold, result_message = self.active_shop.sell(
             self.selected_player, self.selected_item
         )
+        popup_title = str(self.selected_item)
         if sold:
             # Remove ref to item
             self.selected_item = None
@@ -1610,53 +1593,35 @@ class Level:
                 is_to_sell=True,
             )
 
-            # Update the inventory menu (i.e. first menu backward)
-            self.background_menus[len(self.background_menus) - 1] = (
-                new_sell_menu,
-                True,
-            )
-        else:
-            self.background_menus.append((self.active_menu, False))
-        entries = [
+            # Update the inventory for sell menu
+            self.menu_manager.replace_given_menu(SHOP_MENU_ID, new_sell_menu)
+        element_grid = [
             [
-                {
-                    "type": "text",
-                    "text": result_message,
-                    "font": fonts["ITEM_DESC_FONT"],
-                    "margin": (20, 0, 20, 0),
-                }
+                TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.active_menu = InfoBox(
-            str(self.selected_item),
-            "imgs/interface/PopUpMenu.png",
-            entries,
+        self.menu_manager.open_menu(new_InfoBox(
+            popup_title,
+            element_grid,
             width=ITEM_INFO_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(False),
-        )
+        ))
 
     def try_buy_selected_item(self) -> None:
         """
         Handle the purchase of the selected item if possible
         """
         result_message = self.active_shop.buy(self.selected_player, self.selected_item)
-        entries = [
+        element_grid = [
             [
-                {
-                    "type": "text",
-                    "text": result_message,
-                    "font": fonts["ITEM_DESC_FONT"],
-                    "margin": (20, 0, 20, 0),
-                }
+                TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.active_menu = InfoBox(
+        self.menu_manager.replace_given_menu(SHOP_MENU_ID, self.active_shop.menu)
+        self.menu_manager.open_menu(new_InfoBox(
             str(self.selected_item),
-            "imgs/interface/PopUpMenu.png",
-            entries,
-            width=ITEM_INFO_MENU_WIDTH,
-            close_button=lambda: self.close_active_menu(False),
-        )
+            element_grid,
+            width=ITEM_INFO_MENU_WIDTH
+        ))
 
     def unequip_selected_item(self) -> None:
         """
