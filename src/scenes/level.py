@@ -1853,13 +1853,13 @@ class Level:
         for player in self.players:
             if player.is_on_position(position):
                 if player.turn_is_finished():
-                    self.active_menu = menu_creator_manager.create_status_menu(
+                    self.menu_manager.open_menu(menu_creator_manager.create_status_menu(
                         {
                             "info_alteration": self.open_alteration_description,
                             "info_skill": self.open_skill_description,
                         },
                         player,
-                    )
+                    ))
                 else:
                     player.selected = True
                     self.selected_player = player
