@@ -18,12 +18,12 @@ from src.constants import (
     MAIN_WIN_WIDTH,
     MAIN_WIN_HEIGHT
 )
-from src.game_entities.player import Player
-from src.gui.position import Position
-from src.services import menu_creator_manager
-from src.gui.fonts import fonts
-from src.scenes.level import Level, LevelStatus
 from src.game_entities.movable import Movable
+from src.game_entities.player import Player
+from src.gui.fonts import fonts
+from src.gui.position import Position
+from src.scenes.level import Level, LevelStatus
+from src.services import menu_creator_manager
 
 
 class StartScreen:
@@ -177,7 +177,7 @@ class StartScreen:
                     # Reset player's state
                     player.new_turn()
                 self.generate_level_window()
-                self.play(StartScreen.load_level(self.level_id, self.level_screen, team))
+                self.level = StartScreen.load_level(self.level_id, self.level_screen, team)
             elif (
                     status is LevelStatus.ENDED_VICTORY
                     or status is LevelStatus.ENDED_DEFEAT

@@ -15,8 +15,6 @@ from src.game_entities.character import Character
 from src.game_entities.item import Item
 from src.services import menu_creator_manager
 
-SHOP_MENU_ID = "shop"
-
 
 class Shop(Building):
     """

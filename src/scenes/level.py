@@ -45,7 +45,7 @@ from src.game_entities.mission import MissionType
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
-from src.game_entities.shop import Shop, SHOP_MENU_ID
+from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.animation import Animation
@@ -60,7 +60,7 @@ from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.services import load_from_xml_manager as loader, menu_creator_manager
-from src.services.menu_creator_manager import create_event_dialog, INVENTORY_MENU_ID
+from src.services.menu_creator_manager import create_event_dialog, INVENTORY_MENU_ID, SHOP_MENU_ID
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 
@@ -376,7 +376,7 @@ class Level:
         if self.animation:
             if self.animation.animate():
                 self.animation = None
-                if self.game_phase > LevelStatus.IN_PROGRESS and not self.active_menu:
+                if self.game_phase > LevelStatus.IN_PROGRESS and not self.menu_manager.active_menu:
                     # End game animation is finished, level can be quit if there is no more menu
                     self.exit_game()
             return None

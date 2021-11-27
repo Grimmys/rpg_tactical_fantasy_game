@@ -49,7 +49,6 @@ from src.game_entities.mission import MissionType, Mission
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
-from src.game_entities.shop import SHOP_MENU_ID
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
@@ -59,6 +58,7 @@ from src.gui.position import Position
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 INVENTORY_MENU_ID = "inventory"
+SHOP_MENU_ID = "shop"
 
 close_function: Optional[Callable] = None
 
@@ -418,7 +418,7 @@ def create_status_menu(
     for alteration in player.alterations:
         grid_elements.append(
             [
-                Button(title=alteration.name,
+                Button(title=str(alteration),
                        callback=lambda alteration_reference=alteration: buttons_callback["info_alteration"](
                            alteration_reference),
                        no_background=True,
@@ -1039,7 +1039,7 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     for alteration in entity.alterations:
         elements.append(
             [
-                Button(title=alteration.name,
+                Button(title=str(alteration),
                        callback=lambda alteration_reference=alteration: alteration_callback(alteration_reference),
                        no_background=True,
                        text_hover_color=TURQUOISE),
@@ -1088,35 +1088,29 @@ def create_event_dialog(dialog_element: dict[str, any]) -> new_InfoBox:
     )
 
 
-def create_reward_menu(mission: Mission) -> InfoBox:
+def create_reward_menu(mission: Mission) -> new_InfoBox:
     """
     Return the interface for an accomplished mission.
 
     Keyword arguments:
     mission -- the concerned mission
     """
-    entries = [
+    grid_element = [
         [
-            {
-                "type": "text",
-                "text": "Congratulations! Objective has been completed!",
-                "font": fonts["ITEM_DESC_FONT"],
-            }
+            TextElement("Congratulations! Objective has been completed!", font=fonts["ITEM_DESC_FONT"])
         ]
     ]
     if mission.gold:
-        entries.append(
-            [{"type": "text", "text": f"Earned gold : {mission.gold} (all characters)"}]
+        grid_element.append(
+            [TextElement(f"Earned gold : {mission.gold} (all characters)")]
         )
     for item in mission.items:
-        entries.append([{"type": "text", "text": f"Earned item : {item}"}])
+        grid_element.append([TextElement(f"Earned item : {item}")])
 
-    return InfoBox(
+    return new_InfoBox(
         mission.description,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        width=REWARD_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        grid_element,
+        width=REWARD_MENU_WIDTH
     )
 
 
