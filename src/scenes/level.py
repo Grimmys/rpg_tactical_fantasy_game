@@ -56,12 +56,11 @@ from src.gui.constant_sprites import (
     constant_sprites,
 )
 from src.gui.fonts import fonts
-from src.gui.info_box import InfoBox
 from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.services import load_from_xml_manager as loader, menu_creator_manager
-from src.services.menu_creator_manager import create_event_dialog
+from src.services.menu_creator_manager import create_event_dialog, INVENTORY_MENU_ID
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 
@@ -250,9 +249,9 @@ class Level:
         self.defeat: bool = False
 
         # Data structures for possible actions
-        self.possible_moves: dict[Position, int] = {}
-        self.possible_attacks: List[Position] = []
-        self.possible_interactions: List[Position] = []
+        self.possible_moves: dict[tuple[int, int], int] = {}
+        self.possible_attacks: List[tuple[int, int]] = []
+        self.possible_interactions: List[tuple[int, int]] = []
 
         # Storage of current selected entity
         self.selected_player: Optional[Player] = None
@@ -267,7 +266,7 @@ class Level:
         self.watched_entity: Optional[Movable] = None
         self.hovered_entity: Optional[Entity] = None
         self.sidebar: Sidebar = Sidebar(
-            (MENU_WIDTH, MENU_HEIGHT), (0, MAX_MAP_HEIGHT), self.missions, self.nb_level
+            (MENU_WIDTH, MENU_HEIGHT), pygame.Vector2(0, MAX_MAP_HEIGHT), self.missions, self.nb_level
         )
         self.wait_for_teleportation_destination: bool = False
         self.diary_entries: List[List[BoxElement]] = []
@@ -603,7 +602,7 @@ class Level:
             for y_coordinate in {1 - abs(x_coordinate), -1 + abs(x_coordinate)}:
                 tile_x: int = position[0] + (x_coordinate * TILE_SIZE)
                 tile_y: int = position[1] + (y_coordinate * TILE_SIZE)
-                tile_position: Position = (tile_x, tile_y)
+                tile_position = tile_x, tile_y
                 tile_content: Optional[Entity] = self.get_entity_on_tile(tile_position)
                 tiles_content.append(tile_content)
         return tiles_content
@@ -619,13 +618,13 @@ class Level:
         tiles: dict[Position, int] = {position: 0}
         previously_computed_tiles: dict[Position, int] = tiles
         for i in range(1, max_moves + 1):
-            tiles_current_level: dict[Position, int] = {}
+            tiles_current_level: dict[tuple[int, int], int] = {}
             for tile in previously_computed_tiles:
                 for x_coordinate in range(-1, 2):
                     for y_coordinate in {1 - abs(x_coordinate), -1 + abs(x_coordinate)}:
                         tile_x: int = tile[0] + (x_coordinate * TILE_SIZE)
                         tile_y: int = tile[1] + (y_coordinate * TILE_SIZE)
-                        tile_position: Position = (tile_x, tile_y)
+                        tile_position = (tile_x, tile_y)
                         if self.is_tile_available(tile_position) and tile_position not in tiles:
                             tiles_current_level[tile_position] = i
             tiles.update(previously_computed_tiles)
@@ -657,13 +656,13 @@ class Level:
                     for y_coordinate in {i - abs(x_coordinate), -i + abs(x_coordinate)}:
                         tile_x: int = entity.position[0] + (x_coordinate * TILE_SIZE)
                         tile_y: int = entity.position[1] + (y_coordinate * TILE_SIZE)
-                        tile_position: Position = (tile_x, tile_y)
+                        tile_position = (tile_x, tile_y)
                         if tile_position in possible_moves:
                             tiles.append(entity.position)
 
         return set(tiles)
 
-    def is_tile_available(self, tile: Position) -> bool:
+    def is_tile_available(self, tile: tuple[int, int]) -> bool:
         """
         Return whether the given tile can be accessed or not
 
@@ -685,7 +684,7 @@ class Level:
 
         return self.get_entity_on_tile(tile) is None and tile not in self.obstacles
 
-    def get_entity_on_tile(self, tile: Position) -> Optional[Entity]:
+    def get_entity_on_tile(self, tile: tuple[int, int]) -> Optional[Entity]:
         """
         Return the entity that is on the given tile if there is any
 
@@ -1535,6 +1534,7 @@ class Level:
         """
         Remove the selected item from player inventory/equipment
         """
+        self.menu_manager.close_active_menu()
         # Remove item from inventory/equipment according to the index
         if isinstance(self.selected_item, Equipment) \
                 and self.selected_player.has_equipment(self.selected_item):
@@ -1552,10 +1552,8 @@ class Level:
             new_items_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
             )
-        # Refresh the inventory menu (i.e. second menu backward)
-        self.menu_manager.close_active_menu()
-        self.menu_manager.close_active_menu()
-        self.menu_manager.open_menu(new_items_menu)
+        # Refresh the inventory menu
+        self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_items_menu)
         grid_elements = [
             [
                 TextElement("Item has been thrown away", font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
@@ -1592,8 +1590,6 @@ class Level:
                 self.selected_player.gold,
                 is_to_sell=True,
             )
-
-            # Update the inventory for sell menu
             self.menu_manager.replace_given_menu(SHOP_MENU_ID, new_sell_menu)
         element_grid = [
             [
@@ -1693,25 +1689,19 @@ class Level:
         used, result_messages = self.selected_player.use_item(self.selected_item)
         # Inventory display is update if object has been used
         if used:
+            self.menu_manager.close_active_menu()
             self.refresh_inventory()
         entries = [
             [
-                {
-                    "type": "text",
-                    "text": msg,
-                    "font": fonts["ITEM_DESC_FONT"],
-                    "margin": (10, 0, 10, 0),
-                }
+                TextElement(message, font=fonts["ITEM_DESC_FONT"], margin=(10, 0, 10, 0))
             ]
-            for msg in result_messages
+            for message in result_messages
         ]
-        self.open_menu(
-            InfoBox(
+        self.menu_manager.open_menu(
+            new_InfoBox(
                 str(self.selected_item),
-                "imgs/interface/PopUpMenu.png",
                 entries,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button=lambda: self.close_active_menu(False),
             )
         )
 
@@ -1726,9 +1716,8 @@ class Level:
         new_inventory_menu = menu_creator_manager.create_inventory_menu(
             self.interact_item, items, self.selected_player.gold
         )
-        # Update the inventory menu (i.e. first menu backward)
-        self.menu_manager.close_active_menu()
-        self.menu_manager.open_menu(new_inventory_menu)
+        # Update inventory menu
+        self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_inventory_menu)
 
     def open_selected_item_description(self) -> None:
         """

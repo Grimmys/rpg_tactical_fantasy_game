@@ -58,6 +58,7 @@ from src.gui.position import Position
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
+INVENTORY_MENU_ID = "inventory"
 
 close_function: Optional[Callable] = None
 
@@ -180,7 +181,7 @@ def create_inventory_menu(
     else:
         title = "Inventory"
         title_color = WHITE
-        identifier = ""
+        identifier = INVENTORY_MENU_ID
     return new_InfoBox(
         title,
         grid_elements,
