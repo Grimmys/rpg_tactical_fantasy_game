@@ -1,7 +1,7 @@
 """
 Defines Animation class, useful for memorize frames of an ongoing animation.
 """
-from typing import Union, List, Dict
+from typing import Union, List
 
 import pygame
 
@@ -26,15 +26,15 @@ class Animation:
 
     def __init__(
         self,
-        sprites_positions: List[Dict[str, Union[pygame.Surface, Position]]],
+        sprites_positions: List[dict[str, Union[pygame.Surface, Position]]],
         timer: int,
     ) -> None:
         self.sprites_positions: List[
-            Dict[str, Union[pygame.Surface, Position]]
+            dict[str, Union[pygame.Surface, Position]]
         ] = sprites_positions
         self.timer_max: int = timer
         self.timer: int = timer
-        self.current_frame: Dict[
+        self.current_frame: dict[
             str, Union[pygame.Surface, Position]
         ] = self.sprites_positions.pop(0)
 
