@@ -4,12 +4,11 @@ Defines Shop class, a Building in which a player character can buy or sell stuff
 
 from copy import copy
 import os
-from typing import Sequence, Union, List, Tuple, Dict
+from typing import Optional
 
 import pygame.mixer
 from lxml import etree
 
-from src.constants import GREEN
 from src.game_entities.character import Character
 from src.game_entities.item import Item
 from src.gui.entries import Entries
@@ -43,14 +42,14 @@ class Shop(Building):
     def __init__(
         self,
         name: str,
-        position: Tuple[int, int],
+        position: tuple[int, int],
         sprite: str,
-        interaction: Dict[str, any],
-        stock: List[Dict[str, any]],
+        interaction: dict[str, any],
+        stock: list[dict[str, any]],
     ) -> None:
         super().__init__(name, position, sprite, interaction)
-        self.stock: List[Dict[str, any]] = stock
-        self.interaction: Dict[str, any] = interaction
+        self.stock: list[dict[str, any]] = stock
+        self.interaction: dict[str, any] = interaction
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
             Shop.interaction_callback, self.stock, 0
         )
@@ -58,7 +57,7 @@ class Shop(Building):
             os.path.join("sound_fx", "trade.ogg")
         )
 
-    def get_item_entry(self, item: Item) -> Union[Dict[str, any], None]:
+    def get_item_entry(self, item: Item) -> Optional[dict[str, any]]:
         """
         Return the entry corresponding to one item
 
@@ -80,7 +79,7 @@ class Shop(Building):
         for row in self.menu.entries:
             for entry in row:
                 if entry["type"] == "item_button":
-                    item: Union[Dict[str, any], None] = self.get_item_entry(
+                    item: Optional[dict[str, any]] = self.get_item_entry(
                         entry["item"]
                     )
                     if item:
@@ -160,7 +159,7 @@ class Shop(Building):
                 actor.gold -= item.price
                 actor.set_item(copy(item))
 
-                entry: Union[Dict[str, any], None] = self.get_item_entry(item)
+                entry: Optional[dict[str, any]] = self.get_item_entry(item)
                 entry["quantity"] -= 1
                 if entry["quantity"] <= 0:
                     self.stock.remove(entry)
@@ -172,7 +171,7 @@ class Shop(Building):
             return "Not enough space in inventory to buy this item."
         return "Not enough gold to buy this item."
 
-    def sell(self, actor: Character, item: Item) -> Tuple[bool, str]:
+    def sell(self, actor: Character, item: Item) -> tuple[bool, str]:
         """
         Handle the tentative of selling an item by a player character.
 

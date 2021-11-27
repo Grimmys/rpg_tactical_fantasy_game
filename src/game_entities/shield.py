@@ -2,7 +2,7 @@
 Defines Shield class, an Equipment permitting to eventually parry opponent attacks.
 """
 
-from typing import Sequence, Dict
+from typing import Sequence
 
 from lxml import etree
 
@@ -45,7 +45,7 @@ class Shield(Equipment):
         weight: int,
         parry: float,
         durability: int,
-        restrictions: Dict[str, Sequence[str]],
+        restrictions: dict[str, Sequence[str]],
     ) -> None:
         super().__init__(
             name,

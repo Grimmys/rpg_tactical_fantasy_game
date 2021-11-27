@@ -4,7 +4,7 @@ Defines Character class, the class defining allied entities or even playable ent
 
 import math
 import random
-from typing import Union, Sequence, Any, Optional, Dict, Tuple, List
+from typing import Union, Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -60,12 +60,12 @@ class Character(Movable):
     constitution -- the global constitution of the character used to know its capacity to bear items
     """
 
-    races_data: Dict[str, Dict[str, Any]] = {}
-    classes_data: Dict[str, Dict[str, Any]] = {}
+    races_data: dict[str, dict[str, any]] = {}
+    classes_data: dict[str, dict[str, any]] = {}
 
     @staticmethod
     def init_data(
-        races: Dict[str, Dict[str, Any]], classes: Dict[str, Dict[str, Any]]
+        races: dict[str, dict[str, any]], classes: dict[str, dict[str, any]]
     ) -> None:
         """
         Initialize the generic data collections for Character.
@@ -81,21 +81,21 @@ class Character(Movable):
     def __init__(
         self,
         name: str,
-        position: Tuple[int, int],
+        position: tuple[int, int],
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,
         resistance: int,
         strength: int,
         classes: Sequence[str],
-        equipments: List[Equipment],
+        equipments: list[Equipment],
         strategy: str,
         lvl: int,
         skills: Sequence[Skill],
-        alterations: List[Alteration],
+        alterations: list[Alteration],
         race: str,
         gold: int,
-        interaction: Dict[str, Any],
+        interaction: dict[str, any],
         complementary_sprite_link: Optional[str] = None,
     ):
         super().__init__(
@@ -115,11 +115,11 @@ class Character(Movable):
             alterations,
             complementary_sprite_link,
         )
-        self.equipments: List[Equipment] = equipments
+        self.equipments: list[Equipment] = equipments
         self.classes: Sequence[str] = classes
         self.race: str = race
         self.gold: int = gold
-        self.interaction: Dict[str, Any] = interaction
+        self.interaction: dict[str, any] = interaction
         self.join_team: bool = False
         self.reach_: Sequence[int] = [1]
         self.constitution: int = (
@@ -139,7 +139,7 @@ class Character(Movable):
         self.join_team = self.interaction["join_team"]
         entries: Entries = []
         for line in self.interaction["dialog"]:
-            entry_line: List[Entry] = [
+            entry_line: list[Entry] = [
                 {"type": "text", "text": line, "font": fonts["ITEM_DESC_FONT"]}
             ]
             entries.append(entry_line)
