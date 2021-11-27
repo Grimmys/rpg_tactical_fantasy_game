@@ -113,7 +113,7 @@ class Movable(Destroyable):
     def __init__(
         self,
         name: str,
-        position: [int, int],
+        position: tuple[int, int],
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,
