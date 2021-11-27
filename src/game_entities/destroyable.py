@@ -4,7 +4,7 @@ Defines Destroyable class, an entity that could be destroyed.
 
 from enum import Enum
 import os
-from typing import Union, Sequence, Tuple
+from typing import Union, Sequence
 
 import pygame
 from lxml import etree
@@ -47,7 +47,7 @@ class Destroyable(Entity):
     def __init__(
         self,
         name: str,
-        position: Tuple[int, int],
+        position: tuple[int, int],
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,

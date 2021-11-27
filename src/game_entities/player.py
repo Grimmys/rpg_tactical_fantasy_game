@@ -3,7 +3,7 @@ Defines Player class, the class defining characters controlled by the player
 """
 
 from enum import IntEnum, auto
-from typing import Union, Sequence, Optional, List, Tuple
+from typing import Union, Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -72,12 +72,12 @@ class Player(Character):
         resistance: int,
         strength: int,
         classes: Sequence[str],
-        equipments: List[Equipment],
+        equipments: list[Equipment],
         race: str,
         gold: int,
         lvl: int,
         skills: Sequence[Skill],
-        alterations: List[Alteration],
+        alterations: list[Alteration],
         complementary_sprite_link: str = None,
     ):
         super().__init__(
@@ -100,7 +100,7 @@ class Player(Character):
             complementary_sprite_link,
         )
         self.state: PlayerState = PlayerState.WAITING_SELECTION
-        self.old_position: Tuple[int, int] = (-1, -1)
+        self.old_position: tuple[int, int] = (-1, -1)
         self._selected: bool = False
 
         # Sprite displayed when player cannot be selected
@@ -177,7 +177,7 @@ class Player(Character):
             PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
         )
 
-    def set_move(self, position: Sequence[Tuple[int, int]]) -> None:
+    def set_move(self, position: Sequence[tuple[int, int]]) -> None:
         """
         Set the movement of the player to the given position
 
@@ -220,7 +220,7 @@ class Player(Character):
         """
         self.state = PlayerState.WAITING_POST_ACTION
 
-    def use_item(self, item: Consumable) -> Tuple[bool, Sequence[str]]:
+    def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
         """
         Use the given consumable item.
         Change the player state if the item has successfully been used.
