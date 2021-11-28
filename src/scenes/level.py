@@ -987,7 +987,7 @@ class Level:
                 title_color=ORANGE,
             ))
 
-            # self.end_active_character_turn(clear_menus=False)
+            self.end_active_character_turn(clear_menus=False)
 
     def remove_entity(self, entity: Entity) -> None:
         """
