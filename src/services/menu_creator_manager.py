@@ -32,7 +32,7 @@ from src.constants import (
     START_MENU_WIDTH,
     ANIMATION_SPEED,
     SCREEN_SIZE,
-    SAVE_SLOTS, TURQUOISE, ITEM_BUTTON_SIZE_EQ, BLACK,
+    SAVE_SLOTS, TURQUOISE, BLACK, TRADE_ITEM_BUTTON_SIZE,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
@@ -83,7 +83,7 @@ def create_shop_menu(
         ]
         item_button = ImageButton(image_path=item["item"].sprite_path,
                                   title=str(item["item"]),
-                                  size=ITEM_BUTTON_SIZE_EQ,
+                                  size=ITEM_BUTTON_SIZE,
                                   frame_background_path="imgs/interface/blue_frame.png",
                                   frame_background_hover_path="imgs/interface/blue_frame.png",
                                   background_path="imgs/interface/item_frame.png",
@@ -140,7 +140,7 @@ def create_inventory_menu(
             additional_lines.append(f"Price: {item.resell_price}")
         item_button = ImageButton(image_path=item.sprite_path if item else None,
                                   title=str(item) if item else "",
-                                  size=ITEM_BUTTON_SIZE_EQ,
+                                  size=ITEM_BUTTON_SIZE,
                                   disabled=not item,
                                   frame_background_path="imgs/interface/blue_frame.png",
                                   frame_background_hover_path="imgs/interface/blue_frame.png",
@@ -210,7 +210,7 @@ def create_equipment_menu(
                     equipment = potential_equipment
                     break
             element = ImageButton(image_path=equipment.sprite_path if equipment else None,
-                                  title=str(equipment) if equipment else "", size=ITEM_BUTTON_SIZE_EQ,
+                                  title=str(equipment) if equipment else "", size=ITEM_BUTTON_SIZE,
                                   disabled=not equipment,
                                   frame_background_path="imgs/interface/blue_frame.png",
                                   frame_background_hover_path="imgs/interface/blue_frame.png",
@@ -257,7 +257,7 @@ def create_trade_menu(
                 item_button = ImageButton(
                     image_path=items[i * 2 + j].sprite_path if items[i * 2 + j] else None,
                     title=str(items[i * 2 + j]) if items[i * 2 + j] else "",
-                    size=ITEM_BUTTON_SIZE_EQ,
+                    size=TRADE_ITEM_BUTTON_SIZE,
                     disabled=not items[i * 2 + j],
                     frame_background_path="imgs/interface/blue_frame.png",
                     frame_background_hover_path="imgs/interface/blue_frame.png",
@@ -735,8 +735,8 @@ def create_trade_item_menu(
     item_rect = pygame.Rect(
         item_button_position[0] - 20,
         item_button_position[1],
-        ITEM_BUTTON_SIZE[0],
-        ITEM_BUTTON_SIZE[1],
+        TRADE_ITEM_BUTTON_SIZE[0],
+        TRADE_ITEM_BUTTON_SIZE[1],
     )
 
     return InfoBox(
