@@ -5,7 +5,7 @@ Define functions creating a specific menu enveloping data from parameters.
 from typing import Sequence, Union, Callable, Optional
 
 import pygame
-from pygamepopup.components import InfoBox as new_InfoBox, Button, DynamicButton, TextElement, BoxElement
+from pygamepopup.components import InfoBox, Button, DynamicButton, TextElement, BoxElement
 from pygamepopup.components.image_button import ImageButton
 
 from src.constants import (
@@ -52,7 +52,6 @@ from src.game_entities.shield import Shield
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
-from src.gui.info_box import InfoBox
 from src.gui.position import Position
 
 MAP_WIDTH = TILE_SIZE * 20
@@ -108,7 +107,7 @@ def create_shop_menu(
     ]
     element_grid.append(player_gold_line)
 
-    return new_InfoBox(
+    return InfoBox(
         "Shop - Buying",
         element_grid,
         width=ITEM_MENU_WIDTH,
@@ -122,7 +121,7 @@ def create_inventory_menu(
         items: Sequence[Item],
         gold: int,
         is_to_sell: bool = False,
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of a player inventory.
 
@@ -182,7 +181,7 @@ def create_inventory_menu(
         title = "Inventory"
         title_color = WHITE
         identifier = INVENTORY_MENU_ID
-    return new_InfoBox(
+    return InfoBox(
         title,
         grid_elements,
         width=ITEM_MENU_WIDTH,
@@ -193,7 +192,7 @@ def create_inventory_menu(
 
 def create_equipment_menu(
         interaction_callback: Callable, equipments: Sequence[Equipment]
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of a player equipment.
 
@@ -221,7 +220,7 @@ def create_equipment_menu(
                 equipment_reference, button_linked, is_equipped=True)
             row.append(element)
             grid_elements.append(row)
-    return new_InfoBox(
+    return InfoBox(
         "Equipment",
         grid_elements,
         width=EQUIPMENT_MENU_WIDTH
@@ -314,7 +313,7 @@ def create_trade_menu(
 
     title = "Trade"
     title_color = WHITE
-    return new_InfoBox(
+    return InfoBox(
         title,
         grid_elements,
         width=TRADE_MENU_WIDTH,
@@ -345,7 +344,7 @@ def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
 
 def create_status_menu(
         buttons_callback: dict[str, Callable], player: Player
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface resuming the status of a player.
 
@@ -439,7 +438,7 @@ def create_status_menu(
     for j in range(i, len(grid_elements)):
         grid_elements[j].append(BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)))
 
-    return new_InfoBox(
+    return InfoBox(
         "Status",
         grid_elements,
         width=STATUS_MENU_WIDTH,
@@ -453,7 +452,7 @@ def create_player_menu(
         interactable_entities: Sequence[Entity],
         missions: Sequence[Mission],
         foes: Sequence[Foe],
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of a player menu.
 
@@ -588,7 +587,7 @@ def create_player_menu(
             if end:
                 break
 
-    return new_InfoBox(
+    return InfoBox(
         "Select an action",
         grid_elements,
         width=ACTION_MENU_WIDTH,
@@ -604,7 +603,7 @@ def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
     Keyword arguments:
     entries -- the entries data structure containing all the data needed to build the interface
     """
-    return new_InfoBox(
+    return InfoBox(
         "Diary",
         grid_elements,
         width=BATTLE_SUMMARY_WIDTH,
@@ -615,7 +614,7 @@ def create_main_menu(
         buttons_callback: dict[str, Callable],
         is_initialization_phase: bool,
         position: Position,
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of the main level menu.
 
@@ -637,7 +636,7 @@ def create_main_menu(
         elements.append([Button(title="Diary", callback=buttons_callback["diary"])]),
         elements.append([Button(title="End Turn", callback=buttons_callback["end_turn"])])
 
-    return new_InfoBox(
+    return InfoBox(
         "Main Menu",
         elements,
         width=ACTION_MENU_WIDTH,
@@ -648,7 +647,7 @@ def create_main_menu(
 
 def create_item_shop_menu(
         buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
 
@@ -668,7 +667,7 @@ def create_item_shop_menu(
         ITEM_BUTTON_SIZE[1],
     )
 
-    return new_InfoBox(
+    return InfoBox(
         formatted_item_name,
         element_grid,
         width=ACTION_MENU_WIDTH,
@@ -698,7 +697,7 @@ def create_item_sell_menu(
         ITEM_BUTTON_SIZE[1],
     )
 
-    return new_InfoBox(
+    return InfoBox(
         formatted_item_name,
         element_grid,
         width=ACTION_MENU_WIDTH,
@@ -712,7 +711,7 @@ def create_trade_item_menu(
         item: Item,
         players: Sequence[Player],
         is_first_player_owner: bool,
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory
     and can be trade to another player.
@@ -740,7 +739,7 @@ def create_trade_item_menu(
         ITEM_BUTTON_SIZE[1],
     )
 
-    return new_InfoBox(
+    return InfoBox(
         formatted_item_name,
         grid_elements,
         width=ACTION_MENU_WIDTH,
@@ -753,7 +752,7 @@ def create_item_menu(
         item_button_rect: pygame.Rect,
         item: Item,
         is_equipped: bool = False,
-) -> new_InfoBox:
+) -> InfoBox:
     """
     Return the interface of an item of a player.
 
@@ -780,7 +779,7 @@ def create_item_menu(
                 0, [Button(title="Equip", callback=buttons_callback["equip_item"])]
             )
 
-    return new_InfoBox(
+    return InfoBox(
         formatted_item_name,
         element_grid,
         width=ACTION_MENU_WIDTH,
@@ -802,7 +801,7 @@ def create_item_description_stat(stat_name: str, stat_value: str) -> Sequence[Bo
     ]
 
 
-def create_item_description_menu(item: Item) -> new_InfoBox:
+def create_item_description_menu(item: Item) -> InfoBox:
     """
     Return the interface for the full description of an item.
 
@@ -875,14 +874,14 @@ def create_item_description_menu(item: Item) -> new_InfoBox:
                 create_item_description_stat("EFFECT", effect.get_formatted_description())
             )
 
-    return new_InfoBox(
+    return InfoBox(
         item_title,
         grid_elements,
         width=ITEM_INFO_MENU_WIDTH
     )
 
 
-def create_alteration_info_menu(alteration: Alteration) -> new_InfoBox:
+def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
     """
     Return the interface for the description of an alteration.
 
@@ -900,7 +899,7 @@ def create_alteration_info_menu(alteration: Alteration) -> new_InfoBox:
         ],
     ]
 
-    return new_InfoBox(
+    return InfoBox(
         str(alteration),
         grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
@@ -923,14 +922,14 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
         [BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), margin=(0, 0, 10, 0))],
     ]
 
-    return new_InfoBox(
+    return InfoBox(
         skill.formatted_name,
         grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
     )
 
 
-def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> new_InfoBox:
+def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> InfoBox:
     """
     Return the interface for the status screen of an entity.
 
@@ -1061,14 +1060,14 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         elements[i][3] = TextElement(f"> {skill.formatted_name}")
         i += 1
 
-    return new_InfoBox(
+    return InfoBox(
         str(entity),
         elements,
         width=FOE_STATUS_MENU_WIDTH,
     )
 
 
-def create_event_dialog(dialog_element: dict[str, any]) -> new_InfoBox:
+def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
     """
     Return the interface of a dialog.
 
@@ -1079,7 +1078,7 @@ def create_event_dialog(dialog_element: dict[str, any]) -> new_InfoBox:
         [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
         for talk in dialog_element["talks"]
     ]
-    return new_InfoBox(
+    return InfoBox(
         dialog_element["title"],
         elements,
         width=DIALOG_WIDTH,
@@ -1088,7 +1087,7 @@ def create_event_dialog(dialog_element: dict[str, any]) -> new_InfoBox:
     )
 
 
-def create_reward_menu(mission: Mission) -> new_InfoBox:
+def create_reward_menu(mission: Mission) -> InfoBox:
     """
     Return the interface for an accomplished mission.
 
@@ -1107,7 +1106,7 @@ def create_reward_menu(mission: Mission) -> new_InfoBox:
     for item in mission.items:
         grid_element.append([TextElement(f"Earned item : {item}")])
 
-    return new_InfoBox(
+    return InfoBox(
         mission.description,
         grid_element,
         width=REWARD_MENU_WIDTH
@@ -1118,7 +1117,7 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
     """
     Return the interface of the main menu of the game (in the start screen).
     """
-    return new_InfoBox(
+    return InfoBox(
         "In the name of the Five Cats",
         [
             [
@@ -1190,7 +1189,7 @@ def create_options_menu(
     parameters -- the dictionary containing all parameters with their current value
     """
 
-    return new_InfoBox(
+    return InfoBox(
         "Options",
         [
             [
@@ -1237,7 +1236,7 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
             ]
         )
 
-    return new_InfoBox(
+    return InfoBox(
         "Load Game",
         element_grid,
         width=START_MENU_WIDTH
@@ -1260,7 +1259,7 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
             ]
         )
 
-    return new_InfoBox(
+    return InfoBox(
         "Save Game",
         element_grid,
         width=START_MENU_WIDTH

@@ -46,6 +46,7 @@ class Shop(Building):
             stock: List[dict[str, any]],
     ) -> None:
         super().__init__(name, position, sprite, interaction)
+        self.current_visitor: Optional[Character] = None
         self.stock: List[dict[str, any]] = stock
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
             Shop.interaction_callback, self.stock, 0
@@ -87,7 +88,8 @@ class Shop(Building):
         Keyword argument:
         actor -- the character visiting the shop
         """
-        self.update_shop_menu(actor.gold)
+        self.current_visitor = actor
+        self.update_shop_menu(self.current_visitor.gold)
 
         grid_element: list[list[BoxElement]] = [
             [
@@ -100,7 +102,7 @@ class Shop(Building):
         return grid_element
 
     # TODO: Return type of buy and sell methods should be coherent
-    def buy(self, actor: Character, item: Item) -> str:
+    def buy(self, item: Item) -> str:
         """
         Handle the wish of purchase an item by a player character.
 
@@ -110,12 +112,12 @@ class Shop(Building):
         actor -- the actor buying the item
         item -- the item that is being bought
         """
-        if actor.gold >= item.price:
-            if len(actor.items) < actor.nb_items_max:
+        if self.current_visitor.gold >= item.price:
+            if len(self.current_visitor.items) < self.current_visitor.nb_items_max:
                 pygame.mixer.Sound.play(self.gold_sfx)
 
-                actor.gold -= item.price
-                actor.set_item(copy(item))
+                self.current_visitor.gold -= item.price
+                self.current_visitor.set_item(copy(item))
 
                 entry: Union[dict[str, any], None] = self.get_item_entry(item)
                 entry["quantity"] -= 1
@@ -123,13 +125,13 @@ class Shop(Building):
                     self.stock.remove(entry)
 
                 # Gold total amount and stock have been decreased: the screen should be updated
-                self.update_shop_menu(actor.gold)
+                self.update_shop_menu(self.current_visitor.gold)
 
                 return "The item has been bought."
             return "Not enough space in inventory to buy this item."
         return "Not enough gold to buy this item."
 
-    def sell(self, actor: Character, item: Item) -> tuple[bool, str]:
+    def sell(self, item: Item) -> tuple[bool, str]:
         """
         Handle the tentative of selling an item by a player character.
 
@@ -140,11 +142,11 @@ class Shop(Building):
         item -- the item that is being sold
         """
         if item.resell_price > 0:
-            actor.remove_item(item)
-            actor.gold += item.resell_price
+            self.current_visitor.remove_item(item)
+            self.current_visitor.gold += item.resell_price
 
             # Update shop screen content (gold total amount has been augmented)
-            self.update_shop_menu(actor.gold)
+            self.update_shop_menu(self.current_visitor.gold)
 
             return True, "The item has been sold."
         return False, "This item can't be sold !"

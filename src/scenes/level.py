@@ -11,7 +11,7 @@ from typing import Sequence, Union, List, Optional, Set, Type
 
 import pygame
 from lxml import etree
-from pygamepopup.components import InfoBox as new_InfoBox, BoxElement, Button, TextElement
+from pygamepopup.components import InfoBox, BoxElement, Button, TextElement
 from pygamepopup.components.image_button import ImageButton
 from pygamepopup.menu_manager import MenuManager
 
@@ -303,7 +303,7 @@ class Level:
         """
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             "Game has been saved",
             [[]],
             width=ITEM_MENU_WIDTH
@@ -783,7 +783,7 @@ class Level:
             ],
         ]
 
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             "You found in the chest",
             element_grid,
             width=ITEM_MENU_WIDTH,
@@ -807,7 +807,7 @@ class Level:
                 TextElement("Door has been opened", font=fonts["ITEM_DESC_FONT"])
             ]
         ]
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             str(door),
             grid_element,
             width=ITEM_MENU_WIDTH,
@@ -882,7 +882,7 @@ class Level:
                                 TextElement("Started picking, one more turn to go", font=fonts["ITEM_DESC_FONT"])
                             ]
                         ]
-                        self.menu_manager.open_menu(new_InfoBox(
+                        self.menu_manager.open_menu(InfoBox(
                             "Chest",
                             element_grid,
                             width=ITEM_MENU_WIDTH,
@@ -893,7 +893,7 @@ class Level:
 
             else:
                 # TODO: move the creation of the pop-up in menu_creator_manager
-                self.menu_manager.open_menu(new_InfoBox(
+                self.menu_manager.open_menu(InfoBox(
                     "You have no free space in your inventory",
                     [],
                     width=ITEM_MENU_WIDTH,
@@ -914,7 +914,7 @@ class Level:
                             TextElement("Started picking, one more turn to go", font=fonts["ITEM_DESC_FONT"])
                         ]
                     ]
-                    self.menu_manager.open_menu(new_InfoBox(
+                    self.menu_manager.open_menu(InfoBox(
                         str(target),
                         grid_element,
                         width=ITEM_MENU_WIDTH,
@@ -933,7 +933,7 @@ class Level:
                 self.possible_interactions = possible_positions_with_distance.keys()
                 self.wait_for_teleportation_destination = True
             else:
-                self.menu_manager.open_menu(new_InfoBox(
+                self.menu_manager.open_menu(InfoBox(
                     "There is no free square around the other portal",
                     [],
                     width=ITEM_MENU_WIDTH,
@@ -941,7 +941,7 @@ class Level:
         # Check if player tries to drink in a fountain
         elif isinstance(target, Fountain):
             element_grid = target.drink(actor)
-            self.menu_manager.open_menu(new_InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 str(target),
                 element_grid,
                 width=ITEM_MENU_WIDTH,
@@ -963,7 +963,7 @@ class Level:
             pygame.mixer.Sound.play(self.talk_sfx)
 
             element_grid = target.talk(actor)
-            self.menu_manager.open_menu(new_InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 str(target),
                 element_grid,
                 width=ITEM_MENU_WIDTH,
@@ -980,7 +980,7 @@ class Level:
                 self.active_shop = target
 
             element_grid = target.interact(actor)
-            self.menu_manager.open_menu(new_InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 str(target),
                 element_grid,
                 width=ITEM_MENU_WIDTH,
@@ -1183,15 +1183,15 @@ class Level:
         """
         Handle the opening of the player inventory in a shop
         """
-        free_spaces: int = self.selected_player.nb_items_max - len(
-            self.selected_player.items
+        free_spaces: int = self.active_shop.current_visitor.nb_items_max - len(
+            self.active_shop.current_visitor.items
         )
-        items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
+        items: List[Optional[Item]] = list(self.active_shop.current_visitor.items) + [None] * free_spaces
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
                 self.interact_sell_item,
                 items,
-                self.selected_player.gold,
+                self.active_shop.current_visitor.gold,
                 is_to_sell=True,
             )
         )
@@ -1276,7 +1276,7 @@ class Level:
                 has_key = True
                 break
         if not has_key:
-            info_box = new_InfoBox(
+            info_box = InfoBox(
                 "You have no key to open a door",
                 [],
                 width=ITEM_MENU_WIDTH,
@@ -1296,7 +1296,7 @@ class Level:
                 has_key = True
                 break
         if not has_key:
-            info_box = new_InfoBox(
+            info_box = InfoBox(
                 "You have no key to open a chest",
                 [],
                 width=ITEM_MENU_WIDTH,
@@ -1496,7 +1496,7 @@ class Level:
                 ]
             ]
         self.turn_items.append([self.selected_item, owner, receiver])
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             str(self.selected_item),
             grid_elements,
             width=ITEM_DELETE_MENU_WIDTH,
@@ -1559,7 +1559,7 @@ class Level:
                 TextElement("Item has been thrown away", font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             str(self.selected_item),
             grid_elements,
             width=ITEM_DELETE_MENU_WIDTH,
@@ -1571,7 +1571,7 @@ class Level:
         """
         self.menu_manager.close_active_menu()
         sold, result_message = self.active_shop.sell(
-            self.selected_player, self.selected_item
+            self.selected_item
         )
         popup_title = str(self.selected_item)
         if sold:
@@ -1580,14 +1580,14 @@ class Level:
 
             # Update shop screen content (item has been removed from inventory)
             # TODO: very recurrent task that maybe should be extract to a method
-            free_spaces: int = self.selected_player.nb_items_max - len(
-                self.selected_player.items
+            free_spaces: int = self.active_shop.current_visitor.nb_items_max - len(
+                self.active_shop.current_visitor.items
             )
-            items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
+            items: List[Optional[Item]] = list(self.active_shop.current_visitor.items) + [None] * free_spaces
             new_sell_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_sell_item,
                 items,
-                self.selected_player.gold,
+                self.active_shop.current_visitor.gold,
                 is_to_sell=True,
             )
             self.menu_manager.replace_given_menu(SHOP_MENU_ID, new_sell_menu)
@@ -1596,7 +1596,7 @@ class Level:
                 TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             popup_title,
             element_grid,
             width=ITEM_INFO_MENU_WIDTH,
@@ -1606,14 +1606,14 @@ class Level:
         """
         Handle the purchase of the selected item if possible
         """
-        result_message = self.active_shop.buy(self.selected_player, self.selected_item)
+        result_message = self.active_shop.buy(self.selected_item)
         element_grid = [
             [
                 TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
         self.menu_manager.replace_given_menu(SHOP_MENU_ID, self.active_shop.menu)
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             str(self.selected_item),
             element_grid,
             width=ITEM_INFO_MENU_WIDTH
@@ -1643,7 +1643,7 @@ class Level:
                 TextElement(result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
             ]
         ]
-        self.menu_manager.open_menu(new_InfoBox(
+        self.menu_manager.open_menu(InfoBox(
             str(self.selected_item),
             element_grid,
             width=ITEM_INFO_MENU_WIDTH,
@@ -1673,7 +1673,7 @@ class Level:
             ]
         ]
         self.menu_manager.open_menu(
-            new_InfoBox(
+            InfoBox(
                 str(self.selected_item),
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
@@ -1698,7 +1698,7 @@ class Level:
             for message in result_messages
         ]
         self.menu_manager.open_menu(
-            new_InfoBox(
+            InfoBox(
                 str(self.selected_item),
                 entries,
                 width=ITEM_INFO_MENU_WIDTH,
@@ -1955,10 +1955,8 @@ class Level:
         if self.animation:
             return
 
-        # 1 is equals to left button
         if button == 1:
             self.left_click(position)
-        # 3 is equals to right button
         elif button == 3:
             self.right_click()
 
