@@ -38,16 +38,18 @@ class Shop(Building):
     sell_interface_callback = None
 
     def __init__(
-            self,
-            name: str,
-            position: tuple[int, int],
-            sprite: str,
-            interaction: dict[str, any],
-            stock: List[dict[str, any]],
+        self,
+        name: str,
+        position: tuple[int, int],
+        sprite: str,
+        interaction: dict[str, any],
+        stock: list[dict[str, any]],
     ) -> None:
         super().__init__(name, position, sprite, interaction)
         self.current_visitor: Optional[Character] = None
         self.stock: List[dict[str, any]] = stock
+        self.stock: list[dict[str, any]] = stock
+        self.interaction: dict[str, any] = interaction
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
             Shop.interaction_callback, self.stock, 0
         )
@@ -99,6 +101,21 @@ class Shop(Building):
                 Button(title="Sell", callback=Shop.sell_interface_callback)
             ],
         ]
+
+        if not self.interaction:
+            pygame.mixer.Sound.play(self.door_sfx)
+            grid_element.append(
+                [
+                    TextElement("This shop seems closed...", font=fonts["ITEM_DESC_FONT"])
+                ]
+            )
+        else:
+            for talk in self.interaction["talks"]:
+                pygame.mixer.Sound.play(self.talk_sfx)
+                grid_element.append(
+                    [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
+                )
+
         return grid_element
 
     # TODO: Return type of buy and sell methods should be coherent
@@ -119,7 +136,7 @@ class Shop(Building):
                 self.current_visitor.gold -= item.price
                 self.current_visitor.set_item(copy(item))
 
-                entry: Union[dict[str, any], None] = self.get_item_entry(item)
+                entry: Optional[dict[str, any]] = self.get_item_entry(item)
                 entry["quantity"] -= 1
                 if entry["quantity"] <= 0:
                     self.stock.remove(entry)

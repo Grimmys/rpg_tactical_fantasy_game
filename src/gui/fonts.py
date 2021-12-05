@@ -3,11 +3,11 @@ Defines fonts that will be used all over the application.
 The init_fonts function should be called at the beginning of the application
 after pygame initialization.
 """
-from typing import Union
+from typing import Union, Dict
 
 import pygame
 
-fonts_description: dict[str, dict[str, Union[str, int]]] = {
+fonts_description: Dict[str, Dict[str, Union[str, int]]] = {
     "BUTTON_FONT": {
         "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
         "size": 20,
@@ -49,7 +49,7 @@ fonts_description: dict[str, dict[str, Union[str, int]]] = {
     "FPS_FONT": {"default": True},
 }
 
-fonts: dict[str, pygame.font.Font] = {}
+fonts: Dict[str, pygame.font.Font] = {}
 
 
 def init_fonts() -> None:

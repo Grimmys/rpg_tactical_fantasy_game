@@ -5,7 +5,7 @@ or items.
 
 import os
 import random
-from typing import Sequence, List, Optional
+from typing import Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -72,7 +72,7 @@ class Chest(Entity):
         potential_items -- a sequence of potential items that could be in the chest with
         their probability to be the one selected
         """
-        bag: List[Item] = []
+        bag: list[Item] = []
         # probability : between 0.1 and 1
         for (item, probability) in potential_items:
             times = int(probability * 100)

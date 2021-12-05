@@ -4,7 +4,7 @@ accomplished by the player during a level.
 """
 
 from enum import Enum, auto
-from typing import Sequence, Union, List, Optional
+from typing import Sequence, Optional
 
 from src.constants import TILE_SIZE
 from src.game_entities.entity import Entity
@@ -72,7 +72,7 @@ class Mission:
         self.gold: int = gold_reward
         self.items: Sequence[Item] = items_reward
         self.min_chars: int = nb_players
-        self.succeeded_chars: List[Player] = []
+        self.succeeded_chars: list[Player] = []
 
     def is_position_valid(self, position: tuple[int, int]) -> bool:
         """

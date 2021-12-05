@@ -348,6 +348,13 @@
                 <y>0</y>
             </position>
             <sprite>imgs/houses/shop.png</sprite>
+            <interaction>
+                <talks>
+                    <talk>
+                        What goods are you looking to buy or sell ?
+                    </talk>
+                </talks>
+            </interaction>
             <items>
                 <item>
                     <name>
