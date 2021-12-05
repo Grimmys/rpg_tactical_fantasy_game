@@ -2,11 +2,13 @@
 Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
-from typing import Sequence, List, TextIO, Callable, Optional
+from typing import Sequence, TextIO, Callable, Optional
 
 import pygame
 from lxml import etree
 from lxml.etree import XMLSyntaxError
+from pygamepopup.components import InfoBox, TextElement
+from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
     SCREEN_SIZE,
@@ -16,14 +18,12 @@ from src.constants import (
     MAIN_WIN_WIDTH,
     MAIN_WIN_HEIGHT
 )
-from src.game_entities.player import Player
-from src.gui.entries import Entries
-from src.gui.position import Position
-from src.services import menu_creator_manager
-from src.gui.fonts import fonts
-from src.scenes.level import Level, LevelStatus
-from src.gui.info_box import InfoBox
 from src.game_entities.movable import Movable
+from src.game_entities.player import Player
+from src.gui.fonts import fonts
+from src.gui.position import Position
+from src.scenes.level import Level, LevelStatus
+from src.services import menu_creator_manager
 
 
 class StartScreen:
@@ -40,10 +40,7 @@ class StartScreen:
     screen -- the pygame Surface corresponding to the active scene
     menu_screen -- copy of the main menu screen to keep it in memory if the scene change
     background -- the background pygame Surface of the scene
-    active_menu -- the reference to the menu in the foreground: it's always the active one
-    background_menus -- the stack of menus in the background,
-    a boolean value is associated to each menu in the background to know
-    if it should be displayed or not
+    menu_manager -- the reference to the menu manager entity
     level -- the reference to the current running level
     levels -- the list of level ids
     level_id -- the id of the current level
@@ -64,16 +61,17 @@ class StartScreen:
             background_image, screen.get_size()
         )
 
-        # Creating menu
-        self.active_menu: InfoBox = menu_creator_manager.create_start_menu(
+        self.menu_manager = MenuManager(screen)
+
+        # Creating main menu
+        self.menu_manager.open_menu(menu_creator_manager.create_start_menu(
             {
                 "new_game": self.new_game,
                 "load_menu": self.load_menu,
                 "options_menu": self.options_menu,
                 "exit_game": self.exit_game,
             }
-        )
-        self.background_menus: List[tuple[InfoBox, bool]] = []
+        ))
 
         # Memorize if a game is currently being performed
         self.level: Optional[Level] = None
@@ -86,8 +84,6 @@ class StartScreen:
         StartScreen.load_options()
 
         self.exit: bool = False
-
-        menu_creator_manager.close_function = self.close_active_menu
 
     @staticmethod
     def load_options():
@@ -134,22 +130,15 @@ class StartScreen:
         """
         if self.level:
             self.screen.fill(BLACK)
-            self.level.display(self.level_screen)
+            self.level.display()
         else:
             self.screen.blit(self.background, (0, 0))
-            for menu in self.background_menus:
-                if menu[1]:
-                    menu[0].display(self.screen)
-            if self.active_menu:
-                self.active_menu.display(self.screen)
+            self.menu_manager.display()
 
-    def play(self, level: Level) -> None:
+    def generate_level_window(self) -> None:
         """
-        Replace the current screen by the appropriate one for playing the game.
-        Set the current level too.
-
-        Keyword arguments:
-        level -- the ongoing level
+        Handle the generation of the part of the screen dedicated to the ongoing level and change the screen according
+        to the set parameters
         """
         # Modify screen
         flags: int = 0
@@ -165,8 +154,6 @@ class StartScreen:
                         self.screen.get_height() // 2 - level_height // 2,
                         level_width, level_height)
         )
-        self.level = level
-        menu_creator_manager.close_function = self.level.close_active_menu
 
     def update_state(self) -> None:
         """
@@ -189,7 +176,8 @@ class StartScreen:
                     player.healed(player.hit_points_max)
                     # Reset player's state
                     player.new_turn()
-                self.play(StartScreen.load_level(self.level_id, team))
+                self.generate_level_window()
+                self.level = StartScreen.load_level(self.level_id, self.level_screen, team)
             elif (
                     status is LevelStatus.ENDED_VICTORY
                     or status is LevelStatus.ENDED_DEFEAT
@@ -197,18 +185,9 @@ class StartScreen:
                 # TODO: Game win dialog?
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
                 self.level = None
-                menu_creator_manager.close_function = self.close_active_menu
-
-    def close_active_menu(self) -> None:
-        """
-        Replace the active menu by the first menu in background if there is any.
-        """
-        self.active_menu = (
-            self.background_menus.pop()[0] if self.background_menus else None
-        )
 
     @staticmethod
-    def load_level(level: int, team: Optional[Sequence[Player]] = None) -> Level:
+    def load_level(level: int, level_screen: pygame.Surface, team: Optional[Sequence[Player]] = None) -> Level:
         """
         Load a specific level.
 
@@ -220,7 +199,7 @@ class StartScreen:
         """
         if team is None:
             team = []
-        return Level("maps/level_" + str(level) + "/", level, players=team)
+        return Level("maps/level_" + str(level) + "/", level, level_screen, players=team)
 
     def new_game(self) -> None:
         """
@@ -228,7 +207,8 @@ class StartScreen:
         """
         # Init the first level
         self.level_id = 0
-        self.play(StartScreen.load_level(self.level_id))
+        self.generate_level_window()
+        self.level = StartScreen.load_level(self.level_id, self.level_screen)
 
     def load_game(self, game_id: int) -> None:
         """
@@ -252,70 +232,60 @@ class StartScreen:
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                level: Level = Level(
+                self.generate_level_window()
+                self.level = Level(
                     level_name,
                     self.level_id,
+                    self.level_screen,
                     LevelStatus[game_status],
                     turn_nb,
                     tree_root.find("level/entities"),
                 )
-                self.play(level)
                 save.close()
                 return
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt
-            self.background_menus.append((self.active_menu, True))
-
             name: str = "Load Game"
-            entries: Entries = [
-                [
-                    {
-                        "type": "text",
-                        "text": "Unable to load saved game. Save file appears corrupt.",
-                        "font": fonts["MENU_SUB_TITLE_FONT"],
-                    }
-                ]
-            ]
             width: int = self.screen.get_width() // 2
-            self.active_menu = InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 name,
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                [
+                    [
+                        TextElement(
+                            "Unable to load saved game. Save file appears corrupt.",
+                            font=fonts["MENU_SUB_TITLE_FONT"]
+                        )
+                    ]
+                ],
                 width=width,
-                close_button=self.close_active_menu,
-            )
+                background_path="imgs/interface/PopUpMenu.png",
+            ))
 
         except FileNotFoundError:
             # No saved game
-            self.background_menus.append((self.active_menu, True))
-
             name: str = "Load Game"
-            entries: Entries = [
-                [
-                    {
-                        "type": "text",
-                        "text": "No saved game.",
-                        "font": fonts["MENU_SUB_TITLE_FONT"],
-                    }
-                ]
-            ]
             width: int = self.screen.get_width() // 2
-            self.active_menu = InfoBox(
+            self.menu_manager.open_menu(InfoBox(
                 name,
-                "imgs/interface/PopUpMenu.png",
-                entries,
+                [
+                    [
+                        TextElement(
+                            "No saved game.",
+                            font=fonts["MENU_SUB_TITLE_FONT"]
+                        )
+                    ]
+                ],
                 width=width,
-                close_button=self.close_active_menu,
-            )
+                background_path="imgs/interface/PopUpMenu.png",
+            ))
 
     def load_menu(self) -> None:
         """
         Move current active menu to the background and set a freshly created load game menu
         as the new active menu.
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_load_menu(self.load_game)
+        self.menu_manager.open_menu(menu_creator_manager.create_load_menu(self.load_game))
 
     def options_menu(self) -> None:
         """
@@ -323,14 +293,13 @@ class StartScreen:
         as the new active menu.
         Current option values are read from the local configuration file.
         """
-        self.background_menus.append((self.active_menu, False))
-        self.active_menu = menu_creator_manager.create_options_menu(
+        self.menu_manager.open_menu(menu_creator_manager.create_options_menu(
             {
                 "move_speed": int(self.read_options_file("move_speed")),
                 "screen_size": int(self.read_options_file("screen_size")),
             },
             self.modify_option_value,
-        )
+        ))
 
     def exit_game(self) -> None:
         """
@@ -376,10 +345,10 @@ class StartScreen:
         position -- the position of the mouse
         """
         if self.level is None:
-            self.active_menu.motion(position)
+            self.menu_manager.motion(position)
         else:
             relative_position: Position = self._compute_relative_position(position)
-            if relative_position >= (0, 0):
+            if relative_position.length() >= 0:
                 self.level.motion(relative_position)
 
     def click(self, button: int, position: Position) -> bool:
@@ -396,11 +365,10 @@ class StartScreen:
         position -- the position of the mouse
         """
         if self.level is None:
-            if button == 1:
-                StartScreen.execute_action(self.active_menu.click(position))
+            self.menu_manager.click(button, position)
         else:
             relative_position: Position = self._compute_relative_position(position)
-            if relative_position >= (0, 0):
+            if relative_position.length() >= 0:
                 self.level.click(button, relative_position)
         return self.exit
 
@@ -416,7 +384,7 @@ class StartScreen:
         """
         if self.level is not None:
             relative_position: Position = self._compute_relative_position(position)
-            if relative_position >= (0, 0):
+            if relative_position.length() >= 0:
                 self.level.button_down(button, relative_position)
 
     def _compute_relative_position(self, position: Position) -> Position:
@@ -426,5 +394,5 @@ class StartScreen:
         Keyword arguments:
         position -- the absolute position to be converted
         """
-        return position[0] - (self.screen.get_width() // 2 - self.level_screen.get_width() // 2), \
-               position[1] - (self.screen.get_height() // 2 - self.level_screen.get_height() // 2)
+        return position - pygame.Vector2(self.screen.get_width() // 2 - self.level_screen.get_width() // 2,
+                                         self.screen.get_height() // 2 - self.level_screen.get_height() // 2)

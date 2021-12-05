@@ -6,11 +6,11 @@ import os
 
 import pygame
 from lxml import etree
+from pygamepopup.components import BoxElement, TextElement
 
 from src.constants import GREEN
 from src.game_entities.character import Character
 from src.game_entities.entity import Entity
-from src.gui.entries import Entries
 from src.gui.fonts import fonts
 
 
@@ -41,11 +41,11 @@ class Building(Entity):
     """
 
     def __init__(
-        self,
-        name: str,
-        position: tuple[int, int],
-        sprite: str,
-        interaction: dict[str, any] = None,
+            self,
+            name: str,
+            position: tuple[int, int],
+            sprite: str,
+            interaction: dict[str, any] = None,
     ) -> None:
         super().__init__(name, position, sprite)
         self.sprite_link: str = sprite
@@ -63,7 +63,7 @@ class Building(Entity):
             os.path.join("sound_fx", "inventory.ogg")
         )
 
-    def interact(self, actor: Character) -> Entries:
+    def interact(self, actor: Character) -> list[list[BoxElement]]:
         """
         Manage the interaction of a character with the building.
 
@@ -77,24 +77,20 @@ class Building(Entity):
         Keyword argument:
         actor -- the character visiting the building
         """
-        entries: Entries = []
+        entries: list[list[BoxElement]] = []
 
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
             entries.append(
                 [
-                    {
-                        "type": "text",
-                        "text": "This house seems closed...",
-                        "font": fonts["ITEM_DESC_FONT"],
-                    }
+                    TextElement("This house seems closed...", font=fonts["ITEM_DESC_FONT"])
                 ]
             )
         else:
             for talk in self.interaction["talks"]:
                 pygame.mixer.Sound.play(self.talk_sfx)
                 entries.append(
-                    [{"type": "text", "text": talk, "font": fonts["ITEM_DESC_FONT"]}]
+                    [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
                 )
             if self.interaction["gold"] > 0:
                 pygame.mixer.Sound.play(self.gold_sfx)
@@ -102,12 +98,7 @@ class Building(Entity):
                 earn_text: str = f'[You received {self.interaction["gold"]} gold]'
                 entries.append(
                     [
-                        {
-                            "type": "text",
-                            "text": earn_text,
-                            "font": fonts["ITEM_DESC_FONT"],
-                            "color": GREEN,
-                        }
+                        TextElement(earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN)
                     ]
                 )
             if self.interaction["item"] is not None:
@@ -116,12 +107,7 @@ class Building(Entity):
                 earn_text: str = f'[You received {self.interaction["item"]}]'
                 entries.append(
                     [
-                        {
-                            "type": "text",
-                            "text": earn_text,
-                            "font": fonts["ITEM_DESC_FONT"],
-                            "color": GREEN,
-                        }
+                        TextElement(earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN)
                     ]
                 )
             # Interaction could not been repeated : should be remove after been used

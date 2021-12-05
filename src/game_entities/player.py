@@ -64,21 +64,21 @@ class Player(Character):
     """
 
     def __init__(
-        self,
-        name: str,
-        sprite: Union[str, pygame.Surface],
-        hit_points: int,
-        defense: int,
-        resistance: int,
-        strength: int,
-        classes: Sequence[str],
-        equipments: list[Equipment],
-        race: str,
-        gold: int,
-        lvl: int,
-        skills: Sequence[Skill],
-        alterations: list[Alteration],
-        complementary_sprite_link: str = None,
+            self,
+            name: str,
+            sprite: Union[str, pygame.Surface],
+            hit_points: int,
+            defense: int,
+            resistance: int,
+            strength: int,
+            classes: Sequence[str],
+            equipments: list[Equipment],
+            race: str,
+            gold: int,
+            lvl: int,
+            skills: Sequence[Skill],
+            alterations: list[Alteration],
+            complementary_sprite_link: str = None,
     ):
         super().__init__(
             name,
@@ -139,7 +139,7 @@ class Player(Character):
         """
         Character.display(self, screen)
         if self.state in range(
-            PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1
+                PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1
         ):
             screen.blit(Player.SELECTED_DISPLAY, self.position)
 
@@ -177,6 +177,19 @@ class Player(Character):
             PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
         )
 
+    def is_waiting_post_action(self) -> bool:
+        """
+        Return whether the player is waiting a post action or not
+        """
+        return self.state is PlayerState.WAITING_POST_ACTION or \
+               self.state is PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
+
+    def target_selected(self) -> None:
+        """
+        Change back the state to waiting an action and not waiting for the selection of a target
+        """
+        self.state = PlayerState.WAITING_POST_ACTION
+
     def set_move(self, position: Sequence[tuple[int, int]]) -> None:
         """
         Set the movement of the player to the given position
@@ -188,19 +201,15 @@ class Player(Character):
         self.state = PlayerState.ON_MOVE
         self.old_position = self.position
 
-    def move(self) -> bool:
+    def move(self) -> None:
         """
         Move the player by one tile.
-        If the target position is reached, change the current state of the player
-
-        Return whether the movement is finished or not.
+        If the target position is reached, change the current state of the player.
         """
         if self.state is PlayerState.ON_MOVE:
             Character.move(self)
             if not self.on_move:
                 self.state = PlayerState.WAITING_POST_ACTION
-                return True
-        return False
 
     def cancel_move(self) -> bool:
         """

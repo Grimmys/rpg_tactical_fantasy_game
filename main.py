@@ -8,6 +8,7 @@ The pygame events are catch here and delegated to the start screen.
 """
 
 import pygame
+import pygamepopup
 
 from src.scenes.start_screen import StartScreen
 
@@ -73,9 +74,19 @@ if __name__ == "__main__":
     from src.services import load_from_xml_manager as loader
 
     pygame.init()
+    pygamepopup.init()
 
     # Load fonts
     fonts.init_fonts()
+
+    # Configure pygame-popup manager : set default assets to be used
+    pygamepopup.configuration.set_info_box_title_font(fonts.fonts["MENU_TITLE_FONT"])
+    pygamepopup.configuration.set_info_box_background("imgs/interface/PopUpMenu.png")
+    pygamepopup.configuration.set_button_title_font(fonts.fonts["BUTTON_FONT"])
+    pygamepopup.configuration.set_dynamic_button_title_font(fonts.fonts["BUTTON_FONT"])
+    pygamepopup.configuration.set_button_background("imgs/interface/MenuButtonInactiv.png",
+                                                    "imgs/interface/MenuButtonPreLight.png")
+    pygamepopup.configuration.set_text_element_font(fonts.fonts["ITEM_FONT"])
 
     # Window parameters
     pygame.display.set_caption(GAME_TITLE)

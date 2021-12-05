@@ -11,7 +11,7 @@ from src.gui.position import Position
 
 
 def blit_alpha(
-    target: pygame.Surface, source: pygame.Surface, location: Position, opacity: int
+        target: pygame.Surface, source: pygame.Surface, location: tuple[int, int], opacity: int
 ):
     """
     Blit a surface on one other but with a specific opacity.
@@ -35,9 +35,9 @@ def distance(position: Position, other_position: Position) -> int:
     other_position -- the other position
     """
     return (
-        sqrt(
-            (position[0] - other_position[0]) ** 2
-            + (position[1] - other_position[1]) ** 2
-        )
-        // TILE_SIZE
+            sqrt(
+                (position[0] - other_position[0]) ** 2
+                + (position[1] - other_position[1]) ** 2
+            )
+            // TILE_SIZE
     )

@@ -1,17 +1,14 @@
+import random as rd
 import shutil
 import unittest
-import random as rd
 
+import pygame
 import pygame as pg
+from pygamepopup.components import Button
 
-from src.scenes.start_screen import StartScreen
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
+from src.scenes.start_screen import StartScreen
 from src.services import menu_creator_manager
-from tests.test_start_screen import (
-    LOAD_GAME_BUTTON_POS,
-    LEFT_BUTTON,
-    LOAD_FIRST_SLOT_BUTTON_POS,
-)
 from tests.tools import minimal_setup_for_game
 
 
@@ -28,35 +25,23 @@ class TestLevel(unittest.TestCase):
         self.start_screen.display()
 
     def import_save_file(self, import_path):
-        """
-
-        :param import_path:
-        """
         shutil.copyfile(import_path, self.save_path)
-        self.start_screen.click(LEFT_BUTTON, LOAD_GAME_BUTTON_POS)
-        self.start_screen.display()
-        self.start_screen.click(LEFT_BUTTON, LOAD_FIRST_SLOT_BUTTON_POS)
+        self.start_screen.load_menu()
+        self.start_screen.load_game(0)
         self.level = self.start_screen.level
 
     def simulate_trade_item(
-        self, item, active_player, other_player, is_active_the_sender
+            self, item, active_player, other_player, is_active_the_sender
     ):
-        """
-
-        :param item:
-        :param active_player:
-        :param other_player:
-        :param is_active_the_sender:
-        """
         # Store the current menu before making trade
-        self.level.background_menus.append((self.level.active_menu, False))
-        self.level.interact(active_player, other_player, ())
+        self.level.menu_manager.reduce_active_menu()
+        self.level.interact(active_player, other_player, pygame.Vector2())
         self.level.interact_trade_item(
-            item, (0, 0), (active_player, other_player), is_active_the_sender
+            item, Button(), (active_player, other_player), is_active_the_sender
         )
         self.level.trade_item(active_player, other_player, is_active_the_sender)
-        self.level.execute_action(self.level.close_active_menu)
-        self.level.execute_action(self.level.close_active_menu)
+        self.level.menu_manager.close_active_menu()
+        self.level.menu_manager.close_active_menu()
 
     def test_distance_between_two_entities(self):
         # Import simple save file
@@ -121,14 +106,14 @@ class TestLevel(unittest.TestCase):
         item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.active_menu = menu_creator_manager.create_player_menu(
+        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
             {"inventory": None, "equipment": None, "status": None, "wait": None},
             active_player,
             [],
             [],
             [],
             [],
-        )
+        ))
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, receiver_player, True)
@@ -155,14 +140,14 @@ class TestLevel(unittest.TestCase):
         item = rd.choice(sender_player.items)
 
         # Open character menu
-        self.level.active_menu = menu_creator_manager.create_player_menu(
+        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
             {"inventory": None, "equipment": None, "status": None, "wait": None},
             active_player,
             [],
             [],
             [],
             [],
-        )
+        ))
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, sender_player, False)
@@ -192,14 +177,14 @@ class TestLevel(unittest.TestCase):
         second_item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.active_menu = menu_creator_manager.create_player_menu(
+        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
             {"inventory": None, "equipment": None, "status": None, "wait": None},
             active_player,
             [],
             [],
             [],
             [],
-        )
+        ))
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, trade_partner_player, False)

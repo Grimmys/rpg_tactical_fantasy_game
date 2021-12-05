@@ -2,16 +2,17 @@
 Define functions creating a specific menu enveloping data from parameters.
 """
 
-from typing import Sequence, Union, Callable
+from typing import Sequence, Union, Callable, Optional
 
 import pygame
+from pygamepopup.components import InfoBox, Button, DynamicButton, TextElement, BoxElement
+from pygamepopup.components.image_button import ImageButton
 
 from src.constants import (
     TILE_SIZE,
     ITEM_MENU_WIDTH,
     ORANGE,
     WHITE,
-    ITEM_BUTTON_SIZE_EQ,
     EQUIPMENT_MENU_WIDTH,
     TRADE_MENU_WIDTH,
     GREEN,
@@ -19,7 +20,6 @@ from src.constants import (
     RED,
     DARK_GREEN,
     GOLD,
-    TURQUOISE,
     STATUS_MENU_WIDTH,
     ACTION_MENU_WIDTH,
     BATTLE_SUMMARY_WIDTH,
@@ -32,12 +32,12 @@ from src.constants import (
     START_MENU_WIDTH,
     ANIMATION_SPEED,
     SCREEN_SIZE,
-    SAVE_SLOTS,
+    SAVE_SLOTS, TURQUOISE, BLACK, TRADE_ITEM_BUTTON_SIZE,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
-from src.game_entities.chest import Chest
 from src.game_entities.character import Character
+from src.game_entities.chest import Chest
 from src.game_entities.consumable import Consumable
 from src.game_entities.door import Door
 from src.game_entities.entity import Entity
@@ -45,42 +45,27 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe
 from src.game_entities.fountain import Fountain
 from src.game_entities.item import Item
-from src.game_entities.skill import Skill
-from src.gui.entries import Entries, Entry, EntryLine
-from src.gui.fonts import fonts
-from src.gui.info_box import InfoBox
 from src.game_entities.mission import MissionType, Mission
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield
+from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
+from src.gui.fonts import fonts
 from src.gui.position import Position
-from src.services.menus import (
-    BuyMenu,
-    SellMenu,
-    InventoryMenu,
-    EquipmentMenu,
-    TradeMenu,
-    StatusMenu,
-    CharacterMenu,
-    MainMenu,
-    ItemMenu,
-    StartMenu,
-    OptionsMenu,
-    SaveMenu,
-    LoadMenu,
-)
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
+INVENTORY_MENU_ID = "inventory"
+SHOP_MENU_ID = "shop"
 
-close_function: Union[Callable, None] = None
+close_function: Optional[Callable] = None
 
 
 def create_shop_menu(
-    interaction_callback: Callable,
-    stock: Sequence[dict[str, Union[Item, int]]],
-    gold: int,
+        interaction_callback: Callable,
+        stock: Sequence[dict[str, Union[Item, int]]],
+        gold: int,
 ) -> InfoBox:
     """
     Return the interface of a shop menu with user as the buyer.
@@ -89,48 +74,53 @@ def create_shop_menu(
     stock -- the collection of items that are available in the shop, with the quantity of each one
     gold -- the amount of gold that should be displayed at the bottom
     """
-    entries = []
+    element_grid = []
     row = []
     for item in stock:
-        entry = {
-            "type": "item_button",
-            "item": item["item"],
-            "price": item["item"].price,
-            "quantity": item["quantity"],
-            "callback": lambda button_position, item_reference=item[
-                "item"
-            ]: interaction_callback(item_reference, button_position),
-        }
-        row.append(entry)
+        item_text_data = [
+            f"Price: {item['item'].price}",
+            f"Quantity: {item['quantity']}"
+        ]
+        item_button = ImageButton(image_path=item["item"].sprite_path,
+                                  title=str(item["item"]),
+                                  size=ITEM_BUTTON_SIZE,
+                                  frame_background_path="imgs/interface/blue_frame.png",
+                                  frame_background_hover_path="imgs/interface/blue_frame.png",
+                                  background_path="imgs/interface/item_frame.png",
+                                  text_color=BLACK,
+                                  complementary_text_lines=item_text_data
+                                  )
+        item_button.callback = lambda button=item_button, item_reference=item[
+            "item"
+        ]: interaction_callback(item_reference, button)
+        row.append(item_button)
         if len(row) == 2:
-            entries.append(row)
+            element_grid.append(row)
             row = []
 
     if row:
-        entries.append(row)
+        element_grid.append(row)
 
     # Gold at end
-    entry = [
-        {"type": "text", "text": f"Your gold : {gold}", "font": fonts["ITEM_DESC_FONT"]}
+    player_gold_line = [
+        TextElement(f"Your gold: {gold}", font=fonts["ITEM_DESC_FONT"])
     ]
-    entries.append(entry)
+    element_grid.append(player_gold_line)
 
     return InfoBox(
         "Shop - Buying",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=BuyMenu,
+        element_grid,
         width=ITEM_MENU_WIDTH,
-        close_button=lambda: close_function(False),
         title_color=ORANGE,
+        identifier=SHOP_MENU_ID
     )
 
 
 def create_inventory_menu(
-    interaction_callback: Callable,
-    items: Sequence[Item],
-    gold: int,
-    is_to_sell: bool = False,
+        interaction_callback: Callable,
+        items: Sequence[Item],
+        gold: int,
+        is_to_sell: bool = False,
 ) -> InfoBox:
     """
     Return the interface of a player inventory.
@@ -141,59 +131,67 @@ def create_inventory_menu(
     is_to_sell -- a boolean value indicating if this interface should be for potentially sell items
     to the active shop or if it's only for looking at them
     """
-    entries = []
+    grid_elements = []
     row = []
-    method_id = SellMenu.INTERAC_SELL if is_to_sell else InventoryMenu.INTERAC_ITEM
     for i, item in enumerate(items):
+        additional_lines = []
+        # Test if price should appeared
+        if is_to_sell and item:
+            additional_lines.append(f"Price: {item.resell_price}")
+        item_button = ImageButton(image_path=item.sprite_path if item else None,
+                                  title=str(item) if item else "",
+                                  size=ITEM_BUTTON_SIZE,
+                                  disabled=not item,
+                                  frame_background_path="imgs/interface/blue_frame.png",
+                                  frame_background_hover_path="imgs/interface/blue_frame.png",
+                                  background_path="imgs/interface/item_frame.png",
+                                  text_color=BLACK,
+                                  complementary_text_lines=additional_lines)
         if is_to_sell:
-            callback = (
-                lambda button_position, item_reference=item: interaction_callback(
-                    item_reference, button_position
+            item_button.callback = (
+                lambda button=item_button, item_reference=item: interaction_callback(
+                    item_reference, button
                 )
             )
         else:
-            callback = (
-                lambda button_position, item_reference=item: interaction_callback(
-                    item_reference, button_position, is_equipped=False
+            item_button.callback = (
+                lambda button=item_button, item_reference=item: interaction_callback(
+                    item_reference, button, is_equipped=False
                 )
             )
-        entry = {"type": "item_button", "item": item, "index": i, "callback": callback}
-        # Test if price should appeared
-        if is_to_sell and item:
-            entry["price"] = item.resell_price
-        row.append(entry)
+
+        row.append(item_button)
         if len(row) == 2:
-            entries.append(row)
+            grid_elements.append(row)
             row = []
     if row:
-        entries.append(row)
+        grid_elements.append(row)
 
     # Gold at end
-    entry = [
-        {
-            "type": "text",
-            "text": "Your gold : " + str(gold),
-            "font": fonts["ITEM_DESC_FONT"],
-        }
+    gold_text = [
+        TextElement(text=f"Your gold: {gold}", font=fonts["ITEM_DESC_FONT"])
     ]
-    entries.append(entry)
+    grid_elements.append(gold_text)
 
-    title = "Shop - Selling" if is_to_sell else "Inventory"
-    menu_id = SellMenu if is_to_sell else InventoryMenu
-    title_color = ORANGE if is_to_sell else WHITE
+    if is_to_sell:
+        title = "Shop - Selling"
+        title_color = ORANGE
+        identifier = SHOP_MENU_ID
+    else:
+        title = "Inventory"
+        title_color = WHITE
+        identifier = INVENTORY_MENU_ID
     return InfoBox(
         title,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=menu_id,
+        grid_elements,
         width=ITEM_MENU_WIDTH,
-        close_button=lambda: close_function(False),
         title_color=title_color,
+        identifier=identifier,
     )
 
 
 def create_equipment_menu(
-    interaction_callback: Callable, equipments: Sequence[Equipment]
+        interaction_callback: Callable, equipments: Sequence[Equipment]
 ) -> InfoBox:
     """
     Return the interface of a player equipment.
@@ -201,41 +199,36 @@ def create_equipment_menu(
     Keyword arguments:
     equipments -- the collection of equipments currently equipped by the player
     """
-    entries = []
+    grid_elements = []
     body_parts = [["head"], ["body"], ["right_hand", "left_hand"], ["feet"]]
     for part in body_parts:
         row = []
         for member in part:
             equipment = None
-            index = -1
-            for i, potential_equipment in enumerate(equipments):
+            for potential_equipment in equipments:
                 if member == potential_equipment.body_part:
                     equipment = potential_equipment
-                    index = i
                     break
-            entry = {
-                "type": "item_button",
-                "item": equipment,
-                "index": index,
-                "size": ITEM_BUTTON_SIZE_EQ,
-                "callback": lambda button_position, equipment_reference=equipment: interaction_callback(
-                    equipment_reference, button_position, is_equipped=True
-                ),
-            }
-            row.append(entry)
-        entries.append(row)
+            element = ImageButton(image_path=equipment.sprite_path if equipment else None,
+                                  title=str(equipment) if equipment else "", size=ITEM_BUTTON_SIZE,
+                                  disabled=not equipment,
+                                  frame_background_path="imgs/interface/blue_frame.png",
+                                  frame_background_hover_path="imgs/interface/blue_frame.png",
+                                  background_path="imgs/interface/item_frame.png",
+                                  text_color=BLACK)
+            element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(
+                equipment_reference, button_linked, is_equipped=True)
+            row.append(element)
+        grid_elements.append(row)
     return InfoBox(
         "Equipment",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=EquipmentMenu,
-        width=EQUIPMENT_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        grid_elements,
+        width=EQUIPMENT_MENU_WIDTH
     )
 
 
 def create_trade_menu(
-    buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
+        buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
 ) -> InfoBox:
     """
     Return the interface for a trade between two players
@@ -255,122 +248,76 @@ def create_trade_menu(
     free_spaces = items_max - len(items_second)
     items_second += [None] * free_spaces
 
-    entries = []
-    method_id = TradeMenu.INTERAC_ITEM
+    grid_elements = []
     # We assume that first player and second player items lists have the same size and are even
     for i in range(len(items_first) // 2):
         row = []
         for owner_i, items in enumerate([items_first, items_second]):
             for j in range(2):
-                entry = {
-                    "type": "item_button",
-                    "item": items[i * 2 + j],
-                    "index": i,
-                    "subtype": "trade",
-                    "callback": lambda button_position, item_reference=items[
-                        i * 2 + j
+                item_button = ImageButton(
+                    image_path=items[i * 2 + j].sprite_path if items[i * 2 + j] else None,
+                    title=str(items[i * 2 + j]) if items[i * 2 + j] else "",
+                    size=TRADE_ITEM_BUTTON_SIZE,
+                    disabled=not items[i * 2 + j],
+                    frame_background_path="imgs/interface/blue_frame.png",
+                    frame_background_hover_path="imgs/interface/blue_frame.png",
+                    background_path="imgs/interface/item_frame.png",
+                    text_color=BLACK,
+                )
+                item_button.callback = lambda button=item_button, item_reference=items[
+                    i * 2 + j
                     ], owner=owner_i: buttons_callback["interact_item"](
-                        item_reference,
-                        button_position,
-                        [first_player, second_player],
-                        owner == 0,
-                    ),
-                }
-                row.append(entry)
-        entries.append(row)
+                    item_reference,
+                    button,
+                    [first_player, second_player],
+                    owner == 0,
+                )
+                row.append(item_button)
+        grid_elements.append(row)
 
     # Buttons to trade gold
-    method_id = TradeMenu.SEND_GOLD
-    entry = [
-        {
-            "type": "button",
-            "name": "50G ->",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, True, 50
-            ),
-        },
-        {
-            "type": "button",
-            "name": "200G ->",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, True, 200
-            ),
-        },
-        {
-            "type": "button",
-            "name": "All ->",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, True, first_player.gold
-            ),
-        },
-        {
-            "type": "button",
-            "name": "<- 50G",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, False, 50
-            ),
-        },
-        {
-            "type": "button",
-            "name": "<- 200G",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, False, 200
-            ),
-        },
-        {
-            "type": "button",
-            "name": "<- All",
-            "size": (90, 30),
-            "margin": (30, 0, 0, 0),
-            "font": fonts["ITEM_DESC_FONT"],
-            "callback": lambda: buttons_callback["send_gold"](
-                first_player, second_player, False, second_player.gold
-            ),
-        },
+    trade_gold_row = [
+        Button(title="50G ->", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, True, 50
+               )),
+        Button(title="200G ->", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, True, 200
+               )),
+        Button(title="All ->", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, True, first_player.gold
+               )),
+        Button(title="<- 50G", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, False, 50
+               )),
+        Button(title="<- 200G", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, False, 200
+               )),
+        Button(title="<- All", size=(90, 30), margin=(30, 0, 0, 0), font=fonts["ITEM_DESC_FONT"],
+               callback=lambda: buttons_callback["send_gold"](
+                   first_player, second_player, False, second_player.gold
+               )),
     ]
-    entries.append(entry)
+    grid_elements.append(trade_gold_row)
 
     # Gold at end
-    entry = [
-        {
-            "type": "text",
-            "text": str(first_player) + "'s gold : " + str(first_player.gold),
-            "font": fonts["ITEM_DESC_FONT"],
-        },
-        {
-            "type": "text",
-            "text": str(second_player) + "'s gold : " + str(second_player.gold),
-            "font": fonts["ITEM_DESC_FONT"],
-        },
+    gold_row = [
+        TextElement(f"{first_player}'s gold: {first_player.gold}", font=fonts["ITEM_DESC_FONT"]),
+        TextElement(f"{second_player}'s gold: {second_player.gold}", font=fonts["ITEM_DESC_FONT"]),
     ]
-    entries.append(entry)
+    grid_elements.append(gold_row)
 
     title = "Trade"
-    menu_id = TradeMenu
     title_color = WHITE
     return InfoBox(
         title,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=menu_id,
+        grid_elements,
         width=TRADE_MENU_WIDTH,
-        close_button=lambda: close_function(False),
-        separator=True,
+        has_vertical_separator=True,
         title_color=title_color,
     )
 
@@ -396,7 +343,7 @@ def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
 
 
 def create_status_menu(
-    buttons_callback: dict[str, Callable], player: Player
+        buttons_callback: dict[str, Callable], player: Player
 ) -> InfoBox:
     """
     Return the interface resuming the status of a player.
@@ -404,187 +351,107 @@ def create_status_menu(
     Keyword arguments:
     player -- the concerned player
     """
-    entries = [
+    grid_elements = [
         [
-            {},
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Name :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": str(player)},
-            {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("Name :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(str(player)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {},
-            {},
-            {
-                "type": "text",
-                "color": DARK_GREEN,
-                "text": "SKILLS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "margin": (10, 0, 10, 0),
-            },
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("SKILLS", text_color=DARK_GREEN, font=fonts["MENU_SUB_TITLE_FONT"], margin=(10, 0, 10, 0)),
         ],
         [
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Class :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": player.get_formatted_classes()},
+            TextElement("Class :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(player.get_formatted_classes()),
         ],
         [
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Race :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": player.get_formatted_race()},
+            TextElement("Race :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(player.get_formatted_race()),
         ],
         [
-            {
-                "type": "text",
-                "color": GREEN,
-                "text": "Level :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {"type": "text", "text": str(player.lvl)},
+            TextElement("Level :", text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(str(player.lvl))
         ],
         [
-            {
-                "type": "text",
-                "color": GOLD,
-                "text": "   XP :",
-                "font": fonts["ITALIC_ITEM_FONT"],
-            },
-            {
-                "type": "text",
-                "text": f"{player.experience} / {player.experience_to_lvl_up}",
-            },
+            TextElement("  XP :", text_color=GOLD, font=fonts["ITALIC_ITEM_FONT"]),
+            TextElement(f"{player.experience} / {player.experience_to_lvl_up}")
         ],
         [
-            {
-                "type": "text",
-                "color": DARK_GREEN,
-                "text": "STATS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "margin": (10, 0, 10, 0),
-            }
+            TextElement("STATS", text_color=DARK_GREEN, font=fonts["MENU_SUB_TITLE_FONT"], margin=(10, 0, 10, 0)),
         ],
         [
-            {"type": "text", "color": WHITE, "text": "HP :"},
-            {
-                "type": "text",
-                "text": f"{player.hit_points} / {player.hit_points_max}",
-                "color": determine_hp_color(player.hit_points, player.hit_points_max),
-            },
+            TextElement("HP :", text_color=WHITE),
+            TextElement(f"{player.hit_points} / {player.hit_points_max}",
+                        text_color=determine_hp_color(player.hit_points, player.hit_points_max)),
         ],
         [
-            {"type": "text", "color": WHITE, "text": "MOVE :"},
-            {
-                "type": "text",
-                "text": str(player.max_moves)
-                + player.get_formatted_stat_change("speed"),
-            },
+            TextElement("MOVE :", text_color=WHITE),
+            TextElement(str(player.max_moves) + player.get_formatted_stat_change("speed"))
         ],
         [
-            {"type": "text", "color": WHITE, "text": "CONSTITUTION :"},
-            {"type": "text", "text": str(player.constitution)},
+            TextElement("CONSTITUTION :", text_color=WHITE),
+            TextElement(str(player.constitution))
         ],
         [
-            {"type": "text", "color": WHITE, "text": "ATTACK :"},
-            {
-                "type": "text",
-                "text": str(player.strength)
-                + player.get_formatted_stat_change("strength"),
-            },
+            TextElement("ATTACK :", text_color=WHITE),
+            TextElement(str(player.strength) + player.get_formatted_stat_change("strength")),
         ],
         [
-            {"type": "text", "color": WHITE, "text": "DEFENSE :"},
-            {
-                "type": "text",
-                "text": str(player.defense)
-                + player.get_formatted_stat_change("defense"),
-            },
+            TextElement("DEFENSE :", text_color=WHITE),
+            TextElement(str(player.defense) + player.get_formatted_stat_change("defense"))
         ],
         [
-            {"type": "text", "color": WHITE, "text": "MAGICAL RES :"},
-            {
-                "type": "text",
-                "text": str(player.resistance)
-                + player.get_formatted_stat_change("resistance"),
-            },
+            TextElement("MAGICAL RES :", text_color=WHITE),
+            TextElement(str(player.resistance) + player.get_formatted_stat_change("resistance"))
         ],
         [
-            {
-                "type": "text",
-                "color": DARK_GREEN,
-                "text": "ALTERATIONS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "margin": (10, 0, 10, 0),
-            }
+            TextElement("ALTERATIONS", text_color=DARK_GREEN, font=fonts["MENU_SUB_TITLE_FONT"], margin=(10, 0, 10, 0))
         ],
     ]
 
     if not player.alterations:
-        entries.append([{"type": "text", "color": WHITE, "text": "None"}])
+        grid_elements.append([TextElement("None", text_color=WHITE)])
     for alteration in player.alterations:
-        entries.append(
+        grid_elements.append(
             [
-                {
-                    "type": "text_button",
-                    "name": str(alteration),
-                    "callback": lambda alteration_reference=alteration: buttons_callback[
-                        "info_alteration"
-                    ](
-                        alteration_reference
-                    ),
-                    "color": WHITE,
-                    "color_hover": TURQUOISE,
-                    "obj": alteration,
-                }
+                Button(title=str(alteration),
+                       callback=lambda alteration_reference=alteration: buttons_callback["info_alteration"](
+                           alteration_reference),
+                       no_background=True,
+                       text_hover_color=TURQUOISE),
             ]
         )
 
     # Display skills
     i = 2
     for skill in player.skills:
-        skill_displayed = {
-            "type": "text_button",
-            "name": skill.formatted_name,
-            "callback": lambda skill_reference=skill: buttons_callback["info_skill"](
-                skill_reference
-            ),
-            "color": WHITE,
-            "color_hover": TURQUOISE,
-            "obj": skill,
-        }
-        entries[i].append(skill_displayed)
+        skill_displayed = Button(title=skill.formatted_name,
+                                 margin=(0, 0, 0, 0),
+                                 callback=lambda skill_reference=skill: buttons_callback["info_skill"](skill_reference),
+                                 no_background=True,
+                                 text_hover_color=TURQUOISE)
+        grid_elements[i].append(skill_displayed)
         i += 1
-    for j in range(i, len(entries)):
-        entries[j].append({})
+    for j in range(i, len(grid_elements)):
+        grid_elements[j].append(BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)))
 
     return InfoBox(
         "Status",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=StatusMenu,
+        grid_elements,
         width=STATUS_MENU_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 
 def create_player_menu(
-    buttons_callback: dict[str, Callable],
-    player: Player,
-    buildings: Sequence[Building],
-    interactable_entities: Sequence[Entity],
-    missions: Sequence[Mission],
-    foes: Sequence[Foe],
+        buttons_callback: dict[str, Callable],
+        player: Player,
+        buildings: Sequence[Building],
+        interactable_entities: Sequence[Entity],
+        missions: Sequence[Mission],
+        foes: Sequence[Foe],
 ) -> InfoBox:
     """
     Return the interface of a player menu.
@@ -597,11 +464,11 @@ def create_player_menu(
     missions -- the missions of the current level
     foes -- the foes that are still alive on the current level
     """
-    entries = [
-        [{"name": "Inventory", "callback": buttons_callback["inventory"]}],
-        [{"name": "Equipment", "callback": buttons_callback["equipment"]}],
-        [{"name": "Status", "callback": buttons_callback["status"]}],
-        [{"name": "Wait", "callback": buttons_callback["wait"]}],
+    grid_elements = [
+        [Button(title="Inventory", callback=buttons_callback["inventory"])],
+        [Button(title="Equipment", callback=buttons_callback["equipment"])],
+        [Button(title="Status", callback=buttons_callback["status"])],
+        [Button(title="Wait", callback=buttons_callback["wait"])],
     ]
 
     # Options flags
@@ -617,103 +484,88 @@ def create_player_menu(
     if (0, 0) < case_pos < (MAP_WIDTH, MAP_HEIGHT):
         for building in buildings:
             if building.position == case_pos:
-                entries.insert(
-                    0, [{"name": "Visit", "callback": buttons_callback["visit"]}]
+                grid_elements.insert(
+                    0, [Button(title="Visit", callback=buttons_callback["visit"])]
                 )
                 break
 
     for entity in interactable_entities:
         if (
-            abs(entity.position[0] - player.position[0])
-            + abs(entity.position[1] - player.position[1])
-            == TILE_SIZE
+                abs(entity.position[0] - player.position[0])
+                + abs(entity.position[1] - player.position[1])
+                == TILE_SIZE
         ):
             if isinstance(entity, Player):
                 if not trade_option:
-                    entries.insert(
-                        0, [{"name": "Trade", "callback": buttons_callback["trade"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Trade", callback=buttons_callback["trade"])]
                     )
                     trade_option = True
             elif isinstance(entity, Chest):
                 if not entity.opened and not chest_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Open Chest",
-                                "callback": buttons_callback["open_chest"],
-                            }
+                            Button(title="Open Chest", callback=buttons_callback["open_chest"])
                         ],
                     )
                     chest_option = True
                 if "lock_picking" in player.skills and not pick_lock_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Pick Lock",
-                                "callback": buttons_callback["pick_lock"],
-                            }
+                            Button(title="Pick Lock", callback=buttons_callback["pick_lock"])
                         ],
                     )
                     pick_lock_option = True
             elif isinstance(entity, Door):
                 if not door_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Open Door",
-                                "callback": buttons_callback["open_door"],
-                            }
+                            Button(title="Open Door", callback=buttons_callback["open_door"])
                         ],
                     )
                     door_option = True
                 if "lock_picking" in player.skills and not pick_lock_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Pick Lock",
-                                "callback": buttons_callback["pick_lock"],
-                            }
+                            Button(title="Pick Lock", callback=buttons_callback["pick_lock"])
                         ],
                     )
                     pick_lock_option = True
             elif isinstance(entity, Portal):
                 if not portal_option:
-                    entries.insert(
+                    grid_elements.insert(
                         0,
                         [
-                            {
-                                "name": "Use Portal",
-                                "callback": buttons_callback["use_portal"],
-                            }
+                            Button(title="Use Portal", callback=buttons_callback["use_portal"])
                         ],
                     )
                     portal_option = True
             elif isinstance(entity, Fountain):
                 if not fountain_option:
-                    entries.insert(
-                        0, [{"name": "Drink", "callback": buttons_callback["drink"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Drink", callback=buttons_callback["drink"])]
                     )
                     fountain_option = True
             elif isinstance(entity, Character):
                 if not talk_option:
-                    entries.insert(
-                        0, [{"name": "Talk", "callback": buttons_callback["talk"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Talk", callback=buttons_callback["talk"])]
                     )
                     talk_option = True
 
     # Check if player is on mission position
     for mission in missions:
         if (
-            mission.type is MissionType.POSITION
-            or mission.type is MissionType.TOUCH_POSITION
+                mission.type is MissionType.POSITION
+                or mission.type is MissionType.TOUCH_POSITION
         ):
             if mission.is_position_valid(player.position):
-                entries.insert(
-                    0, [{"name": "Take", "callback": buttons_callback["take"]}]
+                grid_elements.insert(
+                    0, [Button(title="Take", callback=buttons_callback["take"])]
                 )
 
     # Check if player could attack something, according to weapon range
@@ -723,33 +575,28 @@ def create_player_menu(
         for foe in foes:
             for reach in w_range:
                 if (
-                    abs(foe.position[0] - player.position[0])
-                    + abs(foe.position[1] - player.position[1])
-                    == TILE_SIZE * reach
+                        abs(foe.position[0] - player.position[0])
+                        + abs(foe.position[1] - player.position[1])
+                        == TILE_SIZE * reach
                 ):
-                    entries.insert(
-                        0, [{"name": "Attack", "callback": buttons_callback["attack"]}]
+                    grid_elements.insert(
+                        0, [Button(title="Attack", callback=buttons_callback["attack"])]
                     )
                     end = True
                     break
             if end:
                 break
 
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
     return InfoBox(
         "Select an action",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=CharacterMenu,
+        grid_elements,
         width=ACTION_MENU_WIDTH,
         element_linked=player.get_rect(),
+        has_close_button=False
     )
 
 
-def create_diary_menu(entries: Entries) -> InfoBox:
+def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
     """
     Return the interface of the diary resuming the last battle logs of a specific player.
 
@@ -758,17 +605,15 @@ def create_diary_menu(entries: Entries) -> InfoBox:
     """
     return InfoBox(
         "Diary",
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        grid_elements,
         width=BATTLE_SUMMARY_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 
 def create_main_menu(
-    buttons_callback: dict[str, Callable],
-    is_initialization_phase: bool,
-    position: Position,
+        buttons_callback: dict[str, Callable],
+        is_initialization_phase: bool,
+        position: Position,
 ) -> InfoBox:
     """
     Return the interface of the main level menu.
@@ -780,33 +625,28 @@ def create_main_menu(
     """
     # Transform pos tuple into rect
     tile = pygame.Rect(position[0], position[1], 1, 1)
-    entries = [
-        [{"name": "Save", "callback": buttons_callback["save"]}],
-        [{"name": "Suspend", "callback": buttons_callback["suspend"]}],
+    elements = [
+        [Button(title="Save", callback=buttons_callback["save"])],
+        [Button(title="Suspend", callback=buttons_callback["suspend"])],
     ]
 
     if is_initialization_phase:
-        entries.append([{"name": "Start", "callback": buttons_callback["start"]}])
+        elements.append([Button(title="Start", callback=buttons_callback["start"])])
     else:
-        entries.append([{"name": "Diary", "callback": buttons_callback["diary"]}]),
-        entries.append([{"name": "End Turn", "callback": buttons_callback["end_turn"]}])
-
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
+        elements.append([Button(title="Diary", callback=buttons_callback["diary"])]),
+        elements.append([Button(title="End Turn", callback=buttons_callback["end_turn"])])
 
     return InfoBox(
         "Main Menu",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=MainMenu,
+        elements,
         width=ACTION_MENU_WIDTH,
         element_linked=tile,
+        has_close_button=False
     )
 
 
 def create_item_shop_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
@@ -815,9 +655,9 @@ def create_item_shop_menu(
     item_button_position -- the position of the item (so the pop-up could be displayed beside it)
     item -- the concerned item
     """
-    entries = [
-        [{"name": "Buy", "callback": buttons_callback["buy_item"], "type": "button"}],
-        [{"name": "Info", "callback": buttons_callback["info_item"], "type": "button"}],
+    element_grid = [
+        [Button(title="Buy", callback=buttons_callback["buy_item"])],
+        [Button(title="Info", callback=buttons_callback["info_item"])],
     ]
     formatted_item_name = str(item)
     item_rect = pygame.Rect(
@@ -829,17 +669,14 @@ def create_item_shop_menu(
 
     return InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        element_grid,
         width=ACTION_MENU_WIDTH,
-        element_linked=item_rect,
-        close_button=lambda: close_function(False),
+        element_linked=item_rect
     )
 
 
 def create_item_sell_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory and can be sold in a shop.
@@ -848,9 +685,9 @@ def create_item_sell_menu(
     item_button_position -- the position of the item (so the pop-up could be displayed beside it)
     item -- the concerned item
     """
-    entries = [
-        [{"name": "Sell", "callback": buttons_callback["sell_item"], "type": "button"}],
-        [{"name": "Info", "callback": buttons_callback["info_item"], "type": "button"}],
+    element_grid = [
+        [Button(title="Sell", callback=buttons_callback["sell_item"])],
+        [Button(title="Info", callback=buttons_callback["info_item"])],
     ]
     formatted_item_name = str(item)
     item_rect = pygame.Rect(
@@ -862,21 +699,18 @@ def create_item_sell_menu(
 
     return InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        element_grid,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button=lambda: close_function(False),
     )
 
 
 def create_trade_item_menu(
-    buttons_callback: dict[str, Callable],
-    item_button_position: Position,
-    item: Item,
-    players: Sequence[Player],
-    is_first_player_owner: bool,
+        buttons_callback: dict[str, Callable],
+        item_button_position: Position,
+        item: Item,
+        players: Sequence[Player],
+        is_first_player_owner: bool,
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory
@@ -887,46 +721,37 @@ def create_trade_item_menu(
     item -- the concerned item
     players -- the two players that are currently involve in the trade
     """
-    entries = [
-        [{"name": "Info", "callback": buttons_callback["info_item"]}],
+    grid_elements = [
         [
-            {
-                "name": "Trade",
-                "callback": lambda: buttons_callback["trade_item"](
-                    players[0], players[1], is_first_player_owner
-                ),
-            }
-        ],
+            Button(title="Info",
+                   callback=buttons_callback["info_item"])
+        ], [
+            Button(title="Trade",
+                   callback=lambda: buttons_callback["trade_item"](players[0], players[1], is_first_player_owner))
+        ]
     ]
     formatted_item_name = str(item)
-
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
 
     item_rect = pygame.Rect(
         item_button_position[0] - 20,
         item_button_position[1],
-        ITEM_BUTTON_SIZE[0],
-        ITEM_BUTTON_SIZE[1],
+        TRADE_ITEM_BUTTON_SIZE[0],
+        TRADE_ITEM_BUTTON_SIZE[1],
     )
 
     return InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        grid_elements,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button=lambda: close_function(False),
     )
 
 
 def create_item_menu(
-    buttons_callback: dict[str, Callable],
-    item_button_position: Position,
-    item: Item,
-    is_equipped: bool = False,
+        buttons_callback: dict[str, Callable],
+        item_button_rect: pygame.Rect,
+        item: Item,
+        is_equipped: bool = False,
 ) -> InfoBox:
     """
     Return the interface of an item of a player.
@@ -936,47 +761,33 @@ def create_item_menu(
     item -- the concerned item
     is_equipped -- a boolean value indicating whether the item is currently equipped or not
     """
-    entries = [
-        [{"name": "Info", "callback": buttons_callback["info_item"]}],
-        [{"name": "Throw", "callback": buttons_callback["throw_item"]}],
+    element_grid = [
+        [Button(title="Info", callback=buttons_callback["info_item"])],
+        [Button(title="Throw", callback=buttons_callback["throw_item"])],
     ]
     formatted_item_name = str(item)
 
     if isinstance(item, Consumable):
-        entries.insert(0, [{"name": "Use", "callback": buttons_callback["use_item"]}])
+        element_grid.insert(0, [Button(title="Use", callback=buttons_callback["use_item"])])
     elif isinstance(item, Equipment):
         if is_equipped:
-            entries.insert(
-                0, [{"name": "Unequip", "callback": buttons_callback["unequip_item"]}]
+            element_grid.insert(
+                0, [Button(title="Unequip", callback=buttons_callback["unequip_item"])]
             )
         else:
-            entries.insert(
-                0, [{"name": "Equip", "callback": buttons_callback["equip_item"]}]
+            element_grid.insert(
+                0, [Button(title="Equip", callback=buttons_callback["equip_item"])]
             )
-
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
-    item_rect = pygame.Rect(
-        item_button_position[0] - 20,
-        item_button_position[1],
-        ITEM_BUTTON_SIZE[0],
-        ITEM_BUTTON_SIZE[1],
-    )
 
     return InfoBox(
         formatted_item_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=ItemMenu,
+        element_grid,
         width=ACTION_MENU_WIDTH,
-        element_linked=item_rect,
-        close_button=lambda: close_function(False),
+        element_linked=item_button_rect
     )
 
 
-def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
+def create_item_description_stat(stat_name: str, stat_value: str) -> Sequence[BoxElement]:
     """
     Return the entry line for the formatted display of an item stat description.
 
@@ -985,18 +796,8 @@ def create_item_description_stat(stat_name: str, stat_value: str) -> EntryLine:
     stat_value -- the value of the statistic
     """
     return [
-        {
-            "type": "text",
-            "text": f"{stat_name} : ",
-            "font": fonts["ITEM_DESC_FONT"],
-            "margin": (0, 0, 0, 100),
-        },
-        {
-            "type": "text",
-            "text": stat_value,
-            "font": fonts["ITEM_DESC_FONT"],
-            "margin": (0, 100, 0, 0),
-        },
+        TextElement(f"{stat_name}: ", font=fonts["ITEM_DESC_FONT"], margin=(0, 0, 0, 100)),
+        TextElement(stat_value, font=fonts["ITEM_DESC_FONT"], margin=(0, 100, 0, 0)),
     ]
 
 
@@ -1009,30 +810,25 @@ def create_item_description_menu(item: Item) -> InfoBox:
     """
     item_title = str(item)
 
-    entries = [
+    grid_elements = [
         [
-            {
-                "type": "text",
-                "text": item.description,
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (20, 0, 20, 0),
-            }
+            TextElement(item.description, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0))
         ]
     ]
 
     if isinstance(item, Equipment):
         if item.restrictions != {}:
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat(
                     "RESERVED TO", item.get_formatted_restrictions()
                 )
             )
         if item.attack > 0:
-            entries.append(create_item_description_stat("POWER", str(item.attack)))
+            grid_elements.append(create_item_description_stat("POWER", str(item.attack)))
         if item.defense > 0:
-            entries.append(create_item_description_stat("DEFENSE", str(item.defense)))
+            grid_elements.append(create_item_description_stat("DEFENSE", str(item.defense)))
         if item.resistance > 0:
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat("MAGICAL RES", str(item.resistance))
             )
         if isinstance(item, Weapon):
@@ -1041,14 +837,14 @@ def create_item_description_menu(item: Item) -> InfoBox:
             for distance in item.reach:
                 reach_txt += str(distance) + ", "
             reach_txt = reach_txt[: len(reach_txt) - 2]
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat(
                     "TYPE OF DAMAGE", str(item.attack_kind.value)
                 )
             )
-            entries.append(create_item_description_stat("REACH", reach_txt))
+            grid_elements.append(create_item_description_stat("REACH", reach_txt))
             for possible_effect in item.effects:
-                entries.append(
+                grid_elements.append(
                     create_item_description_stat(
                         "EFFECT",
                         f'{possible_effect["effect"]} ({possible_effect["probability"]}%)',
@@ -1056,34 +852,32 @@ def create_item_description_menu(item: Item) -> InfoBox:
                 )
             strong_against_formatted = item.get_formatted_strong_against()
             if strong_against_formatted:
-                entries.append(
+                grid_elements.append(
                     create_item_description_stat(
                         "STRONG AGAINST", strong_against_formatted
                     )
                 )
         if isinstance(item, Shield):
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat("PARRY RATE", str(item.parry) + "%")
             )
         if isinstance(item, (Shield, Weapon)):
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat(
                     "DURABILITY", f"{item.durability} / {item.durability_max}"
                 )
             )
-        entries.append(create_item_description_stat("WEIGHT", str(item.weight)))
+        grid_elements.append(create_item_description_stat("WEIGHT", str(item.weight)))
     elif isinstance(item, Consumable):
         for effect in item.effects:
-            entries.append(
+            grid_elements.append(
                 create_item_description_stat("EFFECT", effect.get_formatted_description())
             )
 
     return InfoBox(
         item_title,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        width=ITEM_INFO_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        grid_elements,
+        width=ITEM_INFO_MENU_WIDTH
     )
 
 
@@ -1095,32 +889,20 @@ def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
     alteration -- the concerned alteration
     """
     turns_left = alteration.get_turns_left()
-    entries = [
+    grid_elements = [
         [
-            {
-                "type": "text",
-                "text": alteration.description,
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (20, 0, 20, 0),
-            }
+            TextElement(alteration.description, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0)),
         ],
         [
-            {
-                "type": "text",
-                "text": f"Turns left : {turns_left}",
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (0, 0, 10, 0),
-                "color": ORANGE,
-            }
+            TextElement(f"Turns left: {turns_left}", font=fonts["ITEM_DESC_FONT"], margin=(0, 0, 10, 0),
+                        text_color=ORANGE),
         ],
     ]
 
     return InfoBox(
         str(alteration),
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 
@@ -1131,24 +913,19 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
     Keyword arguments:
     skill -- the concerned skill
     """
-    entries = [
+    grid_elements = [
         [
-            {
-                "type": "text",
-                "text": skill.description,
-                "font": fonts["ITEM_DESC_FONT"],
-                "margin": (20, 0, 20, 0),
-            }
+            TextElement(skill.description,
+                        font=fonts["ITEM_DESC_FONT"],
+                        margin=(20, 0, 20, 0))
         ],
-        [{"type": "text", "text": "", "margin": (0, 0, 10, 0)}],
+        [BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), margin=(0, 0, 10, 0))],
     ]
 
     return InfoBox(
         skill.formatted_name,
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
-        close_button=lambda: close_function(False),
     )
 
 
@@ -1162,136 +939,109 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     keywords_display = (
         entity.get_formatted_keywords() if isinstance(entity, Foe) else ""
     )
-    entries = [
-        [{"type": "text", "text": keywords_display, "font": fonts["ITALIC_ITEM_FONT"]}],
+    elements: list[list[BoxElement]] = [
         [
-            {
-                "type": "text",
-                "text": f"LEVEL : {entity.lvl}",
-                "font": fonts["ITEM_DESC_FONT"],
-            }
+            TextElement(keywords_display, font=fonts["ITALIC_ITEM_FONT"])
         ],
         [
-            {
-                "type": "text",
-                "text": "ATTACK",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (20, 0, 20, 0),
-            },
-            {},
-            {},
-            {
-                "type": "text",
-                "text": "LOOT",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (20, 0, 20, 0),
-            }
-            if isinstance(entity, Foe)
-            else {},
-            {},
+            TextElement(f"LEVEL : {entity.lvl}", font=fonts["ITEM_DESC_FONT"])
         ],
         [
-            {"type": "text", "text": "TYPE :"},
-            {"type": "text", "text": str(entity.attack_kind.value)},
-            {},
-            {},
-            {},
+            TextElement("ATTACK", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(20, 0, 20, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("LOOT", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN,
+                        margin=(20, 0, 20, 0)) if isinstance(entity, Foe) else BoxElement(pygame.Vector2(0, 0),
+                                                                                          pygame.Surface((0, 0)),
+                                                                                          (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "REACH :"},
-            {"type": "text", "text": entity.get_formatted_reach()},
-            {},
-            {},
-            {},
-        ],
-        [{}, {}, {}, {}, {}],
-        [{}, {}, {}, {}, {}],
-        [
-            {
-                "type": "text",
-                "text": "STATS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (10, 0, 10, 0),
-            },
-            {},
-            {},
-            {
-                "type": "text",
-                "text": "SKILLS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (10, 0, 10, 0),
-            },
-            {},
+            TextElement("TYPE :"),
+            TextElement(str(entity.attack_kind.value)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "HP :"},
-            {
-                "type": "text",
-                "text": f"{entity.hit_points} / {entity.hit_points_max}",
-                "color": determine_hp_color(entity.hit_points, entity.hit_points_max),
-            },
-            {},
-            {},
-            {},
+            TextElement("REACH :"),
+            TextElement(entity.get_formatted_reach()),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "MOVE :"},
-            {"type": "text", "text": str(entity.max_moves)},
-            {},
-            {},
-            {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "ATTACK :"},
-            {"type": "text", "text": str(entity.strength)},
-            {},
-            {},
-            {},
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "DEFENSE :"},
-            {"type": "text", "text": str(entity.defense)},
-            {},
-            {},
-            {},
+            TextElement("STATS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(10, 0, 10, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            TextElement("SKILLS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN, margin=(10, 0, 10, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {"type": "text", "text": "MAGICAL RES :"},
-            {"type": "text", "text": str(entity.resistance)},
-            {},
-            {},
-            {},
+            TextElement("HP :"),
+            TextElement(f"{entity.hit_points} / {entity.hit_points_max}",
+                        text_color=determine_hp_color(entity.hit_points, entity.hit_points_max)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            {
-                "type": "text",
-                "text": "ALTERATIONS",
-                "font": fonts["MENU_SUB_TITLE_FONT"],
-                "color": DARK_GREEN,
-                "margin": (10, 0, 10, 0),
-            }
+            TextElement("MOVE :"),
+            TextElement(str(entity.max_moves)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("ATTACK :"),
+            TextElement(str(entity.strength)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("DEFENSE :"),
+            TextElement(str(entity.defense)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("MAGICAL RES :"),
+            TextElement(str(entity.resistance)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+        ],
+        [
+            TextElement("ALTERATIONS", font=fonts["MENU_SUB_TITLE_FONT"], text_color=DARK_GREEN,
+                        margin=(10, 0, 10, 0)),
         ],
     ]
 
     if not entity.alterations:
-        entries.append([{"type": "text", "text": "None"}])
+        elements.append([TextElement("None")])
     for alteration in entity.alterations:
-        entries.append(
+        elements.append(
             [
-                {
-                    "type": "text_button",
-                    "name": str(alteration),
-                    "callback": lambda alteration_reference=alteration: alteration_callback(
-                        alteration_reference
-                    ),
-                    "color": WHITE,
-                    "color_hover": TURQUOISE,
-                    "obj": alteration,
-                }
+                Button(title=str(alteration),
+                       callback=lambda alteration_reference=alteration: alteration_callback(alteration_reference),
+                       no_background=True,
+                       text_hover_color=TURQUOISE),
             ]
         )
 
@@ -1300,23 +1050,20 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         i = 3
         for (item, probability) in loot:
             name = str(item)
-            entries[i][3] = {"type": "text", "text": name}
-            entries[i][4] = {"type": "text", "text": f" ({probability * 100} %)"}
+            elements[i][3] = TextElement(name)
+            elements[i][4] = TextElement(f" ({probability * 100} %)")
             i += 1
 
     # Display skills
     i = 7
     for skill in entity.skills:
-        entries[i][3] = {"type": "text", "text": "> " + skill.formatted_name}
+        elements[i][3] = TextElement(f"> {skill.formatted_name}")
         i += 1
 
     return InfoBox(
         str(entity),
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        StatusMenu,
-        FOE_STATUS_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        elements,
+        width=FOE_STATUS_MENU_WIDTH,
     )
 
 
@@ -1327,17 +1074,16 @@ def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
     Keyword arguments:
     dialog_element -- a data structure containing the title and the content of the dialog
     """
-    entries = [
-        [{"type": "text", "text": talk, "font": fonts["ITEM_DESC_FONT"]}]
+    elements = [
+        [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
         for talk in dialog_element["talks"]
     ]
     return InfoBox(
         dialog_element["title"],
-        "imgs/interface/PopUpMenu.png",
-        entries,
+        elements,
         width=DIALOG_WIDTH,
-        close_button=lambda: close_function(False),
         title_color=ORANGE,
+        visible_on_background=False
     )
 
 
@@ -1348,28 +1094,22 @@ def create_reward_menu(mission: Mission) -> InfoBox:
     Keyword arguments:
     mission -- the concerned mission
     """
-    entries = [
+    grid_element = [
         [
-            {
-                "type": "text",
-                "text": "Congratulations! Objective has been completed!",
-                "font": fonts["ITEM_DESC_FONT"],
-            }
+            TextElement("Congratulations! Objective has been completed!", font=fonts["ITEM_DESC_FONT"])
         ]
     ]
     if mission.gold:
-        entries.append(
-            [{"type": "text", "text": f"Earned gold : {mission.gold} (all characters)"}]
+        grid_element.append(
+            [TextElement(f"Earned gold : {mission.gold} (all characters)")]
         )
     for item in mission.items:
-        entries.append([{"type": "text", "text": f"Earned item : {item}"}])
+        grid_element.append([TextElement(f"Earned item : {item}")])
 
     return InfoBox(
         mission.description,
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        width=REWARD_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        grid_element,
+        width=REWARD_MENU_WIDTH
     )
 
 
@@ -1377,34 +1117,47 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
     """
     Return the interface of the main menu of the game (in the start screen).
     """
-    entries = [
-        [{"name": "New game", "callback": buttons_callback["new_game"]}],
-        [{"name": "Load game", "callback": buttons_callback["load_menu"]}],
-        [{"name": "Options", "callback": buttons_callback["options_menu"]}],
-        [{"name": "Exit game", "callback": buttons_callback["exit_game"]}],
-    ]
-
-    for row in entries:
-        for entry in row:
-            entry["type"] = "button"
-
     return InfoBox(
         "In the name of the Five Cats",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=StartMenu,
+        [
+            [
+                Button(
+                    title="New game",
+                    callback=buttons_callback["new_game"]
+                ),
+            ],
+            [
+                Button(
+                    title="Load game",
+                    callback=buttons_callback["load_menu"]
+                ),
+            ],
+            [
+                Button(
+                    title="Options",
+                    callback=buttons_callback["options_menu"]
+                ),
+            ],
+            [
+                Button(
+                    title="Exit game",
+                    callback=buttons_callback["exit_game"]
+                ),
+            ],
+        ],
         width=START_MENU_WIDTH,
+        has_close_button=False,
     )
 
 
-def load_parameter_entry(
-    formatted_name: str,
-    values: Sequence[dict[str, int]],
-    current_value: int,
-    edit_parameter_callback: Callable,
-) -> Entry:
+def load_parameter_button(
+        formatted_name: str,
+        values: Sequence[dict[str, int]],
+        current_value: int,
+        edit_parameter_callback: Callable,
+) -> DynamicButton:
     """
-    Return an entry corresponding to the data of a specific game parameter.
+    Return a DynamicButton permitting to handle the tweaking of a specific game parameter.
 
     Keyword arguments:
     formatted_name -- the formatted name of the parameter
@@ -1412,23 +1165,22 @@ def load_parameter_entry(
     current_value -- the current value of the parameter
     identifier -- the identifier of the parameter
     """
-    entry = {
-        "type": "parameter_button",
-        "name": formatted_name,
-        "values": values,
-        "callback": edit_parameter_callback,
-        "current_value_ind": 0,
-    }
+    current_value_index: int = 0
 
-    for i in range(len(entry["values"])):
-        if entry["values"][i]["value"] == current_value:
-            entry["current_value_ind"] = i
+    for i in range(len(values)):
+        if values[i]["value"] == current_value:
+            current_value_index = i
 
-    return entry
+    return DynamicButton(
+        base_title=formatted_name,
+        values=values,
+        callback=edit_parameter_callback,
+        current_value_index=current_value_index
+    )
 
 
 def create_options_menu(
-    parameters: dict[str, int], modify_option_function: Callable
+        parameters: dict[str, int], modify_option_function: Callable
 ) -> InfoBox:
     """
     Return the interface of the game options menu.
@@ -1436,39 +1188,35 @@ def create_options_menu(
     Keyword arguments:
     parameters -- the dictionary containing all parameters with their current value
     """
-    entries = [
-        [
-            load_parameter_entry(
-                "Move speed :",
-                [
-                    {"label": "Slow", "value": ANIMATION_SPEED // 2},
-                    {"label": "Normal", "value": ANIMATION_SPEED},
-                    {"label": "Fast", "value": ANIMATION_SPEED * 2},
-                ],
-                parameters["move_speed"],
-                lambda value: modify_option_function("move_speed", value),
-            )
-        ],
-        [
-            load_parameter_entry(
-                "Screen mode :",
-                [
-                    {"label": "Window", "value": SCREEN_SIZE // 2},
-                    {"label": "Full", "value": SCREEN_SIZE},
-                ],
-                parameters["screen_size"],
-                lambda value: modify_option_function("screen_size", value),
-            )
-        ],
-    ]
 
     return InfoBox(
         "Options",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=OptionsMenu,
+        [
+            [
+                load_parameter_button(
+                    "Move speed :",
+                    [
+                        {"label": "Slow", "value": ANIMATION_SPEED // 2},
+                        {"label": "Normal", "value": ANIMATION_SPEED},
+                        {"label": "Fast", "value": ANIMATION_SPEED * 2},
+                    ],
+                    parameters["move_speed"],
+                    lambda value: modify_option_function("move_speed", value),
+                ),
+            ],
+            [
+                load_parameter_button(
+                    "Screen mode :",
+                    [
+                        {"label": "Window", "value": SCREEN_SIZE // 2},
+                        {"label": "Full", "value": SCREEN_SIZE},
+                    ],
+                    parameters["screen_size"],
+                    lambda value: modify_option_function("screen_size", value),
+                ),
+            ],
+        ],
         width=START_MENU_WIDTH,
-        close_button=close_function,
     )
 
 
@@ -1476,26 +1224,22 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
     """
     Return the interface of the load game menu.
     """
-    entries = []
+    element_grid = []
 
     for i in range(SAVE_SLOTS):
-        entries.append(
+        element_grid.append(
             [
-                {
-                    "type": "button",
-                    "name": "Save " + str(i + 1),
-                    "callback": lambda slot_id=i: load_game_function(slot_id),
-                }
+                Button(
+                    title=f"Save {i + 1}",
+                    callback=lambda slot_id=i: load_game_function(slot_id)
+                )
             ]
         )
 
     return InfoBox(
         "Load Game",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=LoadMenu,
-        width=START_MENU_WIDTH,
-        close_button=close_function,
+        element_grid,
+        width=START_MENU_WIDTH
     )
 
 
@@ -1503,24 +1247,20 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
     """
     Return the interface of the save game menu
     """
-    entries = []
+    element_grid = []
 
     for i in range(SAVE_SLOTS):
-        entries.append(
+        element_grid.append(
             [
-                {
-                    "type": "button",
-                    "name": "Save " + str(i + 1),
-                    "callback": lambda slot_id=i: save_game_function(slot_id),
-                }
+                Button(
+                    title=f"Save {i + 1}",
+                    callback=lambda slot_id=i: save_game_function(slot_id),
+                )
             ]
         )
 
     return InfoBox(
         "Save Game",
-        "imgs/interface/PopUpMenu.png",
-        entries,
-        id_type=SaveMenu,
-        width=START_MENU_WIDTH,
-        close_button=lambda: close_function(False),
+        element_grid,
+        width=START_MENU_WIDTH
     )

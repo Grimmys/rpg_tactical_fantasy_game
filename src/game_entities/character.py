@@ -8,18 +8,18 @@ from typing import Union, Sequence, Optional
 
 import pygame
 from lxml import etree
+from pygamepopup.components import BoxElement, TextElement
 
 from src.game_entities.alteration import Alteration
+from src.game_entities.destroyable import DamageKind
 from src.game_entities.entity import Entity
 from src.game_entities.equipment import Equipment
 from src.game_entities.item import Item
 from src.game_entities.key import Key
-from src.game_entities.shield import Shield
 from src.game_entities.movable import Movable
-from src.game_entities.destroyable import DamageKind
+from src.game_entities.shield import Shield
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
-from src.gui.entries import Entries, Entry
 from src.gui.fonts import fonts
 
 
@@ -123,11 +123,11 @@ class Character(Movable):
         self.join_team: bool = False
         self.reach_: Sequence[int] = [1]
         self.constitution: int = (
-            Character.races_data[race]["constitution"]
-            + Character.classes_data[classes[0]]["constitution"]
+                Character.races_data[race]["constitution"]
+                + Character.classes_data[classes[0]]["constitution"]
         )
 
-    def talk(self, actor: Entity) -> Entries:
+    def talk(self, actor: Entity) -> list[list[BoxElement]]:
         """
         Compute the dialog that should be displayed to the player when trying to interact with the entity.
 
@@ -137,13 +137,13 @@ class Character(Movable):
         actor -- the player character which initiated the interaction
         """
         self.join_team = self.interaction["join_team"]
-        entries: Entries = []
+        element_grid: list[list[BoxElement]] = []
         for line in self.interaction["dialog"]:
-            entry_line: list[Entry] = [
-                {"type": "text", "text": line, "font": fonts["ITEM_DESC_FONT"]}
+            elements_line: list[BoxElement] = [
+                TextElement(line, font=fonts["ITEM_DESC_FONT"])
             ]
-            entries.append(entry_line)
-        return entries
+            element_grid.append(elements_line)
+        return element_grid
 
     def display(self, screen: pygame.Surface) -> None:
         """
@@ -180,7 +180,7 @@ class Character(Movable):
         return False
 
     def attacked(
-        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
+            self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
     ) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
@@ -333,7 +333,7 @@ class Character(Movable):
         if equipment.restrictions != {}:
             allowed = False
             if "classes" in equipment.restrictions and (
-                self.race != "centaur" or isinstance(equipment, (Shield, Weapon))
+                    self.race != "centaur" or isinstance(equipment, (Shield, Weapon))
             ):
                 for cls in equipment.restrictions["classes"]:
                     if cls in self.classes:
