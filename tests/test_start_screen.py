@@ -1,21 +1,21 @@
 import os
 import shutil
 import unittest
+from random import randrange
 
 import pygame
 from pygame.rect import Rect
-from random import randrange
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
-from src.scenes.start_screen import StartScreen
 from src.scenes.level import Level
+from src.scenes.start_screen import StartScreen
 from tests.tools import minimal_setup_for_game
 
-NEW_GAME_BUTTON_POS = pygame.Vector2(200, 200)
-LOAD_GAME_BUTTON_POS = pygame.Vector2(200, 290)
-LOAD_FIRST_SLOT_BUTTON_POS = pygame.Vector2(200, 183)
-OPTIONS_BUTTON_POS = pygame.Vector2(200, 380)
-EXIT_GAME_BUTTON_POS = pygame.Vector2(200, 470)
+NEW_GAME_BUTTON_POS = pygame.Vector2(200, 230)
+LOAD_GAME_BUTTON_POS = pygame.Vector2(200, 300)
+LOAD_FIRST_SLOT_BUTTON_POS = pygame.Vector2(200, 203)
+OPTIONS_BUTTON_POS = pygame.Vector2(200, 370)
+EXIT_GAME_BUTTON_POS = pygame.Vector2(200, 440)
 
 LEFT_BUTTON = 1
 MIDDLE_BUTTON = 2

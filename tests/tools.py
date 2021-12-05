@@ -1,10 +1,11 @@
 import pygame
 import pygamepopup
 
-import src.services.load_from_xml_manager as loader
 import src.gui.fonts as font
+import src.services.load_from_xml_manager as loader
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.game_entities.character import Character
+from src.gui.constant_sprites import init_constant_sprites
 
 NB_TESTS_FOR_PROPORTIONS = 1000
 
@@ -24,4 +25,5 @@ def minimal_setup_for_game():
     races = loader.load_races()
     classes = loader.load_classes()
     Character.init_data(races, classes)
+    init_constant_sprites()
     already_set_up = True
