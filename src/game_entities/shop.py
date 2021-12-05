@@ -4,15 +4,16 @@ Defines Shop class, a Building in which a player character can buy or sell stuff
 
 import os
 from copy import copy
-from typing import Union, List, Optional
+from typing import List, Optional
 
 import pygame.mixer
 from lxml import etree
-from pygamepopup.components import BoxElement, Button, InfoBox
+from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
 
 from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.item import Item
+from src.gui.fonts import fonts
 from src.services import menu_creator_manager
 
 
@@ -38,12 +39,12 @@ class Shop(Building):
     sell_interface_callback = None
 
     def __init__(
-        self,
-        name: str,
-        position: tuple[int, int],
-        sprite: str,
-        interaction: dict[str, any],
-        stock: list[dict[str, any]],
+            self,
+            name: str,
+            position: tuple[int, int],
+            sprite: str,
+            interaction: dict[str, any],
+            stock: list[dict[str, any]],
     ) -> None:
         super().__init__(name, position, sprite, interaction)
         self.current_visitor: Optional[Character] = None
@@ -102,14 +103,7 @@ class Shop(Building):
             ],
         ]
 
-        if not self.interaction:
-            pygame.mixer.Sound.play(self.door_sfx)
-            grid_element.append(
-                [
-                    TextElement("This shop seems closed...", font=fonts["ITEM_DESC_FONT"])
-                ]
-            )
-        else:
+        if self.interaction:
             for talk in self.interaction["talks"]:
                 pygame.mixer.Sound.play(self.talk_sfx)
                 grid_element.append(
