@@ -219,7 +219,7 @@ def create_equipment_menu(
             element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(
                 equipment_reference, button_linked, is_equipped=True)
             row.append(element)
-            grid_elements.append(row)
+        grid_elements.append(row)
     return InfoBox(
         "Equipment",
         grid_elements,
