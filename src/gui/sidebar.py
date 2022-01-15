@@ -8,24 +8,23 @@ import pygame
 
 from src.constants import (
     BLACK,
-    YELLOW,
-    ORANGE,
     RED,
     DARK_GREEN,
     BROWN_RED,
     MIDNIGHT_BLUE,
 )
+from src.game_entities.breakable import Breakable
+from src.game_entities.character import Character
+from src.game_entities.destroyable import Destroyable
 from src.game_entities.entity import Entity
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission
+from src.game_entities.movable import Movable
+from src.game_entities.player import Player
 from src.gui.constant_sprites import constant_sprites
 from src.gui.fonts import fonts
-from src.game_entities.destroyable import Destroyable
-from src.game_entities.player import Player
-from src.game_entities.character import Character
-from src.game_entities.movable import Movable
-from src.game_entities.breakable import Breakable
 from src.gui.position import Position
+from src.gui.tools import determine_gauge_color
 
 SHIFT = 2
 SIDEBAR_SPRITE = "imgs/interface/sidebar.png"
@@ -54,11 +53,11 @@ class Sidebar:
     """
 
     def __init__(
-        self,
-        size: Tuple[int, int],
-        position: Position,
-        missions: Sequence[Mission],
-        level_id: int,
+            self,
+            size: Tuple[int, int],
+            position: Position,
+            missions: Sequence[Mission],
+            level_id: int,
     ) -> None:
         self.size: Tuple[int, int] = size
         self.position: Position = position
@@ -68,30 +67,8 @@ class Sidebar:
         self.missions: Sequence[Mission] = missions
         self.level_id: int = level_id
 
-    @staticmethod
-    def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
-        # TODO : this method is also defined in menu_creator_manager module.
-        #  It should be moved into a dedicated file to be shared.
-        """
-        Return the color that should be used to display the hp bar of a player according to the
-        ratio hit points / hit points max.
-
-        Keyword arguments:
-        hit_points -- the current hit points of the entity
-        hit_points_max -- the maximum hit points of the entity
-        """
-        if hit_points == hit_points_max:
-            return BLACK
-        if hit_points >= hit_points_max * 0.75:
-            return DARK_GREEN
-        if hit_points >= hit_points_max * 0.5:
-            return YELLOW
-        if hit_points >= hit_points_max * 0.30:
-            return ORANGE
-        return RED
-
     def display(
-        self, screen: pygame.Surface, number_turns: int, hovered_entity: Entity
+            self, screen: pygame.Surface, number_turns: int, hovered_entity: Entity
     ) -> None:
         """
         Display the sidebar and all the expected information on the screen provided.
@@ -204,7 +181,7 @@ class Sidebar:
             # Display basic information about the ent
             # Name
             text_position_x: int = (
-                frame_position[0] + constant_sprites["frame"].get_width() + 15
+                    frame_position[0] + constant_sprites["frame"].get_width() + 15
             )
             name_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
                 "NAME : ", True, color
@@ -232,7 +209,7 @@ class Sidebar:
                 hit_points_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
                     f"      {hit_points}",
                     True,
-                    Sidebar.determine_hp_color(hit_points, hit_points_max),
+                    determine_gauge_color(hit_points, hit_points_max),
                 )
                 screen.blit(hit_points_text, text_position)
                 hp_post_text = fonts["ITEM_FONT_STRONG"].render(
@@ -249,9 +226,9 @@ class Sidebar:
                         f"LVL : {hovered_entity.lvl}", True, BLACK
                     )
                     lvl_text_position_x: int = (
-                        frame_position[0]
-                        + constant_sprites["frame"].get_width() / 2
-                        - level_text.get_width() / 2
+                            frame_position[0]
+                            + constant_sprites["frame"].get_width() / 2
+                            - level_text.get_width() / 2
                     )
                     screen.blit(
                         level_text,

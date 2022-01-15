@@ -54,7 +54,7 @@ fonts: Dict[str, pygame.font.Font] = {}
 
 def init_fonts() -> None:
     """
-    Load all fonts registred in fonts_description.
+    Load all fonts registered in fonts_description.
     System font will be load if the keyword 'default' is present in the description provided.
     These fonts will be available in all modules by importing the fonts dictionary.
     """

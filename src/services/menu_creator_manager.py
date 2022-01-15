@@ -16,8 +16,6 @@ from src.constants import (
     EQUIPMENT_MENU_WIDTH,
     TRADE_MENU_WIDTH,
     GREEN,
-    YELLOW,
-    RED,
     DARK_GREEN,
     GOLD,
     STATUS_MENU_WIDTH,
@@ -53,6 +51,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
 from src.gui.position import Position
+from src.gui.tools import determine_gauge_color
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
@@ -322,26 +321,6 @@ def create_trade_menu(
     )
 
 
-def determine_hp_color(hit_points: int, hit_points_max: int) -> pygame.Color:
-    """
-    Return the color that should be used to display the hp bar of a player according to the ratio
-    hit points / hit points max.
-
-    Keyword arguments:
-    hit_points -- the current hit points of the entity
-    hit_points_max -- the maximum hit points of the entity
-    """
-    if hit_points == hit_points_max:
-        return WHITE
-    if hit_points >= hit_points_max * 0.75:
-        return GREEN
-    if hit_points >= hit_points_max * 0.5:
-        return YELLOW
-    if hit_points >= hit_points_max * 0.30:
-        return ORANGE
-    return RED
-
-
 def create_status_menu(
         buttons_callback: dict[str, Callable], player: Player
 ) -> InfoBox:
@@ -385,7 +364,7 @@ def create_status_menu(
         [
             TextElement("HP :", text_color=WHITE),
             TextElement(f"{player.hit_points} / {player.hit_points_max}",
-                        text_color=determine_hp_color(player.hit_points, player.hit_points_max)),
+                        text_color=determine_gauge_color(player.hit_points, player.hit_points_max)),
         ],
         [
             TextElement("MOVE :", text_color=WHITE),
@@ -994,7 +973,7 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         [
             TextElement("HP :"),
             TextElement(f"{entity.hit_points} / {entity.hit_points_max}",
-                        text_color=determine_hp_color(entity.hit_points, entity.hit_points_max)),
+                        text_color=determine_gauge_color(entity.hit_points, entity.hit_points_max)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),

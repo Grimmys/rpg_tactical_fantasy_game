@@ -6,7 +6,7 @@ from math import sqrt
 
 import pygame
 
-from src.constants import TILE_SIZE
+from src.constants import TILE_SIZE, BLACK, DARK_GREEN, YELLOW, ORANGE, RED
 from src.gui.position import Position
 
 
@@ -41,3 +41,23 @@ def distance(position: Position, other_position: Position) -> int:
             )
             // TILE_SIZE
     )
+
+
+def determine_gauge_color(current_value: int, max_value: int) -> pygame.Color:
+    """
+    Return the color that should be used to display the gauge of a measure
+    (for example the hit points of an entity).
+
+    Keyword arguments:
+    current_value -- the current value of the measure
+    max_value -- the maximum value that could be reached
+    """
+    if current_value == max_value:
+        return BLACK
+    if current_value >= max_value * 0.75:
+        return DARK_GREEN
+    if current_value >= max_value * 0.5:
+        return YELLOW
+    if current_value >= max_value * 0.30:
+        return ORANGE
+    return RED
