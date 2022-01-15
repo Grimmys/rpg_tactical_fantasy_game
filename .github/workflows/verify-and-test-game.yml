@@ -34,7 +34,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Lint with Pylint
         run: |
-          pylint main.py src --extension-pkg-whitelist=pygame,lxml || pylint-exit $?
+          pylint main.py src --extension-pkg-whitelist=pygame,lxml --max-line-length=120 || pylint-exit $?
   test:
     name: Unit tests
     runs-on: ubuntu-latest
