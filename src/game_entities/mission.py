@@ -7,6 +7,7 @@ from enum import Enum, auto
 from typing import Sequence, Optional
 
 from src.constants import TILE_SIZE
+from src.game_entities.destroyable import Destroyable
 from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.player import Player
@@ -34,6 +35,7 @@ class Mission:
     turn_limit -- the limit of turns until the mission would be considered as failed
     gold_reward -- the quantity of gold given to the player in case of success
     items_reward -- the items given to the player in case of success
+    targets -- the sequence of destroyable entities that should be eliminated
 
     Attributes:
     main -- whether the mission is primary or not
@@ -47,6 +49,7 @@ class Mission:
     items -- the items given to the player in case of success
     min_players -- the minimal number of player characters that should validate the mission
     succeeded_chars -- the player characters which have validated the mission
+    targets -- the sequence of destroyable entities that should be eliminated
     """
 
     def __init__(
@@ -59,6 +62,7 @@ class Mission:
         turn_limit: int = None,
         gold_reward: int = 0,
         items_reward: Sequence[Item] = None,
+        targets: Sequence[Destroyable] = None,
     ) -> None:
         if items_reward is None:
             items_reward = []
@@ -73,6 +77,7 @@ class Mission:
         self.items: Sequence[Item] = items_reward
         self.min_chars: int = nb_players
         self.succeeded_chars: list[Player] = []
+        self.targets = targets
 
     def is_position_valid(self, position: tuple[int, int]) -> bool:
         """

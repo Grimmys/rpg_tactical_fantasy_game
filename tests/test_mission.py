@@ -1,5 +1,5 @@
-import unittest
 import random as rd
+import unittest
 
 from src.constants import TILE_SIZE
 from src.game_entities.foe import Foe
@@ -8,7 +8,7 @@ from tests.random_data_library import (
     random_item,
     random_position,
     random_player_entity,
-    random_entities,
+    random_entities, random_foe_entity,
 )
 from tests.tools import minimal_setup_for_game
 
@@ -140,3 +140,36 @@ class TestMission(unittest.TestCase):
         self.assertTrue(mission.ended)
         self.assertTrue(mission.update_state(turns=turn_limit + 1))
         self.assertFalse(mission.ended)
+
+    @unittest.skip
+    def test_update_state_kill_target_objective(self):
+        nature = MissionType.KILL_TARGETS
+        target = random_foe_entity()
+        mission = Mission(True, nature, [], "Test mission", 0, targets=[target])
+
+        self.assertFalse(mission.ended)
+
+        target.hit_points -= target.hit_points_max // 2
+
+        self.assertFalse(mission.ended)
+
+        target.hit_points = 0
+
+        self.assertTrue(mission.ended)
+
+    @unittest.skip
+    def test_update_state_kill_multiple_targets_objective(self):
+        nature = MissionType.KILL_TARGETS
+        targets = random_entities(Foe, min=2)
+        mission = Mission(True, nature, [], "Test mission", 0, targets=targets)
+
+        self.assertFalse(mission.ended)
+
+        targets[0].hit_points = 0
+
+        self.assertFalse(mission.ended)
+
+        for foe in targets:
+            foe.hit_points = 0
+
+        self.assertTrue(mission.ended)
