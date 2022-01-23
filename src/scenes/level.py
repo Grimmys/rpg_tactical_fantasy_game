@@ -147,14 +147,14 @@ class Level:
     """
 
     def __init__(
-            self,
-            directory: str,
-            nb_level: int,
-            screen: pygame.Surface,
-            status: LevelStatus = LevelStatus.INITIALIZATION,
-            turn: int = 0,
-            data: etree.Element = None,
-            players: Sequence[Player] = None,
+        self,
+        directory: str,
+        nb_level: int,
+        screen: pygame.Surface,
+        status: LevelStatus = LevelStatus.INITIALIZATION,
+        turn: int = 0,
+        data: etree.Element = None,
+        players: Sequence[Player] = None,
     ) -> None:
         if players is None:
             players = []
@@ -316,8 +316,8 @@ class Level:
         # At next update, level will be destroyed
         self.quit_request = True
         if (
-                self.game_phase != LevelStatus.ENDED_VICTORY
-                and self.game_phase != LevelStatus.ENDED_DEFEAT
+            self.game_phase != LevelStatus.ENDED_VICTORY
+            and self.game_phase != LevelStatus.ENDED_DEFEAT
         ):
             self.game_phase = LevelStatus.ENDED_DEFEAT
 
@@ -387,8 +387,8 @@ class Level:
 
         # Game should be left if it's ended and there is no more animation nor menu
         if (
-                self.game_phase is LevelStatus.ENDED_DEFEAT
-                or self.game_phase is LevelStatus.ENDED_VICTORY
+            self.game_phase is LevelStatus.ENDED_DEFEAT
+            or self.game_phase is LevelStatus.ENDED_VICTORY
         ):
             return self.game_phase
 
@@ -418,7 +418,7 @@ class Level:
         if self.selected_player:
             self.selected_player.move()
             if self.selected_player.is_waiting_post_action() and not self.possible_attacks \
-                    and not self.possible_interactions:
+                and not self.possible_interactions:
                 self.open_player_menu()
             return None
 
@@ -446,12 +446,12 @@ class Level:
         Open the menu displaying all the actions a playable character can do
         """
         interactable_entities = (
-                self.entities["chests"]
-                + self.entities["portals"]
-                + self.entities["doors"]
-                + self.entities["fountains"]
-                + self.entities["allies"]
-                + self.players
+            self.entities["chests"]
+            + self.entities["portals"]
+            + self.entities["doors"]
+            + self.entities["fountains"]
+            + self.entities["allies"]
+            + self.players
         )
         self.menu_manager.open_menu(menu_creator_manager.create_player_menu(
             {
@@ -675,10 +675,10 @@ class Level:
             self.map["y"] + self.map["height"],
         )
         if not (
-                all(
-                    minimum <= case < maximum
-                    for minimum, case, maximum in zip(min_case, tile, max_case)
-                )
+            all(
+                minimum <= case < maximum
+                for minimum, case, maximum in zip(min_case, tile, max_case)
+            )
         ):
             return False
 
@@ -721,7 +721,7 @@ class Level:
         return path
 
     def distance_between_all(self, entity: Entity, all_other_entities: Sequence) -> \
-            dict[Entity, int]:
+        dict[Entity, int]:
         """
         Return the distance between each different given entities for a reference entity
 
@@ -739,8 +739,8 @@ class Level:
         for tile, distance in free_tiles_distance.items():
             for neighbour in self.get_next_cases(tile):
                 if (
-                        neighbour in all_other_entities
-                        and distance < entities_distance[neighbour]
+                    neighbour in all_other_entities
+                    and distance < entities_distance[neighbour]
                 ):
                     entities_distance[neighbour] = distance
         return entities_distance
@@ -812,6 +812,8 @@ class Level:
             grid_element,
             width=ITEM_MENU_WIDTH,
         ))
+
+        self.end_active_character_turn(clear_menus=False)
 
     def ally_to_player(self, character: Character) -> None:
         """
@@ -887,6 +889,7 @@ class Level:
                             element_grid,
                             width=ITEM_MENU_WIDTH,
                         ))
+                        self.end_active_character_turn(clear_menus=False)
                     else:
                         # Lock picking is finished, get content
                         self.open_chest(actor, target)
@@ -903,7 +906,6 @@ class Level:
             if self.selected_player.current_action is CharacterMenu.OPEN_DOOR:
                 actor.remove_door_key()
                 self.open_door(target)
-                self.end_active_character_turn(clear_menus=False)
             elif self.selected_player.current_action is CharacterMenu.PICK_LOCK:
                 if not target.pick_lock_initiated:
                     # Lock picking has not been already initiated
@@ -919,6 +921,7 @@ class Level:
                         grid_element,
                         width=ITEM_MENU_WIDTH,
                     ))
+                    self.end_active_character_turn(clear_menus=False)
                 else:
                     # Lock picking is finished, get content
                     self.open_door(target)
@@ -1226,8 +1229,8 @@ class Level:
         """
         for mission in self.missions:
             if (
-                    mission.type is MissionType.POSITION
-                    or mission.type is MissionType.TOUCH_POSITION
+                mission.type is MissionType.POSITION
+                or mission.type is MissionType.TOUCH_POSITION
             ):
                 # Verify that character is not the last if the mission is not the main one
                 if mission.main or len(self.players) > 1:
@@ -1416,11 +1419,11 @@ class Level:
         )
 
     def interact_trade_item(
-            self,
-            item: Item,
-            item_button: Button,
-            players: Sequence[Player],
-            is_first_player_owner: bool,
+        self,
+        item: Item,
+        item_button: Button,
+        players: Sequence[Player],
+        is_first_player_owner: bool,
     ) -> None:
         """
         Handle the interaction with an item from player inventory or equipment during a trade
@@ -1447,7 +1450,7 @@ class Level:
         )
 
     def trade_item(
-            self, first_player: Player, second_player: Player, is_first_player_owner: bool
+        self, first_player: Player, second_player: Player, is_first_player_owner: bool
     ) -> None:
         """
         Trade an item between to playable characters
@@ -1503,11 +1506,11 @@ class Level:
         ))
 
     def send_gold(
-            self,
-            first_player: Player,
-            second_player: Player,
-            is_first_player_sender: bool,
-            value: int,
+        self,
+        first_player: Player,
+        second_player: Player,
+        is_first_player_sender: bool,
+        value: int,
     ) -> None:
         """
         Trade some gold between to playable characters
@@ -1537,7 +1540,7 @@ class Level:
         self.menu_manager.close_active_menu()
         # Remove item from inventory/equipment according to the index
         if isinstance(self.selected_item, Equipment) \
-                and self.selected_player.has_equipment(self.selected_item):
+            and self.selected_player.has_equipment(self.selected_item):
             self.selected_player.remove_equipment(self.selected_item)
             equipments = list(self.selected_player.equipments)
             new_items_menu = menu_creator_manager.create_equipment_menu(
@@ -1802,7 +1805,7 @@ class Level:
                     # Player is waiting to move
                     for move in self.possible_moves:
                         if pygame.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                                position
+                            position
                         ):
                             path = self.determine_path_to(move, self.possible_moves)
                             self.selected_player.set_move(path)
@@ -1816,7 +1819,7 @@ class Level:
                     # Player is waiting to attack
                     for attack in self.possible_attacks:
                         if pygame.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                                position
+                            position
                         ):
                             entity = self.get_entity_on_tile(attack)
                             self.duel(
@@ -1833,7 +1836,7 @@ class Level:
                     # Player is waiting to interact
                     for interact in self.possible_interactions:
                         if pygame.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                                position
+                            position
                         ):
                             entity = self.get_entity_on_tile(interact)
                             self.interact(self.selected_player, entity, interact)
@@ -1971,14 +1974,14 @@ class Level:
         """
         if button == 3:
             if (
-                    not self.menu_manager.active_menu
-                    and not self.selected_player
-                    and self.side_turn is EntityTurn.PLAYER
+                not self.menu_manager.active_menu
+                and not self.selected_player
+                and self.side_turn is EntityTurn.PLAYER
             ):
                 for collection in self.entities.values():
                     for entity in collection:
                         if isinstance(
-                                entity, Movable
+                            entity, Movable
                         ) and entity.get_rect().collidepoint(position):
                             self.watched_entity = entity
                             self.possible_moves = self.get_possible_moves(
