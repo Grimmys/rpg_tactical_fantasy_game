@@ -6,12 +6,12 @@ from math import sqrt
 
 import pygame
 
-from src.constants import TILE_SIZE, BLACK, DARK_GREEN, YELLOW, ORANGE, RED
+from src.constants import TILE_SIZE, DARK_GREEN, YELLOW, ORANGE, RED
 from src.gui.position import Position
 
 
 def blit_alpha(
-        target: pygame.Surface, source: pygame.Surface, location: tuple[int, int], opacity: int
+    target: pygame.Surface, source: pygame.Surface, location: tuple[int, int], opacity: int
 ):
     """
     Blit a surface on one other but with a specific opacity.
@@ -35,15 +35,15 @@ def distance(position: Position, other_position: Position) -> int:
     other_position -- the other position
     """
     return (
-            sqrt(
-                (position[0] - other_position[0]) ** 2
-                + (position[1] - other_position[1]) ** 2
-            )
-            // TILE_SIZE
+        sqrt(
+            (position[0] - other_position[0]) ** 2
+            + (position[1] - other_position[1]) ** 2
+        )
+        // TILE_SIZE
     )
 
 
-def determine_gauge_color(current_value: int, max_value: int) -> pygame.Color:
+def determine_gauge_color(current_value: int, max_value: int, default_color: pygame.Color) -> pygame.Color:
     """
     Return the color that should be used to display the gauge of a measure
     (for example the hit points of an entity).
@@ -51,9 +51,10 @@ def determine_gauge_color(current_value: int, max_value: int) -> pygame.Color:
     Keyword arguments:
     current_value -- the current value of the measure
     max_value -- the maximum value that could be reached
+    default_color -- the default color that should be returned when the gauge is relatively full
     """
     if current_value == max_value:
-        return BLACK
+        return default_color
     if current_value >= max_value * 0.75:
         return DARK_GREEN
     if current_value >= max_value * 0.5:

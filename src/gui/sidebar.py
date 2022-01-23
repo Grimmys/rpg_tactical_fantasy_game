@@ -53,11 +53,11 @@ class Sidebar:
     """
 
     def __init__(
-            self,
-            size: Tuple[int, int],
-            position: Position,
-            missions: Sequence[Mission],
-            level_id: int,
+        self,
+        size: Tuple[int, int],
+        position: Position,
+        missions: Sequence[Mission],
+        level_id: int,
     ) -> None:
         self.size: Tuple[int, int] = size
         self.position: Position = position
@@ -68,7 +68,7 @@ class Sidebar:
         self.level_id: int = level_id
 
     def display(
-            self, screen: pygame.Surface, number_turns: int, hovered_entity: Entity
+        self, screen: pygame.Surface, number_turns: int, hovered_entity: Entity
     ) -> None:
         """
         Display the sidebar and all the expected information on the screen provided.
@@ -181,7 +181,7 @@ class Sidebar:
             # Display basic information about the ent
             # Name
             text_position_x: int = (
-                    frame_position[0] + constant_sprites["frame"].get_width() + 15
+                frame_position[0] + constant_sprites["frame"].get_width() + 15
             )
             name_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
                 "NAME : ", True, color
@@ -209,7 +209,7 @@ class Sidebar:
                 hit_points_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
                     f"      {hit_points}",
                     True,
-                    determine_gauge_color(hit_points, hit_points_max),
+                    determine_gauge_color(hit_points, hit_points_max, BLACK),
                 )
                 screen.blit(hit_points_text, text_position)
                 hp_post_text = fonts["ITEM_FONT_STRONG"].render(
@@ -226,9 +226,9 @@ class Sidebar:
                         f"LVL : {hovered_entity.lvl}", True, BLACK
                     )
                     lvl_text_position_x: int = (
-                            frame_position[0]
-                            + constant_sprites["frame"].get_width() / 2
-                            - level_text.get_width() / 2
+                        frame_position[0]
+                        + constant_sprites["frame"].get_width() / 2
+                        - level_text.get_width() / 2
                     )
                     screen.blit(
                         level_text,

@@ -364,7 +364,7 @@ def create_status_menu(
         [
             TextElement("HP :", text_color=WHITE),
             TextElement(f"{player.hit_points} / {player.hit_points_max}",
-                        text_color=determine_gauge_color(player.hit_points, player.hit_points_max)),
+                        text_color=determine_gauge_color(player.hit_points, player.hit_points_max, WHITE)),
         ],
         [
             TextElement("MOVE :", text_color=WHITE),
@@ -973,7 +973,7 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
         [
             TextElement("HP :"),
             TextElement(f"{entity.hit_points} / {entity.hit_points_max}",
-                        text_color=determine_gauge_color(entity.hit_points, entity.hit_points_max)),
+                        text_color=determine_gauge_color(entity.hit_points, entity.hit_points_max, WHITE)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
