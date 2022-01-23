@@ -62,9 +62,9 @@ close_function: Optional[Callable] = None
 
 
 def create_shop_menu(
-        interaction_callback: Callable,
-        stock: Sequence[dict[str, Union[Item, int]]],
-        gold: int,
+    interaction_callback: Callable,
+    stock: Sequence[dict[str, Union[Item, int]]],
+    gold: int,
 ) -> InfoBox:
     """
     Return the interface of a shop menu with user as the buyer.
@@ -116,10 +116,10 @@ def create_shop_menu(
 
 
 def create_inventory_menu(
-        interaction_callback: Callable,
-        items: Sequence[Item],
-        gold: int,
-        is_to_sell: bool = False,
+    interaction_callback: Callable,
+    items: Sequence[Item],
+    gold: int,
+    is_to_sell: bool = False,
 ) -> InfoBox:
     """
     Return the interface of a player inventory.
@@ -190,7 +190,7 @@ def create_inventory_menu(
 
 
 def create_equipment_menu(
-        interaction_callback: Callable, equipments: Sequence[Equipment]
+    interaction_callback: Callable, equipments: Sequence[Equipment]
 ) -> InfoBox:
     """
     Return the interface of a player equipment.
@@ -227,7 +227,7 @@ def create_equipment_menu(
 
 
 def create_trade_menu(
-        buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
+    buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
 ) -> InfoBox:
     """
     Return the interface for a trade between two players
@@ -322,7 +322,7 @@ def create_trade_menu(
 
 
 def create_status_menu(
-        buttons_callback: dict[str, Callable], player: Player
+    buttons_callback: dict[str, Callable], player: Player
 ) -> InfoBox:
     """
     Return the interface resuming the status of a player.
@@ -425,12 +425,12 @@ def create_status_menu(
 
 
 def create_player_menu(
-        buttons_callback: dict[str, Callable],
-        player: Player,
-        buildings: Sequence[Building],
-        interactable_entities: Sequence[Entity],
-        missions: Sequence[Mission],
-        foes: Sequence[Foe],
+    buttons_callback: dict[str, Callable],
+    player: Player,
+    buildings: Sequence[Building],
+    interactable_entities: Sequence[Entity],
+    missions: Sequence[Mission],
+    foes: Sequence[Foe],
 ) -> InfoBox:
     """
     Return the interface of a player menu.
@@ -470,9 +470,9 @@ def create_player_menu(
 
     for entity in interactable_entities:
         if (
-                abs(entity.position[0] - player.position[0])
-                + abs(entity.position[1] - player.position[1])
-                == TILE_SIZE
+            abs(entity.position[0] - player.position[0])
+            + abs(entity.position[1] - player.position[1])
+            == TILE_SIZE
         ):
             if isinstance(entity, Player):
                 if not trade_option:
@@ -539,8 +539,8 @@ def create_player_menu(
     # Check if player is on mission position
     for mission in missions:
         if (
-                mission.type is MissionType.POSITION
-                or mission.type is MissionType.TOUCH_POSITION
+            mission.type is MissionType.POSITION
+            or mission.type is MissionType.TOUCH_POSITION
         ):
             if mission.is_position_valid(player.position):
                 grid_elements.insert(
@@ -554,9 +554,9 @@ def create_player_menu(
         for foe in foes:
             for reach in w_range:
                 if (
-                        abs(foe.position[0] - player.position[0])
-                        + abs(foe.position[1] - player.position[1])
-                        == TILE_SIZE * reach
+                    abs(foe.position[0] - player.position[0])
+                    + abs(foe.position[1] - player.position[1])
+                    == TILE_SIZE * reach
                 ):
                     grid_elements.insert(
                         0, [Button(title="Attack", callback=buttons_callback["attack"])]
@@ -590,9 +590,9 @@ def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
 
 
 def create_main_menu(
-        buttons_callback: dict[str, Callable],
-        is_initialization_phase: bool,
-        position: Position,
+    buttons_callback: dict[str, Callable],
+    is_initialization_phase: bool,
+    position: Position,
 ) -> InfoBox:
     """
     Return the interface of the main level menu.
@@ -625,7 +625,7 @@ def create_main_menu(
 
 
 def create_item_shop_menu(
-        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
@@ -655,7 +655,7 @@ def create_item_shop_menu(
 
 
 def create_item_sell_menu(
-        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory and can be sold in a shop.
@@ -685,11 +685,11 @@ def create_item_sell_menu(
 
 
 def create_trade_item_menu(
-        buttons_callback: dict[str, Callable],
-        item_button_position: Position,
-        item: Item,
-        players: Sequence[Player],
-        is_first_player_owner: bool,
+    buttons_callback: dict[str, Callable],
+    item_button_position: Position,
+    item: Item,
+    players: Sequence[Player],
+    is_first_player_owner: bool,
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory
@@ -727,10 +727,10 @@ def create_trade_item_menu(
 
 
 def create_item_menu(
-        buttons_callback: dict[str, Callable],
-        item_button_rect: pygame.Rect,
-        item: Item,
-        is_equipped: bool = False,
+    buttons_callback: dict[str, Callable],
+    item_button_rect: pygame.Rect,
+    item: Item,
+    is_equipped: bool = False,
 ) -> InfoBox:
     """
     Return the interface of an item of a player.
@@ -1080,10 +1080,10 @@ def create_reward_menu(mission: Mission) -> InfoBox:
     ]
     if mission.gold:
         grid_element.append(
-            [TextElement(f"Earned gold : {mission.gold} (all characters)")]
+            [TextElement(f"Earned gold: {mission.gold} (all characters)")]
         )
     for item in mission.items:
-        grid_element.append([TextElement(f"Earned item : {item}")])
+        grid_element.append([TextElement(f"Earned item: {item}")])
 
     return InfoBox(
         mission.description,
@@ -1130,10 +1130,10 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
 
 
 def load_parameter_button(
-        formatted_name: str,
-        values: Sequence[dict[str, int]],
-        current_value: int,
-        edit_parameter_callback: Callable,
+    formatted_name: str,
+    values: Sequence[dict[str, int]],
+    current_value: int,
+    edit_parameter_callback: Callable,
 ) -> DynamicButton:
     """
     Return a DynamicButton permitting to handle the tweaking of a specific game parameter.
@@ -1159,7 +1159,7 @@ def load_parameter_button(
 
 
 def create_options_menu(
-        parameters: dict[str, int], modify_option_function: Callable
+    parameters: dict[str, int], modify_option_function: Callable
 ) -> InfoBox:
     """
     Return the interface of the game options menu.

@@ -1,29 +1,29 @@
 from lxml import etree
 
+from src.constants import TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
-from src.game_entities.character import Character
-from src.game_entities.door import Door
-from src.game_entities.gold import Gold
-from src.game_entities.item import Item
-from src.game_entities.player import Player
 from src.game_entities.building import Building
+from src.game_entities.character import Character
 from src.game_entities.chest import Chest
+from src.game_entities.consumable import Consumable
+from src.game_entities.door import Door
 from src.game_entities.effect import Effect
 from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe, Keyword
 from src.game_entities.fountain import Fountain
+from src.game_entities.gold import Gold
+from src.game_entities.item import Item
 from src.game_entities.key import Key
 from src.game_entities.mission import Mission, MissionType
+from src.game_entities.player import Player
 from src.game_entities.portal import Portal
-from src.game_entities.consumable import Consumable
 from src.game_entities.potion import Potion
 from src.game_entities.shield import Shield
 from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
-from src.constants import TILE_SIZE
 
 foes_infos = {}
 fountains_infos = {}
@@ -306,24 +306,24 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     }
 
 
-def load_ally(ally, from_save, gap_x, gap_y):
+def load_ally(ally_element, from_save, gap_x, gap_y):
     """
 
-    :param ally:
+    :param ally_element:
     :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
     """
-    name = ally.find("name").text.strip()
-    infos = etree.parse("data/characters.xml").find(name)
+    name = ally_element.find("name").text.strip()
+    generic_data = etree.parse("data/characters.xml").find(name)
 
-    attributes = load_artificial_entity(ally, infos, from_save, gap_x, gap_y)
+    attributes = load_artificial_entity(ally_element, generic_data, from_save, gap_x, gap_y)
 
     # Static data character
-    race = infos.find("race").text.strip()
-    classes = [infos.find("class").text.strip()]
-    interaction_element = infos.find("interaction")
+    race = generic_data.find("race").text.strip()
+    classes = [generic_data.find("class").text.strip()]
+    interaction_element = generic_data.find("interaction")
     dialog = []
     for talk in interaction_element.findall("talk"):
         dialog.append(talk.text.strip())
@@ -333,18 +333,16 @@ def load_ally(ally, from_save, gap_x, gap_y):
     }
 
     # Dynamic data character
-    dynamic_data = infos
-    if from_save:
-        dynamic_data = ally
+    dynamic_data = ally_element if from_save else generic_data
     gold = int(dynamic_data.find("gold").text.strip())
 
     equipments = []
     for equipment in dynamic_data.findall("equipment/*"):
         if from_save:
-            eq_loaded = load_item(equipment)
+            equipment_loaded = load_item(equipment)
         else:
-            eq_loaded = parse_item_file(equipment.text.strip())
-        equipments.append(eq_loaded)
+            equipment_loaded = parse_item_file(equipment.text.strip())
+        equipments.append(equipment_loaded)
 
     if from_save:
         skills = [
@@ -380,20 +378,17 @@ def load_ally(ally, from_save, gap_x, gap_y):
         interaction,
     )
 
-    inventory = infos.find("inventory")
-    if inventory is not None:
-        for item in inventory.findall("item"):
-            if from_save:
-                item_loaded = load_item(item)
-            else:
-                item_loaded = parse_item_file(item.text.strip())
-            loaded_ally.set_item(item_loaded)
+    for item in dynamic_data.findall("inventory/item"):
+        item_loaded = (
+            load_item(item) if from_save else parse_item_file(item.text.strip())
+        )
+        loaded_ally.set_item(item_loaded)
 
     if from_save:
-        current_hit_points = int(ally.find("current_hp").text.strip())
+        current_hit_points = int(ally_element.find("current_hp").text.strip())
         loaded_ally.hit_points = current_hit_points
 
-        experience = int(ally.find("exp").text.strip())
+        experience = int(ally_element.find("exp").text.strip())
         loaded_ally.earn_xp(experience)
     else:
         # Up stats according to current lvl
@@ -894,40 +889,40 @@ def load_events(events_el, gap_x, gap_y):
     return events
 
 
-def load_player(element, from_save):
+def load_player(player_element, from_save):
     """
 
-    :param element:
+    :param player_element:
     :param from_save:
     :return:
     """
-    name = element.find("name").text.strip()
-    level = element.find("level")
+    name = player_element.find("name").text.strip()
+    level = player_element.find("level")
     if level is None:
         # If level is not specified, default value is 1
         level = 1
     else:
         level = int(level.text.strip())
-    p_class = element.find("class").text.strip()
-    race = element.find("race").text.strip()
-    gold = int(element.find("gold").text.strip())
-    experience = int(element.find("exp").text.strip()) if from_save else 0
-    hit_points = int(element.find("hp").text.strip())
-    strength = int(element.find("strength").text.strip())
-    defense = int(element.find("defense").text.strip())
-    res = int(element.find("resistance").text.strip())
+    player_class = player_element.find("class").text.strip()
+    race = player_element.find("race").text.strip()
+    gold = int(player_element.find("gold").text.strip())
+    experience = int(player_element.find("exp").text.strip()) if from_save else 0
+    hit_points = int(player_element.find("hp").text.strip())
+    strength = int(player_element.find("strength").text.strip())
+    defense = int(player_element.find("defense").text.strip())
+    res = int(player_element.find("resistance").text.strip())
     current_hp = (
-        int(element.find("current_hp").text.strip()) if from_save else hit_points
+        int(player_element.find("current_hp").text.strip()) if from_save else hit_points
     )
-    inv = []
-    for item in element.findall("inventory/item"):
+    inventory = []
+    for item in player_element.findall("inventory/item"):
         item_loaded = (
             load_item(item) if from_save else parse_item_file(item.text.strip())
         )
-        inv.append(item_loaded)
+        inventory.append(item_loaded)
 
     equipments = []
-    for equipment in element.findall("equipment/*"):
+    for equipment in player_element.findall("equipment/*"):
         eq_loaded = (
             load_item(equipment)
             if from_save
@@ -943,18 +938,18 @@ def load_player(element, from_save):
                 if skill.text.strip() not in skills_infos
                 else skills_infos[skill.text.strip()]
             )
-            for skill in element.findall("skills/skill/name")
+            for skill in player_element.findall("skills/skill/name")
         ]
-        for alteration in element.findall("alterations/alteration"):
+        for alteration in player_element.findall("alterations/alteration"):
             alterations.append(load_alteration(alteration))
         tree = etree.parse("data/characters.xml").getroot()
         player_t = tree.xpath(name)[0]
     else:
         skills = (
-            Character.classes_data[p_class]["skills"]
+            Character.classes_data[player_class]["skills"]
             + Character.races_data[race]["skills"]
         )
-        player_t = element
+        player_t = player_element
 
     # -- Reading of the XML file for default character's values (i.e. sprites)
     sprite = "imgs/" + player_t.find("sprite").text.strip()
@@ -969,7 +964,7 @@ def load_player(element, from_save):
         defense,
         res,
         strength,
-        [p_class],
+        [player_class],
         equipments,
         race,
         gold,
@@ -979,15 +974,15 @@ def load_player(element, from_save):
         complementary_sprite_link=compl_sprite,
     )
     player.earn_xp(experience)
-    player.items = inv
+    player.items = inventory
     player.hit_points = current_hp
     if from_save:
         position = (
-            int(element.find("position/x").text.strip()) * TILE_SIZE,
-            int(element.find("position/y").text.strip()) * TILE_SIZE,
+            int(player_element.find("position/x").text.strip()) * TILE_SIZE,
+            int(player_element.find("position/y").text.strip()) * TILE_SIZE,
         )
         player.position = position
-        state = element.find("turnFinished").text.strip()
+        state = player_element.find("turnFinished").text.strip()
         if state == "True":
             player.end_turn()
     else:
