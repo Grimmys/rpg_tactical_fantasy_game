@@ -405,16 +405,16 @@ def create_status_menu(
         )
 
     # Display skills
-    i = 2
+    line_index = 2
     for skill in player.skills:
         skill_displayed = Button(title=skill.formatted_name,
                                  margin=(0, 0, 0, 0),
                                  callback=lambda skill_reference=skill: buttons_callback["info_skill"](skill_reference),
                                  no_background=True,
                                  text_hover_color=TURQUOISE)
-        grid_elements[i].append(skill_displayed)
-        i += 1
-    for j in range(i, len(grid_elements)):
+        grid_elements[line_index].append(skill_displayed)
+        line_index += 1
+    for j in range(line_index, len(grid_elements)):
         grid_elements[j].append(BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)))
 
     return InfoBox(
@@ -908,7 +908,7 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
     )
 
 
-def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> InfoBox:
+def create_status_entity_menu(buttons_callback: dict[str, Callable], entity: Entity) -> InfoBox:
     """
     Return the interface for the status screen of an entity.
 
@@ -918,7 +918,7 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     keywords_display = (
         entity.get_formatted_keywords() if isinstance(entity, Foe) else ""
     )
-    elements: list[list[BoxElement]] = [
+    grid_elements: list[list[BoxElement]] = [
         [
             TextElement(keywords_display, font=fonts["ITALIC_ITEM_FONT"])
         ],
@@ -1013,12 +1013,13 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
     ]
 
     if not entity.alterations:
-        elements.append([TextElement("None")])
+        grid_elements.append([TextElement("None")])
     for alteration in entity.alterations:
-        elements.append(
+        grid_elements.append(
             [
                 Button(title=str(alteration),
-                       callback=lambda alteration_reference=alteration: alteration_callback(alteration_reference),
+                       callback=lambda alteration_reference=alteration: buttons_callback["info_alteration"](
+                           alteration_reference),
                        no_background=True,
                        text_hover_color=TURQUOISE),
             ]
@@ -1026,22 +1027,27 @@ def create_status_entity_menu(alteration_callback: Callable, entity: Entity) -> 
 
     if isinstance(entity, Foe):
         loot = entity.potential_loot
-        i = 3
+        line_index = 3
         for (item, probability) in loot:
             name = str(item)
-            elements[i][3] = TextElement(name)
-            elements[i][4] = TextElement(f" ({probability * 100} %)")
-            i += 1
+            grid_elements[line_index][3] = TextElement(name)
+            grid_elements[line_index][4] = TextElement(f" ({probability * 100} %)")
+            line_index += 1
 
     # Display skills
-    i = 7
+    line_index = 8
     for skill in entity.skills:
-        elements[i][3] = TextElement(f"> {skill.formatted_name}")
-        i += 1
+        grid_elements[line_index][3] = Button(title=skill.formatted_name,
+                                              margin=(0, 0, 0, 0),
+                                              callback=lambda skill_reference=skill: buttons_callback["info_skill"](
+                                                  skill_reference),
+                                              no_background=True,
+                                              text_hover_color=TURQUOISE)
+        line_index += 1
 
     return InfoBox(
         str(entity),
-        elements,
+        grid_elements,
         width=FOE_STATUS_MENU_WIDTH,
     )
 

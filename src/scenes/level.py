@@ -1881,7 +1881,11 @@ class Level:
         for entity in self.entities["foes"] + self.entities["allies"]:
             if entity.is_on_position(position):
                 self.menu_manager.open_menu(menu_creator_manager.create_status_entity_menu(
-                    self.open_alteration_description, entity
+                    {
+                        "info_alteration": self.open_alteration_description,
+                        "info_skill": self.open_skill_description
+                    },
+                    entity,
                 ))
                 return
 
