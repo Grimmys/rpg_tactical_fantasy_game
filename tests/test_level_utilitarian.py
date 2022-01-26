@@ -187,7 +187,7 @@ class TestLevel(unittest.TestCase):
             [],
         ))
 
-        # Make trade (send item from active player to receiver player)
+        # Make trade in both way
         self.simulate_trade_item(item, active_player, trade_partner_player, False)
         self.simulate_trade_item(second_item, active_player, trade_partner_player, True)
 
@@ -203,6 +203,61 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(item in trade_partner_player.items)
         self.assertTrue(second_item in active_player.items)
         self.assertFalse(second_item in trade_partner_player.items)
+
+    def test_cancel_movement_after_trade_done_during_previous_turn_does_not_cancel_trade(self):
+        # Import complete save file
+        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+
+        players = self.level.players
+
+        active_player = [player for player in players if player.name == "raimund"][0]
+        trade_partner_player = [
+            player for player in players if player.name == "braern"
+        ][0]
+        self.level.selected_player = active_player
+
+        item = rd.choice(trade_partner_player.items)
+        second_item = rd.choice(active_player.items)
+
+        # Open character menu
+        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
+            {"inventory": None, "equipment": None, "status": None, "wait": None},
+            active_player,
+            [],
+            [],
+            [],
+            [],
+        ))
+
+        # Make trade in both way
+        self.simulate_trade_item(item, active_player, trade_partner_player, False)
+        self.simulate_trade_item(second_item, active_player, trade_partner_player, True)
+
+        self.assertTrue(item in active_player.items)
+        self.assertFalse(item in trade_partner_player.items)
+        self.assertFalse(second_item in active_player.items)
+        self.assertTrue(second_item in trade_partner_player.items)
+
+        # Next turn
+        self.level.end_active_character_turn()
+        self.level.end_turn()
+
+        # Select and cancel player turn
+        self.level.selected_player = active_player
+        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
+            {"inventory": None, "equipment": None, "status": None, "wait": None},
+            active_player,
+            [],
+            [],
+            [],
+            [],
+        ))
+        self.level.right_click()
+
+        self.assertTrue(item in active_player.items)
+        self.assertFalse(item in trade_partner_player.items)
+        self.assertFalse(second_item in active_player.items)
+        self.assertTrue(second_item in trade_partner_player.items)
 
     @unittest.skip
     def test_cancel_movement_after_trade_gold_sent(self):

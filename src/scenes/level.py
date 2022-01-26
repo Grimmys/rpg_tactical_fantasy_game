@@ -270,7 +270,7 @@ class Level:
         )
         self.wait_for_teleportation_destination: bool = False
         self.diary_entries: List[List[BoxElement]] = []
-        self.turn_items: List[List[Union[Item, Player]]] = []
+        self.traded_items: List[List[Union[Item, Player]]] = []
 
         self.wait_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "waiting.ogg")
@@ -1347,9 +1347,10 @@ class Level:
         self.selected_item = None
         self.selected_player.end_turn()
         self.selected_player = None
-        self.possible_moves = []
-        self.possible_attacks = []
-        self.possible_interactions = []
+        self.traded_items.clear()
+        self.possible_moves.clear()
+        self.possible_attacks.clear()
+        self.possible_interactions.clear()
         if clear_menus:
             self.menu_manager.clear_menus()
 
@@ -1498,7 +1499,9 @@ class Level:
                                 margin=(20, 0, 20, 0)),
                 ]
             ]
-        self.turn_items.append([self.selected_item, owner, receiver])
+
+            self.traded_items.append([self.selected_item, owner, receiver])
+
         self.menu_manager.open_menu(InfoBox(
             str(self.selected_item),
             grid_elements,
@@ -1920,15 +1923,15 @@ class Level:
                 # TODO: Find a better way to test if active menu is the character's main menu
                 if self.menu_manager.active_menu.title == "Select an action":
                     if self.selected_player.cancel_move():
-                        if self.turn_items is not None:
-                            for item in self.turn_items:
+                        if self.traded_items:
+                            for item in self.traded_items:
                                 if item[1] == self.selected_player:
                                     item[2].remove_item(item[0])
                                     self.selected_player.set_item(item[0])
                                 else:
                                     self.selected_player.remove_item(item[0])
                                     item[1].set_item(item[0])
-                            self.turn_items.clear()
+                            self.traded_items.clear()
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
