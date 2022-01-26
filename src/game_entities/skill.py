@@ -60,8 +60,8 @@ class Skill:
         self.stats: Optional[Sequence[str]] = stats
         self.alterations: Optional[Sequence[Alteration]] = alterations
 
-    def __eq__(self, o):
-        return self.name == o
+    def __eq__(self, name):
+        return self.name == name
 
     def __str__(self):
         return self.name

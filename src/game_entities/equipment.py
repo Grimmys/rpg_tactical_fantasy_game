@@ -71,10 +71,10 @@ class Equipment(Item):
             raw_equipped_sprite, (TILE_SIZE, TILE_SIZE)
         )
         if len(equipped_sprites) > 1:
-            for sprite in equipped_sprites[1:]:
+            for equipped_sprite in equipped_sprites[1:]:
                 self.equipped_sprite.blit(
                     pygame.transform.scale(
-                        pygame.image.load(sprite).convert_alpha(),
+                        pygame.image.load(equipped_sprite).convert_alpha(),
                         (TILE_SIZE, TILE_SIZE),
                     ),
                     (0, 0),

@@ -132,7 +132,7 @@ def create_inventory_menu(
     """
     grid_elements = []
     row = []
-    for i, item in enumerate(items):
+    for item in items:
         additional_lines = []
         # Test if price should appeared
         if is_to_sell and item:
@@ -612,7 +612,7 @@ def create_main_menu(
     if is_initialization_phase:
         elements.append([Button(title="Start", callback=buttons_callback["start"])])
     else:
-        elements.append([Button(title="Diary", callback=buttons_callback["diary"])]),
+        elements.append([Button(title="Diary", callback=buttons_callback["diary"])])
         elements.append([Button(title="End Turn", callback=buttons_callback["end_turn"])])
 
     return InfoBox(
@@ -1152,7 +1152,7 @@ def load_parameter_button(
     """
     current_value_index: int = 0
 
-    for i in range(len(values)):
+    for i, _ in enumerate(values):
         if values[i]["value"] == current_value:
             current_value_index = i
 

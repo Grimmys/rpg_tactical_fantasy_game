@@ -315,10 +315,7 @@ class Level:
         """
         # At next update, level will be destroyed
         self.quit_request = True
-        if (
-            self.game_phase != LevelStatus.ENDED_VICTORY
-            and self.game_phase != LevelStatus.ENDED_DEFEAT
-        ):
+        if self.game_phase not in (LevelStatus.ENDED_VICTORY, LevelStatus.ENDED_DEFEAT):
             self.game_phase = LevelStatus.ENDED_DEFEAT
 
     def is_game_started(self) -> bool:
@@ -547,7 +544,7 @@ class Level:
         movable -- the movable entity concerned
         screen -- the screen on which the possibilities should be drawn
         """
-        for tile in self.possible_moves.keys():
+        for tile in self.possible_moves:
             if movable.position != tile:
                 blit_alpha(screen, constant_sprites["landing"], tile, LANDING_OPACITY)
 
@@ -599,7 +596,7 @@ class Level:
         """
         tiles_content: List[Optional[Entity]] = []
         for x_coordinate in range(-1, 2):
-            for y_coordinate in {1 - abs(x_coordinate), -1 + abs(x_coordinate)}:
+            for y_coordinate in (1 - abs(x_coordinate), -1 + abs(x_coordinate)):
                 tile_x: int = position[0] + (x_coordinate * TILE_SIZE)
                 tile_y: int = position[1] + (y_coordinate * TILE_SIZE)
                 tile_position = tile_x, tile_y
@@ -621,7 +618,7 @@ class Level:
             tiles_current_level: dict[tuple[int, int], int] = {}
             for tile in previously_computed_tiles:
                 for x_coordinate in range(-1, 2):
-                    for y_coordinate in {1 - abs(x_coordinate), -1 + abs(x_coordinate)}:
+                    for y_coordinate in (1 - abs(x_coordinate), -1 + abs(x_coordinate)):
                         tile_x: int = tile[0] + (x_coordinate * TILE_SIZE)
                         tile_y: int = tile[1] + (y_coordinate * TILE_SIZE)
                         tile_position = (tile_x, tile_y)
@@ -653,7 +650,7 @@ class Level:
         for entity in entities:
             for i in reach:
                 for x_coordinate in range(-i, i + 1):
-                    for y_coordinate in {i - abs(x_coordinate), -i + abs(x_coordinate)}:
+                    for y_coordinate in (i - abs(x_coordinate), -i + abs(x_coordinate)):
                         tile_x: int = entity.position[0] + (x_coordinate * TILE_SIZE)
                         tile_y: int = entity.position[1] + (y_coordinate * TILE_SIZE)
                         tile_position = (tile_x, tile_y)
@@ -1023,7 +1020,7 @@ class Level:
         kind -- the nature of the damage that would be dealt
         """
         nb_attacks: int = 2 if "double_attack" in attacker.skills else 1
-        for i in range(nb_attacks):
+        for _ in range(nb_attacks):
             experience: int = 0
 
             if isinstance(target, Character) and target.parried():

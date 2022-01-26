@@ -59,11 +59,11 @@ def init_fonts() -> None:
     These fonts will be available in all modules by importing the fonts dictionary.
     """
     global fonts
-    for font in fonts_description:
-        if "default" in fonts_description[font]:
+    for font_name, font in fonts_description.items():
+        if "default" in font:
             # Use pygame's default font
-            fonts[font] = pygame.font.SysFont("arial", 20, True)
+            fonts[font_name] = pygame.font.SysFont("arial", 20, True)
         else:
-            fonts[font] = pygame.font.Font(
-                fonts_description[font]["name"], fonts_description[font]["size"]
+            fonts[font_name] = pygame.font.Font(
+                font["name"], font["size"]
             )

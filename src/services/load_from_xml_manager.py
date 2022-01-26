@@ -1063,7 +1063,7 @@ def load_item(data):
     # Retrieve static data
     item = parse_item_file(name)
     item.resell_price = int(data.find("value").text.strip())
-    if isinstance(item, Weapon) or isinstance(item, Shield):
+    if isinstance(item, (Shield, Weapon)):
         item.durability = int(data.find("durability").text.strip())
 
     return item
@@ -1087,7 +1087,7 @@ def parse_item_file(name):
         price = 0
     category = item_tree_root.find("category").text.strip()
 
-    if category == "potion" or category == "consumable":
+    if category in ("potion", "consumable"):
         effects = []
         for effect in item_tree_root.findall(".//effect"):
             effect_name = effect.find("type").text.strip()

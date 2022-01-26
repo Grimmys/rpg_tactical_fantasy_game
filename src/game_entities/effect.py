@@ -28,16 +28,12 @@ class Effect:
         self.name: str = name
         self.power: int = power
         self.duration: int = duration
-        if (
-            self.name == "speed_up"
-            or self.name == "strength_up"
-            or self.name == "defense_up"
-        ):
+        if self.name in ("speed_up", "strength_up", "defense_up"):
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = (
                 alteration_root.find("info")
-                .text.strip()
-                .replace("{val}", str(self.power))
+                    .text.strip()
+                    .replace("{val}", str(self.power))
             )
             abbr = alteration_root.find("abbreviated_name").text.strip()
             self.alteration = Alteration(

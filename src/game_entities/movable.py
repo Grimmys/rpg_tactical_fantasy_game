@@ -111,21 +111,21 @@ class Movable(Destroyable):
         )
 
     def __init__(
-            self,
-            name: str,
-            position: tuple[int, int],
-            sprite: Union[str, pygame.Surface],
-            hit_points: int,
-            defense: int,
-            resistance: int,
-            max_moves: int,
-            strength: int,
-            attack_kind: str,
-            strategy: str,
-            lvl: int = 1,
-            skills: Optional[Sequence[Skill]] = None,
-            alterations: Optional[Sequence[Alteration]] = None,
-            complementary_sprite_link: Optional[str] = None,
+        self,
+        name: str,
+        position: tuple[int, int],
+        sprite: Union[str, pygame.Surface],
+        hit_points: int,
+        defense: int,
+        resistance: int,
+        max_moves: int,
+        strength: int,
+        attack_kind: str,
+        strategy: str,
+        lvl: int = 1,
+        skills: Optional[Sequence[Skill]] = None,
+        alterations: Optional[Sequence[Alteration]] = None,
+        complementary_sprite_link: Optional[str] = None,
     ) -> None:
         super().__init__(name, position, sprite, hit_points, defense, resistance)
         if skills is None:
@@ -190,7 +190,7 @@ class Movable(Destroyable):
         return self._attack_kind
 
     def attacked(
-            self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
+        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
     ) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
@@ -209,8 +209,8 @@ class Movable(Destroyable):
             (
                 ally,
                 (
-                        abs(self.position[0] - ally.position[0])
-                        + abs(self.position[1] - ally.position[1])
+                    abs(self.position[0] - ally.position[0])
+                    + abs(self.position[1] - ally.position[1])
                 )
                 // TILE_SIZE,
             )
@@ -355,16 +355,16 @@ class Movable(Destroyable):
             return f" ({change})"
         return ""
 
-    def earn_xp(self, xp: int) -> bool:
+    def earn_xp(self, experience: int) -> bool:
         """
         Handle the earning of experience.
 
         Return whether the entity level up or not.
 
         Keyword arguments:
-        xp -- the amount of earned xp
+        experience -- the amount of earned xp
         """
-        self.experience += xp
+        self.experience += experience
         if self.experience >= self.experience_to_lvl_up:
             self.lvl_up()
             return True
@@ -461,7 +461,7 @@ class Movable(Destroyable):
         return True
 
     def act(
-            self, possible_moves: dict[Position, int], targets: dict[Entity, int]
+        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
     ) -> Optional[Position]:
         """
         Determine what action should be done by the entity controlled by AI.
@@ -498,9 +498,9 @@ class Movable(Destroyable):
         for distance in self.reach:
             for target in targets:
                 if (
-                        abs(self.position[0] - target.position[0])
-                        + abs(self.position[1] - target.position[1])
-                        == TILE_SIZE * distance
+                    abs(self.position[0] - target.position[0])
+                    + abs(self.position[1] - target.position[1])
+                    == TILE_SIZE * distance
                 ):
                     if self.target and target == self.target:
                         return target.position
@@ -526,9 +526,9 @@ class Movable(Destroyable):
                     for move in possible_moves:
                         # Try to find move next to one target
                         if (
-                                abs(move[0] - target.position[0])
-                                + abs(move[1] - target.position[1])
-                                == TILE_SIZE * distance
+                            abs(move[0] - target.position[0])
+                            + abs(move[1] - target.position[1])
+                            == TILE_SIZE * distance
                         ):
                             self.target = target
                             return move
@@ -541,9 +541,9 @@ class Movable(Destroyable):
                 for move in possible_moves:
                     # Search for the nearest move to target
                     dist = (
-                            abs(move[0] - self.target.position[0])
-                            + abs(move[1] - self.target.position[1])
-                            - (TILE_SIZE * distance)
+                        abs(move[0] - self.target.position[0])
+                        + abs(move[1] - self.target.position[1])
+                        - (TILE_SIZE * distance)
                     )
                     if 0 <= dist < min_dist:
                         best_move = move
