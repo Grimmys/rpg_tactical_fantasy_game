@@ -53,7 +53,7 @@ class TestItem(unittest.TestCase):
 
     def test_id_uniqueness(self):
         items = []
-        for i in range(NB_TESTS_FOR_PROPORTIONS):
+        for _ in range(NB_TESTS_FOR_PROPORTIONS):
             items.append(random_item())
 
         self.assertTrue(

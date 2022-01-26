@@ -1539,8 +1539,7 @@ class Level:
         """
         self.menu_manager.close_active_menu()
         # Remove item from inventory/equipment according to the index
-        if isinstance(self.selected_item, Equipment) \
-            and self.selected_player.has_equipment(self.selected_item):
+        if isinstance(self.selected_item, Equipment) and self.selected_player.has_exact_equipment(self.selected_item):
             self.selected_player.remove_equipment(self.selected_item)
             equipments = list(self.selected_player.equipments)
             new_items_menu = menu_creator_manager.create_equipment_menu(
@@ -1567,6 +1566,7 @@ class Level:
             grid_elements,
             width=ITEM_DELETE_MENU_WIDTH,
         ))
+        self.selected_item = None
 
     def try_sell_selected_item(self) -> None:
         """

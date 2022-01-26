@@ -123,8 +123,8 @@ class Character(Movable):
         self.join_team: bool = False
         self.reach_: Sequence[int] = [1]
         self.constitution: int = (
-                Character.races_data[race]["constitution"]
-                + Character.classes_data[classes[0]]["constitution"]
+            Character.races_data[race]["constitution"]
+            + Character.classes_data[classes[0]]["constitution"]
         )
 
     def talk(self, actor: Entity) -> list[list[BoxElement]]:
@@ -180,7 +180,7 @@ class Character(Movable):
         return False
 
     def attacked(
-            self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
+        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
     ) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
@@ -282,14 +282,14 @@ class Character(Movable):
             return False
         return self.equipments[index]
 
-    def has_equipment(self, equipment: Equipment) -> bool:
+    def has_exact_equipment(self, equipment: Equipment) -> bool:
         """
-        Return whether the character wears the given equipment or not
+        Return whether the character wears the given exact instance of the equipment or not
 
         Keyword argument:
         equipment -- the equipment to look for
         """
-        return equipment in self.equipments
+        return equipment.identifier in map(lambda eq: eq.identifier, self.equipments)
 
     def get_formatted_classes(self) -> str:
         """
@@ -333,7 +333,7 @@ class Character(Movable):
         if equipment.restrictions != {}:
             allowed = False
             if "classes" in equipment.restrictions and (
-                    self.race != "centaur" or isinstance(equipment, (Shield, Weapon))
+                self.race != "centaur" or isinstance(equipment, (Shield, Weapon))
             ):
                 for cls in equipment.restrictions["classes"]:
                     if cls in self.classes:

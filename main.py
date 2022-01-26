@@ -95,6 +95,7 @@ if __name__ == "__main__":
     # Make sure the game will display correctly on high DPI monitors on Windows.
     if platform.system() == 'Windows':
         from ctypes import windll
+
         try:
             windll.user32.SetProcessDPIAware()
         except AttributeError:

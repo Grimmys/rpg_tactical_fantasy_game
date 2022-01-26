@@ -9,6 +9,7 @@ from pygamepopup.components import Button
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
 from src.scenes.start_screen import StartScreen
 from src.services import menu_creator_manager
+from src.services.load_from_xml_manager import parse_item_file
 from tests.tools import minimal_setup_for_game
 
 
@@ -31,7 +32,7 @@ class TestLevel(unittest.TestCase):
         self.level = self.start_screen.level
 
     def simulate_trade_item(
-            self, item, active_player, other_player, is_active_the_sender
+        self, item, active_player, other_player, is_active_the_sender
     ):
         # Store the current menu before making trade
         self.level.menu_manager.reduce_active_menu()
@@ -214,6 +215,59 @@ class TestLevel(unittest.TestCase):
     @unittest.skip
     def test_cancel_movement_after_trade_items_and_gold_sent_and_received(self):
         pass
+
+    def test_throw_selected_item(self):
+        self.import_save_file("tests/test_saves/simple_save.xml")
+
+        raimund_player = [player for player in self.level.players if player.name == "raimund"][0]
+        item_to_be_thrown = [item for item in raimund_player.items if item.name == "life_potion"][0]
+        other_item = [item for item in raimund_player.items if item.name == "key"][0]
+
+        self.level.selected_player = raimund_player
+        self.level.selected_item = item_to_be_thrown
+
+        self.level.throw_selected_item()
+
+        self.assertNotIn(item_to_be_thrown, raimund_player.items)
+        self.assertIn(other_item, raimund_player.items)
+        self.assertIsNone(self.level.selected_item)
+
+    def test_throw_selected_equipped_item(self):
+        self.import_save_file("tests/test_saves/simple_save.xml")
+
+        raimund_player = [player for player in self.level.players if player.name == "raimund"][0]
+        equipment_to_be_thrown = [item for item in raimund_player.equipments if item.name == "basic_bow"][0]
+        other_equipment = [item for item in raimund_player.equipments if item.name == "brown_boots"][0]
+        inventory_before = raimund_player.items.copy()
+
+        self.level.selected_player = raimund_player
+        self.level.selected_item = equipment_to_be_thrown
+
+        self.level.throw_selected_item()
+
+        self.assertNotIn(equipment_to_be_thrown, raimund_player.equipments)
+        self.assertIn(other_equipment, raimund_player.equipments)
+        self.assertEqual(inventory_before, raimund_player.items)
+        self.assertIsNone(self.level.selected_item)
+
+    def test_throw_selected_equipment_but_not_the_equipped_one(self):
+        self.import_save_file("tests/test_saves/simple_save.xml")
+
+        raimund_player = [player for player in self.level.players if player.name == "raimund"][0]
+        equipment_to_be_thrown_from_inventory = parse_item_file("basic_bow")
+        raimund_player.set_item(equipment_to_be_thrown_from_inventory)
+        equipped_version_of_the_item = [item for item in raimund_player.equipments if item.name == "brown_boots"][0]
+        equipment_before = raimund_player.equipments.copy()
+
+        self.level.selected_player = raimund_player
+        self.level.selected_item = equipment_to_be_thrown_from_inventory
+
+        self.level.throw_selected_item()
+
+        self.assertNotIn(equipment_to_be_thrown_from_inventory, raimund_player.items)
+        self.assertIn(equipped_version_of_the_item, raimund_player.equipments)
+        self.assertEqual(equipment_before, raimund_player.equipments)
+        self.assertIsNone(self.level.selected_item)
 
 
 if __name__ == "__main__":

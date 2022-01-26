@@ -312,7 +312,7 @@
             <info>
                 Could be used to open some chest
             </info>
-            <open_chest />
+            <open_chest/>
             <category>
                 key
             </category>
@@ -330,7 +330,7 @@
             <info>
                 Could be used to open some door.
             </info>
-            <open_door />
+            <open_door/>
             <category>
                 key
             </category>
@@ -873,7 +873,7 @@
             </price>
         </helmet>
         <horned_helmet>
-             <name>
+            <name>
                 Horned Helmet
             </name>
             <sprite>
@@ -1081,7 +1081,7 @@
                 body
             </bodypart>
             <def>
-                2
+                1
             </def>
             <weight>
                 1
