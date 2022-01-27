@@ -21,6 +21,7 @@ from src.game_entities.shield import Shield
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
+from src.gui.position import Position
 
 
 class Character(Movable):
@@ -81,7 +82,7 @@ class Character(Movable):
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: Position,
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,

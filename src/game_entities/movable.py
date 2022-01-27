@@ -113,7 +113,7 @@ class Movable(Destroyable):
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: Position,
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,
@@ -133,7 +133,7 @@ class Movable(Destroyable):
         if alterations is None:
             alterations = []
         self._max_moves: int = max_moves
-        self.on_move: list[tuple[int, int]] = []
+        self.on_move: list[Position] = []
         self._timer: int = TIMER
         self.strength: int = strength
         self.alterations: list[Alteration] = alterations
@@ -143,7 +143,7 @@ class Movable(Destroyable):
         self.items: list[Item] = []
         self.nb_items_max: int = NB_ITEMS_MAX
         self.state: EntityState = EntityState.HAVE_TO_ACT
-        self.target: Union[Entity, None] = None
+        self.target: Optional[Entity] = None
         if complementary_sprite_link:
             complementary_sprite: pygame.Surface = pygame.transform.scale(
                 pygame.image.load(complementary_sprite_link).convert_alpha(),
@@ -485,7 +485,7 @@ class Movable(Destroyable):
             self.end_turn()
         return None
 
-    def determine_attack(self, targets: Sequence[Entity]) -> Optional[tuple[int, int]]:
+    def determine_attack(self, targets: Sequence[Entity]) -> Optional[Position]:
         """
         Determine which entity should be attacked by the entity controlled by AI.
 
@@ -494,7 +494,7 @@ class Movable(Destroyable):
         Keyword arguments:
         targets -- the sequence of entities that could be attacked
         """
-        temporary_attack: Optional[tuple[int, int]] = None
+        temporary_attack: Optional[Position] = None
         for distance in self.reach:
             for target in targets:
                 if (
@@ -519,7 +519,7 @@ class Movable(Destroyable):
         with their associated distance from the entity
         targets -- the collection of entities that could be attacked with their associated distance from the entity
         """
-        self.target: Optional[tuple[int, int]] = None
+        self.target: Optional[Position] = None
         if self.strategy is EntityStrategy.SEMI_ACTIVE:
             for target, dist in targets.items():
                 for distance in self.reach:

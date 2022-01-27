@@ -1,3 +1,4 @@
+import pygame
 from lxml import etree
 
 from src.constants import TILE_SIZE
@@ -269,7 +270,7 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     # Dynamic data
     x_coordinate = int(entity.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(entity.find("position/y").text) * TILE_SIZE + gap_y
-    position = (x_coordinate, y_coordinate)
+    position = pygame.Vector2(x_coordinate, y_coordinate)
 
     level_element = (
         entity.find("level")
@@ -571,7 +572,7 @@ def load_door(door, from_save, gap_x, gap_y):
     # Static data
     x_coordinate = int(door.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(door.find("position/y").text) * TILE_SIZE + gap_y
-    pos = (x_coordinate, y_coordinate)
+    position = pygame.Vector2(x_coordinate, y_coordinate)
     sprite = door.find("sprite").text.strip()
 
     # Dynamic data
@@ -579,7 +580,7 @@ def load_door(door, from_save, gap_x, gap_y):
     if from_save:
         pick_lock_initiated = door.find("pick_lock_initiated") is not None
 
-    loaded_door = Door(pos, sprite, pick_lock_initiated)
+    loaded_door = Door(position, sprite, pick_lock_initiated)
     return loaded_door
 
 
@@ -596,7 +597,7 @@ def load_building(building, from_save, gap_x, gap_y):
     name = building.find("name").text.strip()
     x_coordinate = int(building.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(building.find("position/y").text) * TILE_SIZE + gap_y
-    pos = (x_coordinate, y_coordinate)
+    position = pygame.Vector2(x_coordinate, y_coordinate)
     sprite = building.find("sprite").text.strip()
     interaction = building.find("interaction")
     interaction_element = {}
@@ -630,12 +631,12 @@ def load_building(building, from_save, gap_x, gap_y):
                     "quantity": int(item.find("quantity").text.strip()),
                 }
                 stock.append(entry)
-            loaded_building = Shop(name, pos, sprite, interaction_element, stock)
+            loaded_building = Shop(name, position, sprite, interaction_element, stock)
         else:
             print("Error : building type isn't recognized : ", type)
             raise SystemError
     else:
-        loaded_building = Building(name, pos, sprite, interaction_element)
+        loaded_building = Building(name, position, sprite, interaction_element)
 
     # Dynamic data
     if from_save:
@@ -762,13 +763,13 @@ def load_portal(portal_couple, gap_x, gap_y):
     """
     first_x = int(portal_couple.find("first/position/x").text) * TILE_SIZE + gap_x
     first_y = int(portal_couple.find("first/position/y").text) * TILE_SIZE + gap_y
-    first_pos = (first_x, first_y)
+    first_position = pygame.Vector2(first_x, first_y)
     second_x = int(portal_couple.find("second/position/x").text) * TILE_SIZE + gap_x
     second_y = int(portal_couple.find("second/position/y").text) * TILE_SIZE + gap_y
-    second_pos = (second_x, second_y)
+    second_position = pygame.Vector2(second_x, second_y)
     sprite = "imgs/dungeon_crawl/" + portal_couple.find("sprite").text.strip()
-    first_portal = Portal(first_pos, sprite)
-    second_portal = Portal(second_pos, sprite)
+    first_portal = Portal(first_position, sprite)
+    second_portal = Portal(second_position, sprite)
     Portal.link_portals(first_portal, second_portal)
     return first_portal, second_portal
 
@@ -785,7 +786,7 @@ def load_fountain(fountain, from_save, gap_x, gap_y):
     name = fountain.find("type").text.strip()
     x_coordinate = int(fountain.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(fountain.find("position/y").text) * TILE_SIZE + gap_y
-    pos = (x_coordinate, y_coordinate)
+    position = pygame.Vector2(x_coordinate, y_coordinate)
     if name not in fountains_infos:
         fountains_infos[name] = etree.parse("data/fountains.xml").find(name)
     sprite = "imgs/dungeon_crawl/" + fountains_infos[name].find("sprite").text.strip()
@@ -798,7 +799,7 @@ def load_fountain(fountain, from_save, gap_x, gap_y):
     effect = Effect(effect_name, power, duration)
     times = int(fountains_infos[name].find("times").text.strip())
 
-    loaded_fountain = Fountain(name, pos, sprite, sprite_empty, effect, times)
+    loaded_fountain = Fountain(name, position, sprite, sprite_empty, effect, times)
 
     if from_save:
         # Load remaining uses from saved data

@@ -2,8 +2,8 @@
 Defines Destroyable class, an entity that could be destroyed.
 """
 
-from enum import Enum
 import os
+from enum import Enum
 from typing import Union, Sequence
 
 import pygame
@@ -11,6 +11,7 @@ from lxml import etree
 
 from src.game_entities.entity import Entity
 from src.gui.constant_sprites import constant_sprites
+from src.gui.position import Position
 
 
 class DamageKind(Enum):
@@ -47,7 +48,7 @@ class Destroyable(Entity):
     def __init__(
         self,
         name: str,
-        position: tuple[int, int],
+        position: Position,
         sprite: Union[str, pygame.Surface],
         hit_points: int,
         defense: int,

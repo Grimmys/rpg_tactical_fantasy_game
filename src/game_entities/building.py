@@ -12,6 +12,7 @@ from src.constants import GREEN
 from src.game_entities.character import Character
 from src.game_entities.entity import Entity
 from src.gui.fonts import fonts
+from src.gui.position import Position
 
 
 class Building(Entity):
@@ -41,11 +42,11 @@ class Building(Entity):
     """
 
     def __init__(
-            self,
-            name: str,
-            position: tuple[int, int],
-            sprite: str,
-            interaction: dict[str, any] = None,
+        self,
+        name: str,
+        position: Position,
+        sprite: str,
+        interaction: dict[str, any] = None,
     ) -> None:
         super().__init__(name, position, sprite)
         self.sprite_link: str = sprite

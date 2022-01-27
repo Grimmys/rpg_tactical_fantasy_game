@@ -14,6 +14,7 @@ from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.item import Item
 from src.gui.fonts import fonts
+from src.gui.position import Position
 from src.services import menu_creator_manager
 
 
@@ -39,12 +40,12 @@ class Shop(Building):
     sell_interface_callback = None
 
     def __init__(
-            self,
-            name: str,
-            position: tuple[int, int],
-            sprite: str,
-            interaction: dict[str, any],
-            stock: list[dict[str, any]],
+        self,
+        name: str,
+        position: Position,
+        sprite: str,
+        interaction: dict[str, any],
+        stock: list[dict[str, any]],
     ) -> None:
         super().__init__(name, position, sprite, interaction)
         self.current_visitor: Optional[Character] = None
