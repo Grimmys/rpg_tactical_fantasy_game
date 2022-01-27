@@ -630,7 +630,7 @@ class Level:
         return tiles
 
     def get_possible_attacks(self, possible_moves: Sequence[Position],
-                             reach: Sequence[int], from_ally_side: bool) -> Set[Position]:
+                             reach: Sequence[int], from_ally_side: bool) -> Set[tuple[float, float]]:
         """
         Return all the tiles that could be targeted for an attack from a specific entity
 
@@ -639,7 +639,7 @@ class Level:
         reach -- the reach of the attacking entity
         from_ally_side -- a boolean indicating whether this is a friendly attack or not
         """
-        tiles: List[Position] = []
+        tiles: List[tuple[float, float]] = []
 
         entities = list(self.entities["breakables"])
         if from_ally_side:
@@ -655,7 +655,7 @@ class Level:
                         tile_y: int = entity.position[1] + (y_coordinate * TILE_SIZE)
                         tile_position = (tile_x, tile_y)
                         if tile_position in possible_moves:
-                            tiles.append(entity.position)
+                            tiles.append(tuple(entity.position))
 
         return set(tiles)
 
