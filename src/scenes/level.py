@@ -604,7 +604,7 @@ class Level:
                 tiles_content.append(tile_content)
         return tiles_content
 
-    def get_possible_moves(self, position: Position, max_moves: int) -> dict[Position, int]:
+    def get_possible_moves(self, position: tuple[int, int], max_moves: int) -> dict[tuple[int, int], int]:
         """
         Return all the possible moves with their distance from the starting position
 
@@ -612,8 +612,8 @@ class Level:
         position -- the starting position
         max_moves -- the maximum number of tiles that could be traveled
         """
-        tiles: dict[Position, int] = {position: 0}
-        previously_computed_tiles: dict[Position, int] = tiles
+        tiles: dict[tuple[int, int], int] = {position: 0}
+        previously_computed_tiles: dict[tuple[int, int], int] = tiles
         for i in range(1, max_moves + 1):
             tiles_current_level: dict[tuple[int, int], int] = {}
             for tile in previously_computed_tiles:
@@ -726,8 +726,8 @@ class Level:
         entity -- the entity for which the distance from all other entities should be computed
         all_other_entities -- all other entities for which the distance should be computed
         """
-        free_tiles_distance: dict[Position, int] = self.get_possible_moves(
-            entity.position,
+        free_tiles_distance: dict[tuple[int, int], int] = self.get_possible_moves(
+            tuple(entity.position),
             (self.map["width"] * self.map["height"]) // (TILE_SIZE * TILE_SIZE),
         )
         entities_distance: dict[Entity, int] = {
