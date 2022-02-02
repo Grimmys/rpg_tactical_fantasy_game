@@ -141,35 +141,39 @@ class TestMission(unittest.TestCase):
         self.assertTrue(mission.update_state(turns=turn_limit + 1))
         self.assertFalse(mission.ended)
 
-    @unittest.skip
     def test_update_state_kill_target_objective(self):
         nature = MissionType.KILL_TARGETS
         target = random_foe_entity()
         mission = Mission(True, nature, [], "Test mission", 0, targets=[target])
 
+        mission.update_state()
         self.assertFalse(mission.ended)
 
         target.hit_points -= target.hit_points_max // 2
 
+        mission.update_state()
         self.assertFalse(mission.ended)
 
         target.hit_points = 0
 
+        mission.update_state()
         self.assertTrue(mission.ended)
 
-    @unittest.skip
     def test_update_state_kill_multiple_targets_objective(self):
         nature = MissionType.KILL_TARGETS
         targets = random_entities(Foe, min=2)
         mission = Mission(True, nature, [], "Test mission", 0, targets=targets)
 
+        mission.update_state()
         self.assertFalse(mission.ended)
 
         targets[0].hit_points = 0
 
+        mission.update_state()
         self.assertFalse(mission.ended)
 
         for foe in targets:
             foe.hit_points = 0
 
+        mission.update_state()
         self.assertTrue(mission.ended)
