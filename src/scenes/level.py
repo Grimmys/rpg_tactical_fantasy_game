@@ -629,7 +629,7 @@ class Level:
         tiles.update(previously_computed_tiles)
         return tiles
 
-    def get_possible_attacks(self, possible_moves: Sequence[Position],
+    def get_possible_attacks(self, possible_moves: Sequence[tuple[int, int]],
                              reach: Sequence[int], from_ally_side: bool) -> Set[tuple[float, float]]:
         """
         Return all the tiles that could be targeted for an attack from a specific entity
@@ -696,7 +696,7 @@ class Level:
         return None
 
     def determine_path_to(self, destination_tile: Position,
-                          distance_for_tile: dict[Position, int]) -> List[Position]:
+                          distance_for_tile: dict[tuple[int, int], int]) -> List[Position]:
         """
         Return an ordered list of position that represent the path from one tile to another
 
@@ -705,16 +705,16 @@ class Level:
         distance -- the distance between the starting tile and the destination
         """
         path: List[Position] = [destination_tile]
-        current_tile: Position = destination_tile
+        current_tile: tuple[int, int] = tuple(destination_tile)
         while distance_for_tile[current_tile] > 1:
             # Check for neighbour cases
-            available_tiles: dict[Position, int] = self.get_possible_moves(current_tile, 1)
+            available_tiles: dict[tuple[int, int], int] = self.get_possible_moves(tuple(current_tile), 1)
             for tile in available_tiles:
                 if tile in distance_for_tile:
                     distance = distance_for_tile[tile]
                     if distance < distance_for_tile[current_tile]:
                         current_tile = tile
-                        path.insert(0, current_tile)
+                        path.insert(0, pygame.Vector2(current_tile))
         return path
 
     def distance_between_all(self, entity: Entity, all_other_entities: Sequence) -> \
@@ -926,7 +926,7 @@ class Level:
         elif isinstance(target, Portal):
             new_based_position: Position = target.linked_to.position
             possible_positions_with_distance: dict[Position, int] = \
-                self.get_possible_moves(new_based_position, 1)
+                self.get_possible_moves(tuple(new_based_position), 1)
             # Remove portal pos since player cannot be on the portal
             del possible_positions_with_distance[new_based_position]
             if possible_positions_with_distance:
@@ -1121,18 +1121,18 @@ class Level:
         entity -- the entity for which the action should be computed
         is_ally -- a boolean indicating if the entity is an ally or not
         """
-        possible_moves: dict[Position, int] = self.get_possible_moves(entity.position,
-                                                                      entity.max_moves)
+        possible_moves: dict[tuple[int, int], int] = self.get_possible_moves(tuple(entity.position),
+                                                                             entity.max_moves)
         targets: Sequence[Movable] = (
             self.entities["foes"] if is_ally else self.players + self.entities["allies"]
         )
         allies: Sequence[Movable] = (
             self.players + self.entities["allies"] if is_ally else self.entities["foes"]
         )
-        tile: Position = entity.act(possible_moves, self.distance_between_all(entity, targets))
+        tile: Optional[Position] = entity.act(possible_moves, self.distance_between_all(entity, targets))
 
         if tile:
-            if tile in possible_moves:
+            if tuple(tile) in possible_moves:
                 # Entity choose to move to case
                 self.hovered_entity = entity
                 path = self.determine_path_to(tile, possible_moves)
@@ -1867,7 +1867,7 @@ class Level:
                     player.selected = True
                     self.selected_player = player
                     self.possible_moves = self.get_possible_moves(
-                        player.position,
+                        tuple(player.position),
                         player.max_moves + player.get_stat_change("speed"),
                     )
                     self.possible_attacks = (
@@ -1989,7 +1989,7 @@ class Level:
                         ) and entity.get_rect().collidepoint(position):
                             self.watched_entity = entity
                             self.possible_moves = self.get_possible_moves(
-                                entity.position, entity.max_moves
+                                tuple(entity.position), entity.max_moves
                             )
                             reach: Sequence[int] = self.watched_entity.reach
                             self.possible_attacks = {}
