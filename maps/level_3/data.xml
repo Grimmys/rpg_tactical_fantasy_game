@@ -134,6 +134,9 @@
             <level>
                 6
             </level>
+            <mission_target>
+                MAIN_MISSION
+            </mission_target>
         </foe>
     </foes>
     <buildings>
@@ -305,6 +308,7 @@
     </obstacles>
     <missions>
         <main>
+            <id>MAIN_MISSION</id>
             <type>KILL_TARGETS</type>
             <description>
                 Kill the Mutanter
