@@ -223,9 +223,7 @@ class StartScreen:
                 index: str = tree_root.find("level/index").text.strip()
                 level_name: str = f"maps/level_{index}/"
                 game_status: str = tree_root.find("level/phase").text.strip()
-                turn_nb: int = 0
-                if game_status != "I":
-                    turn_nb = int(tree_root.find("level/turn").text.strip())
+                turn_nb = int(tree_root.find("level/turn").text.strip())
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)

@@ -97,8 +97,8 @@ class Entity:
         # Save position
         position: etree.SubElement = etree.SubElement(tree, "position")
         x_coordinate: etree.SubElement = etree.SubElement(position, "x")
-        x_coordinate.text = str(self.position[0] // TILE_SIZE)
+        x_coordinate.text = str(int(self.position[0] // TILE_SIZE))
         y_coordinate: etree.SubElement = etree.SubElement(position, "y")
-        y_coordinate.text = str(self.position[1] // TILE_SIZE)
+        y_coordinate.text = str(int(self.position[1] // TILE_SIZE))
 
         return tree

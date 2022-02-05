@@ -1,5 +1,5 @@
+import random
 import unittest
-import random as rd
 
 from src.game_entities.foe import Keyword
 from src.services.load_from_xml_manager import (
@@ -93,8 +93,8 @@ class TestSaveAndLoad(unittest.TestCase):
             reach=[2],
             keywords=[Keyword.CAVALRY],
             loot=[
-                (parse_item_file("monster_meat"), rd.random()),
-                (random_gold(), rd.random()),
+                (parse_item_file("monster_meat"), random.random()),
+                (random_gold(), random.random()),
             ],
         )
         foe_saved = foe.save("foe")

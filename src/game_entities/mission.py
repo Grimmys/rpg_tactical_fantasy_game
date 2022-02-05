@@ -104,7 +104,7 @@ class Mission:
         player: Player = None,
         entities: dict[str, Sequence[Entity]] = None,
         turns: int = 0,
-    ) -> bool:
+    ) -> None:
         """
         Update the state of the mission.
         Verify whether it's ended or not.

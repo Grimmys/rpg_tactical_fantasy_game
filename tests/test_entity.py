@@ -1,9 +1,10 @@
+import random
 import unittest
 
-import random as rd
+import pygame
 
-from src.game_entities.entity import Entity
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
+from src.game_entities.entity import Entity
 from tests.random_data_library import random_position
 from tests.tools import minimal_setup_for_game
 
@@ -15,54 +16,54 @@ class TestEntity(unittest.TestCase):
 
     def test_init_entity(self):
         name = "entity"
-        pos = (3, 2)
+        position = pygame.Vector2(3, 2)
         sprite = "imgs/dungeon_crawl/monster/angel.png"
-        entity = Entity(name, pos, sprite)
+        entity = Entity(name, position, sprite)
         self.assertEqual(name, entity.name)
-        self.assertEqual(pos, entity.position)
+        self.assertEqual(position, entity.position)
         self.assertEqual("Entity", str(entity))
-        self.assertTrue(entity.is_on_position(pos))
+        self.assertTrue(entity.is_on_position(position))
 
     def test_name_format(self):
-        pos = random_position()
+        position = random_position()
         sprite = "imgs/dungeon_crawl/monster/angel.png"
 
         name = "test"
-        entity = Entity(name, pos, sprite)
+        entity = Entity(name, position, sprite)
         self.assertEqual("Test", str(entity))
 
         name = "Test"
-        entity = Entity(name, pos, sprite)
+        entity = Entity(name, position, sprite)
         self.assertEqual("Test", str(entity))
 
         name = "entity_test"
-        entity = Entity(name, pos, sprite)
+        entity = Entity(name, position, sprite)
         self.assertEqual("Entity Test", str(entity))
 
         name = "5entity_test_01"
-        entity = Entity(name, pos, sprite)
+        entity = Entity(name, position, sprite)
         self.assertEqual("Entity Test", str(entity))
 
     def test_position(self):
         name = "test"
         sprite = "imgs/dungeon_crawl/monster/angel.png"
-        pos = random_position()
-        entity = Entity(name, pos, sprite)
+        position = random_position()
+        entity = Entity(name, position, sprite)
 
-        self.assertTrue(entity.is_on_position(pos))
+        self.assertTrue(entity.is_on_position(position))
         self.assertTrue(
             entity.is_on_position(
                 (
-                    pos[0] + rd.randrange(0, TILE_SIZE),
-                    pos[1] + rd.randrange(0, TILE_SIZE),
+                    position[0] + random.randrange(0, TILE_SIZE),
+                    position[1] + random.randrange(0, TILE_SIZE),
                 )
             )
         )
         self.assertFalse(
-            entity.is_on_position((pos[0] - rd.randrange(0, MAIN_WIN_WIDTH), pos[1]))
+            entity.is_on_position((position[0] - random.randrange(0, MAIN_WIN_WIDTH), position[1]))
         )
         self.assertFalse(
-            entity.is_on_position((pos[0], pos[1] - rd.randrange(0, MAIN_WIN_HEIGHT)))
+            entity.is_on_position((position[0], position[1] - random.randrange(0, MAIN_WIN_HEIGHT)))
         )
 
 
