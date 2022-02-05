@@ -126,4 +126,3 @@ class Mission:
             self.ended = all([target.hit_points <= 0 for target in self.targets])
         elif self.type is MissionType.TURN_LIMIT:
             self.ended = turns <= self.turn_limit
-        return True

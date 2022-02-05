@@ -101,11 +101,11 @@ class TestMission(unittest.TestCase):
         players = [random_player_entity(), random_player_entity()]
         mission = Mission(True, nature, position, "Test mission", 2)
 
-        self.assertTrue(mission.update_state(players[0]))
+        mission.update_state(players[0])
         self.assertFalse(mission.ended)
         self.assertEqual(players[0], mission.succeeded_chars[0])
 
-        self.assertTrue(mission.update_state(players[1]))
+        mission.update_state(players[1])
         self.assertTrue(mission.ended)
         self.assertEqual(players, mission.succeeded_chars)
 
@@ -115,18 +115,18 @@ class TestMission(unittest.TestCase):
         foes = random_entities(Foe, min=2)
         entities = {"foes": foes}
 
-        self.assertTrue(mission.update_state(entities=entities))
+        mission.update_state(entities=entities)
         self.assertFalse(mission.ended)
 
         foes.pop()
 
-        self.assertTrue(mission.update_state(entities=entities))
+        mission.update_state(entities=entities)
         self.assertFalse(mission.ended)
 
         while len(foes) != 0:
             foes.pop()
 
-        self.assertTrue(mission.update_state(entities=entities))
+        mission.update_state(entities=entities)
         self.assertTrue(mission.ended)
 
     def test_update_state_objective_with_turn_limit(self):
@@ -134,11 +134,13 @@ class TestMission(unittest.TestCase):
         turn_limit = rd.randint(1, 10)
         mission = Mission(True, nature, [], "Test mission", 0, turn_limit=turn_limit)
 
-        self.assertTrue(mission.update_state(turns=0))
+        mission.update_state(turns=0)
         self.assertTrue(mission.ended)
-        self.assertTrue(mission.update_state(turns=turn_limit))
+
+        mission.update_state(turns=turn_limit)
         self.assertTrue(mission.ended)
-        self.assertTrue(mission.update_state(turns=turn_limit + 1))
+
+        mission.update_state(turns=turn_limit + 1)
         self.assertFalse(mission.ended)
 
     def test_update_state_kill_target_objective(self):

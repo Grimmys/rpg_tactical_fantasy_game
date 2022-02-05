@@ -1232,15 +1232,14 @@ class Level:
                 # Verify that character is not the last if the mission is not the main one
                 if mission.main or len(self.players) > 1:
                     if mission.is_position_valid(self.selected_player.position):
-                        # Check if player is able to complete this objective
-                        if mission.update_state(self.selected_player):
-                            self.players.remove(self.selected_player)
-                            self.passed_players.append(self.selected_player)
-                            if mission.main and mission.ended:
-                                self.victory = True
-                            # Turn is finished
-                            self.end_active_character_turn()
-                            break
+                        mission.update_state(self.selected_player)
+                        self.players.remove(self.selected_player)
+                        self.passed_players.append(self.selected_player)
+                        if mission.main and mission.ended:
+                            self.victory = True
+                        # Turn is finished
+                        self.end_active_character_turn()
+                        break
 
     def select_talk(self) -> None:
         """
