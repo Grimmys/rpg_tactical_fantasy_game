@@ -3,14 +3,15 @@ Defines Weapon class, a specific equipment with which an entity can attack.
 """
 
 from __future__ import annotations
-import random as rd
+
+import random
 from typing import Sequence
 
 from lxml import etree
 
+from src.game_entities.destroyable import DamageKind
 from src.game_entities.effect import Effect
 from src.game_entities.equipment import Equipment
-from src.game_entities.destroyable import DamageKind
 from src.game_entities.foe import Keyword
 from src.game_entities.movable import Movable
 from src.game_entities.skill import SkillNature
@@ -122,7 +123,7 @@ class Weapon(Equipment):
         )
         return self.durability
 
-    def apply_effects(self, user: Character, target: Movable) -> Sequence[Effect]: # NOQA
+    def apply_effects(self, user: Character, target: Movable) -> Sequence[Effect]:  # NOQA
         """
         Check if some effects from the list of possible effects are triggered after the use of the weapon
 
@@ -143,7 +144,7 @@ class Weapon(Equipment):
                 ):
                     probability += skill.power
 
-            if rd.randint(0, 100) < probability:
+            if random.randint(0, 100) < probability:
                 effects.append(effect["effect"])
         return effects
 

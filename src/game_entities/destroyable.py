@@ -59,7 +59,7 @@ class Destroyable(Entity):
         self.hit_points: int = hit_points
         self.defense: int = defense
         self.resistance: int = resistance
-        self.attack_sfx: pygame.Sound = pygame.mixer.Sound(
+        self.attack_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "attack.ogg")
         )
 

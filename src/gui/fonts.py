@@ -58,7 +58,6 @@ def init_fonts() -> None:
     System font will be load if the keyword 'default' is present in the description provided.
     These fonts will be available in all modules by importing the fonts dictionary.
     """
-    global fonts
     for font_name, font in fonts_description.items():
         if "default" in font:
             # Use pygame's default font

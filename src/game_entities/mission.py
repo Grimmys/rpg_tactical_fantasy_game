@@ -123,6 +123,6 @@ class Mission:
         elif self.type is MissionType.KILL_EVERYBODY:
             self.ended = len(entities["foes"]) == 0
         elif self.type is MissionType.KILL_TARGETS:
-            self.ended = all([target.hit_points <= 0 for target in self.targets])
+            self.ended = all((target.hit_points <= 0 for target in self.targets))
         elif self.type is MissionType.TURN_LIMIT:
             self.ended = turns <= self.turn_limit

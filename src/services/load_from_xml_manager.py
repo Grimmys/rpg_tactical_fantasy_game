@@ -132,13 +132,11 @@ def load_skill(name):
         stats = []
         stats_element = skill_element.find("stats")
         if stats_element is not None:
-            stats = [stat for stat in stats_element.text.replace(" ", "").split(",")]
+            stats = list(stats_element.text.replace(" ", "").split(","))
         alterations = []
         alterations_element = skill_element.find("alteration")
         if alterations_element is not None:
-            alterations = [
-                alt for alt in alterations_element.text.replace(" ", "").split(",")
-            ]
+            alterations = list(alterations_element.text.replace(" ", "").split(","))
 
         skills_infos[name] = Skill(
             name, formatted_name, nature, desc, power, stats, alterations

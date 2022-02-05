@@ -64,21 +64,21 @@ class Player(Character):
     """
 
     def __init__(
-            self,
-            name: str,
-            sprite: Union[str, pygame.Surface],
-            hit_points: int,
-            defense: int,
-            resistance: int,
-            strength: int,
-            classes: Sequence[str],
-            equipments: list[Equipment],
-            race: str,
-            gold: int,
-            lvl: int,
-            skills: Sequence[Skill],
-            alterations: list[Alteration],
-            complementary_sprite_link: str = None,
+        self,
+        name: str,
+        sprite: Union[str, pygame.Surface],
+        hit_points: int,
+        defense: int,
+        resistance: int,
+        strength: int,
+        classes: Sequence[str],
+        equipments: list[Equipment],
+        race: str,
+        gold: int,
+        lvl: int,
+        skills: Sequence[Skill],
+        alterations: list[Alteration],
+        complementary_sprite_link: str = None,
     ):
         super().__init__(
             name,
@@ -139,7 +139,7 @@ class Player(Character):
         """
         Character.display(self, screen)
         if self.state in range(
-                PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1
+            PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1
         ):
             screen.blit(Player.SELECTED_DISPLAY, self.position)
 
@@ -190,14 +190,14 @@ class Player(Character):
         """
         self.state = PlayerState.WAITING_POST_ACTION
 
-    def set_move(self, position: Sequence[tuple[int, int]]) -> None:
+    def set_move(self, path: Sequence[Position]) -> None:
         """
         Set the movement of the player to the given position
 
         Keyword arguments:
-        position -- the target position of the movement
+        path -- the ordered sequence of tiles that should be crossed by the entity
         """
-        Character.set_move(self, position)
+        Character.set_move(self, path)
         self.state = PlayerState.ON_MOVE
         self.old_position = self.position
 

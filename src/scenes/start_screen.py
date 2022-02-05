@@ -2,7 +2,7 @@
 Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
-from typing import Sequence, TextIO, Callable, Optional
+from typing import Sequence, Callable, Optional
 
 import pygame
 from lxml import etree
@@ -166,8 +166,8 @@ class StartScreen:
         if self.level:
             status: int = self.level.update_state()
             if (
-                    status is LevelStatus.ENDED_VICTORY
-                    and (self.level_id + 1) in self.levels
+                status is LevelStatus.ENDED_VICTORY
+                and (self.level_id + 1) in self.levels
             ):
                 self.level_id += 1
                 team: Sequence[Player] = self.level.passed_players + self.level.players
@@ -179,8 +179,8 @@ class StartScreen:
                 self.generate_level_window()
                 self.level = StartScreen.load_level(self.level_id, self.level_screen, team)
             elif (
-                    status is LevelStatus.ENDED_VICTORY
-                    or status is LevelStatus.ENDED_DEFEAT
+                status is LevelStatus.ENDED_VICTORY
+                or status is LevelStatus.ENDED_DEFEAT
             ):
                 # TODO: Game win dialog?
                 self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
@@ -218,10 +218,7 @@ class StartScreen:
         game_id -- the id of the saved file that should be load
         """
         try:
-            save: TextIO = open(f"saves/save_{game_id}.xml", "r")
-
-            # Test if there is a current saved game
-            if save:
+            with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
                 tree_root: etree.Element = etree.parse(save).getroot()
                 index: str = tree_root.find("level/index").text.strip()
                 level_name: str = f"maps/level_{index}/"
@@ -241,8 +238,6 @@ class StartScreen:
                     turn_nb,
                     tree_root.find("level/entities"),
                 )
-                save.close()
-                return
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt

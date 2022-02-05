@@ -51,10 +51,10 @@ def main_loop(
             elif event.type == pygame.MOUSEMOTION:
                 scene.motion(event.pos)
             elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1 or event.button == 3:
+                if event.button in (1, 3):
                     quit_game = scene.click(event.button, event.pos)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1 or event.button == 3:
+                if event.button in (1, 3):
                     scene.button_down(event.button, event.pos)
         scene.update_state()
         scene.display()

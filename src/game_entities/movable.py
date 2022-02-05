@@ -157,16 +157,16 @@ class Movable(Destroyable):
         self.strategy: EntityStrategy = EntityStrategy[strategy]
         self.skills: Sequence[Skill] = skills
 
-        self.walk_sfx: pygame.Sound = pygame.mixer.Sound(
+        self.walk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "walk.ogg")
         )
-        self.skeleton_sfx: pygame.Sound = pygame.mixer.Sound(
+        self.skeleton_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "skeleton_walk.ogg")
         )
-        self.necrophage_sfx: pygame.Sound = pygame.mixer.Sound(
+        self.necrophage_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "necro_walk.ogg")
         )
-        self.centaur_sfx: pygame.Sound = pygame.mixer.Sound(
+        self.centaur_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "cent_walk.ogg")
         )
 

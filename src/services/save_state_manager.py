@@ -11,20 +11,19 @@ class SaveStateManager:
 
     def save_game(self, file_id):
         """
+        Save the current state of the game to the given file in XML format
 
-        :param file_id:
+        Keyword Arguments:
+        file_id -- the id of the save file to use
         """
-        save_file = open(f"saves/save_{file_id}.xml", "w+")
+        with open(f"saves/save_{file_id}.xml", "w+") as save_file:
+            level = self.save_level()
+            self.tree.append(level)
 
-        level = self.save_level()
-        self.tree.append(level)
-
-        # Store XML tree in file
-        save_file.write(
-            etree.tostring(self.tree, pretty_print=True, encoding="unicode")
-        )
-
-        save_file.close()
+            # Store XML tree in file
+            save_file.write(
+                etree.tostring(self.tree, pretty_print=True, encoding="unicode")
+            )
 
     def save_level(self):
         """
