@@ -2,6 +2,8 @@
 Defines Fountain class, a passive entity with which characters can interact to eventually earn bonus.
 """
 
+from __future__ import annotations
+
 import pygame
 from lxml import etree
 from pygamepopup.components import BoxElement, TextElement
@@ -34,13 +36,13 @@ class Fountain(Entity):
     """
 
     def __init__(
-            self,
-            name: str,
-            position: Position,
-            sprite: str,
-            sprite_empty: str,
-            effect: Effect,
-            times: int,
+        self,
+        name: str,
+        position: Position,
+        sprite: str,
+        sprite_empty: str,
+        effect: Effect,
+        times: int,
     ) -> None:
         super().__init__(name, position, sprite)
         self.effect: Effect = effect

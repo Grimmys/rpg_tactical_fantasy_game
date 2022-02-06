@@ -2,6 +2,8 @@
 Defines Effect class, corresponding to the application of a specific effect to a destroyable entity.
 """
 
+from __future__ import annotations
+
 from lxml import etree
 
 from src.game_entities.alteration import Alteration

@@ -3,6 +3,8 @@ Defines Chest class, corresponding to an entity that could be opened by a player
 or items.
 """
 
+from __future__ import annotations
+
 import os
 import random
 from typing import Sequence, Optional
@@ -10,8 +12,8 @@ from typing import Sequence, Optional
 import pygame
 from lxml import etree
 
-from src.game_entities.entity import Entity
 from src.constants import TILE_SIZE
+from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 
 random.seed()

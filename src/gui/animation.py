@@ -1,6 +1,9 @@
 """
 Defines Animation class, useful for memorize frames of an ongoing animation.
 """
+
+from __future__ import annotations
+
 from typing import Union, List
 
 import pygame

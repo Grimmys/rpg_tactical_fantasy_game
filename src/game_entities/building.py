@@ -2,6 +2,8 @@
 Defines Building class, an entity that can be visited by the player
 """
 
+from __future__ import annotations
+
 import os
 
 import pygame

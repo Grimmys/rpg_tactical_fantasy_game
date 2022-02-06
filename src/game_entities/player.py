@@ -2,6 +2,8 @@
 Defines Player class, the class defining characters controlled by the player
 """
 
+from __future__ import annotations
+
 from enum import IntEnum, auto
 from typing import Union, Sequence, Optional
 

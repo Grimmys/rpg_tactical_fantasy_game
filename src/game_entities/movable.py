@@ -3,6 +3,8 @@ Defines Movable class and enum classes for representing entity states and entity
 different classes handling the management of entities that can move, only living entities as for now.
 """
 
+from __future__ import annotations
+
 import os
 from enum import IntEnum, auto, Enum
 from typing import Union, Sequence, Optional

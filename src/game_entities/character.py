@@ -2,6 +2,8 @@
 Defines Character class, the class defining allied entities or even playable entities
 """
 
+from __future__ import annotations
+
 import math
 import random
 from typing import Union, Sequence, Optional

@@ -3,6 +3,8 @@ Defines Mission class and MissionType enum, data structures representing the dif
 accomplished by the player during a level.
 """
 
+from __future__ import annotations
+
 from enum import Enum, auto
 from typing import Sequence, Optional
 

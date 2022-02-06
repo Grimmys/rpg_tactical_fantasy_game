@@ -2,6 +2,8 @@
 Define functions creating a specific menu enveloping data from parameters.
 """
 
+from __future__ import annotations
+
 from typing import Sequence, Union, Callable, Optional
 
 import pygame

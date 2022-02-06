@@ -2,6 +2,8 @@
 Defines Shop class, a Building in which a player character can buy or sell stuff.
 """
 
+from __future__ import annotations
+
 import os
 from copy import copy
 from typing import List, Optional

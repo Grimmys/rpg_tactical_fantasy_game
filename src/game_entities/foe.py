@@ -2,6 +2,8 @@
 Defines Foe class, an hostile entity which targets players and allies.
 """
 
+from __future__ import annotations
+
 import random as rd
 from enum import Enum, auto
 from typing import Union, Sequence, Optional

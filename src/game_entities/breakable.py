@@ -3,6 +3,8 @@ Defines Breakable class, a static Destroyable object that is an element of the b
 Generally, this class helps to represent breakable walls.
 """
 
+from __future__ import annotations
+
 import pygame
 from lxml import etree
 

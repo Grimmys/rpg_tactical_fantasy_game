@@ -3,6 +3,8 @@ Defines Equipment class, an item that can be worn
 by specific entities at a specific body part.
 """
 
+from __future__ import annotations
+
 from typing import Sequence
 
 import pygame

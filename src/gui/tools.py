@@ -2,6 +2,8 @@
 Defines utilitary functions for stuff related to GUI.
 """
 
+from __future__ import annotations
+
 from math import sqrt
 
 import pygame
