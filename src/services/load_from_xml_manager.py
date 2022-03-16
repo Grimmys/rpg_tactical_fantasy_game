@@ -484,6 +484,9 @@ def load_foe(foe_element, from_save, gap_x, gap_y):
         if gold_looted is not None:
             loot.extend([(Gold(int(gold_looted.find("amount").text)), 1.0)])
 
+    mission_target_element = foe_element.find("mission_target")
+    mission_target = mission_target_element.text.strip() if mission_target_element is not None else None
+
     loaded_foe = Foe(
         attributes["name"],
         attributes["position"],
@@ -501,6 +504,7 @@ def load_foe(foe_element, from_save, gap_x, gap_y):
         keywords,
         attributes["level"],
         attributes["alterations"],
+        mission_target
     )
 
     if from_save:
@@ -515,9 +519,8 @@ def load_foe(foe_element, from_save, gap_x, gap_y):
         # Restore hp due to lvl up
         loaded_foe.healed()
 
-    mission_target = foe_element.find("mission_target")
     if mission_target is not None:
-        _link_foe_to_mission(loaded_foe, mission_target.text.strip())
+        _link_foe_to_mission(loaded_foe, mission_target)
 
     return loaded_foe
 
@@ -709,7 +712,7 @@ def load_mission(mission_xml, is_main, number_players, gap_x, gap_y):
             y_coordinate = int(coordinates.find("y").text) * TILE_SIZE + gap_y
             positions.append((x_coordinate, y_coordinate))
     elif nature is MissionType.KILL_TARGETS:
-        targets = foes_by_mission[mission_xml.find("id").text.strip()]
+        targets = foes_by_mission.pop(mission_xml.find("id").text.strip())
     min_players = mission_xml.find("nb_players")
     if min_players is not None:
         min_players = int(min_players.text.strip())

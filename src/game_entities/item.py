@@ -34,7 +34,7 @@ class Item:
     internal_identifier: int = 0
 
     def __init__(
-            self, name: str, sprite: str, description: str, price: int = 0
+        self, name: str, sprite: str, description: str, price: int = 0
     ) -> None:
         self.name: str = name
         self.sprite: pygame.Surface = pygame.transform.scale(

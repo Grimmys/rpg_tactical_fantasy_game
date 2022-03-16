@@ -82,6 +82,7 @@ class Foe(Movable):
         keywords: Optional[Sequence[Keyword]] = None,
         lvl: int = 1,
         alterations: Optional[Sequence[Alteration]] = None,
+        target_of_mission: Optional[str] = None,
     ) -> None:
         super().__init__(
             name,
@@ -101,6 +102,7 @@ class Foe(Movable):
         self.xp_gain: int = int(xp_gain * (1.1 ** (lvl - 1)))
         self.potential_loot: Sequence[tuple[Item, float]] = loot
         self.keywords: Sequence[Keyword] = [] if keywords is None else keywords
+        self.target_of_mission: Optional[str] = target_of_mission
 
     def stats_up(self, levels_earned: int = 1) -> None:
         """
@@ -154,17 +156,21 @@ class Foe(Movable):
         tree: etree.Element = super().save(tree_name)
 
         # Save loot
-        loot: etree.SubElement = etree.SubElement(tree, "loot")
+        loot_element: etree.SubElement = etree.SubElement(tree, "loot")
         for (item, probability) in self.potential_loot:
             if isinstance(item, Gold):
-                it_el: etree.SubElement = etree.SubElement(loot, "gold")
-                it_name = etree.SubElement(it_el, "amount")
-                it_name.text = str(item.amount)
+                item_element: etree.SubElement = etree.SubElement(loot_element, "gold")
+                item_name = etree.SubElement(item_element, "amount")
+                item_name.text = str(item.amount)
             else:
-                it_el: etree.SubElement = etree.SubElement(loot, "item")
-                it_name = etree.SubElement(it_el, "name")
-                it_name.text = item.name
-            it_probability: etree.SubElement = etree.SubElement(it_el, "probability")
+                item_element: etree.SubElement = etree.SubElement(loot_element, "item")
+                item_name = etree.SubElement(item_element, "name")
+                item_name.text = item.name
+            it_probability: etree.SubElement = etree.SubElement(item_element, "probability")
             it_probability.text = str(probability)
 
+        # Save mission link
+        if self.target_of_mission is not None:
+            mission_element = etree.SubElement(tree, "mission_target")
+            mission_element.text = self.target_of_mission
         return tree
