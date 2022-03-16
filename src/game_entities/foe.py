@@ -54,12 +54,14 @@ class Foe(Movable):
     keywords -- the sequence of keywords designating the foe
     lvl -- the current level of the entity
     alterations -- the sequence of alterations affecting the foe
+    target_of_mission -- the id of the mission where the foe is the target if there is any
 
     Attributes:
     reach -- the range of reach of the entity
     xp_gain -- the amount of experience earned by the player character killing the foe
     potential_loot -- the sequence of items that might be looted when the foe is killed
     keywords -- the sequence of keywords designating the foe
+    target_of_mission -- the id of the mission where the foe is the target if there is any
     """
 
     grow_rates: dict[str, dict[str, Sequence[int]]] = {}
