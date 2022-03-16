@@ -63,8 +63,8 @@ class Mission:
         nb_players: int,
         turn_limit: int = None,
         gold_reward: int = 0,
-        items_reward: Sequence[Item] = None,
-        targets: Sequence[Destroyable] = None,
+        items_reward: Optional[Sequence[Item]] = None,
+        targets: Optional[Sequence[Destroyable]] = None,
     ) -> None:
         if items_reward is None:
             items_reward = []

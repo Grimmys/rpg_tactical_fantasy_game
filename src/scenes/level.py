@@ -232,14 +232,14 @@ class Level:
             # List for players who are no longer in the level
             self.passed_players = loader.load_escaped_players(data_tree)
 
+        # Load and store all entities
+        self.entities = loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
+        self.entities["players"] = self.players
+
         # Load missions
         self.missions, self.main_mission = loader.load_missions(
             tree, self.players, self.map["x"], self.map["y"]
         )
-
-        # Load and store all entities
-        self.entities = loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
-        self.entities["players"] = self.players
 
         # Booleans for end game
         # TODO : these booleans are mutually exclusive and so seem a little redundant.

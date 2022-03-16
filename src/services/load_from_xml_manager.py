@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Sequence, Optional
+
 import pygame
 from lxml import etree
 
@@ -10,6 +14,7 @@ from src.game_entities.chest import Chest
 from src.game_entities.consumable import Consumable
 from src.game_entities.door import Door
 from src.game_entities.effect import Effect
+from src.game_entities.entity import Entity
 from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe, Keyword
 from src.game_entities.fountain import Fountain
@@ -25,66 +30,62 @@ from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
+from src.gui.position import Position
 
-foes_infos = {}
-fountains_infos = {}
-skills_infos = {}
+foes_data = {}
+fountains_data = {}
+skills_data = {}
 
-RACES_PATH = "data/races.xml"
-CLASSES_PATH = "data/classes.xml"
+RACES_DATA_PATH = "data/races.xml"
+CLASSES_DATA_PATH = "data/classes.xml"
+
+foes_by_mission: dict[str, list[Foe]] = {}
 
 
-def load_races():
+def load_races() -> dict[str, dict[str, any]]:
     """
 
     :return:
     """
     races = {}
-    races_file = etree.parse(RACES_PATH).getroot()
+    races_file = etree.parse(RACES_DATA_PATH).getroot()
     for race_element in races_file.findall("*"):
         race = {}
-        cons = race_element.find("constitution")
-        race["constitution"] = int(cons.text.strip()) if cons is not None else 0
-        race["move"] = int(race_element.find("move").text.strip())
+        constitution = race_element.find("constitution")
+        race["constitution"] = int(constitution.text.strip()) if constitution is not None else 0
+        move = race_element.find("move")
+        race["move"] = int(race_element.find("move").text.strip()) if move is not None else 0
         race["skills"] = [
-            (
-                load_skill(skill.text.strip())
-                if skill not in skills_infos
-                else skills_infos[skill]
-            )
+            get_skill_data(skill.text.strip())
             for skill in race_element.findall("skills/skill/name")
         ]
         races[race_element.tag] = race
     return races
 
 
-def load_classes():
+def load_classes() -> dict[str, dict[str, any]]:
     """
 
     :return:
     """
     classes = {}
-    classes_file = etree.parse(CLASSES_PATH).getroot()
+    classes_file = etree.parse(CLASSES_DATA_PATH).getroot()
     for class_element in classes_file.findall("*"):
         class_data = {}
-        cons = class_element.find("constitution")
-        class_data["constitution"] = int(cons.text.strip()) if cons is not None else 0
+        constitution = class_element.find("constitution")
+        class_data["constitution"] = int(constitution.text.strip()) if constitution is not None else 0
         move = class_element.find("move")
         class_data["move"] = int(move.text.strip()) if move is not None else 0
         class_data["stats_up"] = load_stats_up(class_element)
         class_data["skills"] = [
-            (
-                load_skill(skill.text.strip())
-                if skill not in skills_infos
-                else skills_infos[skill]
-            )
+            get_skill_data(skill.text.strip())
             for skill in class_element.findall("skills/skill/name")
         ]
         classes[class_element.tag] = class_data
     return classes
 
 
-def load_stat_up(element, stat_name):
+def load_stat_up(element, stat_name) -> Sequence[int]:
     """
 
     :param element:
@@ -97,7 +98,7 @@ def load_stat_up(element, stat_name):
     ]
 
 
-def load_stats_up(element):
+def load_stats_up(element) -> dict[str, Sequence[int]]:
     """
 
     :param element:
@@ -111,18 +112,18 @@ def load_stats_up(element):
     }
 
 
-def load_skill(name):
+def get_skill_data(name) -> Skill:
     """
 
     :param name:
     :return:
     """
-    if name not in skills_infos:
-        # Required dat
+    if name not in skills_data:
+        # Required data
         skill_element = etree.parse("data/skills.xml").find(name)
         formatted_name = skill_element.find("name").text.strip()
         nature = skill_element.find("type").text.strip()
-        desc = skill_element.find("info").text.strip()
+        description = skill_element.find("info").text.strip()
 
         # Not required elements
         power = 0
@@ -138,28 +139,28 @@ def load_skill(name):
         if alterations_element is not None:
             alterations = list(alterations_element.text.replace(" ", "").split(","))
 
-        skills_infos[name] = Skill(
-            name, formatted_name, nature, desc, power, stats, alterations
+        skills_data[name] = Skill(
+            name, formatted_name, nature, description, power, stats, alterations
         )
-    return skills_infos[name]
+    return skills_data[name]
 
 
-def load_alteration(alteration_el):
+def load_alteration(alteration_element) -> Alteration:
     """
 
-    :param alteration_el:
+    :param alteration_element:
     :return:
     """
-    name = alteration_el.find("name").text.strip()
-    abbr = alteration_el.find("abbr").text.strip()
-    power = int(alteration_el.find("power").text.strip())
-    duration = int(alteration_el.find("duration").text.strip())
-    desc = alteration_el.find("desc").text.strip()
-    specificities = [spec.text.strip() for spec in alteration_el.findall("specs/spec")]
-    return Alteration(name, abbr, power, duration, desc, specificities)
+    name = alteration_element.find("name").text.strip()
+    abbreviation = alteration_element.find("abbr").text.strip()
+    power = int(alteration_element.find("power").text.strip())
+    duration = int(alteration_element.find("duration").text.strip())
+    description = alteration_element.find("desc").text.strip()
+    specificities = [spec.text.strip() for spec in alteration_element.findall("specs/spec")]
+    return Alteration(name, abbreviation, power, duration, description, specificities)
 
 
-def load_placements(positions, gap_x, gap_y):
+def load_placements(positions, gap_x, gap_y) -> Sequence[Position]:
     """
 
     :param positions:
@@ -168,15 +169,14 @@ def load_placements(positions, gap_x, gap_y):
     :return:
     """
     placements = []
-    for coords in positions:
-        x_coordinate = int(coords.find("x").text) * TILE_SIZE + gap_x
-        y_coordinate = int(coords.find("y").text) * TILE_SIZE + gap_y
-        pos = (x_coordinate, y_coordinate)
-        placements.append(pos)
+    for coordinates in positions:
+        x_coordinate = int(coordinates.find("x").text) * TILE_SIZE + gap_x
+        y_coordinate = int(coordinates.find("y").text) * TILE_SIZE + gap_y
+        placements.append(pygame.Vector2(x_coordinate, y_coordinate))
     return placements
 
 
-def load_all_entities(data, from_save, gap_x, gap_y):
+def load_all_entities(data, from_save, gap_x, gap_y) -> dict[str, Sequence[Entity]]:
     """
 
     :param data:
@@ -211,7 +211,7 @@ def load_all_entities(data, from_save, gap_x, gap_y):
     }
 
 
-def load_entities(entity_nature, data, from_save, gap_x, gap_y):
+def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> Sequence[Entity]:
     """
 
     :param entity_nature:
@@ -224,6 +224,7 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y):
     collection = []
 
     for element in data:
+        # TODO: Too many branches for a similar behaviour, need refactoring (mapping?)
         if entity_nature == "character":
             entity = load_ally(element, from_save, gap_x, gap_y)
         elif entity_nature == "foe":
@@ -235,8 +236,8 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y):
         elif entity_nature == "building":
             entity = load_building(element, from_save, gap_x, gap_y)
         elif entity_nature == "portal":
-            entity, ent2 = load_portal(element, gap_x, gap_y)
-            collection.append(ent2)
+            entity, other_entity = load_portal(element, gap_x, gap_y)
+            collection.append(other_entity)
         elif entity_nature == "fountain":
             entity = load_fountain(element, from_save, gap_x, gap_y)
         elif entity_nature == "breakable":
@@ -248,11 +249,11 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y):
     return collection
 
 
-def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_path=""):
+def load_artificial_entity(entity, data, from_save, gap_x, gap_y, extension_path=""):
     """
 
     :param entity:
-    :param infos:
+    :param data:
     :param from_save:
     :param gap_x:
     :param gap_y:
@@ -262,8 +263,8 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     name = entity.find("name").text.strip()
 
     # Static data
-    sprite = "imgs/" + extension_path + infos.find("sprite").text.strip()
-    strategy = infos.find("strategy").text.strip()
+    sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
+    strategy = data.find("strategy").text.strip()
 
     # Dynamic data
     x_coordinate = int(entity.find("position/x").text) * TILE_SIZE + gap_x
@@ -273,14 +274,14 @@ def load_artificial_entity(entity, infos, from_save, gap_x, gap_y, extension_pat
     level_element = (
         entity.find("level")
         if entity.find("level") is not None
-        else infos.find("level")
+        else data.find("level")
     )
     lvl = int(level_element.text.strip())
     specific_strategy = entity.find("strategy")
     if specific_strategy is not None:
         strategy = specific_strategy.text.strip()
 
-    dynamic_data = infos
+    dynamic_data = data
     if from_save:
         dynamic_data = entity
     hit_points = int(dynamic_data.find("hp").text.strip())
@@ -346,9 +347,9 @@ def load_ally(ally_element, from_save, gap_x, gap_y):
     if from_save:
         skills = [
             (
-                load_skill(skill.text.strip())
-                if not skill.text.strip() in skills_infos
-                else skills_infos[skill.text.strip()]
+                get_skill_data(skill.text.strip())
+                if not skill.text.strip() in skills_data
+                else skills_data[skill.text.strip()]
             )
             for skill in dynamic_data.findall("skills/skill/name")
         ]
@@ -398,42 +399,48 @@ def load_ally(ally_element, from_save, gap_x, gap_y):
     return loaded_ally
 
 
-def load_foe(foe, from_save, gap_x, gap_y):
+def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
+    if mission_id not in foes_by_mission:
+        foes_by_mission[mission_id] = []
+    foes_by_mission[mission_id].append(foe)
+
+
+def load_foe(foe_element, from_save, gap_x, gap_y):
     """
 
-    :param foe:
+    :param foe_element:
     :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
     """
-    name = foe.find("name").text.strip()
-    if name not in foes_infos:
-        foes_infos[name] = etree.parse("data/foes.xml").find(name)
+    name = foe_element.find("name").text.strip()
+    if name not in foes_data:
+        foes_data[name] = etree.parse("data/foes.xml").find(name)
         # Load grow rates of this kind of foe in the class
-        Foe.grow_rates[name] = load_stats_up(foes_infos[name])
+        Foe.grow_rates[name] = load_stats_up(foes_data[name])
 
     attributes = load_artificial_entity(
-        foe, foes_infos[name], from_save, gap_x, gap_y, "dungeon_crawl/monster/"
+        foe_element, foes_data[name], from_save, gap_x, gap_y, "dungeon_crawl/monster/"
     )
 
     # Static data foe
-    xp_gain = int(foes_infos[name].find("xp_gain").text.strip())
-    foe_range = foes_infos[name].find("reach")
+    xp_gain = int(foes_data[name].find("xp_gain").text.strip())
+    foe_range = foes_data[name].find("reach")
     reach = (
         [int(reach) for reach in foe_range.text.strip().split(",")]
         if foe_range is not None
         else [1]
     )
-    attack_kind = foes_infos[name].find("attack_kind").text.strip()
+    attack_kind = foes_data[name].find("attack_kind").text.strip()
     loot = [
         (
             parse_item_file(item.find("name").text.strip()),
             float(item.find("probability").text),
         )
-        for item in foes_infos[name].findall("loot/item")
+        for item in foes_data[name].findall("loot/item")
     ]
-    gold_looted = foes_infos[name].find("loot/gold")
+    gold_looted = foes_data[name].find("loot/gold")
     if gold_looted is not None:
         loot.append(
             (
@@ -441,12 +448,13 @@ def load_foe(foe, from_save, gap_x, gap_y):
                 float(gold_looted.find("probability").text),
             )
         )
-    keywords_element = foes_infos[name].find("keywords")
+    keywords_element = foes_data[name].find("keywords")
     keywords = (
         [Keyword[keyword.upper()] for keyword in keywords_element.text.strip().split(",")]
         if keywords_element is not None
         else []
     )
+    move = int(foes_data[name].find("move").text.strip())
 
     # Dynamic data foe
     if from_save:
@@ -456,9 +464,9 @@ def load_foe(foe, from_save, gap_x, gap_y):
                 parse_item_file(item.find("name").text.strip()),
                 float(item.find("probability").text),
             )
-            for item in foe.findall("loot/item")
+            for item in foe_element.findall("loot/item")
         ]
-        gold_looted = foe.find("loot/gold")
+        gold_looted = foe_element.find("loot/gold")
         if gold_looted is not None:
             loot.append(
                 (
@@ -469,14 +477,12 @@ def load_foe(foe, from_save, gap_x, gap_y):
     else:
         dynamic_loot = [
             (parse_item_file(item.find("name").text.strip()), 1.0)
-            for item in foe.findall("loot/item")
+            for item in foe_element.findall("loot/item")
         ]
         loot.extend(dynamic_loot)
-        gold_looted = foe.find("loot/gold")
+        gold_looted = foe_element.find("loot/gold")
         if gold_looted is not None:
             loot.extend([(Gold(int(gold_looted.find("amount").text)), 1.0)])
-
-    move = int(foes_infos[name].find("move").text.strip())
 
     loaded_foe = Foe(
         attributes["name"],
@@ -498,16 +504,20 @@ def load_foe(foe, from_save, gap_x, gap_y):
     )
 
     if from_save:
-        current_hp = int(foe.find("current_hp").text.strip())
+        current_hp = int(foe_element.find("current_hp").text.strip())
         loaded_foe.hit_points = current_hp
 
-        experience = int(foe.find("exp").text.strip())
+        experience = int(foe_element.find("exp").text.strip())
         loaded_foe.earn_xp(experience)
     else:
         # Up stats according to current lvl
         loaded_foe.stats_up(attributes["level"] - 1)
         # Restore hp due to lvl up
         loaded_foe.healed()
+
+    mission_target = foe_element.find("mission_target")
+    if mission_target is not None:
+        _link_foe_to_mission(loaded_foe, mission_target.text.strip())
 
     return loaded_foe
 
@@ -679,29 +689,32 @@ def load_obstacles(tree, gap_x, gap_y):
     return loaded_obstacles
 
 
-def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
+def load_mission(mission_xml, is_main, number_players, gap_x, gap_y):
     """
 
     :param mission_xml:
     :param is_main:
-    :param nb_players:
+    :param number_players:
     :param gap_x:
     :param gap_y:
     :return:
     """
     nature = MissionType[mission_xml.find("type").text]
-    desc = mission_xml.find("description").text.strip()
-    positions = []
+    description = mission_xml.find("description").text.strip()
+    positions: list[tuple[int, int]] = []
+    targets: Optional[Sequence[Foe]] = None
     if nature is MissionType.POSITION or nature is MissionType.TOUCH_POSITION:
-        for coords in mission_xml.findall("position"):
-            x_coordinate = int(coords.find("x").text) * TILE_SIZE + gap_x
-            y_coordinate = int(coords.find("y").text) * TILE_SIZE + gap_y
+        for coordinates in mission_xml.findall("position"):
+            x_coordinate = int(coordinates.find("x").text) * TILE_SIZE + gap_x
+            y_coordinate = int(coordinates.find("y").text) * TILE_SIZE + gap_y
             positions.append((x_coordinate, y_coordinate))
+    elif nature is MissionType.KILL_TARGETS:
+        targets = foes_by_mission[mission_xml.find("id").text.strip()]
     min_players = mission_xml.find("nb_players")
     if min_players is not None:
         min_players = int(min_players.text.strip())
     else:
-        min_players = nb_players
+        min_players = number_players
     if is_main:
         gold_reward = 0
         items_reward = []
@@ -720,11 +733,12 @@ def load_mission(mission_xml, is_main, nb_players, gap_x, gap_y):
         is_main,
         nature,
         positions,
-        desc,
+        description,
         min_players,
         turn_limit,
         gold_reward,
         items_reward,
+        targets
     )
 
 
@@ -743,7 +757,7 @@ def load_missions(tree, players, gap_x, gap_y):
     mission = load_mission(main_mission, True, len(players), gap_x, gap_y)
     loaded_missions.append(mission)
     main_mission = mission
-    #   > Load secondary missions
+    #  > Load secondary missions
     for mission_xml in tree.findall("missions/mission"):
         loaded_missions.append(
             load_mission(mission_xml, False, len(players), gap_x, gap_y)
@@ -785,17 +799,17 @@ def load_fountain(fountain, from_save, gap_x, gap_y):
     x_coordinate = int(fountain.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(fountain.find("position/y").text) * TILE_SIZE + gap_y
     position = pygame.Vector2(x_coordinate, y_coordinate)
-    if name not in fountains_infos:
-        fountains_infos[name] = etree.parse("data/fountains.xml").find(name)
-    sprite = "imgs/dungeon_crawl/" + fountains_infos[name].find("sprite").text.strip()
+    if name not in fountains_data:
+        fountains_data[name] = etree.parse("data/fountains.xml").find(name)
+    sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
     sprite_empty = (
-        "imgs/dungeon_crawl/" + fountains_infos[name].find("sprite_empty").text.strip()
+        "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
     )
-    effect_name = fountains_infos[name].find("effect").text.strip()
-    power = int(fountains_infos[name].find("power").text.strip())
-    duration = int(fountains_infos[name].find("duration").text.strip())
+    effect_name = fountains_data[name].find("effect").text.strip()
+    power = int(fountains_data[name].find("power").text.strip())
+    duration = int(fountains_data[name].find("duration").text.strip())
     effect = Effect(effect_name, power, duration)
-    times = int(fountains_infos[name].find("times").text.strip())
+    times = int(fountains_data[name].find("times").text.strip())
 
     loaded_fountain = Fountain(name, position, sprite, sprite_empty, effect, times)
 
@@ -933,9 +947,9 @@ def load_player(player_element, from_save):
     if from_save:
         skills = [
             (
-                load_skill(skill.text.strip())
-                if skill.text.strip() not in skills_infos
-                else skills_infos[skill.text.strip()]
+                get_skill_data(skill.text.strip())
+                if skill.text.strip() not in skills_data
+                else skills_data[skill.text.strip()]
             )
             for skill in player_element.findall("skills/skill/name")
         ]

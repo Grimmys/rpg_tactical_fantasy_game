@@ -2,6 +2,8 @@
 Defines StartScreen class, the initial scene of the game,
 corresponding to the main menu.
 """
+from __future__ import annotations
+
 from typing import Sequence, Callable, Optional
 
 import pygame
