@@ -175,7 +175,7 @@ class Character(Movable):
         """
         for equipment in self.equipments:
             if isinstance(equipment, Shield):
-                parried: bool = random.randint(0, 100) < equipment.parry
+                parried: bool = random.randint(1, 100) <= equipment.parry
                 if parried:
                     if equipment.used() <= 0:
                         self.remove_equipment(equipment)
