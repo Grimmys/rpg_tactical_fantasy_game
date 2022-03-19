@@ -59,6 +59,7 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
+from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, menu_creator_manager
 from src.services.menu_creator_manager import create_event_dialog, INVENTORY_MENU_ID, SHOP_MENU_ID
 from src.services.menus import CharacterMenu
@@ -87,16 +88,16 @@ class EntityTurn(IntEnum):
         return EntityTurn(next_value)
 
 
-class Level:
+class LevelScene(Scene):
     """
     This class is the main scene of the game, handling all the actions of the players for
     an ongoing level, and also apply the game logic of the level (manage animations, IA turns etc.).
 
     Keywords:
+    screen -- the pygame Surface related to the level
     directory -- the relative path to the directory where all static data
     concerning the level are stored
-    nb_level -- the number identifying the level
-    screen -- the pygame Surface related to the level
+    number -- the number identifying the level
     status -- the status of the game for this level
     turn -- the value of the current turn (0 by default for new game)
     data -- saved data in XML format in case where the game is loaded from a save
@@ -105,12 +106,11 @@ class Level:
     Attributes:
     directory -- the relative path to the directory where all static data
     concerning the level are stored
-    nb_level -- the number identifying the level
+    number -- the number identifying the level
     map -- a dictionary containing the properties of the level's map
     obstacles -- the list of obstacles on the level
     events -- a structure containing the data about all the events that could occur
     possible_placements -- the list of available initial positions for players
-    screen -- the pygame Surface related to the level
     menu_manager -- the reference to the menu manager entity
     a boolean value is associated to each menu in the background to know
     if it should be displayed or not
@@ -146,18 +146,13 @@ class Level:
     gold_sfx -- the sound that should be started when a player obtain gold
     """
 
-    def __init__(
-        self,
-        directory: str,
-        nb_level: int,
-        screen: pygame.Surface,
-        status: LevelStatus = LevelStatus.INITIALIZATION,
-        turn: int = 0,
-        data: etree.Element = None,
-        players: Sequence[Player] = None,
-    ) -> None:
+    def __init__(self, screen: pygame.Surface, directory: str, number: int,
+                 status: LevelStatus = LevelStatus.INITIALIZATION, turn: int = 0, data: Optional[etree.Element] = None,
+                 players: Optional[Sequence[Player]] = None) -> None:
         if players is None:
             players = []
+
+        super().__init__(screen)
 
         Shop.interaction_callback = self.interact_item_shop
         Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(self.active_shop.menu)
@@ -165,7 +160,7 @@ class Level:
 
         # Store directory path if player wants to save and exit game
         self.directory: str = directory
-        self.nb_level: int = nb_level
+        self.number: int = number
 
         # Reading of the XML file
         tree: etree.Element = etree.parse(directory + "data.xml").getroot()
@@ -178,22 +173,18 @@ class Level:
             "y": (MAX_MAP_HEIGHT - map_image.get_height()) // 2,
         }
 
-        # Load obstacles
         self.obstacles: List[Position] = loader.load_obstacles(
             tree.find("obstacles"), self.map["x"], self.map["y"]
         )
 
-        # Load events
         self.events: dict[str, any] = loader.load_events(
             tree.find("events"), self.map["x"], self.map["y"]
         )
 
-        # Load available tiles for characters' placement
-        self.possible_placements: List[Position] = loader.load_placements(
+        self.player_possible_placements: List[Position] = loader.load_placements(
             tree.findall("placementArea/position"), self.map["x"], self.map["y"]
         )
 
-        self.screen = screen
         self.menu_manager = MenuManager(self.screen)
         self.players: List[Player] = players
         self.entities: dict[str, List[Entity]] = {"players": self.players}
@@ -215,14 +206,7 @@ class Level:
                         player.position = player_el["position"]
                         self.players.append(player)
 
-            # Set initial pos of players arbitrarily
-            for player in self.players:
-                for tile in self.possible_placements:
-                    if self.get_entity_on_tile(tile) is None:
-                        player.set_initial_pos(tile)
-                        break
-                else:
-                    print("Error ! Not enough free tiles to set players...")
+            self._determine_players_initial_position()
         else:
             # Game is loaded from a save (data)
             from_save = True
@@ -266,7 +250,7 @@ class Level:
         self.watched_entity: Optional[Movable] = None
         self.hovered_entity: Optional[Entity] = None
         self.sidebar: Sidebar = Sidebar(
-            (MENU_WIDTH, MENU_HEIGHT), pygame.Vector2(0, MAX_MAP_HEIGHT), self.missions, self.nb_level
+            (MENU_WIDTH, MENU_HEIGHT), pygame.Vector2(0, MAX_MAP_HEIGHT), self.missions, self.number
         )
         self.wait_for_teleportation_destination: bool = False
         self.diary_entries: List[List[BoxElement]] = []
@@ -287,6 +271,15 @@ class Level:
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "trade.ogg")
         )
+
+    def _determine_players_initial_position(self):
+        for player in self.players:
+            for tile in self.player_possible_placements:
+                if self.get_entity_on_tile(tile) is None:
+                    player.set_initial_pos(tile)
+                    break
+            else:
+                print("Error ! Not enough free tiles to set players...")
 
     def open_save_menu(self) -> None:
         """
@@ -565,7 +558,7 @@ class Level:
         Keyword arguments:
         screen -- the screen on which the possibilities should be drawn
         """
-        for tile in self.possible_placements:
+        for tile in self.player_possible_placements:
             blit_alpha(screen, constant_sprites["landing"], tile, LANDING_OPACITY)
 
     def start_game(self) -> None:
@@ -1842,7 +1835,7 @@ class Level:
                             return
             else:
                 # Initialization phase : player try to change the place of the selected character
-                for tile in self.possible_placements:
+                for tile in self.player_possible_placements:
                     if pygame.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(position):
                         # Test if a character is on the tile, in this case, characters are swapped
                         entity = self.get_entity_on_tile(tile)

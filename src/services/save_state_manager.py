@@ -34,7 +34,7 @@ class SaveStateManager:
 
         # Save level identity
         index = etree.SubElement(level, "index")
-        index.text = str(self.level.nb_level)
+        index.text = str(self.level.number)
 
         # Save game phase
         phase = etree.SubElement(level, "phase")

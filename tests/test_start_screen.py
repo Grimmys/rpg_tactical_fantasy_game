@@ -7,8 +7,8 @@ import pygame
 from pygame.rect import Rect
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
-from src.scenes.level import Level
-from src.scenes.start_screen import StartScreen
+from src.scenes.level_scene import LevelScene
+from src.scenes.start_scene import StartScene
 from tests.tools import minimal_setup_for_game
 
 NEW_GAME_BUTTON_POS = pygame.Vector2(200, 230)
@@ -30,7 +30,7 @@ class TestStartScreen(unittest.TestCase):
         super(TestStartScreen, cls).setUpClass()
         minimal_setup_for_game()
         cls.save_url = "saves/main_save.xml"
-        cls.level_class = Level
+        cls.level_class = LevelScene
         cls.buttons.append(
             Rect(
                 NEW_GAME_BUTTON_POS[0],
@@ -79,7 +79,7 @@ class TestStartScreen(unittest.TestCase):
     def setUp(self):
         # Window parameters
         screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-        self.start_screen = StartScreen(screen)
+        self.start_screen = StartScene(screen)
         self.start_screen.display()
 
     def test_no_game_at_launch(self):

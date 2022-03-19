@@ -10,7 +10,7 @@ The pygame events are catch here and delegated to the start screen.
 import pygame
 import pygamepopup
 
-from src.scenes.start_screen import StartScreen
+from src.scenes.start_scene import StartScene
 
 
 def show_fps(
@@ -31,7 +31,7 @@ def show_fps(
 
 
 def main_loop(
-    scene: StartScreen, window: pygame.Surface, clock: pygame.time.Clock
+    scene: StartScene, window: pygame.Surface, clock: pygame.time.Clock
 ) -> None:
     """
     Run the game until a quit request happened.
@@ -110,13 +110,13 @@ if __name__ == "__main__":
     classes = loader.load_classes()
     Character.init_data(races, classes)
 
-    start_screen = StartScreen(main_window)
+    start_scene = StartScene(main_window)
 
     # Load and start menu soundtrack
     pygame.mixer.music.load(os.path.join("sound_fx", "soundtrack.ogg"))
     pygame.mixer.music.play(-1)
 
     # Let's the game start!
-    main_loop(start_screen, main_window, pygame.time.Clock())
+    main_loop(start_scene, main_window, pygame.time.Clock())
 
     raise SystemExit

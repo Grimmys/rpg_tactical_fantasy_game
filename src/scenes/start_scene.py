@@ -24,11 +24,12 @@ from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
 from src.gui.position import Position
-from src.scenes.level import Level, LevelStatus
+from src.scenes.level_scene import LevelScene, LevelStatus
+from src.scenes.scene import Scene
 from src.services import menu_creator_manager
 
 
-class StartScreen:
+class StartScene(Scene):
     """
     This class is the initial scene of the game, handling all kind of pygame events directly
     received from the main file.
@@ -39,7 +40,6 @@ class StartScreen:
     screen -- the pygame Surface corresponding to the main menu screen
 
     Attributes:
-    screen -- the pygame Surface corresponding to the active scene
     menu_screen -- copy of the main menu screen to keep it in memory if the scene change
     background -- the background pygame Surface of the scene
     menu_manager -- the reference to the menu manager entity
@@ -52,7 +52,8 @@ class StartScreen:
     screen_size: int = SCREEN_SIZE
 
     def __init__(self, screen: pygame.Surface) -> None:
-        self.screen: pygame.Surface = screen
+        super().__init__(screen)
+
         self.menu_screen: pygame.Surface = self.screen.copy()
 
         # Start screen loop
@@ -76,14 +77,14 @@ class StartScreen:
         ))
 
         # Memorize if a game is currently being performed
-        self.level: Optional[Level] = None
+        self.level: Optional[LevelScene] = None
         self.level_screen: Optional[pygame.Surface] = None
 
         self.levels: Sequence[int] = [0, 1, 2, 3]
         self.level_id: Optional[int] = None
 
         # Load current saved parameters
-        StartScreen.load_options()
+        StartScene.load_options()
 
         self.exit: bool = False
 
@@ -93,8 +94,8 @@ class StartScreen:
         Load the saved game configuration from local file.
         """
         # Load current move speed
-        Movable.move_speed = int(StartScreen.read_options_file("move_speed"))
-        StartScreen.screen_size = int(StartScreen.read_options_file("screen_size"))
+        Movable.move_speed = int(StartScene.read_options_file("move_speed"))
+        StartScene.screen_size = int(StartScene.read_options_file("screen_size"))
 
     @staticmethod
     def read_options_file(element_to_read: str) -> str:
@@ -137,7 +138,7 @@ class StartScreen:
             self.screen.blit(self.background, (0, 0))
             self.menu_manager.display()
 
-    def generate_level_window(self) -> None:
+    def _generate_level_window(self) -> None:
         """
         Handle the generation of the part of the screen dedicated to the ongoing level and change the screen according
         to the set parameters
@@ -145,7 +146,7 @@ class StartScreen:
         # Modify screen
         flags: int = 0
         size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
-        if StartScreen.screen_size == 2:
+        if StartScene.screen_size == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
         self.screen = pygame.display.set_mode(size, flags)
@@ -178,8 +179,8 @@ class StartScreen:
                     player.healed(player.hit_points_max)
                     # Reset player's state
                     player.new_turn()
-                self.generate_level_window()
-                self.level = StartScreen.load_level(self.level_id, self.level_screen, team)
+                self._generate_level_window()
+                self.level = StartScene.load_new_level(self.level_id, self.level_screen, team)
             elif (
                 status is LevelStatus.ENDED_VICTORY
                 or status is LevelStatus.ENDED_DEFEAT
@@ -189,7 +190,7 @@ class StartScreen:
                 self.level = None
 
     @staticmethod
-    def load_level(level: int, level_screen: pygame.Surface, team: Optional[Sequence[Player]] = None) -> Level:
+    def load_new_level(level: int, level_screen: pygame.Surface, team: Optional[Sequence[Player]] = None) -> LevelScene:
         """
         Load a specific level.
 
@@ -201,7 +202,7 @@ class StartScreen:
         """
         if team is None:
             team = []
-        return Level("maps/level_" + str(level) + "/", level, level_screen, players=team)
+        return LevelScene(level_screen, "maps/level_" + str(level) + "/", level, players=team)
 
     def new_game(self) -> None:
         """
@@ -209,8 +210,8 @@ class StartScreen:
         """
         # Init the first level
         self.level_id = 0
-        self.generate_level_window()
-        self.level = StartScreen.load_level(self.level_id, self.level_screen)
+        self._generate_level_window()
+        self.level = StartScene.load_new_level(self.level_id, self.level_screen)
 
     def load_game(self, game_id: int) -> None:
         """
@@ -229,15 +230,9 @@ class StartScreen:
 
                 # Load level with current game status, foes states, and team
                 self.level_id = int(index)
-                self.generate_level_window()
-                self.level = Level(
-                    level_name,
-                    self.level_id,
-                    self.level_screen,
-                    LevelStatus[game_status],
-                    turn_nb,
-                    tree_root.find("level/entities"),
-                )
+                self._generate_level_window()
+                self.level = LevelScene(self.level_screen, level_name, self.level_id, LevelStatus[game_status], turn_nb,
+                                        tree_root.find("level/entities"))
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt
@@ -313,11 +308,11 @@ class StartScreen:
         if option_name == "move_speed":
             Movable.move_speed = option_value
         elif option_name == "screen_size":
-            StartScreen.screen_size = option_value
+            StartScene.screen_size = option_value
         else:
             print(f"Unrecognized option name : {option_name} with value {option_value}")
             return
-        StartScreen.modify_options_file(option_name, str(option_value))
+        StartScene.modify_options_file(option_name, str(option_value))
 
     @staticmethod
     def execute_action(action: Callable) -> None:
