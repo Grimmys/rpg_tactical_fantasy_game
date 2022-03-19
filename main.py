@@ -10,24 +10,8 @@ The pygame events are catch here and delegated to the start screen.
 import pygame
 import pygamepopup
 
+from src.gui.tools import show_fps
 from src.scenes.start_scene import StartScene
-
-
-def show_fps(
-    surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.font.Font
-) -> None:
-    """
-    Display at the top left corner of the screen the current frame rate.
-
-    Keyword arguments:
-    screen -- the surface on which the framerate should be drawn
-    inner_clock -- the pygame clock running and containing the current frame rate
-    font -- the font used to display the frame rate
-    """
-    fps_text: pygame.Surface = font.render(
-        "FPS: " + str(round(inner_clock.get_fps())), True, (255, 255, 0)
-    )
-    surface.blit(fps_text, (2, 2))
 
 
 def main_loop(

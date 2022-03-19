@@ -8,8 +8,25 @@ from math import sqrt
 
 import pygame
 
-from src.constants import TILE_SIZE, DARK_GREEN, YELLOW, ORANGE, RED
+from src.constants import TILE_SIZE, DARK_GREEN, YELLOW, ORANGE, RED, LIGHT_YELLOW
 from src.gui.position import Position
+
+
+def show_fps(
+    surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.font.Font
+) -> None:
+    """
+    Display at the top left corner of the screen the current frame rate.
+
+    Keyword arguments:
+    screen -- the surface on which the framerate should be drawn
+    inner_clock -- the pygame clock running and containing the current frame rate
+    font -- the font used to display the frame rate
+    """
+    fps_text = font.render(
+        f"FPS: {inner_clock.get_fps():.0f}", True, LIGHT_YELLOW
+    )
+    surface.blit(fps_text, (2, 2))
 
 
 def blit_alpha(
