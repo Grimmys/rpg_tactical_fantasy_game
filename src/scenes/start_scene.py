@@ -14,11 +14,8 @@ from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
     SCREEN_SIZE,
-    BLACK,
     WIN_WIDTH,
-    WIN_HEIGHT,
-    MAIN_WIN_WIDTH,
-    MAIN_WIN_HEIGHT
+    WIN_HEIGHT
 )
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
@@ -44,8 +41,6 @@ class StartScene(Scene):
     background -- the background pygame Surface of the scene
     menu_manager -- the reference to the menu manager entity
     level -- the reference to the current running level
-    levels -- the list of level ids
-    level_id -- the id of the current level
     exit -- a boolean indicating if an exit request has been made
     """
 
@@ -65,8 +60,6 @@ class StartScene(Scene):
         )
 
         self.menu_manager = MenuManager(screen)
-
-        # Creating main menu
         self.menu_manager.open_menu(menu_creator_manager.create_start_menu(
             {
                 "new_game": self.new_game,
@@ -76,17 +69,10 @@ class StartScene(Scene):
             }
         ))
 
-        # Memorize if a game is currently being performed
         self.level: Optional[LevelScene] = None
-        self.level_screen: Optional[pygame.Surface] = None
-
-        self.levels: Sequence[int] = [0, 1, 2, 3]
-        self.level_id: Optional[int] = None
-
-        # Load current saved parameters
-        StartScene.load_options()
-
         self.exit: bool = False
+
+        StartScene.load_options()
 
     @staticmethod
     def load_options():
@@ -131,17 +117,13 @@ class StartScene(Scene):
         Display the level on screen if there is one, else display the background
         of the start screen, all the menus in the background and lastly the active menu.
         """
-        if self.level:
-            self.screen.fill(BLACK)
-            self.level.display()
-        else:
-            self.screen.blit(self.background, (0, 0))
-            self.menu_manager.display()
+        self.screen.blit(self.background, (0, 0))
+        self.menu_manager.display()
 
-    def _generate_level_window(self) -> None:
+    @staticmethod
+    def generate_level_window() -> pygame.Surface:
         """
-        Handle the generation of the part of the screen dedicated to the ongoing level and change the screen according
-        to the set parameters
+Handle the generation of the screen dedicated to the ongoing level according to set parameters
         """
         # Modify screen
         flags: int = 0
@@ -149,45 +131,15 @@ class StartScene(Scene):
         if StartScene.screen_size == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
-        self.screen = pygame.display.set_mode(size, flags)
-        level_width: int = min(self.screen.get_width(), WIN_WIDTH)
-        level_height: int = min(self.screen.get_height(), WIN_HEIGHT)
-        self.level_screen = self.screen.subsurface(
-            pygame.Rect(self.screen.get_width() // 2 - level_width // 2,
-                        self.screen.get_height() // 2 - level_height // 2,
-                        level_width, level_height)
-        )
+        return pygame.display.set_mode(size, flags)
 
-    def update_state(self) -> None:
+    def update_state(self) -> bool:
         """
         Update the state of the game.
-        If there is an ongoing level, update it and verify that it's not ended.
-        If it's ended with a victory, start the next level.
-        If it's a defeat or if there is no next level, let the start screen be the active screen
-        again.
+
+        Return whether a level has been start or not to let the scene manager switch to this scene
         """
-        if self.level:
-            status: int = self.level.update_state()
-            if (
-                status is LevelStatus.ENDED_VICTORY
-                and (self.level_id + 1) in self.levels
-            ):
-                self.level_id += 1
-                team: Sequence[Player] = self.level.passed_players + self.level.players
-                for player in team:
-                    # Players are fully restored between level
-                    player.healed(player.hit_points_max)
-                    # Reset player's state
-                    player.new_turn()
-                self._generate_level_window()
-                self.level = StartScene.load_new_level(self.level_id, self.level_screen, team)
-            elif (
-                status is LevelStatus.ENDED_VICTORY
-                or status is LevelStatus.ENDED_DEFEAT
-            ):
-                # TODO: Game win dialog?
-                self.screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
-                self.level = None
+        return self.level is not None
 
     @staticmethod
     def load_new_level(level: int, level_screen: pygame.Surface, team: Optional[Sequence[Player]] = None) -> LevelScene:
@@ -209,9 +161,7 @@ class StartScene(Scene):
         Load the first level of the game.
         """
         # Init the first level
-        self.level_id = 0
-        self._generate_level_window()
-        self.level = StartScene.load_new_level(self.level_id, self.level_screen)
+        self.level = StartScene.load_new_level(0, self.generate_level_window())
 
     def load_game(self, game_id: int) -> None:
         """
@@ -223,15 +173,14 @@ class StartScene(Scene):
         try:
             with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
                 tree_root: etree.Element = etree.parse(save).getroot()
-                index: str = tree_root.find("level/index").text.strip()
-                level_name: str = f"maps/level_{index}/"
-                game_status: str = tree_root.find("level/phase").text.strip()
+                level_id = int(tree_root.find("level/index").text.strip())
+                level_name = f"maps/level_{level_id}/"
+                game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = int(tree_root.find("level/turn").text.strip())
 
-                # Load level with current game status, foes states, and team
-                self.level_id = int(index)
-                self._generate_level_window()
-                self.level = LevelScene(self.level_screen, level_name, self.level_id, LevelStatus[game_status], turn_nb,
+                self.level = LevelScene(StartScene.generate_level_window(), level_name, level_id,
+                                        LevelStatus[game_status],
+                                        turn_nb,
                                         tree_root.find("level/entities"))
 
         except XMLSyntaxError:
@@ -328,24 +277,17 @@ class StartScene(Scene):
     def motion(self, position: Position) -> None:
         """
         Handle the triggering of a motion event.
-        Delegate the event to the current running level if there is one,
-        else delegate it to the active menu.
+        Delegate it to the active menu.
 
         Keyword arguments:
         position -- the position of the mouse
         """
-        if self.level is None:
-            self.menu_manager.motion(position)
-        else:
-            relative_position: Position = self._compute_relative_position(position)
-            if relative_position.length() >= 0:
-                self.level.motion(relative_position)
+        self.menu_manager.motion(position)
 
     def click(self, button: int, position: Position) -> bool:
         """
         Handle the triggering of a click event.
-        Delegate the event to the current running level if there is one,
-        else delegate it to the active menu if it is a left-click.
+        Delegate it to the active menu if it is a left-click.
 
         Return whether an exit request has been made or not.
 
@@ -354,35 +296,5 @@ class StartScene(Scene):
         (1 for left button, 2 for middle button, 3 for right button)
         position -- the position of the mouse
         """
-        if self.level is None:
-            self.menu_manager.click(button, position)
-        else:
-            relative_position: Position = self._compute_relative_position(position)
-            if relative_position.length() >= 0:
-                self.level.click(button, relative_position)
+        self.menu_manager.click(button, position)
         return self.exit
-
-    def button_down(self, button: int, position: Position) -> None:
-        """
-        Handle the triggering of a mouse button down event.
-        Delegate the event to the current running level if there is one.
-
-        Keyword arguments:
-        button -- an integer value representing which mouse button is down
-        (1 for left button, 2 for middle button, 3 for right button)
-        position -- the position of the mouse
-        """
-        if self.level is not None:
-            relative_position: Position = self._compute_relative_position(position)
-            if relative_position.length() >= 0:
-                self.level.button_down(button, relative_position)
-
-    def _compute_relative_position(self, position: Position) -> Position:
-        """
-        Compute and return a position relative to the left top corner of the ongoing level screen
-
-        Keyword arguments:
-        position -- the absolute position to be converted
-        """
-        return position - pygame.Vector2(self.screen.get_width() // 2 - self.level_screen.get_width() // 2,
-                                         self.screen.get_height() // 2 - self.level_screen.get_height() // 2)

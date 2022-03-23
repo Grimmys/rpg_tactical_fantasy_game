@@ -1,5 +1,5 @@
 """
-Defines Level class, the main scene of the game,
+Define Level class, the main scene of the game,
 corresponding to an ongoing level.
 """
 
@@ -24,8 +24,7 @@ from src.constants import (
     ORANGE,
     ITEM_DELETE_MENU_WIDTH,
     ITEM_INFO_MENU_WIDTH,
-    TILE_SIZE, BLACK,
-)
+    TILE_SIZE, BLACK, WIN_HEIGHT, WIN_WIDTH, )
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
 from src.game_entities.building import Building
@@ -104,6 +103,7 @@ class LevelScene(Scene):
     players -- the list of players on the level
 
     Attributes:
+    active_screen_part -- the sub part of the screen containing all the elements of the level
     directory -- the relative path to the directory where all static data
     concerning the level are stored
     number -- the number identifying the level
@@ -146,6 +146,8 @@ class LevelScene(Scene):
     gold_sfx -- the sound that should be started when a player obtain gold
     """
 
+    IDS = [0, 1, 2, 3]
+
     def __init__(self, screen: pygame.Surface, directory: str, number: int,
                  status: LevelStatus = LevelStatus.INITIALIZATION, turn: int = 0, data: Optional[etree.Element] = None,
                  players: Optional[Sequence[Player]] = None) -> None:
@@ -153,6 +155,7 @@ class LevelScene(Scene):
             players = []
 
         super().__init__(screen)
+        self.active_screen_part = self._compute_active_screen_part()
 
         Shop.interaction_callback = self.interact_item_shop
         Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(self.active_shop.menu)
@@ -351,36 +354,33 @@ class LevelScene(Scene):
             [{"sprite": animation_surface, "pos": position}], 180
         )
 
-    def update_state(self) -> Optional[LevelStatus]:
+    def update_state(self) -> bool:
         """
         Update the state of the game.
         Let the animation progress if there is any.
         Verify if victory or defeat conditions are met.
         Handle next AI action if it's not player's turn.
 
-        Return the game phase if the level should be ended.
+        Return the whether the game should be ended or not.
         """
         if self.quit_request:
-            return self.game_phase
+            return True
 
         if self.animation:
             if self.animation.animate():
                 self.animation = None
                 if self.game_phase > LevelStatus.IN_PROGRESS and not self.menu_manager.active_menu:
-                    # End game animation is finished, level can be quit if there is no more menu
                     self.exit_game()
-            return None
+            return False
 
-        # Game can't evolve if there is an active menu
         if self.menu_manager.active_menu is not None:
-            return None
+            return False
 
-        # Game should be left if it's ended and there is no more animation nor menu
         if (
             self.game_phase is LevelStatus.ENDED_DEFEAT
             or self.game_phase is LevelStatus.ENDED_VICTORY
         ):
-            return self.game_phase
+            return True
 
         for mission in self.missions:
             mission.update_state(entities=self.entities, turns=self.turn)
@@ -393,24 +393,23 @@ class LevelScene(Scene):
             else:
                 self.victory = True
 
-        # Verify if game should be ended
         if self.victory:
             self.end_level(constant_sprites["victory"], constant_sprites["victory_pos"])
             self.game_phase = LevelStatus.ENDED_VICTORY
             self.victory = False
-            return None
+            return False
         if self.defeat:
             self.end_level(constant_sprites["defeat"], constant_sprites["defeat_pos"])
             self.game_phase = LevelStatus.ENDED_DEFEAT
             self.defeat = False
-            return None
+            return False
 
         if self.selected_player:
             self.selected_player.move()
             if self.selected_player.is_waiting_post_action() and not self.possible_attacks \
                 and not self.possible_interactions:
                 self.open_player_menu()
-            return None
+            return False
 
         entities = []
         if self.side_turn is EntityTurn.PLAYER:
@@ -429,7 +428,7 @@ class LevelScene(Scene):
             self.side_turn = self.side_turn.get_next()
             self.begin_turn()
 
-        return None
+        return False
 
     def open_player_menu(self) -> None:
         """
@@ -474,33 +473,33 @@ class LevelScene(Scene):
         Display also all the menus in the background (that should be visible)
         and lastly the active menu.
         """
-        self.screen.blit(self.map["img"], (self.map["x"], self.map["y"]))
-        self.sidebar.display(self.screen, self.turn, self.hovered_entity)
+        self.active_screen_part.blit(self.map["img"], (self.map["x"], self.map["y"]))
+        self.sidebar.display(self.active_screen_part, self.turn, self.hovered_entity)
 
         for collection in self.entities.values():
-            for ent in collection:
-                ent.display(self.screen)
-                if isinstance(ent, Destroyable):
-                    ent.display_hit_points(self.screen)
+            for entity in collection:
+                entity.display(self.active_screen_part)
+                if isinstance(entity, Destroyable):
+                    entity.display_hit_points(self.active_screen_part)
 
         if self.watched_entity:
-            self.show_possible_actions(self.watched_entity, self.screen)
+            self.show_possible_actions(self.watched_entity, self.active_screen_part)
 
         # If the game hasn't yet started
         if self.game_phase is LevelStatus.INITIALIZATION:
-            self.show_possible_placements(self.screen)
+            self.show_possible_placements(self.active_screen_part)
         else:
             if self.selected_player:
                 # If player is waiting to move
                 if self.possible_moves:
-                    self.show_possible_actions(self.selected_player, self.screen)
+                    self.show_possible_actions(self.selected_player, self.active_screen_part)
                 elif self.possible_attacks:
-                    self.show_possible_attacks(self.selected_player, self.screen)
+                    self.show_possible_attacks(self.selected_player, self.active_screen_part)
                 elif self.possible_interactions:
-                    self.show_possible_interactions(self.screen)
+                    self.show_possible_interactions(self.active_screen_part)
 
         if self.animation:
-            self.animation.display(self.screen)
+            self.animation.display(self.active_screen_part)
         else:
             self.menu_manager.display()
 
@@ -1791,13 +1790,14 @@ class LevelScene(Scene):
         if self.side_turn is not EntityTurn.PLAYER:
             return
 
+        position_inside_level = self._compute_relative_position(position)
         if self.selected_player is not None:
             if self.game_phase is not LevelStatus.INITIALIZATION:
                 if self.possible_moves:
                     # Player is waiting to move
                     for move in self.possible_moves:
                         if pygame.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                            position
+                            position_inside_level
                         ):
                             path = self.determine_path_to(move, self.possible_moves)
                             self.selected_player.set_move(path)
@@ -1811,7 +1811,7 @@ class LevelScene(Scene):
                     # Player is waiting to attack
                     for attack in self.possible_attacks:
                         if pygame.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                            position
+                            position_inside_level
                         ):
                             entity = self.get_entity_on_tile(attack)
                             self.duel(
@@ -1828,7 +1828,7 @@ class LevelScene(Scene):
                     # Player is waiting to interact
                     for interact in self.possible_interactions:
                         if pygame.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                            position
+                            position_inside_level
                         ):
                             entity = self.get_entity_on_tile(interact)
                             self.interact(self.selected_player, entity, interact)
@@ -1836,7 +1836,7 @@ class LevelScene(Scene):
             else:
                 # Initialization phase : player try to change the place of the selected character
                 for tile in self.player_possible_placements:
-                    if pygame.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(position):
+                    if pygame.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(position_inside_level):
                         # Test if a character is on the tile, in this case, characters are swapped
                         entity = self.get_entity_on_tile(tile)
                         if entity:
@@ -1846,7 +1846,7 @@ class LevelScene(Scene):
                         return
             return
         for player in self.players:
-            if player.is_on_position(position):
+            if player.is_on_position(position_inside_level):
                 if player.turn_is_finished():
                     self.menu_manager.open_menu(menu_creator_manager.create_status_menu(
                         {
@@ -1871,7 +1871,7 @@ class LevelScene(Scene):
                     )
                 return
         for entity in self.entities["foes"] + self.entities["allies"]:
-            if entity.is_on_position(position):
+            if entity.is_on_position(position_inside_level):
                 self.menu_manager.open_menu(menu_creator_manager.create_status_entity_menu(
                     {
                         "info_alteration": self.open_alteration_description,
@@ -1974,11 +1974,12 @@ class LevelScene(Scene):
                 and not self.selected_player
                 and self.side_turn is EntityTurn.PLAYER
             ):
+                position_inside_level = self._compute_relative_position(position)
                 for collection in self.entities.values():
                     for entity in collection:
                         if isinstance(
                             entity, Movable
-                        ) and entity.get_rect().collidepoint(position):
+                        ) and entity.get_rect().collidepoint(position_inside_level):
                             self.watched_entity = entity
                             self.possible_moves = self.get_possible_moves(
                                 tuple(entity.position), entity.max_moves
@@ -2003,9 +2004,34 @@ class LevelScene(Scene):
         self.menu_manager.motion(position)
 
         if not self.menu_manager.active_menu:
+            position_inside_level = self._compute_relative_position(position)
             self.hovered_entity = None
             for collection in self.entities.values():
                 for entity in collection:
-                    if entity.get_rect().collidepoint(position):
+                    if entity.get_rect().collidepoint(position_inside_level):
                         self.hovered_entity = entity
                         return
+
+    def _compute_active_screen_part(self) -> pygame.Surface:
+        """
+        Compute the part of the screen containing the level itself,
+        i.e. the part where the map, the player interface and every entities are.
+
+        Return the computed sub-screen part.
+        """
+        level_width: int = min(self.screen.get_width(), WIN_WIDTH)
+        level_height: int = min(self.screen.get_height(), WIN_HEIGHT)
+        return self.screen.subsurface(
+            pygame.Rect(self.screen.get_width() // 2 - level_width // 2,
+                        self.screen.get_height() // 2 - level_height // 2,
+                        level_width, level_height)
+        )
+
+    def _compute_relative_position(self, position: Position) -> Position:
+        """
+        Compute and return a position relative to the left top corner of the ongoing level screen
+        Keyword arguments:
+        position -- the absolute position to be converted
+        """
+        return position - pygame.Vector2(self.screen.get_width() // 2 - self.active_screen_part.get_width() // 2,
+                                         self.screen.get_height() // 2 - self.active_screen_part.get_height() // 2)

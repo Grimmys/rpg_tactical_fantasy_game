@@ -85,7 +85,6 @@ class TestStartScreen(unittest.TestCase):
     def test_no_game_at_launch(self):
         # Verify no game is launched
         self.assertIsNone(self.start_screen.level)
-        self.assertIsNone(self.start_screen.level_id)
 
     def test_new_game(self):
         # Memorize old screen
@@ -98,14 +97,13 @@ class TestStartScreen(unittest.TestCase):
         self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
-        self.assertEqual(self.start_screen.level_id, 0)
+        self.assertEqual(self.start_screen.level.number, 0)
         self.assertNotEqual(self.start_screen.screen.get_rect(), screen.get_rect())
 
     def test_load_nonexistent_save(self):
         # Make a copy of the current window
         screen = self.start_screen.screen.copy()
         old_level = self.start_screen.level
-        old_level_id = self.start_screen.level_id
         old_active_menu = self.start_screen.menu_manager.active_menu
         self.assertEqual(len(self.start_screen.menu_manager.background_menus), 0)
 
@@ -122,7 +120,6 @@ class TestStartScreen(unittest.TestCase):
         self.assertIsNone(self.start_screen.level)
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
-        self.assertEqual(self.start_screen.level_id, old_level_id)
         self.assertEqual(len(self.start_screen.menu_manager.background_menus), 1)
         self.assertEqual(self.start_screen.menu_manager.background_menus[0], old_active_menu)
         self.assertNotEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
@@ -146,7 +143,7 @@ class TestStartScreen(unittest.TestCase):
         self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
-        self.assertEqual(self.start_screen.level_id, 0)
+        self.assertEqual(self.start_screen.level.number, 0)
         self.assertNotEqual(self.start_screen.screen.get_rect(), screen.get_rect())
 
     def test_options_menu(self):
@@ -173,7 +170,6 @@ class TestStartScreen(unittest.TestCase):
         # Make a copy of the current window
         screen = self.start_screen.screen.copy()
         old_level = self.start_screen.level
-        old_level_id = self.start_screen.level_id
 
         # Generate random pos not on any existent buttons
         valid_pos = False
@@ -195,13 +191,11 @@ class TestStartScreen(unittest.TestCase):
         # Verify state is unchanged
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
-        self.assertEqual(self.start_screen.level_id, old_level_id)
 
     def test_right_click(self):
         # Make a copy of the current window
         screen = self.start_screen.screen.copy()
         old_level = self.start_screen.level
-        old_level_id = self.start_screen.level_id
         old_active_menu = self.start_screen.menu_manager.active_menu
 
         # Generate random position on new game button
@@ -213,7 +207,6 @@ class TestStartScreen(unittest.TestCase):
         # Verify state is unchanged
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
-        self.assertEqual(self.start_screen.level_id, old_level_id)
         self.assertEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
 
         # Generate random position on load game button
@@ -225,7 +218,6 @@ class TestStartScreen(unittest.TestCase):
         # Verify state is unchanged
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
-        self.assertEqual(self.start_screen.level_id, old_level_id)
         self.assertEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
 
         # Generate random position on options button
@@ -237,7 +229,6 @@ class TestStartScreen(unittest.TestCase):
         # Verify state is unchanged
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
-        self.assertEqual(self.start_screen.level_id, old_level_id)
         self.assertEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
 
         # Generate random position on exit game button
@@ -249,7 +240,6 @@ class TestStartScreen(unittest.TestCase):
         # Verify state is unchanged
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
-        self.assertEqual(self.start_screen.level_id, old_level_id)
         self.assertEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
 
 

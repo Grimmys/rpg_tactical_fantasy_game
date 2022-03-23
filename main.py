@@ -29,6 +29,7 @@ def main_loop(
     """
     quit_game: bool = False
     while not quit_game:
+        screen.fill(BLACK)
         quit_game = game_controller.process_game_iteration()
         show_fps(screen, clock, fonts.fonts["FPS_FONT"])
         pygame.display.update()
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     import os
     import platform
 
-    from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, GAME_TITLE
+    from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, GAME_TITLE, BLACK
     from src.gui import constant_sprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
