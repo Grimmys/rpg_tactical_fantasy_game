@@ -7,6 +7,8 @@ import pygame
 
 GAME_TITLE = "In the name of the Five Cats"
 
+FRAME_RATE = 60
+
 INITIAL_MAX = 10000
 
 TILE_SIZE = 48
