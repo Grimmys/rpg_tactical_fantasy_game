@@ -65,12 +65,12 @@ class TestStartScreen(unittest.TestCase):
         )
 
     @staticmethod
-    def generate_position(start_pos, end_pos):
+    def generate_position(start_position, end_position):
         # Generate random pos in a rect having start_pos as top left corner
         # and end_pos as bottom right corner
         position = (
-            randrange(start_pos.x, end_pos.x + 1),
-            randrange(start_pos.y, end_pos.y + 1),
+            randrange(start_position.x, end_position.x),
+            randrange(start_position.y, end_position.y),
         )
         # Print pos in case of test failure
         print(f"Generated position: {position}")
