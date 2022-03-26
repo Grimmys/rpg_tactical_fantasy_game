@@ -30,6 +30,7 @@ class TestLevel(unittest.TestCase):
         self.start_screen.load_menu()
         self.start_screen.load_game(0)
         self.level = self.start_screen.level
+        self.level.load_level_content()
 
     def simulate_trade_item(
         self, item, active_player, other_player, is_active_the_sender
