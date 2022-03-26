@@ -176,7 +176,7 @@ def load_placements(positions, gap_x, gap_y) -> Sequence[Position]:
     return placements
 
 
-def load_all_entities(data, from_save, gap_x, gap_y) -> dict[str, Sequence[Entity]]:
+def load_all_entities(data, from_save, gap_x, gap_y) -> dict[str, list[Entity]]:
     """
 
     :param data:
@@ -211,7 +211,7 @@ def load_all_entities(data, from_save, gap_x, gap_y) -> dict[str, Sequence[Entit
     }
 
 
-def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> Sequence[Entity]:
+def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
     """
 
     :param entity_nature:
@@ -537,7 +537,7 @@ def load_chest(chest, from_save, gap_x, gap_y):
     # Static data
     x_coordinate = int(chest.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(chest.find("position/y").text) * TILE_SIZE + gap_y
-    pos = (x_coordinate, y_coordinate)
+    position = pygame.Vector2(x_coordinate, y_coordinate)
     sprite_closed = chest.find("closed/sprite").text.strip()
     sprite_opened = chest.find("opened/sprite").text.strip()
 
@@ -563,7 +563,7 @@ def load_chest(chest, from_save, gap_x, gap_y):
             potential_items.append((item, probability))
         opened = False
 
-    loaded_chest = Chest(pos, sprite_closed, sprite_opened, potential_items)
+    loaded_chest = Chest(position, sprite_closed, sprite_opened, potential_items)
 
     if opened:
         loaded_chest.open()

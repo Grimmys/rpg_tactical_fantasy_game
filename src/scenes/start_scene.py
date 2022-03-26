@@ -123,7 +123,7 @@ class StartScene(Scene):
     @staticmethod
     def generate_level_window() -> pygame.Surface:
         """
-Handle the generation of the screen dedicated to the ongoing level according to set parameters
+        Handle the generation of the screen dedicated to the ongoing level according to set parameters
         """
         # Modify screen
         flags: int = 0

@@ -20,7 +20,8 @@ CHAPTER_LEVEL_SEPARATION_HEIGHT = 100
 class LevelLoadingScene(Scene):
     """
     This scene is always loaded right before a level scene.
-    It is responsible of displaying generic information about the next level to get the player ready for it.
+    It is responsible of displaying generic information about the next level to get the player ready for it while
+    the level is being loaded.
 
     Keyword arguments:
     screen -- the pygame Surface related to the scene
@@ -36,6 +37,7 @@ class LevelLoadingScene(Scene):
         self.level: LevelScene = level
         self.animation: Optional[Animation] = Animation(self._load_level_introduction_animation_frames(),
                                                         DELAY_BETWEEN_FRAMES)
+        self.is_animation_running: bool = False
 
     def _load_level_introduction_animation_frames(self) -> list[FrameDescription]:
         """
@@ -45,7 +47,7 @@ class LevelLoadingScene(Scene):
         """
         level_title_rendering = self._generate_level_title_rendering()
 
-        level_title_screen = self.screen.copy()
+        level_title_screen = pygame.Surface(self.screen.get_size())
         level_title_screen.blit(level_title_rendering, (level_title_screen.get_width() // 2 -
                                                         level_title_rendering.get_width() // 2,
                                                         level_title_screen.get_height() // 2 -
@@ -87,11 +89,17 @@ class LevelLoadingScene(Scene):
 
     def update_state(self) -> bool:
         """
+        Proceed to loading of level content if needed.
         Update the animation.
 
         Return whether the scene should be ended or not.
         """
-        if self.animation and self.animation.animate():
-            self.animation = None
+        if not self.level.is_loaded and self.is_animation_running:
+            self.level.load_level_content()
+
+        if self.animation:
+            self.is_animation_running = True
+            if self.animation.animate():
+                self.animation = None
 
         return not self.animation

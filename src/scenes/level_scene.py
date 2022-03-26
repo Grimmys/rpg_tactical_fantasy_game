@@ -110,6 +110,7 @@ class LevelScene(Scene):
     map -- a dictionary containing the properties of the level's map
     chapter -- the id corresponding to the chapter in which the level is part
     name -- the full title of the level
+    is_loaded -- whether the level is ready to be played or not
     obstacles -- the list of obstacles on the level
     events -- a structure containing the data about all the events that could occur
     possible_placements -- the list of available initial positions for players
@@ -175,62 +176,25 @@ class LevelScene(Scene):
             "y": (MAX_MAP_HEIGHT - map_image.get_height()) // 2,
         }
 
-        tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
+        self.tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
+        self.data: Optional[etree.Element] = data
 
-        self.chapter: int = int(tree.find("chapter").text.strip())
-        self.name: str = tree.find("name").text.strip()
+        self.chapter: int = int(self.tree.find("chapter").text.strip())
+        self.name: str = self.tree.find("name").text.strip()
 
-        self.obstacles: list[Position] = loader.load_obstacles(
-            tree.find("obstacles"), self.map["x"], self.map["y"]
-        )
+        self.is_loaded: bool = False
 
-        self.events: dict[str, any] = loader.load_events(
-            tree.find("events"), self.map["x"], self.map["y"]
-        )
-
-        self.player_possible_placements: Sequence[Position] = loader.load_placements(
-            tree.findall("placementArea/position"), self.map["x"], self.map["y"]
-        )
+        self.obstacles: list[Position] = []
+        self.events: dict[str, any] = {}
+        self.player_possible_placements: Sequence[Position] = []
 
         self.menu_manager = MenuManager(self.screen)
         self.players: list[Player] = players
-        self.entities: dict[str, list[Entity]] = {"players": self.players}
-        if data is None:
-            # Game is new
-            from_save: bool = False
-            data_tree: etree.Element = tree
-            gap_x, gap_y = (self.map["x"], self.map["y"])
-            self.passed_players: list[Player] = []
-            if "before_init" in self.events:
-                if "dialogs" in self.events["before_init"]:
-                    for dialog in self.events["before_init"]["dialogs"]:
-                        self.menu_manager.open_menu(
-                            create_event_dialog(dialog)
-                        )
-                if "new_players" in self.events["before_init"]:
-                    for player_el in self.events["before_init"]["new_players"]:
-                        player = loader.init_player(player_el["name"])
-                        player.position = player_el["position"]
-                        self.players.append(player)
+        self.escaped_players: list[Player] = []
 
-            self._determine_players_initial_position()
-        else:
-            # Game is loaded from a save (data)
-            from_save = True
-            data_tree = data
-            gap_x, gap_y = (0, 0)
-            self.players = loader.load_players(data_tree)
-            # List for players who are no longer in the level
-            self.passed_players = loader.load_escaped_players(data_tree)
+        self.entities: dict[str, list[Entity]] = {}
 
-        # Load and store all entities
-        self.entities = loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
-        self.entities["players"] = self.players
-
-        # Load missions
-        self.missions, self.main_mission = loader.load_missions(
-            tree, self.players, self.map["x"], self.map["y"]
-        )
+        self.missions, self.main_mission = None, None
 
         # Booleans for end game
         # TODO : these booleans are mutually exclusive and so seem a little redundant.
@@ -256,28 +220,88 @@ class LevelScene(Scene):
         self.animation: Optional[Animation] = None
         self.watched_entity: Optional[Movable] = None
         self.hovered_entity: Optional[Entity] = None
-        self.sidebar: Sidebar = Sidebar(
-            (MENU_WIDTH, MENU_HEIGHT), pygame.Vector2(0, MAX_MAP_HEIGHT), self.missions, self.number
-        )
+        self.sidebar: Optional[Sidebar] = None
         self.wait_for_teleportation_destination: bool = False
         self.diary_entries: list[list[BoxElement]] = []
         self.traded_items: list[list[Union[Item, Player]]] = []
 
-        self.wait_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+        self.wait_sfx: Optional[pygame.mixer.Sound] = None
+        self.inventory_sfx: Optional[pygame.mixer.Sound] = None
+        self.armor_sfx: Optional[pygame.mixer.Sound] = None
+        self.talk_sfx: Optional[pygame.mixer.Sound] = None
+        self.gold_sfx: Optional[pygame.mixer.Sound] = None
+
+    def load_level_content(self) -> None:
+        """
+        Load all the content of the level
+        """
+        self.obstacles = loader.load_obstacles(
+            self.tree.find("obstacles"), self.map["x"], self.map["y"]
+        )
+
+        self.events = loader.load_events(
+            self.tree.find("events"), self.map["x"], self.map["y"]
+        )
+
+        self.player_possible_placements = loader.load_placements(
+            self.tree.findall("placementArea/position"), self.map["x"], self.map["y"]
+        )
+
+        self.entities["players"] = self.players
+
+        if self.data is None:
+            # Game is new
+            from_save: bool = False
+            data_tree: etree.Element = self.tree
+            gap_x, gap_y = (self.map["x"], self.map["y"])
+            if "before_init" in self.events:
+                if "dialogs" in self.events["before_init"]:
+                    for dialog in self.events["before_init"]["dialogs"]:
+                        self.menu_manager.open_menu(
+                            create_event_dialog(dialog)
+                        )
+                if "new_players" in self.events["before_init"]:
+                    for player_el in self.events["before_init"]["new_players"]:
+                        player = loader.init_player(player_el["name"])
+                        player.position = player_el["position"]
+                        self.players.append(player)
+
+            self._determine_players_initial_position()
+        else:
+            # Game is loaded from a save (data)
+            from_save = True
+            data_tree = self.data
+            gap_x, gap_y = (0, 0)
+            self.players.extend(loader.load_players(data_tree))
+            self.escaped_players = loader.load_escaped_players(data_tree)
+
+        self.entities.update(loader.load_all_entities(data_tree, from_save, gap_x, gap_y))
+
+        self.missions, self.main_mission = loader.load_missions(
+            self.tree, self.players, self.map["x"], self.map["y"]
+        )
+
+        self.sidebar = Sidebar(
+            (MENU_WIDTH, MENU_HEIGHT), pygame.Vector2(0, MAX_MAP_HEIGHT), self.missions, self.number
+        )
+
+        self.wait_sfx = pygame.mixer.Sound(
             os.path.join("sound_fx", "waiting.ogg")
         )
         self.inventory_sfx = pygame.mixer.Sound(
             os.path.join("sound_fx", "inventory.ogg")
         )
-        self.armor_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+        self.armor_sfx = pygame.mixer.Sound(
             os.path.join("sound_fx", "armor.ogg")
         )
-        self.talk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+        self.talk_sfx = pygame.mixer.Sound(
             os.path.join("sound_fx", "talking.ogg")
         )
-        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
+        self.gold_sfx = pygame.mixer.Sound(
             os.path.join("sound_fx", "trade.ogg")
         )
+
+        self.is_loaded = True
 
     def _determine_players_initial_position(self):
         for player in self.players:
@@ -1230,7 +1254,7 @@ class LevelScene(Scene):
                     if mission.is_position_valid(self.selected_player.position):
                         mission.update_state(self.selected_player)
                         self.players.remove(self.selected_player)
-                        self.passed_players.append(self.selected_player)
+                        self.escaped_players.append(self.selected_player)
                         if mission.main and mission.ended:
                             self.victory = True
                         # Turn is finished

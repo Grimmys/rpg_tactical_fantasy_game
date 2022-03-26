@@ -71,7 +71,7 @@ class SceneManager:
         if isinstance(self.active_scene, LevelScene):
             next_level_number = self.active_scene.number + 1
             if self.active_scene.game_phase is LevelStatus.ENDED_VICTORY and next_level_number in LevelScene.IDS:
-                team = self.active_scene.passed_players + self.active_scene.players
+                team = self.active_scene.escaped_players + self.active_scene.players
                 for player in team:
                     player.healed(player.hit_points_max)
                     player.new_turn()
