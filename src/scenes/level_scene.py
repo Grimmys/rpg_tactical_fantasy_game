@@ -47,7 +47,7 @@ from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
-from src.gui.animation import Animation
+from src.gui.animation import Animation, Frame
 from src.gui.constant_sprites import (
     ATTACKABLE_OPACITY,
     LANDING_OPACITY,
@@ -379,7 +379,7 @@ class LevelScene(Scene):
                             create_event_dialog(dialog)
                         )
         self.animation = Animation(
-            [{"sprite": animation_surface, "position": position}], 180
+            [Frame(animation_surface, position)], 180
         )
 
     def update_state(self) -> bool:
@@ -1794,10 +1794,7 @@ class LevelScene(Scene):
         self.turn += 1
         self.animation = Animation(
             [
-                {
-                    "sprite": constant_sprites["new_turn"],
-                    "position": constant_sprites["new_turn_pos"],
-                }
+                Frame(constant_sprites["new_turn"], constant_sprites["new_turn_pos"])
             ],
             60,
         )

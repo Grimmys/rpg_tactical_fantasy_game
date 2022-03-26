@@ -13,47 +13,63 @@ from src.gui.position import Position
 FrameDescription = dict[str, Union[pygame.Surface, Position]]
 
 
+class Frame:
+    """
+    Define the properties of a single animation frame
+
+    Keyword arguments:
+    surface -- the content of the frame
+    position -- the position where the content should be displayed
+    duration -- the duration of the frame, will be set to the default value for the animation if not provided
+
+    Attributes:
+    surface -- the content of the frame
+    position -- the position where the content should be displayed
+    duration -- the duration of the frame
+    """
+
+    def __init__(self, surface: pygame.Surface, position: Position, duration: int = 0):
+        self.surface: pygame.Surface = surface
+        self.position: Position = position
+        self.duration: int = duration
+
+
 class Animation:
     """
     Manage any kind of ongoing animation: not an already finished animation or a "planned" one.
     The list of frames should be ordered before the initialization of an instance.
 
     Keyword arguments:
-    sprites_positions -- the ordered list of the frames with their position
-    frame_delay -- the delay (in game frames) between each animation frame
+    frames -- the ordered list of frames with their position and duration
+    default_frame_delay -- default delay (in game frames) between each animation frame
 
     Attributes:
-    sprites_positions -- the ordered list of the frames with their position
-    timer_max -- the delay (in game frames) between each animation frame
-    timer -- the elapsed number of games frames since the previous frame has been displayed
+    frames -- the ordered list of frames with their position and duration
     current_frame -- the current displayed frame with its position
+    timer -- the elapsed number of games frames since the previous frame has been displayed
     """
 
     def __init__(
         self,
-        sprites_positions: list[FrameDescription],
-        frame_delay: int,
+        frames: list[Frame],
+        default_frame_delay: int,
     ) -> None:
-        self.sprites_positions: list[
-            dict[str, Union[pygame.Surface, Position]]
-        ] = sprites_positions
-        self.timer_max: int = frame_delay
-        self.timer: int = frame_delay
-        self.current_frame: dict[
-            str, Union[pygame.Surface, Position]
-        ] = self.sprites_positions.pop(0)
+        self.frames: list[Frame] = frames
+        self._init_frames(default_frame_delay)
+        self.current_frame: Frame = self.frames.pop(0)
+        self.timer: int = self.current_frame.duration
 
     def animate(self) -> bool:
         """
-        Increment the timer and check if the next frame should replace the current frame.
+        Decrement the timer and check if the next frame should replace the current frame.
 
         Return whether the animation is ended or not.
         """
         self.timer -= 1
         if self.timer == 0:
-            if self.sprites_positions:
-                self.timer = self.timer_max
-                self.current_frame = self.sprites_positions.pop(0)
+            if self.frames:
+                self.current_frame = self.frames.pop(0)
+                self.timer = self.current_frame.duration
             else:
                 return True
         return False
@@ -65,4 +81,9 @@ class Animation:
         Keyword arguments:
         screen -- the screen on which the current frame should be drawn
         """
-        screen.blit(self.current_frame["sprite"], self.current_frame["position"])
+        screen.blit(self.current_frame.surface, self.current_frame.position)
+
+    def _init_frames(self, default_frame_delay) -> None:
+        for frame in self.frames:
+            if frame.duration == 0:
+                frame.duration = default_frame_delay

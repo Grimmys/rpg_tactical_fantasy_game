@@ -7,12 +7,14 @@ from typing import Optional
 import pygame
 
 from src.constants import WHITE
-from src.gui.animation import Animation, FrameDescription
+from src.gui.animation import Frame
+from src.gui.fade_in_out_animation import FadeInOutAnimation
 from src.gui.fonts import fonts
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import Scene
 
-DELAY_BETWEEN_FRAMES = 120
+DELAY_BETWEEN_FRAMES = 3
+TITLE_VISIBILITY_DURATION = 160
 
 CHAPTER_LEVEL_SEPARATION_HEIGHT = 100
 
@@ -35,15 +37,16 @@ class LevelLoadingScene(Scene):
     def __init__(self, screen: pygame.Surface, level: LevelScene) -> None:
         super().__init__(screen)
         self.level: LevelScene = level
-        self.animation: Optional[Animation] = Animation(self._load_level_introduction_animation_frames(),
-                                                        DELAY_BETWEEN_FRAMES)
+        self.animation: Optional[FadeInOutAnimation] = FadeInOutAnimation(
+            self._load_level_introduction_animation_frame(),
+            TITLE_VISIBILITY_DURATION)
         self.is_animation_running: bool = False
 
-    def _load_level_introduction_animation_frames(self) -> list[FrameDescription]:
+    def _load_level_introduction_animation_frame(self) -> Frame:
         """
-        Load all the frames for the loading screen animation.
+        Load the frame for the loading screen animation.
 
-        Return the ordered list of frames.
+        Return the loaded frame.
         """
         level_title_rendering = self._generate_level_title_rendering()
 
@@ -53,8 +56,7 @@ class LevelLoadingScene(Scene):
                                                         level_title_screen.get_height() // 2 -
                                                         level_title_rendering.get_height() // 2))
 
-        main_frame = {"sprite": level_title_screen, "position": pygame.Vector2(0, 0)}
-        return [main_frame]
+        return Frame(level_title_screen, pygame.Vector2(0, 0), DELAY_BETWEEN_FRAMES)
 
     def _generate_level_title_rendering(self) -> pygame.Surface:
         """
@@ -94,7 +96,7 @@ class LevelLoadingScene(Scene):
 
         Return whether the scene should be ended or not.
         """
-        if not self.level.is_loaded and self.is_animation_running:
+        if not self.level.is_loaded and self.animation.is_fade_in_finished:
             self.level.load_level_content()
 
         if self.animation:
