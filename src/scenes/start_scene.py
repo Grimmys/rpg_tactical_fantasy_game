@@ -174,11 +174,11 @@ Handle the generation of the screen dedicated to the ongoing level according to 
             with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
                 tree_root: etree.Element = etree.parse(save).getroot()
                 level_id = int(tree_root.find("level/index").text.strip())
-                level_name = f"maps/level_{level_id}/"
+                level_path = f"maps/level_{level_id}/"
                 game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = int(tree_root.find("level/turn").text.strip())
 
-                self.level = LevelScene(StartScene.generate_level_window(), level_name, level_id,
+                self.level = LevelScene(StartScene.generate_level_window(), level_path, level_id,
                                         LevelStatus[game_status],
                                         turn_nb,
                                         tree_root.find("level/entities"))

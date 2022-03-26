@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os
 from enum import IntEnum, auto
-from typing import Sequence, Union, List, Optional, Set, Type
+from typing import Sequence, Union, Optional, Set, Type
 
 import pygame
 from lxml import etree
@@ -161,12 +161,9 @@ class LevelScene(Scene):
         Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(self.active_shop.menu)
         Shop.sell_interface_callback = self.open_sell_interface
 
-        # Store directory path if player wants to save and exit game
         self.directory: str = directory
         self.number: int = number
 
-        # Reading of the XML file
-        tree: etree.Element = etree.parse(directory + "data.xml").getroot()
         map_image: pygame.Surface = pygame.image.load(self.directory + "map.png")
         self.map: dict[str, any] = {
             "img": map_image,
@@ -176,7 +173,11 @@ class LevelScene(Scene):
             "y": (MAX_MAP_HEIGHT - map_image.get_height()) // 2,
         }
 
-        self.obstacles: List[Position] = loader.load_obstacles(
+        tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
+
+        self.name: str = tree.find("name").text.strip()
+
+        self.obstacles: list[Position] = loader.load_obstacles(
             tree.find("obstacles"), self.map["x"], self.map["y"]
         )
 
@@ -184,19 +185,19 @@ class LevelScene(Scene):
             tree.find("events"), self.map["x"], self.map["y"]
         )
 
-        self.player_possible_placements: List[Position] = loader.load_placements(
+        self.player_possible_placements: Sequence[Position] = loader.load_placements(
             tree.findall("placementArea/position"), self.map["x"], self.map["y"]
         )
 
         self.menu_manager = MenuManager(self.screen)
-        self.players: List[Player] = players
-        self.entities: dict[str, List[Entity]] = {"players": self.players}
+        self.players: list[Player] = players
+        self.entities: dict[str, list[Entity]] = {"players": self.players}
         if data is None:
             # Game is new
             from_save: bool = False
             data_tree: etree.Element = tree
             gap_x, gap_y = (self.map["x"], self.map["y"])
-            self.passed_players: List[Player] = []
+            self.passed_players: list[Player] = []
             if "before_init" in self.events:
                 if "dialogs" in self.events["before_init"]:
                     for dialog in self.events["before_init"]["dialogs"]:
@@ -237,8 +238,8 @@ class LevelScene(Scene):
 
         # Data structures for possible actions
         self.possible_moves: dict[tuple[int, int], int] = {}
-        self.possible_attacks: List[tuple[int, int]] = []
-        self.possible_interactions: List[tuple[int, int]] = []
+        self.possible_attacks: list[tuple[int, int]] = []
+        self.possible_interactions: list[tuple[int, int]] = []
 
         # Storage of current selected entity
         self.selected_player: Optional[Player] = None
@@ -256,8 +257,8 @@ class LevelScene(Scene):
             (MENU_WIDTH, MENU_HEIGHT), pygame.Vector2(0, MAX_MAP_HEIGHT), self.missions, self.number
         )
         self.wait_for_teleportation_destination: bool = False
-        self.diary_entries: List[List[BoxElement]] = []
-        self.traded_items: List[List[Union[Item, Player]]] = []
+        self.diary_entries: list[list[BoxElement]] = []
+        self.traded_items: list[list[Union[Item, Player]]] = []
 
         self.wait_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "waiting.ogg")
@@ -579,14 +580,14 @@ class LevelScene(Scene):
                     player.position = player_el["position"]
                     self.players.append(player)
 
-    def get_next_cases(self, position: Position) -> List[Optional[Entity]]:
+    def get_next_cases(self, position: Position) -> list[Optional[Entity]]:
         """
         Return the entities that are next to the given tile
 
         Keyword arguments:
         position -- the position of the tile whose neighbors must be computed
         """
-        tiles_content: List[Optional[Entity]] = []
+        tiles_content: list[Optional[Entity]] = []
         for x_coordinate in range(-1, 2):
             for y_coordinate in (1 - abs(x_coordinate), -1 + abs(x_coordinate)):
                 tile_x: int = position[0] + (x_coordinate * TILE_SIZE)
@@ -631,7 +632,7 @@ class LevelScene(Scene):
         reach -- the reach of the attacking entity
         from_ally_side -- a boolean indicating whether this is a friendly attack or not
         """
-        tiles: List[tuple[float, float]] = []
+        tiles: list[tuple[float, float]] = []
 
         entities = list(self.entities["breakables"])
         if from_ally_side:
@@ -688,7 +689,7 @@ class LevelScene(Scene):
         return None
 
     def determine_path_to(self, destination_tile: Position,
-                          distance_for_tile: dict[tuple[int, int], int]) -> List[Position]:
+                          distance_for_tile: dict[tuple[int, int], int]) -> list[Position]:
         """
         Return an ordered list of position that represent the path from one tile to another
 
@@ -696,7 +697,7 @@ class LevelScene(Scene):
         destination_tile -- the position of the destination
         distance -- the distance between the starting tile and the destination
         """
-        path: List[Position] = [destination_tile]
+        path: list[Position] = [destination_tile]
         current_tile: tuple[int, int] = tuple(destination_tile)
         while distance_for_tile[current_tile] > 1:
             # Check for neighbour cases
@@ -1178,7 +1179,7 @@ class LevelScene(Scene):
         free_spaces: int = self.active_shop.current_visitor.nb_items_max - len(
             self.active_shop.current_visitor.items
         )
-        items: List[Optional[Item]] = list(self.active_shop.current_visitor.items) + [None] * free_spaces
+        items: list[Optional[Item]] = list(self.active_shop.current_visitor.items) + [None] * free_spaces
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
                 self.interact_sell_item,
@@ -1360,7 +1361,7 @@ class LevelScene(Scene):
         free_spaces: int = self.selected_player.nb_items_max - len(
             self.selected_player.items
         )
-        items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
+        items: list[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
@@ -1541,7 +1542,7 @@ class LevelScene(Scene):
             free_spaces: int = self.selected_player.nb_items_max - len(
                 self.selected_player.items
             )
-            items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
+            items: list[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
             new_items_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
             )
@@ -1577,7 +1578,7 @@ class LevelScene(Scene):
             free_spaces: int = self.active_shop.current_visitor.nb_items_max - len(
                 self.active_shop.current_visitor.items
             )
-            items: List[Optional[Item]] = list(self.active_shop.current_visitor.items) + [None] * free_spaces
+            items: list[Optional[Item]] = list(self.active_shop.current_visitor.items) + [None] * free_spaces
             new_sell_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_sell_item,
                 items,
@@ -1706,7 +1707,7 @@ class LevelScene(Scene):
         free_spaces: int = self.selected_player.nb_items_max - len(
             self.selected_player.items
         )
-        items: List[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
+        items: list[Optional[Item]] = list(self.selected_player.items) + [None] * free_spaces
         new_inventory_menu = menu_creator_manager.create_inventory_menu(
             self.interact_item, items, self.selected_player.gold
         )

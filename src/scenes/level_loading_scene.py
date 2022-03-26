@@ -41,7 +41,8 @@ class LevelLoadingScene(Scene):
 
         Return the ordered list of frames.
         """
-        level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Level {self.level.number}", True, WHITE)
+        level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Level {self.level.number}: {self.level.name}", True,
+                                                                WHITE)
         level_title_screen = self.screen.copy()
         level_title_screen.blit(level_name_rendering, (level_title_screen.get_width() // 2 -
                                                        level_name_rendering.get_width() // 2,
