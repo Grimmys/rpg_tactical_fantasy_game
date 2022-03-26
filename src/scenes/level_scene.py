@@ -92,7 +92,7 @@ class LevelScene(Scene):
     This class is the main scene of the game, handling all the actions of the players for
     an ongoing level, and also apply the game logic of the level (manage animations, IA turns etc.).
 
-    Keywords:
+    Keywords arguments:
     screen -- the pygame Surface related to the level
     directory -- the relative path to the directory where all static data
     concerning the level are stored
@@ -351,7 +351,7 @@ class LevelScene(Scene):
                             create_event_dialog(dialog)
                         )
         self.animation = Animation(
-            [{"sprite": animation_surface, "pos": position}], 180
+            [{"sprite": animation_surface, "position": position}], 180
         )
 
     def update_state(self) -> bool:
@@ -1768,7 +1768,7 @@ class LevelScene(Scene):
             [
                 {
                     "sprite": constant_sprites["new_turn"],
-                    "pos": constant_sprites["new_turn_pos"],
+                    "position": constant_sprites["new_turn_pos"],
                 }
             ],
             60,

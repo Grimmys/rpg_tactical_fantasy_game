@@ -34,6 +34,8 @@ class Scene:
     def update_state(self) -> bool:
         """
         Take care of updating the state of the scene and returning whether it's finished or not.
+
+        Return whether the scene should be ended or not.
         """
         pass
 

@@ -7,6 +7,7 @@ from __future__ import annotations
 import pygame
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.scenes.level_loading_scene import LevelLoadingScene
 from src.scenes.level_scene import LevelStatus, LevelScene
 from src.scenes.scene import Scene
 from src.scenes.start_scene import StartScene
@@ -49,7 +50,6 @@ class SceneManager:
                 if event.button in (1, 3):
                     self.active_scene.button_down(event.button, event.pos)
         if self.active_scene.update_state():
-            print(self.active_scene)
             self.start_new_scene()
             return False
         self.active_scene.display()
@@ -61,6 +61,10 @@ class SceneManager:
         Check what was the previous scene to determine which scene should be the next one depending on the context.
         """
         if isinstance(self.active_scene, StartScene):
+            self.active_scene = LevelLoadingScene(self.active_scene.level.screen, self.active_scene.level)
+            return
+
+        if isinstance(self.active_scene, LevelLoadingScene):
             self.active_scene = self.active_scene.level
             return
 
@@ -72,7 +76,8 @@ class SceneManager:
                     player.healed(player.hit_points_max)
                     player.new_turn()
                 level_screen = StartScene.generate_level_window()
-                self.active_scene = LevelScene(level_screen, f"maps/level_{next_level_number}/",
-                                               next_level_number, players=team)
+                level = LevelScene(level_screen, f"maps/level_{next_level_number}/",
+                                   next_level_number, players=team)
+                self.active_scene = LevelLoadingScene(level_screen, level)
             else:
                 self.active_scene = StartScene(pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT)))

@@ -4,11 +4,13 @@ Defines Animation class, useful for memorize frames of an ongoing animation.
 
 from __future__ import annotations
 
-from typing import Union, List
+from typing import Union
 
 import pygame
 
 from src.gui.position import Position
+
+FrameDescription = dict[str, Union[pygame.Surface, Position]]
 
 
 class Animation:
@@ -18,25 +20,25 @@ class Animation:
 
     Keyword arguments:
     sprites_positions -- the ordered list of the frames with their position
-    timer -- the delay between the displaying of the next frame
+    frame_delay -- the delay (in game frames) between each animation frame
 
     Attributes:
     sprites_positions -- the ordered list of the frames with their position
-    timer_max -- the delay between the displaying of the next frame
-    timer -- the elapsed time since the previous frame has been displayed
+    timer_max -- the delay (in game frames) between each animation frame
+    timer -- the elapsed number of games frames since the previous frame has been displayed
     current_frame -- the current displayed frame with its position
     """
 
     def __init__(
         self,
-        sprites_positions: List[dict[str, Union[pygame.Surface, Position]]],
-        timer: int,
+        sprites_positions: list[FrameDescription],
+        frame_delay: int,
     ) -> None:
-        self.sprites_positions: List[
+        self.sprites_positions: list[
             dict[str, Union[pygame.Surface, Position]]
         ] = sprites_positions
-        self.timer_max: int = timer
-        self.timer: int = timer
+        self.timer_max: int = frame_delay
+        self.timer: int = frame_delay
         self.current_frame: dict[
             str, Union[pygame.Surface, Position]
         ] = self.sprites_positions.pop(0)
@@ -63,4 +65,4 @@ class Animation:
         Keyword arguments:
         screen -- the screen on which the current frame should be drawn
         """
-        screen.blit(self.current_frame["sprite"], self.current_frame["pos"])
+        screen.blit(self.current_frame["sprite"], self.current_frame["position"])

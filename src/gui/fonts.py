@@ -44,6 +44,10 @@ fonts_description: Dict[str, Dict[str, Union[str, int]]] = {
         "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
         "size": 46,
     },
+    "LEVEL_TITLE_FONT": {
+        "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
+        "size": 60,
+    },
     "ITALIC_ITEM_FONT": {"name": "fonts/minya_nouvelle_it.ttf", "size": 14},
     "ITALIC_ITEM_FONT_HOVER": {"name": "fonts/minya_nouvelle_it.ttf", "size": 16},
     "FPS_FONT": {"default": True},
