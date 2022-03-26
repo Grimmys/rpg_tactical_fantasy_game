@@ -14,6 +14,8 @@ from src.scenes.scene import Scene
 
 DELAY_BETWEEN_FRAMES = 120
 
+CHAPTER_LEVEL_SEPARATION_HEIGHT = 100
+
 
 class LevelLoadingScene(Scene):
     """
@@ -32,24 +34,49 @@ class LevelLoadingScene(Scene):
     def __init__(self, screen: pygame.Surface, level: LevelScene) -> None:
         super().__init__(screen)
         self.level: LevelScene = level
-        self.animation: Optional[Animation] = Animation(self.load_level_introduction_animation_frames(),
+        self.animation: Optional[Animation] = Animation(self._load_level_introduction_animation_frames(),
                                                         DELAY_BETWEEN_FRAMES)
 
-    def load_level_introduction_animation_frames(self) -> list[FrameDescription]:
+    def _load_level_introduction_animation_frames(self) -> list[FrameDescription]:
         """
         Load all the frames for the loading screen animation.
 
         Return the ordered list of frames.
         """
-        level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Level {self.level.number}: {self.level.name}", True,
-                                                                WHITE)
+        level_title_rendering = self._generate_level_title_rendering()
+
         level_title_screen = self.screen.copy()
-        level_title_screen.blit(level_name_rendering, (level_title_screen.get_width() // 2 -
-                                                       level_name_rendering.get_width() // 2,
-                                                       level_title_screen.get_height() // 2 -
-                                                       level_name_rendering.get_height() // 2))
+        level_title_screen.blit(level_title_rendering, (level_title_screen.get_width() // 2 -
+                                                        level_title_rendering.get_width() // 2,
+                                                        level_title_screen.get_height() // 2 -
+                                                        level_title_rendering.get_height() // 2))
+
         main_frame = {"sprite": level_title_screen, "position": pygame.Vector2(0, 0)}
         return [main_frame]
+
+    def _generate_level_title_rendering(self) -> pygame.Surface:
+        """
+        Render chapter and level name.
+
+        Return the surface containing the rendered text.
+        """
+        chapter_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Chapter {self.level.chapter}", True,
+                                                             WHITE)
+
+        level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Level {self.level.number}: {self.level.name}", True,
+                                                                WHITE)
+
+        surface_size = (max(chapter_rendering.get_width(), level_name_rendering.get_width()),
+                        chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT
+                        + level_name_rendering.get_height())
+        level_title_rendering = pygame.Surface(surface_size)
+        level_title_rendering.blit(chapter_rendering,
+                                   (level_title_rendering.get_width() // 2 - chapter_rendering.get_width() // 2, 0))
+        level_title_rendering.blit(level_name_rendering,
+                                   (level_title_rendering.get_width() // 2 - level_name_rendering.get_width() // 2,
+                                    chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT))
+
+        return level_title_rendering
 
     def display(self) -> None:
         """

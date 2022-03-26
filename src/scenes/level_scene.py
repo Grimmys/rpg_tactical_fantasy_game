@@ -108,6 +108,8 @@ class LevelScene(Scene):
     concerning the level are stored
     number -- the number identifying the level
     map -- a dictionary containing the properties of the level's map
+    chapter -- the id corresponding to the chapter in which the level is part
+    name -- the full title of the level
     obstacles -- the list of obstacles on the level
     events -- a structure containing the data about all the events that could occur
     possible_placements -- the list of available initial positions for players
@@ -175,6 +177,7 @@ class LevelScene(Scene):
 
         tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
 
+        self.chapter: int = int(tree.find("chapter").text.strip())
         self.name: str = tree.find("name").text.strip()
 
         self.obstacles: list[Position] = loader.load_obstacles(

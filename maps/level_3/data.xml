@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level>
+    <chapter>2</chapter>
+    <name>Lost City</name>
     <width>20</width>
     <height>8</height>
     <placementArea>
