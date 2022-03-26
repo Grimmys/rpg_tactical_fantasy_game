@@ -112,7 +112,7 @@ class TestMission(unittest.TestCase):
     def test_update_state_kill_everybody_objective(self):
         nature = MissionType.KILL_EVERYBODY
         mission = Mission(True, nature, [], "Test mission", 0)
-        foes = random_entities(Foe, min=2)
+        foes = random_entities(Foe, min_number=2)
         entities = {"foes": foes}
 
         mission.update_state(entities=entities)
@@ -163,7 +163,7 @@ class TestMission(unittest.TestCase):
 
     def test_update_state_kill_multiple_targets_objective(self):
         nature = MissionType.KILL_TARGETS
-        targets = random_entities(Foe, min=2)
+        targets = random_entities(Foe, min_number=2)
         mission = Mission(True, nature, [], "Test mission", 0, targets=targets)
 
         mission.update_state()

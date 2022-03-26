@@ -15,6 +15,7 @@ from lxml import etree
 from src.constants import TILE_SIZE
 from src.game_entities.entity import Entity
 from src.game_entities.item import Item
+from src.gui.position import Position
 
 random.seed()
 
@@ -45,7 +46,7 @@ class Chest(Entity):
 
     def __init__(
         self,
-        position: tuple[int, int],
+        position: Position,
         sprite_close: str,
         sprite_open: str,
         potential_items: Sequence[tuple[Item, float]],

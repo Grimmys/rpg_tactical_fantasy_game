@@ -13,6 +13,7 @@ from src.game_entities.destroyable import Destroyable
 from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.player import Player
+from src.gui.position import Position
 
 
 class MissionType(Enum):
@@ -81,7 +82,7 @@ class Mission:
         self.succeeded_chars: list[Player] = []
         self.targets = targets
 
-    def is_position_valid(self, position: tuple[int, int]) -> bool:
+    def is_position_valid(self, position: Position) -> bool:
         """
         Determine whether the mission can be accomplished from the given position or not.
         Return the result of the computation.
