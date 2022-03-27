@@ -87,4 +87,4 @@ if __name__ == "__main__":
     # Let's the game start!
     main_loop(scene_manager, main_screen, pygame.time.Clock())
 
-    raise SystemExit
+    pygame.quit()
