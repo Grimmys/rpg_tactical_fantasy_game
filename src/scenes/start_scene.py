@@ -114,8 +114,7 @@ class StartScene(Scene):
 
     def display(self) -> None:
         """
-        Display the level on screen if there is one, else display the background
-        of the start screen, all the menus in the background and lastly the active menu.
+        Display the background of the start screen, and all the menus.
         """
         self.screen.blit(self.background, (0, 0))
         self.menu_manager.display()

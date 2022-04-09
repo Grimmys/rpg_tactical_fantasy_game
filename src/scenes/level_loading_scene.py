@@ -40,7 +40,6 @@ class LevelLoadingScene(Scene):
         self.animation: Optional[FadeInOutAnimation] = FadeInOutAnimation(
             self._load_level_introduction_animation_frame(),
             TITLE_VISIBILITY_DURATION)
-        self.is_animation_running: bool = False
 
     def _load_level_introduction_animation_frame(self) -> Frame:
         """
@@ -99,9 +98,7 @@ class LevelLoadingScene(Scene):
         if not self.level.is_loaded and self.animation.is_fade_in_finished:
             self.level.load_level_content()
 
-        if self.animation:
-            self.is_animation_running = True
-            if self.animation.animate():
-                self.animation = None
+        if self.animation and self.animation.animate():
+            self.animation = None
 
         return not self.animation
