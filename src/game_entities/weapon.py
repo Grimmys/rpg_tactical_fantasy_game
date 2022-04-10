@@ -126,8 +126,8 @@ class Weapon(Equipment):
         return self.durability
 
     def apply_effects(
-        self, user: Character, target: Movable
-    ) -> Sequence[Effect]:  # NOQA
+        self, user: Character, target: Movable  # NOQA
+    ) -> Sequence[Effect]:
         """
         Check if some effects from the list of possible effects are triggered after the use of the weapon
 

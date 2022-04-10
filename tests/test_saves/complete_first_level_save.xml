@@ -8,7 +8,7 @@
         <ally>
           <name>jist</name>
           <position>
-            <x>16</x>
+            <x>15</x>
             <y>8</y>
           </position>
           <current_hp>10</current_hp>
@@ -33,18 +33,18 @@
         <foe>
           <name>skeleton</name>
           <position>
-            <x>15</x>
+            <x>16</x>
             <y>6</y>
           </position>
-          <current_hp>6</current_hp>
+          <current_hp>10</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>6</hp>
-          <strength>4</strength>
-          <defense>0</defense>
+          <hp>10</hp>
+          <strength>7</strength>
+          <defense>1</defense>
           <resistance>0</resistance>
           <move>3</move>
           <loot>
@@ -61,18 +61,18 @@
         <foe>
           <name>skeleton</name>
           <position>
-            <x>12</x>
+            <x>13</x>
             <y>8</y>
           </position>
-          <current_hp>6</current_hp>
+          <current_hp>10</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>6</hp>
-          <strength>4</strength>
-          <defense>0</defense>
+          <hp>10</hp>
+          <strength>7</strength>
+          <defense>1</defense>
           <resistance>0</resistance>
           <move>3</move>
           <loot>
@@ -89,46 +89,18 @@
         <foe>
           <name>skeleton</name>
           <position>
-            <x>14</x>
-            <y>3</y>
-          </position>
-          <current_hp>12</current_hp>
-          <level>3</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>12</hp>
-          <strength>6</strength>
-          <defense>0</defense>
-          <resistance>2</resistance>
-          <move>3</move>
-          <loot>
-            <item>
-              <name>bones</name>
-              <probability>0.1</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.05</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>skeleton</name>
-          <position>
-            <x>9</x>
+            <x>10</x>
             <y>5</y>
           </position>
-          <current_hp>6</current_hp>
+          <current_hp>10</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>6</hp>
-          <strength>4</strength>
-          <defense>0</defense>
+          <hp>10</hp>
+          <strength>7</strength>
+          <defense>1</defense>
           <resistance>0</resistance>
           <move>3</move>
           <loot>
@@ -145,45 +117,17 @@
         <foe>
           <name>skeleton</name>
           <position>
-            <x>8</x>
-            <y>7</y>
-          </position>
-          <current_hp>10</current_hp>
-          <level>2</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>10</hp>
-          <strength>6</strength>
-          <defense>1</defense>
-          <resistance>1</resistance>
-          <move>3</move>
-          <loot>
-            <item>
-              <name>bones</name>
-              <probability>0.1</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.05</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>skeleton</name>
-          <position>
-            <x>3</x>
+            <x>4</x>
             <y>3</y>
           </position>
-          <current_hp>10</current_hp>
+          <current_hp>15</current_hp>
           <level>3</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>10</hp>
-          <strength>5</strength>
+          <hp>15</hp>
+          <strength>10</strength>
           <defense>2</defense>
           <resistance>2</resistance>
           <move>3</move>
@@ -201,103 +145,75 @@
         <foe>
           <name>necrophage</name>
           <position>
-            <x>16</x>
-            <y>3</y>
-          </position>
-          <current_hp>10</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>10</hp>
-          <strength>7</strength>
-          <defense>0</defense>
-          <resistance>0</resistance>
-          <move>2</move>
-          <loot>
-            <item>
-              <name>monster_meat</name>
-              <probability>0.2</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.15</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>necrophage</name>
-          <position>
-            <x>13</x>
-            <y>5</y>
-          </position>
-          <current_hp>10</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>10</hp>
-          <strength>7</strength>
-          <defense>0</defense>
-          <resistance>0</resistance>
-          <move>2</move>
-          <loot>
-            <item>
-              <name>monster_meat</name>
-              <probability>0.2</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.15</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>necrophage</name>
-          <position>
-            <x>7</x>
+            <x>15</x>
             <y>4</y>
           </position>
-          <current_hp>14</current_hp>
+          <current_hp>15</current_hp>
+          <level>1</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>15</hp>
+          <strength>8</strength>
+          <defense>0</defense>
+          <resistance>0</resistance>
+          <move>2</move>
+          <loot>
+            <item>
+              <name>monster_meat</name>
+              <probability>0.2</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.15</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>necrophage</name>
+          <position>
+            <x>9</x>
+            <y>7</y>
+          </position>
+          <current_hp>15</current_hp>
+          <level>1</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>15</hp>
+          <strength>8</strength>
+          <defense>0</defense>
+          <resistance>0</resistance>
+          <move>2</move>
+          <loot>
+            <item>
+              <name>monster_meat</name>
+              <probability>0.2</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.15</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>necrophage</name>
+          <position>
+            <x>5</x>
+            <y>6</y>
+          </position>
+          <current_hp>18</current_hp>
           <level>2</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>14</hp>
-          <strength>8</strength>
+          <hp>18</hp>
+          <strength>10</strength>
           <defense>0</defense>
           <resistance>1</resistance>
-          <move>2</move>
-          <loot>
-            <item>
-              <name>monster_meat</name>
-              <probability>0.2</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.15</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>necrophage</name>
-          <position>
-            <x>4</x>
-            <y>6</y>
-          </position>
-          <current_hp>10</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>10</hp>
-          <strength>7</strength>
-          <defense>0</defense>
-          <resistance>0</resistance>
           <move>2</move>
           <loot>
             <item>
@@ -316,7 +232,7 @@
         <chest>
           <name>Chest</name>
           <position>
-            <x>11</x>
+            <x>10</x>
             <y>3</y>
           </position>
           <state>False</state>
@@ -337,7 +253,7 @@
           <name>house</name>
           <position>
             <x>7</x>
-            <y>8</y>
+            <y>7</y>
           </position>
           <state>False</state>
           <sprite>imgs/houses/blue_house.png</sprite>
@@ -352,25 +268,24 @@
         <building>
           <name>house</name>
           <position>
-            <x>8</x>
+            <x>6</x>
             <y>3</y>
           </position>
           <state>False</state>
           <sprite>imgs/houses/blue_house_side.png</sprite>
-          <uninteractable/>
         </building>
         <building>
           <name>house</name>
           <position>
-            <x>10</x>
-            <y>4</y>
+            <x>9</x>
+            <y>5</y>
           </position>
           <state>False</state>
           <sprite>imgs/houses/yellow_house.png</sprite>
           <interaction>
             <talks>
-              <talk>No ! I won't let undeads like you kill me !</talk>
-              <talk>GO AWAY !!!</talk>
+              <talk>No! I won't let undeads like you kill me!</talk>
+              <talk>GO AWAY!!!</talk>
               <talk>[A knife is thrown at you]</talk>
             </talks>
             <item>pocket_knife</item>
@@ -379,7 +294,7 @@
         <building>
           <name>house</name>
           <position>
-            <x>12</x>
+            <x>13</x>
             <y>6</y>
           </position>
           <state>False</state>
@@ -387,29 +302,32 @@
           <interaction>
             <talks>
               <talk>I'm sorry, but I can't let you enter in my house...</talk>
-              <talk>It's not safe here anymore ! I have to stay locked up for a while.</talk>
+              <talk>It's not safe here anymore! I have to stay locked up for a while.</talk>
             </talks>
           </interaction>
         </building>
         <building>
           <name>tavern</name>
           <position>
-            <x>16</x>
+            <x>15</x>
             <y>7</y>
           </position>
           <state>False</state>
           <sprite>imgs/houses/tavern.png</sprite>
-          <uninteractable/>
         </building>
         <building>
           <name>shop</name>
           <position>
-            <x>14</x>
+            <x>13</x>
             <y>2</y>
           </position>
-          <state>True</state>
+          <state>False</state>
           <sprite>imgs/houses/shop.png</sprite>
-          <uninteractable/>
+          <interaction>
+            <talks>
+              <talk>What goods are you looking to buy or sell?</talk>
+            </talks>
+          </interaction>
           <type>shop</type>
           <items>
             <item>
@@ -424,6 +342,10 @@
               <name>wooden_shield</name>
               <quantity>2</quantity>
             </item>
+            <item>
+              <name>scroll_of_knowledge</name>
+              <quantity>3</quantity>
+            </item>
           </items>
         </building>
       </buildings>
@@ -432,8 +354,8 @@
         <player>
           <name>raimund</name>
           <position>
-            <x>17</x>
-            <y>10</y>
+            <x>15</x>
+            <y>9</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>
@@ -442,8 +364,8 @@
           <skills/>
           <alterations/>
           <hp>20</hp>
-          <strength>3</strength>
-          <defense>0</defense>
+          <strength>5</strength>
+          <defense>1</defense>
           <resistance>0</resistance>
           <move>5</move>
           <class>warrior</class>
@@ -452,37 +374,41 @@
           <inventory>
             <item>
               <name>topaz</name>
-              <value>100</value>
+              <value>200</value>
             </item>
             <item>
               <name>key</name>
-              <value>100</value>
+              <value>200</value>
             </item>
           </inventory>
           <equipment>
             <head>
               <name>helmet</name>
-              <value>200</value>
+              <value>125</value>
             </head>
             <right_hand>
               <name>club</name>
-              <value>50</value>
-              <durability>14</durability>
+              <value>150</value>
+              <durability>20</durability>
             </right_hand>
             <body>
               <name>chainmail</name>
               <value>250</value>
             </body>
+            <feet>
+              <name>brown_boots</name>
+              <value>125</value>
+            </feet>
           </equipment>
           <turnFinished>False</turnFinished>
         </player>
         <player>
           <name>braern</name>
           <position>
-            <x>16</x>
-            <y>9</y>
+            <x>15</x>
+            <y>10</y>
           </position>
-          <current_hp>14</current_hp>
+          <current_hp>15</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>MANUAL</strategy>
@@ -492,8 +418,8 @@
             </skill>
           </skills>
           <alterations/>
-          <hp>14</hp>
-          <strength>2</strength>
+          <hp>15</hp>
+          <strength>3</strength>
           <defense>1</defense>
           <resistance>0</resistance>
           <move>5</move>
@@ -502,19 +428,27 @@
           <gold>250</gold>
           <inventory>
             <item>
-              <name>speed_potion</name>
-              <value>100</value>
+              <name>life_potion</name>
+              <value>75</value>
             </item>
           </inventory>
           <equipment>
+            <head>
+              <name>plumed_helmet</name>
+              <value>125</value>
+            </head>
+            <body>
+              <name>leather_armor</name>
+              <value>175</value>
+            </body>
             <right_hand>
               <name>basic_bow</name>
-              <value>350</value>
-              <durability>40</durability>
+              <value>175</value>
+              <durability>35</durability>
             </right_hand>
             <feet>
               <name>brown_boots</name>
-              <value>200</value>
+              <value>125</value>
             </feet>
           </equipment>
           <turnFinished>False</turnFinished>
@@ -523,7 +457,7 @@
           <name>thokdrum</name>
           <position>
             <x>16</x>
-            <y>10</y>
+            <y>9</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>
@@ -536,7 +470,7 @@
           </skills>
           <alterations/>
           <hp>20</hp>
-          <strength>3</strength>
+          <strength>4</strength>
           <defense>2</defense>
           <resistance>0</resistance>
           <move>4</move>
@@ -546,23 +480,36 @@
           <inventory>
             <item>
               <name>life_potion</name>
-              <value>100</value>
+              <value>75</value>
+            </item>
+            <item>
+              <name>vigor_potion</name>
+              <value>225</value>
             </item>
           </inventory>
           <equipment>
+            <head>
+              <name>horned_helmet</name>
+              <value>125</value>
+            </head>
             <right_hand>
               <name>pickaxe</name>
-              <value>200</value>
+              <value>150</value>
               <durability>30</durability>
             </right_hand>
             <body>
               <name>chainmail</name>
               <value>250</value>
             </body>
+            <feet>
+              <name>brown_boots</name>
+              <value>125</value>
+            </feet>
           </equipment>
           <turnFinished>False</turnFinished>
         </player>
       </players>
+      <escaped_players/>
     </entities>
   </level>
 </save>

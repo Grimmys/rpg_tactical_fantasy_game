@@ -66,34 +66,32 @@ class TestLevel(unittest.TestCase):
         braern = None
         thokdrum = None
         for player in players:
-            pos = (player.position[0] // TILE_SIZE, player.position[1] // TILE_SIZE)
-            if pos == (17, 10):
+            if player.name == "raimund":
                 raimund = player
-            elif pos == (16, 9):
+            elif player.name == "braern":
                 braern = player
-            elif pos == (16, 10):
+            elif player.name == "thokdrum":
                 thokdrum = player
 
         specific_skeleton = None
         specific_necrophage = None
-        for f in foes:
-            pos = (f.position[0] // TILE_SIZE, f.position[1] // TILE_SIZE)
-            if pos == (12, 8):
-                specific_skeleton = f
-            if pos == (13, 5):
-                specific_necrophage = f
+        for foe in foes:
+            position = (foe.position[0] // TILE_SIZE, foe.position[1] // TILE_SIZE)
+            if position == (16, 6):
+                specific_skeleton = foe
+            if position == (9, 7):
+                specific_necrophage = foe
 
-        entities_with_dist = self.level.distance_between_all(specific_skeleton, players)
-        self.assertEqual(12, entities_with_dist[raimund])
-        self.assertEqual(4, entities_with_dist[braern])
-        self.assertEqual(5, entities_with_dist[thokdrum])
+        entities_distance_to_skeleton = self.level.distance_between_all(specific_skeleton, players)
+        self.assertEqual(5, entities_distance_to_skeleton[raimund])
+        self.assertEqual(6, entities_distance_to_skeleton[braern])
+        self.assertEqual(2, entities_distance_to_skeleton[thokdrum])
 
-        entities_with_dist = self.level.distance_between_all(
+        entities_distance_to_necrophage = self.level.distance_between_all(
             specific_necrophage, players
         )
-        self.assertEqual(8, entities_with_dist[raimund])
-        self.assertEqual(6, entities_with_dist[braern])
-        self.assertEqual(7, entities_with_dist[thokdrum])
+        self.assertEqual(7, entities_distance_to_necrophage[raimund])
+        self.assertEqual(8, entities_distance_to_necrophage[braern])
 
     def test_cancel_movement_after_trade_item_sent(self):
         # Import complete save file
