@@ -13,8 +13,8 @@ from src.gui.fonts import fonts
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import Scene
 
-DELAY_BETWEEN_FRAMES = 3
-TITLE_VISIBILITY_DURATION = 160
+DELAY_BETWEEN_FRAMES = 2
+TITLE_VISIBILITY_DURATION = 120
 
 CHAPTER_LEVEL_SEPARATION_HEIGHT = 100
 
