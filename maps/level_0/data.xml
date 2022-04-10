@@ -2,23 +2,23 @@
 <level>
     <chapter>1</chapter>
     <name>Crypt Vandalism</name>
-    <width>18</width>
+    <width>16</width>
     <height>10</height>
     <placementArea>
         <position>
-            <x>14</x>
+            <x>12</x>
             <y>7</y>
         </position>
         <position>
-            <x>14</x>
+            <x>12</x>
             <y>8</y>
         </position>
         <position>
-            <x>15</x>
+            <x>13</x>
             <y>7</y>
         </position>
         <position>
-            <x>15</x>
+            <x>13</x>
             <y>8</y>
         </position>
     </placementArea>
@@ -110,7 +110,7 @@
                 </item>
             </contains>
             <position>
-                <x>9</x>
+                <x>7</x>
                 <y>1</y>
             </position>
         </chest>
@@ -121,7 +121,7 @@
                 jist
             </name>
             <position>
-                <x>14</x>
+                <x>12</x>
                 <y>6</y>
             </position>
         </ally>
@@ -156,35 +156,11 @@
                 skeleton
             </name>
             <position>
-                <x>12</x>
-                <y>1</y>
-            </position>
-            <level>
-                3
-            </level>
-        </foe>
-        <foe>
-            <name>
-                skeleton
-            </name>
-            <position>
                 <x>7</x>
                 <y>3</y>
             </position>
             <level>
                 1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                skeleton
-            </name>
-            <position>
-                <x>6</x>
-                <y>5</y>
-            </position>
-            <level>
-                2
             </level>
         </foe>
         <foe>
@@ -204,35 +180,23 @@
                 necrophage
             </name>
             <position>
-                <x>14</x>
-                <y>1</y>
-            </position>
-            <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                necrophage
-            </name>
-            <position>
-                <x>11</x>
-                <y>3</y>
-            </position>
-            <level>
-                1
-            </level>
-        </foe>
-        <foe>
-            <name>
-                necrophage
-            </name>
-            <position>
-                <x>5</x>
+                <x>12</x>
                 <y>2</y>
             </position>
             <level>
-                2
+                1
+            </level>
+        </foe>
+        <foe>
+            <name>
+                necrophage
+            </name>
+            <position>
+                <x>6</x>
+                <y>5</y>
+            </position>
+            <level>
+                1
             </level>
         </foe>
         <foe>
@@ -244,7 +208,7 @@
                 <y>4</y>
             </position>
             <level>
-                1
+                2
             </level>
         </foe>
     </foes>
@@ -254,8 +218,8 @@
                 house
             </name>
             <position>
-                <x>5</x>
-                <y>6</y>
+                <x>4</x>
+                <y>5</y>
             </position>
             <sprite>imgs/houses/blue_house.png</sprite>
             <interaction>
@@ -277,7 +241,7 @@
                 house
             </name>
             <position>
-                <x>6</x>
+                <x>3</x>
                 <y>1</y>
             </position>
             <sprite>imgs/houses/blue_house_side.png</sprite>
@@ -287,8 +251,8 @@
                 house
             </name>
             <position>
-                <x>8</x>
-                <y>2</y>
+                <x>6</x>
+                <y>3</y>
             </position>
             <sprite>imgs/houses/yellow_house.png</sprite>
             <interaction>
@@ -333,7 +297,7 @@
                 tavern
             </name>
             <position>
-                <x>14</x>
+                <x>12</x>
                 <y>5</y>
             </position>
             <sprite>imgs/houses/tavern.png</sprite>
@@ -346,7 +310,7 @@
                 shop
             </name>
             <position>
-                <x>12</x>
+                <x>10</x>
                 <y>0</y>
             </position>
             <sprite>imgs/houses/shop.png</sprite>
@@ -395,7 +359,7 @@
     </buildings>
     <obstacles>
         <positions>
-            <x>17</x>
+            <x>15</x>
             <from_y>0</from_y>
             <to_y>9</to_y>
         </positions>
@@ -406,12 +370,12 @@
         </positions>
         <positions>
             <from_x>0</from_x>
-            <to_x>19</to_x>
+            <to_x>15</to_x>
             <y>0</y>
         </positions>
         <positions>
             <from_x>0</from_x>
-            <to_x>19</to_x>
+            <to_x>15</to_x>
             <y>9</y>
         </positions>
         <positions>
@@ -420,12 +384,16 @@
             <to_y>1</to_y>
         </positions>
         <position>
+            <x>1</x>
+            <y>5</y>
+        </position>
+        <position>
             <x>2</x>
             <y>1</y>
         </position>
         <position>
             <x>3</x>
-            <y>2</y>
+            <y>6</y>
         </position>
         <position>
             <x>4</x>
@@ -433,6 +401,10 @@
         </position>
         <position>
             <x>5</x>
+            <y>2</y>
+        </position>
+        <position>
+            <x>6</x>
             <y>1</y>
         </position>
         <position>
@@ -440,27 +412,19 @@
             <y>2</y>
         </position>
         <position>
-            <x>8</x>
-            <y>1</y>
-        </position>
-        <position>
             <x>9</x>
-            <y>2</y>
-        </position>
-        <position>
-            <x>11</x>
             <y>1</y>
         </position>
         <position>
-            <x>12</x>
+            <x>10</x>
             <y>2</y>
         </position>
         <position>
-            <x>15</x>
+            <x>13</x>
             <y>3</y>
         </position>
         <position>
-            <x>16</x>
+            <x>14</x>
             <y>2</y>
         </position>
         <position>
@@ -480,7 +444,7 @@
             <y>8</y>
         </position>
         <position>
-            <x>7</x>
+            <x>5</x>
             <y>7</y>
         </position>
         <position>
@@ -488,15 +452,11 @@
             <y>8</y>
         </position>
         <position>
-            <x>9</x>
+            <x>7</x>
             <y>7</y>
         </position>
         <position>
             <x>10</x>
-            <y>8</y>
-        </position>
-        <position>
-            <x>12</x>
             <y>8</y>
         </position>
     </obstacles>
