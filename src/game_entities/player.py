@@ -183,8 +183,10 @@ class Player(Character):
         """
         Return whether the player is waiting a post action or not
         """
-        return self.state is PlayerState.WAITING_POST_ACTION or \
-               self.state is PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
+        return (
+            self.state is PlayerState.WAITING_POST_ACTION
+            or self.state is PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
+        )
 
     def target_selected(self) -> None:
         """
@@ -294,7 +296,11 @@ class Player(Character):
         for equipment in self.equipments:
             equipment.set_grey()
         # Remove all alterations that are finished
-        self.alterations = [alteration for alteration in self.alterations if not alteration.is_finished()]
+        self.alterations = [
+            alteration
+            for alteration in self.alterations
+            if not alteration.is_finished()
+        ]
 
     def new_turn(self) -> None:
         """Handle the start of a new turn for the player"""

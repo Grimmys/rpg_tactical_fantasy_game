@@ -12,11 +12,7 @@ from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import (
-    SCREEN_SIZE,
-    WIN_WIDTH,
-    WIN_HEIGHT
-)
+from src.constants import SCREEN_SIZE, WIN_WIDTH, WIN_HEIGHT
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
@@ -60,14 +56,16 @@ class StartScene(Scene):
         )
 
         self.menu_manager = MenuManager(screen)
-        self.menu_manager.open_menu(menu_creator_manager.create_start_menu(
-            {
-                "new_game": self.new_game,
-                "load_menu": self.load_menu,
-                "options_menu": self.options_menu,
-                "exit_game": self.exit_game,
-            }
-        ))
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_start_menu(
+                {
+                    "new_game": self.new_game,
+                    "load_menu": self.load_menu,
+                    "options_menu": self.options_menu,
+                    "exit_game": self.exit_game,
+                }
+            )
+        )
 
         self.level: Optional[LevelScene] = None
         self.exit: bool = False
@@ -141,7 +139,11 @@ class StartScene(Scene):
         return self.level is not None
 
     @staticmethod
-    def load_new_level(level: int, level_screen: pygame.Surface, team: Optional[Sequence[Player]] = None) -> LevelScene:
+    def load_new_level(
+        level: int,
+        level_screen: pygame.Surface,
+        team: Optional[Sequence[Player]] = None,
+    ) -> LevelScene:
         """
         Load a specific level.
 
@@ -153,7 +155,9 @@ class StartScene(Scene):
         """
         if team is None:
             team = []
-        return LevelScene(level_screen, "maps/level_" + str(level) + "/", level, players=team)
+        return LevelScene(
+            level_screen, "maps/level_" + str(level) + "/", level, players=team
+        )
 
     def new_game(self) -> None:
         """
@@ -177,53 +181,62 @@ class StartScene(Scene):
                 game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = int(tree_root.find("level/turn").text.strip())
 
-                self.level = LevelScene(StartScene.generate_level_window(), level_path, level_id,
-                                        LevelStatus[game_status],
-                                        turn_nb,
-                                        tree_root.find("level/entities"))
+                self.level = LevelScene(
+                    StartScene.generate_level_window(),
+                    level_path,
+                    level_id,
+                    LevelStatus[game_status],
+                    turn_nb,
+                    tree_root.find("level/entities"),
+                )
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt
             name: str = "Load Game"
             width: int = self.screen.get_width() // 2
-            self.menu_manager.open_menu(InfoBox(
-                name,
-                [
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
                     [
-                        TextElement(
-                            "Unable to load saved game. Save file appears corrupt.",
-                            font=fonts["MENU_SUB_TITLE_FONT"]
-                        )
-                    ]
-                ],
-                width=width,
-                background_path="imgs/interface/PopUpMenu.png",
-            ))
+                        [
+                            TextElement(
+                                "Unable to load saved game. Save file appears corrupt.",
+                                font=fonts["MENU_SUB_TITLE_FONT"],
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
 
         except FileNotFoundError:
             # No saved game
             name: str = "Load Game"
             width: int = self.screen.get_width() // 2
-            self.menu_manager.open_menu(InfoBox(
-                name,
-                [
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
                     [
-                        TextElement(
-                            "No saved game.",
-                            font=fonts["MENU_SUB_TITLE_FONT"]
-                        )
-                    ]
-                ],
-                width=width,
-                background_path="imgs/interface/PopUpMenu.png",
-            ))
+                        [
+                            TextElement(
+                                "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
 
     def load_menu(self) -> None:
         """
         Move current active menu to the background and set a freshly created load game menu
         as the new active menu.
         """
-        self.menu_manager.open_menu(menu_creator_manager.create_load_menu(self.load_game))
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_load_menu(self.load_game)
+        )
 
     def options_menu(self) -> None:
         """
@@ -231,13 +244,15 @@ class StartScene(Scene):
         as the new active menu.
         Current option values are read from the local configuration file.
         """
-        self.menu_manager.open_menu(menu_creator_manager.create_options_menu(
-            {
-                "move_speed": int(self.read_options_file("move_speed")),
-                "screen_size": int(self.read_options_file("screen_size")),
-            },
-            self.modify_option_value,
-        ))
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_options_menu(
+                {
+                    "move_speed": int(self.read_options_file("move_speed")),
+                    "screen_size": int(self.read_options_file("screen_size")),
+                },
+                self.modify_option_value,
+            )
+        )
 
     def exit_game(self) -> None:
         """

@@ -90,7 +90,9 @@ class Weapon(Equipment):
 
     def get_formatted_strong_against(self):
         """Return the list of keywords against which the weapon is stronger in a formatted way"""
-        return ", ".join([keyword.name.lower().capitalize() for keyword in self.strong_against])
+        return ", ".join(
+            [keyword.name.lower().capitalize() for keyword in self.strong_against]
+        )
 
     def hit(self, holder, target):
         """
@@ -123,7 +125,9 @@ class Weapon(Equipment):
         )
         return self.durability
 
-    def apply_effects(self, user: Character, target: Movable) -> Sequence[Effect]:  # NOQA
+    def apply_effects(
+        self, user: Character, target: Movable
+    ) -> Sequence[Effect]:  # NOQA
         """
         Check if some effects from the list of possible effects are triggered after the use of the weapon
 

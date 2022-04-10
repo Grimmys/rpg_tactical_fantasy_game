@@ -66,19 +66,17 @@ class Fountain(Entity):
                 self.times -= 1
                 if self.times == 0:
                     self.sprite = self.sprite_empty
-            entries.append(
-                [TextElement(result[1], font=fonts["ITEM_DESC_FONT"])]
-            )
+            entries.append([TextElement(result[1], font=fonts["ITEM_DESC_FONT"])])
             entries.append(
                 [
-                    TextElement(f"{self.times} remaining uses", font=fonts["ITEM_DESC_FONT"])
+                    TextElement(
+                        f"{self.times} remaining uses", font=fonts["ITEM_DESC_FONT"]
+                    )
                 ]
             )
         else:
             entries.append(
-                [
-                    TextElement("The fountain is empty...", font=fonts["ITEM_DESC_FONT"])
-                ]
+                [TextElement("The fountain is empty...", font=fonts["ITEM_DESC_FONT"])]
             )
         return entries
 

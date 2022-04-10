@@ -87,7 +87,9 @@ class SaveStateManager:
         )
         entities.append(self.save_collection("players", "player", self.level.players))
         entities.append(
-            self.save_collection("escaped_players", "player", self.level.escaped_players)
+            self.save_collection(
+                "escaped_players", "player", self.level.escaped_players
+            )
         )
 
         return entities

@@ -67,6 +67,4 @@ def init_fonts() -> None:
             # Use pygame's default font
             fonts[font_name] = pygame.font.SysFont("arial", 20, True)
         else:
-            fonts[font_name] = pygame.font.Font(
-                font["name"], font["size"]
-            )
+            fonts[font_name] = pygame.font.Font(font["name"], font["size"])

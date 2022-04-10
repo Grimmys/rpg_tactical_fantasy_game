@@ -8,7 +8,8 @@ from tests.random_data_library import (
     random_item,
     random_position,
     random_player_entity,
-    random_entities, random_foe_entity,
+    random_entities,
+    random_foe_entity,
 )
 from tests.tools import minimal_setup_for_game
 

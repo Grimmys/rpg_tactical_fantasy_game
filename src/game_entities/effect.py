@@ -34,8 +34,8 @@ class Effect:
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = (
                 alteration_root.find("info")
-                    .text.strip()
-                    .replace("{val}", str(self.power))
+                .text.strip()
+                .replace("{val}", str(self.power))
             )
             abbr = alteration_root.find("abbreviated_name").text.strip()
             self.alteration = Alteration(

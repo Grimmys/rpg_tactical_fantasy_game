@@ -509,7 +509,9 @@ class Movable(Destroyable):
                     temporary_attack = target.position
         return temporary_attack
 
-    def determine_move(self, possible_moves: dict[Position, int], targets: dict[Entity, int]) -> Position:
+    def determine_move(
+        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
+    ) -> Position:
         """
         Determine which movement should be selected by the entity controlled by AI.
         Change the current target of the entity if needed.

@@ -40,7 +40,13 @@ if __name__ == "__main__":
     import os
     import platform
 
-    from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, GAME_TITLE, BLACK, FRAME_RATE
+    from src.constants import (
+        MAIN_WIN_WIDTH,
+        MAIN_WIN_HEIGHT,
+        GAME_TITLE,
+        BLACK,
+        FRAME_RATE,
+    )
     from src.gui import constant_sprites, fonts
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
@@ -56,15 +62,16 @@ if __name__ == "__main__":
     pygamepopup.configuration.set_info_box_background("imgs/interface/PopUpMenu.png")
     pygamepopup.configuration.set_button_title_font(fonts.fonts["BUTTON_FONT"])
     pygamepopup.configuration.set_dynamic_button_title_font(fonts.fonts["BUTTON_FONT"])
-    pygamepopup.configuration.set_button_background("imgs/interface/MenuButtonInactiv.png",
-                                                    "imgs/interface/MenuButtonPreLight.png")
+    pygamepopup.configuration.set_button_background(
+        "imgs/interface/MenuButtonInactiv.png", "imgs/interface/MenuButtonPreLight.png"
+    )
     pygamepopup.configuration.set_text_element_font(fonts.fonts["ITEM_FONT"])
 
     pygame.display.set_caption(GAME_TITLE)
     main_screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     # Make sure the game will display correctly on high DPI monitors on Windows.
-    if platform.system() == 'Windows':
+    if platform.system() == "Windows":
         from ctypes import windll
 
         try:

@@ -38,8 +38,8 @@ class LevelLoadingScene(Scene):
         super().__init__(screen)
         self.level: LevelScene = level
         self.animation: Optional[FadeInOutAnimation] = FadeInOutAnimation(
-            self._load_level_introduction_animation_frame(),
-            TITLE_VISIBILITY_DURATION)
+            self._load_level_introduction_animation_frame(), TITLE_VISIBILITY_DURATION
+        )
 
     def _load_level_introduction_animation_frame(self) -> Frame:
         """
@@ -50,10 +50,15 @@ class LevelLoadingScene(Scene):
         level_title_rendering = self._generate_level_title_rendering()
 
         level_title_screen = pygame.Surface(self.screen.get_size())
-        level_title_screen.blit(level_title_rendering, (level_title_screen.get_width() // 2 -
-                                                        level_title_rendering.get_width() // 2,
-                                                        level_title_screen.get_height() // 2 -
-                                                        level_title_rendering.get_height() // 2))
+        level_title_screen.blit(
+            level_title_rendering,
+            (
+                level_title_screen.get_width() // 2
+                - level_title_rendering.get_width() // 2,
+                level_title_screen.get_height() // 2
+                - level_title_rendering.get_height() // 2,
+            ),
+        )
 
         return Frame(level_title_screen, pygame.Vector2(0, 0), DELAY_BETWEEN_FRAMES)
 
@@ -63,21 +68,37 @@ class LevelLoadingScene(Scene):
 
         Return the surface containing the rendered text.
         """
-        chapter_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Chapter {self.level.chapter}", True,
-                                                             WHITE)
+        chapter_rendering = fonts["LEVEL_TITLE_FONT"].render(
+            f"Chapter {self.level.chapter}", True, WHITE
+        )
 
-        level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(f"Level {self.level.number}: {self.level.name}", True,
-                                                                WHITE)
+        level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(
+            f"Level {self.level.number}: {self.level.name}", True, WHITE
+        )
 
-        surface_size = (max(chapter_rendering.get_width(), level_name_rendering.get_width()),
-                        chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT
-                        + level_name_rendering.get_height())
+        surface_size = (
+            max(chapter_rendering.get_width(), level_name_rendering.get_width()),
+            chapter_rendering.get_height()
+            + CHAPTER_LEVEL_SEPARATION_HEIGHT
+            + level_name_rendering.get_height(),
+        )
         level_title_rendering = pygame.Surface(surface_size)
-        level_title_rendering.blit(chapter_rendering,
-                                   (level_title_rendering.get_width() // 2 - chapter_rendering.get_width() // 2, 0))
-        level_title_rendering.blit(level_name_rendering,
-                                   (level_title_rendering.get_width() // 2 - level_name_rendering.get_width() // 2,
-                                    chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT))
+        level_title_rendering.blit(
+            chapter_rendering,
+            (
+                level_title_rendering.get_width() // 2
+                - chapter_rendering.get_width() // 2,
+                0,
+            ),
+        )
+        level_title_rendering.blit(
+            level_name_rendering,
+            (
+                level_title_rendering.get_width() // 2
+                - level_name_rendering.get_width() // 2,
+                chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT,
+            ),
+        )
 
         return level_title_rendering
 

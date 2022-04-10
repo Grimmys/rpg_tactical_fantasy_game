@@ -56,6 +56,10 @@ class FadeInOutAnimation(Animation):
                 self.is_fade_in_finished = True
 
         self.current_frame.surface.set_alpha(self.current_opacity)
-        self.timer = self.current_frame.duration if self.current_opacity != 255 else self.visibility_duration
+        self.timer = (
+            self.current_frame.duration
+            if self.current_opacity != 255
+            else self.visibility_duration
+        )
 
         return False

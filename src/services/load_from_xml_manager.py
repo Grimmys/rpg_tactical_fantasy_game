@@ -52,9 +52,13 @@ def load_races() -> dict[str, dict[str, any]]:
     for race_element in races_file.findall("*"):
         race = {}
         constitution = race_element.find("constitution")
-        race["constitution"] = int(constitution.text.strip()) if constitution is not None else 0
+        race["constitution"] = (
+            int(constitution.text.strip()) if constitution is not None else 0
+        )
         move = race_element.find("move")
-        race["move"] = int(race_element.find("move").text.strip()) if move is not None else 0
+        race["move"] = (
+            int(race_element.find("move").text.strip()) if move is not None else 0
+        )
         race["skills"] = [
             get_skill_data(skill.text.strip())
             for skill in race_element.findall("skills/skill/name")
@@ -73,7 +77,9 @@ def load_classes() -> dict[str, dict[str, any]]:
     for class_element in classes_file.findall("*"):
         class_data = {}
         constitution = class_element.find("constitution")
-        class_data["constitution"] = int(constitution.text.strip()) if constitution is not None else 0
+        class_data["constitution"] = (
+            int(constitution.text.strip()) if constitution is not None else 0
+        )
         move = class_element.find("move")
         class_data["move"] = int(move.text.strip()) if move is not None else 0
         class_data["stats_up"] = load_stats_up(class_element)
@@ -156,7 +162,9 @@ def load_alteration(alteration_element) -> Alteration:
     power = int(alteration_element.find("power").text.strip())
     duration = int(alteration_element.find("duration").text.strip())
     description = alteration_element.find("desc").text.strip()
-    specificities = [spec.text.strip() for spec in alteration_element.findall("specs/spec")]
+    specificities = [
+        spec.text.strip() for spec in alteration_element.findall("specs/spec")
+    ]
     return Alteration(name, abbreviation, power, duration, description, specificities)
 
 
@@ -272,9 +280,7 @@ def load_artificial_entity(entity, data, from_save, gap_x, gap_y, extension_path
     position = pygame.Vector2(x_coordinate, y_coordinate)
 
     level_element = (
-        entity.find("level")
-        if entity.find("level") is not None
-        else data.find("level")
+        entity.find("level") if entity.find("level") is not None else data.find("level")
     )
     lvl = int(level_element.text.strip())
     specific_strategy = entity.find("strategy")
@@ -318,7 +324,9 @@ def load_ally(ally_element, from_save, gap_x, gap_y):
     name = ally_element.find("name").text.strip()
     generic_data = etree.parse("data/characters.xml").find(name)
 
-    attributes = load_artificial_entity(ally_element, generic_data, from_save, gap_x, gap_y)
+    attributes = load_artificial_entity(
+        ally_element, generic_data, from_save, gap_x, gap_y
+    )
 
     # Static data character
     race = generic_data.find("race").text.strip()
@@ -450,7 +458,10 @@ def load_foe(foe_element, from_save, gap_x, gap_y):
         )
     keywords_element = foes_data[name].find("keywords")
     keywords = (
-        [Keyword[keyword.upper()] for keyword in keywords_element.text.strip().split(",")]
+        [
+            Keyword[keyword.upper()]
+            for keyword in keywords_element.text.strip().split(",")
+        ]
         if keywords_element is not None
         else []
     )
@@ -485,7 +496,11 @@ def load_foe(foe_element, from_save, gap_x, gap_y):
             loot.extend([(Gold(int(gold_looted.find("amount").text)), 1.0)])
 
     mission_target_element = foe_element.find("mission_target")
-    mission_target = mission_target_element.text.strip() if mission_target_element is not None else None
+    mission_target = (
+        mission_target_element.text.strip()
+        if mission_target_element is not None
+        else None
+    )
 
     loaded_foe = Foe(
         attributes["name"],
@@ -504,7 +519,7 @@ def load_foe(foe_element, from_save, gap_x, gap_y):
         keywords,
         attributes["level"],
         attributes["alterations"],
-        mission_target
+        mission_target,
     )
 
     if from_save:
@@ -741,7 +756,7 @@ def load_mission(mission_xml, is_main, number_players, gap_x, gap_y):
         turn_limit,
         gold_reward,
         items_reward,
-        targets
+        targets,
     )
 
 
@@ -880,7 +895,9 @@ def load_events(events_el, gap_x, gap_y):
                 title_element = dialog_element.find("title")
                 events[event.tag]["dialogs"].append(
                     {
-                        "title": title_element.text.strip() if title_element is not None else "",
+                        "title": title_element.text.strip()
+                        if title_element is not None
+                        else "",
                         "talks": [
                             talk.text.strip()
                             for talk in dialog_element.find("talks").findall("talk")
@@ -1063,7 +1080,9 @@ def load_weapon_effect(eff):
     loaded_effect["effect"] = Effect(name, power, duration)
 
     # Load probability
-    loaded_effect["probability"] = int(float(eff.find("probability").text.strip()) * 100)
+    loaded_effect["probability"] = int(
+        float(eff.find("probability").text.strip()) * 100
+    )
 
     return loaded_effect
 
@@ -1110,7 +1129,11 @@ def parse_item_file(name):
             power_element = effect.find("power")
             power = int(power_element.text.strip()) if power_element is not None else 0
             duration_element = effect.find("duration")
-            duration = int(duration_element.text.strip()) if duration_element is not None else 0
+            duration = (
+                int(duration_element.text.strip())
+                if duration_element is not None
+                else 0
+            )
             effects.append(Effect(effect_name, power, duration))
         item = (
             Potion(name, sprite, info, price, effects)
@@ -1120,7 +1143,9 @@ def parse_item_file(name):
     elif category == "armor":
         body_part = item_tree_root.find("bodypart").text.strip()
         defense_element = item_tree_root.find("def")
-        defense = int(defense_element.text.strip()) if defense_element is not None else 0
+        defense = (
+            int(defense_element.text.strip()) if defense_element is not None else 0
+        )
         weight = int(item_tree_root.find("weight").text.strip())
         equipment_sprites = item_tree_root.find("equipped_sprites")
         if equipment_sprites is not None:
@@ -1151,7 +1176,9 @@ def parse_item_file(name):
     elif category == "shield":
         parry = int(float(item_tree_root.find("parry_rate").text.strip()) * 100)
         defense_element = item_tree_root.find("def")
-        defense = int(defense_element.text.strip()) if defense_element is not None else 0
+        defense = (
+            int(defense_element.text.strip()) if defense_element is not None else 0
+        )
         fragility = int(item_tree_root.find("fragility").text.strip())
         weight = int(item_tree_root.find("weight").text.strip())
         equipped_sprite = [

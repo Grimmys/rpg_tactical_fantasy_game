@@ -23,14 +23,15 @@ def show_fps(
     inner_clock -- the pygame clock running and containing the current frame rate
     font -- the font used to display the frame rate
     """
-    fps_text = font.render(
-        f"FPS: {inner_clock.get_fps():.0f}", True, LIGHT_YELLOW
-    )
+    fps_text = font.render(f"FPS: {inner_clock.get_fps():.0f}", True, LIGHT_YELLOW)
     surface.blit(fps_text, (2, 2))
 
 
 def blit_alpha(
-    target: pygame.Surface, source: pygame.Surface, location: tuple[int, int], opacity: int
+    target: pygame.Surface,
+    source: pygame.Surface,
+    location: tuple[int, int],
+    opacity: int,
 ):
     """
     Blit a surface on one other but with a specific opacity.
@@ -62,7 +63,9 @@ def distance(position: Position, other_position: Position) -> int:
     )
 
 
-def determine_gauge_color(current_value: int, max_value: int, default_color: pygame.Color) -> pygame.Color:
+def determine_gauge_color(
+    current_value: int, max_value: int, default_color: pygame.Color
+) -> pygame.Color:
     """
     Return the color that should be used to display the gauge of a measure
     (for example the hit points of an entity).

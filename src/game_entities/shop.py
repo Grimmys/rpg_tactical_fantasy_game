@@ -98,20 +98,14 @@ class Shop(Building):
         self.update_shop_menu(self.current_visitor.gold)
 
         grid_element: list[list[BoxElement]] = [
-            [
-                Button(title="Buy", callback=Shop.buy_interface_callback)
-            ],
-            [
-                Button(title="Sell", callback=Shop.sell_interface_callback)
-            ],
+            [Button(title="Buy", callback=Shop.buy_interface_callback)],
+            [Button(title="Sell", callback=Shop.sell_interface_callback)],
         ]
 
         if self.interaction:
             for talk in self.interaction["talks"]:
                 pygame.mixer.Sound.play(self.talk_sfx)
-                grid_element.append(
-                    [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
-                )
+                grid_element.append([TextElement(talk, font=fonts["ITEM_DESC_FONT"])])
 
         return grid_element
 

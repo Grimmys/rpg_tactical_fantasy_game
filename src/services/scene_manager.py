@@ -61,7 +61,9 @@ class SceneManager:
         Check what was the previous scene to determine which scene should be the next one depending on the context.
         """
         if isinstance(self.active_scene, StartScene):
-            self.active_scene = LevelLoadingScene(self.active_scene.level.screen, self.active_scene.level)
+            self.active_scene = LevelLoadingScene(
+                self.active_scene.level.screen, self.active_scene.level
+            )
             return
 
         if isinstance(self.active_scene, LevelLoadingScene):
@@ -70,14 +72,23 @@ class SceneManager:
 
         if isinstance(self.active_scene, LevelScene):
             next_level_number = self.active_scene.number + 1
-            if self.active_scene.game_phase is LevelStatus.ENDED_VICTORY and next_level_number in LevelScene.IDS:
+            if (
+                self.active_scene.game_phase is LevelStatus.ENDED_VICTORY
+                and next_level_number in LevelScene.IDS
+            ):
                 team = self.active_scene.escaped_players + self.active_scene.players
                 for player in team:
                     player.healed(player.hit_points_max)
                     player.new_turn()
                 level_screen = StartScene.generate_level_window()
-                level = LevelScene(level_screen, f"maps/level_{next_level_number}/",
-                                   next_level_number, players=team)
+                level = LevelScene(
+                    level_screen,
+                    f"maps/level_{next_level_number}/",
+                    next_level_number,
+                    players=team,
+                )
                 self.active_scene = LevelLoadingScene(level_screen, level)
             else:
-                self.active_scene = StartScene(pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT)))
+                self.active_scene = StartScene(
+                    pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+                )

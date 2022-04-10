@@ -121,7 +121,9 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(self.start_screen.screen.get_rect(), screen.get_rect())
         self.assertEqual(self.start_screen.level, old_level)
         self.assertEqual(len(self.start_screen.menu_manager.background_menus), 1)
-        self.assertEqual(self.start_screen.menu_manager.background_menus[0], old_active_menu)
+        self.assertEqual(
+            self.start_screen.menu_manager.background_menus[0], old_active_menu
+        )
         self.assertNotEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
 
     def test_load_existent_save(self):
@@ -156,7 +158,9 @@ class TestStartScreen(unittest.TestCase):
         )
         self.start_screen.click(LEFT_BUTTON, position)
 
-        self.assertEqual(self.start_screen.menu_manager.background_menus[0], old_active_menu)
+        self.assertEqual(
+            self.start_screen.menu_manager.background_menus[0], old_active_menu
+        )
         self.assertNotEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
 
     def test_exit_game(self):

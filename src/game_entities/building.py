@@ -86,22 +86,24 @@ class Building(Entity):
             pygame.mixer.Sound.play(self.door_sfx)
             entries.append(
                 [
-                    TextElement("This house seems closed...", font=fonts["ITEM_DESC_FONT"])
+                    TextElement(
+                        "This house seems closed...", font=fonts["ITEM_DESC_FONT"]
+                    )
                 ]
             )
         else:
             for talk in self.interaction["talks"]:
                 pygame.mixer.Sound.play(self.talk_sfx)
-                entries.append(
-                    [TextElement(talk, font=fonts["ITEM_DESC_FONT"])]
-                )
+                entries.append([TextElement(talk, font=fonts["ITEM_DESC_FONT"])])
             if self.interaction["gold"] > 0:
                 pygame.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction["gold"]
                 earn_text: str = f'[You received {self.interaction["gold"]} gold]'
                 entries.append(
                     [
-                        TextElement(earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN)
+                        TextElement(
+                            earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN
+                        )
                     ]
                 )
             if self.interaction["item"] is not None:
@@ -110,7 +112,9 @@ class Building(Entity):
                 earn_text: str = f'[You received {self.interaction["item"]}]'
                 entries.append(
                     [
-                        TextElement(earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN)
+                        TextElement(
+                            earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN
+                        )
                     ]
                 )
             # Interaction could not been repeated : should be remove after been used

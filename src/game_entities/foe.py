@@ -168,7 +168,9 @@ class Foe(Movable):
                 item_element: etree.SubElement = etree.SubElement(loot_element, "item")
                 item_name = etree.SubElement(item_element, "name")
                 item_name.text = item.name
-            it_probability: etree.SubElement = etree.SubElement(item_element, "probability")
+            it_probability: etree.SubElement = etree.SubElement(
+                item_element, "probability"
+            )
             it_probability.text = str(probability)
 
         # Save mission link

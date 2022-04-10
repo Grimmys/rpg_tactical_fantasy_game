@@ -108,14 +108,16 @@ class TestLevel(unittest.TestCase):
         item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
-            {"inventory": None, "equipment": None, "status": None, "wait": None},
-            active_player,
-            [],
-            [],
-            [],
-            [],
-        ))
+        self.level.menu_manager.open_menu(
+            menu_creator_manager.create_player_menu(
+                {"inventory": None, "equipment": None, "status": None, "wait": None},
+                active_player,
+                [],
+                [],
+                [],
+                [],
+            )
+        )
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, receiver_player, True)
@@ -142,14 +144,16 @@ class TestLevel(unittest.TestCase):
         item = rd.choice(sender_player.items)
 
         # Open character menu
-        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
-            {"inventory": None, "equipment": None, "status": None, "wait": None},
-            active_player,
-            [],
-            [],
-            [],
-            [],
-        ))
+        self.level.menu_manager.open_menu(
+            menu_creator_manager.create_player_menu(
+                {"inventory": None, "equipment": None, "status": None, "wait": None},
+                active_player,
+                [],
+                [],
+                [],
+                [],
+            )
+        )
 
         # Make trade (send item from active player to receiver player)
         self.simulate_trade_item(item, active_player, sender_player, False)
@@ -179,14 +183,16 @@ class TestLevel(unittest.TestCase):
         second_item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
-            {"inventory": None, "equipment": None, "status": None, "wait": None},
-            active_player,
-            [],
-            [],
-            [],
-            [],
-        ))
+        self.level.menu_manager.open_menu(
+            menu_creator_manager.create_player_menu(
+                {"inventory": None, "equipment": None, "status": None, "wait": None},
+                active_player,
+                [],
+                [],
+                [],
+                [],
+            )
+        )
 
         # Make trade in both way
         self.simulate_trade_item(item, active_player, trade_partner_player, False)
@@ -205,7 +211,9 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(second_item in active_player.items)
         self.assertFalse(second_item in trade_partner_player.items)
 
-    def test_cancel_movement_after_trade_done_during_previous_turn_does_not_cancel_trade(self):
+    def test_cancel_movement_after_trade_done_during_previous_turn_does_not_cancel_trade(
+        self,
+    ):
         # Import complete save file
         self.import_save_file("tests/test_saves/complete_first_level_save.xml")
 
@@ -221,14 +229,16 @@ class TestLevel(unittest.TestCase):
         second_item = rd.choice(active_player.items)
 
         # Open character menu
-        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
-            {"inventory": None, "equipment": None, "status": None, "wait": None},
-            active_player,
-            [],
-            [],
-            [],
-            [],
-        ))
+        self.level.menu_manager.open_menu(
+            menu_creator_manager.create_player_menu(
+                {"inventory": None, "equipment": None, "status": None, "wait": None},
+                active_player,
+                [],
+                [],
+                [],
+                [],
+            )
+        )
 
         # Make trade in both way
         self.simulate_trade_item(item, active_player, trade_partner_player, False)
@@ -245,14 +255,16 @@ class TestLevel(unittest.TestCase):
 
         # Select and cancel player turn
         self.level.selected_player = active_player
-        self.level.menu_manager.open_menu(menu_creator_manager.create_player_menu(
-            {"inventory": None, "equipment": None, "status": None, "wait": None},
-            active_player,
-            [],
-            [],
-            [],
-            [],
-        ))
+        self.level.menu_manager.open_menu(
+            menu_creator_manager.create_player_menu(
+                {"inventory": None, "equipment": None, "status": None, "wait": None},
+                active_player,
+                [],
+                [],
+                [],
+                [],
+            )
+        )
         self.level.right_click()
 
         self.assertTrue(item in active_player.items)
@@ -275,8 +287,12 @@ class TestLevel(unittest.TestCase):
     def test_throw_selected_item(self):
         self.import_save_file("tests/test_saves/simple_save.xml")
 
-        raimund_player = [player for player in self.level.players if player.name == "raimund"][0]
-        item_to_be_thrown = [item for item in raimund_player.items if item.name == "life_potion"][0]
+        raimund_player = [
+            player for player in self.level.players if player.name == "raimund"
+        ][0]
+        item_to_be_thrown = [
+            item for item in raimund_player.items if item.name == "life_potion"
+        ][0]
         other_item = [item for item in raimund_player.items if item.name == "key"][0]
 
         self.level.selected_player = raimund_player
@@ -291,9 +307,15 @@ class TestLevel(unittest.TestCase):
     def test_throw_selected_equipped_item(self):
         self.import_save_file("tests/test_saves/simple_save.xml")
 
-        raimund_player = [player for player in self.level.players if player.name == "raimund"][0]
-        equipment_to_be_thrown = [item for item in raimund_player.equipments if item.name == "basic_bow"][0]
-        other_equipment = [item for item in raimund_player.equipments if item.name == "brown_boots"][0]
+        raimund_player = [
+            player for player in self.level.players if player.name == "raimund"
+        ][0]
+        equipment_to_be_thrown = [
+            item for item in raimund_player.equipments if item.name == "basic_bow"
+        ][0]
+        other_equipment = [
+            item for item in raimund_player.equipments if item.name == "brown_boots"
+        ][0]
         inventory_before = raimund_player.items.copy()
 
         self.level.selected_player = raimund_player
@@ -309,10 +331,14 @@ class TestLevel(unittest.TestCase):
     def test_throw_selected_equipment_but_not_the_equipped_one(self):
         self.import_save_file("tests/test_saves/simple_save.xml")
 
-        raimund_player = [player for player in self.level.players if player.name == "raimund"][0]
+        raimund_player = [
+            player for player in self.level.players if player.name == "raimund"
+        ][0]
         equipment_to_be_thrown_from_inventory = parse_item_file("basic_bow")
         raimund_player.set_item(equipment_to_be_thrown_from_inventory)
-        equipped_version_of_the_item = [item for item in raimund_player.equipments if item.name == "brown_boots"][0]
+        equipped_version_of_the_item = [
+            item for item in raimund_player.equipments if item.name == "brown_boots"
+        ][0]
         equipment_before = raimund_player.equipments.copy()
 
         self.level.selected_player = raimund_player
