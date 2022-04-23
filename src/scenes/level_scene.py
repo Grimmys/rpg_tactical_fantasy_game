@@ -252,7 +252,6 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
-    @staticmethod
     def load_level_content(self) -> None:
         """
         Load all the content of the level
