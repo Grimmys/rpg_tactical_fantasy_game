@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
- <tileset firstgid="1" source="../../../../Desktop/Informatique/Gaming/Tiled/Dungeon.tsx"/>
+ <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
  <layer id="1" name="ground" width="20" height="10">
   <data encoding="csv">
 591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,

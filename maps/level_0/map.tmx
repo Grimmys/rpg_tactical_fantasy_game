@@ -3,8 +3,8 @@
  <editorsettings>
   <export format="tmx"/>
  </editorsettings>
- <tileset firstgid="1" source="../../../../Desktop/Informatique/Gaming/Tiled/Dungeon.tsx"/>
- <tileset firstgid="6081" source="../../../../Desktop/Informatique/Gaming/Tiled/houses.tsx"/>
+ <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
+ <tileset firstgid="6081" source="../../imgs/tiled_tilesets/houses.tsx"/>
  <layer id="1" name="ground" width="16" height="10">
   <data encoding="csv">
 589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
