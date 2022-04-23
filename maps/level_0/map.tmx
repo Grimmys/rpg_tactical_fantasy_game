@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="1">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="108">
  <editorsettings>
   <export format="tmx"/>
  </editorsettings>
+ <properties>
+  <property name="main_mission_description" value="Leave the village"/>
+  <property name="main_mission_type" value="POSITION"/>
+ </properties>
  <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
  <tileset firstgid="6081" source="../../imgs/tiled_tilesets/houses.tsx"/>
  <layer id="1" name="ground" width="16" height="10">
@@ -23,8 +27,8 @@
   <data encoding="csv">
 1,850,1,1,1,1,1,851,6116,1,1,848,6129,6093,6095,6131,
 848,1,854,1,848,1,852,1,1,850,1,1,1,1,1,853,
-1099,1,1,1,1,850,1,848,1,1,848,1,1,1,851,854,
-3221226561,1,1,1,1,1,1,1,1,589,1,1,1,848,1,6081,
+1,1,1,1,1,850,1,848,1,1,848,1,1,1,851,854,
+1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,6081,
 854,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6087,
 847,852,1,1,1,1,1,1,1,1,1,1,1,1,1,6093,
 848,1,1,854,1,1,1,1,1,1,1,1,1,1,1,849,
@@ -33,4 +37,18 @@
 1,1,1,854,1,852,1,854,852,854,1,6081,6082,6083,848,1
 </data>
  </layer>
+ <objectgroup id="5" name="dynamic_data">
+  <object id="14" type="objective" gid="1099" x="0" y="96" width="32" height="32">
+   <properties>
+    <property name="mission" value="main"/>
+    <property name="walkable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="104" type="objective" gid="1093" x="0" y="128" width="32" height="32">
+   <properties>
+    <property name="mission" value="main"/>
+    <property name="walkable" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
