@@ -47,6 +47,7 @@ from src.game_entities.item import Item
 from src.game_entities.key import Key
 from src.game_entities.mission import MissionType
 from src.game_entities.movable import Movable
+from src.game_entities.obstacle import Obstacle
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
@@ -185,9 +186,9 @@ class LevelScene(Scene):
         self.directory: str = directory
         self.number: int = number
 
-        tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
-        map_width, map_height = tmx_data.width * TILE_SIZE, tmx_data.height * TILE_SIZE
-        map_static_content = tmx_loader.parse_tiled_map(tmx_data, (map_width, map_height))
+        self.tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
+        map_width, map_height = self.tmx_data.width * TILE_SIZE, self.tmx_data.height * TILE_SIZE
+        map_static_content = tmx_loader.load_ground(self.tmx_data, (map_width, map_height))
 
         self.map: dict[str, any] = {
             "img": map_static_content,
@@ -205,7 +206,7 @@ class LevelScene(Scene):
 
         self.is_loaded: bool = False
 
-        self.obstacles: list[Position] = []
+        self.obstacles: Optional[set[Obstacle]] = None
         self.events: dict[str, any] = {}
         self.player_possible_placements: Sequence[Position] = []
 
@@ -256,9 +257,7 @@ class LevelScene(Scene):
         """
         Load all the content of the level
         """
-        self.obstacles = loader.load_obstacles(
-            self.tree.find("obstacles"), self.map["x"], self.map["y"]
-        )
+        self.obstacles = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
 
         self.events = loader.load_events(
             self.tree.find("events"), self.map["x"], self.map["y"]
@@ -298,8 +297,8 @@ class LevelScene(Scene):
             loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
         )
 
-        self.missions, self.main_mission = loader.load_missions(
-            self.tree, self.players, self.map["x"], self.map["y"]
+        self.missions, self.main_mission = tmx_loader.load_missions(
+            self.tmx_data, self.players, self.map["x"], self.map["y"]
         )
 
         self.sidebar = Sidebar(
@@ -524,6 +523,12 @@ class LevelScene(Scene):
         self.active_screen_part.blit(self.map["img"], (self.map["x"], self.map["y"]))
         self.sidebar.display(self.active_screen_part, self.turn, self.hovered_entity)
 
+        for obstacle in self.obstacles:
+            obstacle.display(self.active_screen_part)
+
+        for mission in self.missions:
+            mission.display(self.active_screen_part)
+
         for collection in self.entities.values():
             for entity in collection:
                 entity.display(self.active_screen_part)
@@ -714,7 +719,7 @@ class LevelScene(Scene):
 
         return set(tiles)
 
-    def is_tile_available(self, tile: tuple[int, int]) -> bool:
+    def is_tile_available(self, tile: Position) -> bool:
         """
         Return whether the given tile can be accessed or not
 
@@ -736,7 +741,7 @@ class LevelScene(Scene):
 
         return self.get_entity_on_tile(tile) is None and tile not in self.obstacles
 
-    def get_entity_on_tile(self, tile: tuple[int, int]) -> Optional[Entity]:
+    def get_entity_on_tile(self, tile: Position) -> Optional[Entity]:
         """
         Return the entity that is on the given tile if there is any
 
