@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="8" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="25">
+ <tileset firstgid="1" source="../../../../Desktop/Informatique/Gaming/Tiled/Dungeon.tsx"/>
+ <tileset firstgid="6081" source="../../../../Desktop/Informatique/Gaming/Tiled/houses.tsx"/>
+ <tileset firstgid="6189" source="../../../../Desktop/Informatique/Gaming/Tiled/Thugs.tsx"/>
+ <layer id="1" name="ground" width="20" height="8">
+  <data encoding="csv">
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589
+</data>
+ </layer>
+ <layer id="2" name="obstacles" width="20" height="8">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,849,849,850,0,0,0,0,0,0,0,
+0,0,0,0,848,6101,0,6107,0,848,0,0,0,6109,0,0,848,0,0,0,
+1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,851,848,0,0,
+1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+1,1,1,0,0,0,0,0,0,0,6105,0,0,0,0,1,0,0,0,0,
+0,0,0,0,851,0,0,0,0,0,0,0,6111,0,0,1,0,6103,853,0,
+0,0,0,0,0,850,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="3" name="entities">
+  <object id="1" type="mutant_lizard" gid="4785" x="352" y="128" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="4" type="mutant_lizard" gid="4785" x="544" y="256" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="5" name="Mutant Bee" type="mutant_bee" gid="4772" x="224" y="32" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="6" type="mutant_bee" gid="4772" x="192" y="256" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="7" type="mutant_ant" gid="4770" x="480" y="96" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="8" type="mutant_ant" gid="4770" x="512" y="160" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="9" type="mutant_ant" gid="4770" x="448" y="192" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="10" type="chest" gid="8" x="288" y="32" width="32" height="32"/>
+  <object id="12" name="StartPos" type="InitialPosition" x="16" y="96">
+   <point/>
+  </object>
+  <object id="13" name="StartPos" type="InitialPosition" x="48" y="96">
+   <point/>
+  </object>
+  <object id="14" name="StartPos" type="InitialPosition" x="48" y="128">
+   <point/>
+  </object>
+  <object id="15" name="StartPos" type="InitialPosition" x="16" y="128">
+   <point/>
+  </object>
+  <object id="16" name="StartPosition" type="InitialPosition" x="16" y="160">
+   <point/>
+  </object>
+  <object id="17" name="StartPos" type="InitialPosition" x="48" y="160">
+   <point/>
+  </object>
+  <object id="18" name="StartPos" type="InitialPosition" x="16" y="192">
+   <point/>
+  </object>
+  <object id="19" name="StartPos" type="InitialPosition" x="48" y="192">
+   <point/>
+  </object>
+  <object id="21" type="mutanter_cultist" gid="6190" x="608" y="64" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="22" type="chest" gid="8" x="288" y="32" width="32" height="32"/>
+  <object id="23" type="chest" gid="8" x="288" y="32" width="32" height="32"/>
+  <object id="24" type="chest" gid="8" x="288" y="32" width="32" height="32">
+   <properties>
+    <property name="contains" value="strength_potion"/>
+    <property name="opened" type="file" value="../../../lost_men/imgs/dungeon_crawl/dungeon/chest_2_open.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

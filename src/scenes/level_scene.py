@@ -10,6 +10,7 @@ from enum import IntEnum, auto
 from typing import Sequence, Union, Optional, Set, Type
 
 import pygame
+import pytmx
 from lxml import etree
 from pygamepopup.components import InfoBox, BoxElement, Button, TextElement
 from pygamepopup.components.image_button import ImageButton
@@ -184,13 +185,16 @@ class LevelScene(Scene):
         self.directory: str = directory
         self.number: int = number
 
-        map_image: pygame.Surface = pygame.image.load(self.directory + "map.png")
+        tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
+        map_width, map_height = tmx_data.width * TILE_SIZE, tmx_data.height * TILE_SIZE
+        map_static_content = LevelScene.parse_tiled_map(tmx_data, (map_width, map_height))
+
         self.map: dict[str, any] = {
-            "img": map_image,
-            "width": map_image.get_width(),
-            "height": map_image.get_height(),
-            "x": (MAX_MAP_WIDTH - map_image.get_width()) // 2,
-            "y": (MAX_MAP_HEIGHT - map_image.get_height()) // 2,
+            "img": map_static_content,
+            "width": map_width,
+            "height": map_height,
+            "x": (MAX_MAP_WIDTH - map_width) // 2,
+            "y": (MAX_MAP_HEIGHT - map_height) // 2,
         }
 
         self.tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
@@ -247,6 +251,18 @@ class LevelScene(Scene):
         self.armor_sfx: Optional[pygame.mixer.Sound] = None
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
+
+    @staticmethod
+    def parse_tiled_map(tmx_data, size: tuple[int, int]) -> pygame.Surface:
+        map_ground = pygame.Surface(size)
+        for layer in tmx_data.layers:
+            if isinstance(layer, pytmx.TiledTileLayer):
+                for x, y, gid in layer:
+                    tile = tmx_data.get_tile_image_by_gid(gid)
+                    if tile:
+                        map_ground.blit(pygame.transform.scale(tile, (TILE_SIZE, TILE_SIZE)),
+                                        (x * TILE_SIZE, y * TILE_SIZE))
+        return map_ground
 
     def load_level_content(self) -> None:
         """
