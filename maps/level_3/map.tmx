@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="8" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="25">
- <tileset firstgid="1" source="../../../../Desktop/Informatique/Gaming/Tiled/Dungeon.tsx"/>
- <tileset firstgid="6081" source="../../../../Desktop/Informatique/Gaming/Tiled/houses.tsx"/>
- <tileset firstgid="6189" source="../../../../Desktop/Informatique/Gaming/Tiled/Thugs.tsx"/>
+ <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
+ <tileset firstgid="6081" source="../../imgs/tiled_tilesets/houses.tsx"/>
+ <tileset firstgid="6189" source="../../imgs/tiled_tilesets/thugs.tsx"/>
  <layer id="1" name="ground" width="20" height="8">
   <data encoding="csv">
 589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
