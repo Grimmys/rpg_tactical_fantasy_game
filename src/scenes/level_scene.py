@@ -64,7 +64,7 @@ from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.scenes.scene import Scene
-from src.services import load_from_xml_manager as loader, menu_creator_manager
+from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
     create_event_dialog,
     INVENTORY_MENU_ID,
@@ -187,7 +187,7 @@ class LevelScene(Scene):
 
         tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
         map_width, map_height = tmx_data.width * TILE_SIZE, tmx_data.height * TILE_SIZE
-        map_static_content = LevelScene.parse_tiled_map(tmx_data, (map_width, map_height))
+        map_static_content = tmx_loader.parse_tiled_map(tmx_data, (map_width, map_height))
 
         self.map: dict[str, any] = {
             "img": map_static_content,
@@ -253,17 +253,6 @@ class LevelScene(Scene):
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
     @staticmethod
-    def parse_tiled_map(tmx_data, size: tuple[int, int]) -> pygame.Surface:
-        map_ground = pygame.Surface(size)
-        for layer in tmx_data.layers:
-            if isinstance(layer, pytmx.TiledTileLayer):
-                for x, y, gid in layer:
-                    tile = tmx_data.get_tile_image_by_gid(gid)
-                    if tile:
-                        map_ground.blit(pygame.transform.scale(tile, (TILE_SIZE, TILE_SIZE)),
-                                        (x * TILE_SIZE, y * TILE_SIZE))
-        return map_ground
-
     def load_level_content(self) -> None:
         """
         Load all the content of the level
