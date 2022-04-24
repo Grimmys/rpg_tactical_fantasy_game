@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="20">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="21">
  <properties>
   <property name="limited_mission_description" value="Win in 10 turns"/>
   <property name="limited_mission_gold_reward" type="int" value="200"/>
@@ -100,5 +100,15 @@
   <object id="16" name="placement" type="placement" x="320" y="128" width="32" height="32"/>
   <object id="17" name="placement" type="placement" x="320" y="160" width="32" height="32"/>
   <object id="18" name="placement" type="placement" x="288" y="160" width="32" height="32"/>
+  <object id="20" type="chest" gid="8" x="64" y="64" width="32" height="32">
+   <properties>
+    <property name="content_possibilities" type="int" value="2"/>
+    <property name="item_0_name" value="short_sword"/>
+    <property name="item_0_probability" type="float" value="0.6"/>
+    <property name="item_1_name" value="wooden_shield"/>
+    <property name="item_1_probability" type="float" value="0.4"/>
+    <property name="opened_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_open.png"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
