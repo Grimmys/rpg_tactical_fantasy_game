@@ -2,26 +2,6 @@
 <level>
     <chapter>1</chapter>
     <name>In the Shadows of the Trees</name>
-    <width>20</width>
-    <height>10</height>
-    <placementArea>
-        <position>
-            <x>9</x>
-            <y>4</y>
-        </position>
-        <position>
-            <x>10</x>
-            <y>4</y>
-        </position>
-        <position>
-            <x>10</x>
-            <y>5</y>
-        </position>
-        <position>
-            <x>9</x>
-            <y>5</y>
-        </position>
-    </placementArea>
     <events>
         <before_init>
             <dialog>

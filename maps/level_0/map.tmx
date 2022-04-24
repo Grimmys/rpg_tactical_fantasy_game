@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="124">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="132">
  <editorsettings>
   <export format="tmx"/>
  </editorsettings>
@@ -85,5 +85,10 @@
     <property name="level" type="int" value="1"/>
    </properties>
   </object>
+  <object id="125" name="placement" type="placement" x="384" y="224" width="32" height="32"/>
+  <object id="130" name="placement" type="placement" x="384" y="256" width="32" height="32"/>
+  <object id="131" name="placement" type="placement" x="416" y="256" width="32" height="32"/>
+  <object id="126" name="placement" type="placement" x="416" y="224" width="32" height="32"/>
+  <object id="128" x="384" y="256" width="32"/>
  </objectgroup>
 </map>
