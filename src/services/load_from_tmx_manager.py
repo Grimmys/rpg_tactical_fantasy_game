@@ -57,16 +57,25 @@ def _load_mission(tmx_data: pytmx.TiledMap, is_main: bool, mission_id: str, play
     description = tmx_data.properties[f"{mission_id}_mission_description"]
     objective_tiles: list[Objective] = []
     targets: Optional[Sequence[Foe]] = None
+    turns_limit: Optional[int] = tmx_data.properties[
+        f"{mission_id}_mission_turns"] if f"{mission_id}_mission_turns" in tmx_data.properties else None
     gold_reward = 0
     items_reward = []
     if nature in (MissionType.POSITION, MissionType.TOUCH_POSITION):
         objective_tiles = objective_tile_by_mission[mission_id]
+
     if f"{mission_id}_mission_number_players" in tmx_data.properties:
         min_players = tmx_data.properties[f"{mission_id}_mission_number_players"]
     else:
         min_players = len(players)
 
-    return Mission(is_main, nature, objective_tiles, description, min_players, None, gold_reward, items_reward, targets)
+    if not is_main:
+        if f"{mission_id}_mission_gold_reward" in tmx_data.properties:
+            gold_reward = tmx_data.properties[f"{mission_id}_mission_gold_reward"]
+        items_reward = []  # TODO: parsing of items reward
+
+    return Mission(is_main, nature, objective_tiles, description, min_players, turns_limit, gold_reward, items_reward,
+                   targets)
 
 
 def load_missions(tmx_data: pytmx.TiledMap,
@@ -74,4 +83,10 @@ def load_missions(tmx_data: pytmx.TiledMap,
                   horizontal_gap: int, vertical_gap: int) -> tuple[Sequence[Mission], Mission]:
     _load_objectives(tmx_data, horizontal_gap, vertical_gap)
     main_mission = _load_mission(tmx_data, True, "main", players)
-    return [main_mission], main_mission
+    missions = [main_mission]
+    if "secondary_missions" in tmx_data.properties:
+        secondary_missions = tmx_data.properties["secondary_missions"].split(",")
+        for mission_id in secondary_missions:
+            missions.append(_load_mission(tmx_data, False, mission_id, players))
+
+    return missions, main_mission

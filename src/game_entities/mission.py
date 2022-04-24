@@ -65,7 +65,7 @@ class Mission:
         objective_tiles: Sequence[Objective],
         description: str,
         nb_players: int,
-        turn_limit: int = None,
+        turn_limit: Optional[int] = None,
         gold_reward: int = 0,
         items_reward: Optional[Sequence[Item]] = None,
         targets: Optional[Sequence[Destroyable]] = None,
@@ -108,7 +108,7 @@ class Mission:
     def update_state(
         self,
         player: Player = None,
-        entities: dict[str, Sequence[Entity]] = None,
+        entities: Optional[dict[str, Sequence[Entity]]] = None,
         turns: int = 0,
     ) -> None:
         """
