@@ -6,6 +6,7 @@ import pygame
 import pytmx
 
 from src.constants import TILE_SIZE
+from src.game_entities.chest import Chest
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
 from src.game_entities.objective import Objective
@@ -111,3 +112,20 @@ def load_player_placements(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertic
         if dynamic_object.type == "placement":
             placements.append((dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap))
     return placements
+
+
+def load_chests(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Chest]:
+    chests = []
+    for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
+        if dynamic_object.type == "chest":
+            position = (dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap)
+            image = pygame.transform.scale(dynamic_object.image, (TILE_SIZE, TILE_SIZE))
+            content_possibilities = []
+            for index in range(dynamic_object.properties["content_possibilities"]):
+                item = xml_loader.parse_item_file(dynamic_object.properties[f"item_{index}_name"])
+                content_possibilities.append((item,
+                                              dynamic_object.properties[f"item_{index}_probability"]))
+
+            chests.append(Chest(position, image, dynamic_object.properties["opened_sprite"],
+                                content_possibilities))
+    return chests

@@ -46,46 +46,4 @@
             </new_player>
         </after_init>
     </events>
-    <chests>
-        <chest>
-            <closed>
-                <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
-                </sprite>
-            </closed>
-            <opened>
-                <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
-                </sprite>
-            </opened>
-            <contains>
-                <item>
-                    <name>
-                        short_sword
-                    </name>
-                    <probability>
-                        0.6
-                    </probability>
-                </item>
-                <item>
-                    <name>
-                        wooden_shield
-                    </name>
-                    <probability>
-                        0.4
-                    </probability>
-                </item>
-            </contains>
-            <position>
-                <x>2</x>
-                <y>1</y>
-            </position>
-        </chest>
-    </chests>
-    <foes>
-    </foes>
-    <obstacles>
-    </obstacles>
-    <missions>
-    </missions>
 </level>

@@ -238,7 +238,7 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
         elif entity_nature == "foe":
             entity = load_foe_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "chest":
-            entity = load_chest(element, from_save, gap_x, gap_y)
+            entity = load_chest_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "door":
             entity = load_door(element, from_save, gap_x, gap_y)
         elif entity_nature == "building":
@@ -648,7 +648,7 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str])
     return loaded_foe
 
 
-def load_chest(chest, from_save, gap_x, gap_y):
+def load_chest_from_save(chest, from_save, gap_x, gap_y):
     """
 
     :param chest:

@@ -67,34 +67,6 @@
             </new_player>
         </before_init>
     </events>
-    <chests>
-        <chest>
-            <closed>
-                <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_closed.png
-                </sprite>
-            </closed>
-            <opened>
-                <sprite>
-                    imgs/dungeon_crawl/dungeon/chest_2_open.png
-                </sprite>
-            </opened>
-            <contains>
-                <item>
-                    <probability>
-                        1.0
-                    </probability>
-                    <name>
-                        life_potion
-                    </name>
-                </item>
-            </contains>
-            <position>
-                <x>7</x>
-                <y>1</y>
-            </position>
-        </chest>
-    </chests>
     <allies>
         <ally>
             <name>
