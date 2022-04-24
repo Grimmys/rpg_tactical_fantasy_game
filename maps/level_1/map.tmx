@@ -48,6 +48,8 @@
   <object id="2" name="assassin" type="foe" x="96" y="0" width="32" height="32">
    <properties>
     <property name="level" type="int" value="1"/>
+    <property name="loot_item_0_name" value="key"/>
+    <property name="number_items" type="int" value="1"/>
     <property name="strategy" value="STATIC"/>
    </properties>
   </object>
