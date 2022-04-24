@@ -5,7 +5,7 @@ from src.game_entities.foe import Keyword
 from src.services.load_from_xml_manager import (
     load_ally,
     load_alteration,
-    load_foe,
+    load_foe_from_save,
     parse_item_file,
     load_player,
     load_item,
@@ -98,7 +98,7 @@ class TestSaveAndLoad(unittest.TestCase):
             ],
         )
         foe_saved = foe.save("foe")
-        loaded_foe = load_foe(foe_saved, True, 0, 0)
+        loaded_foe = load_foe_from_save(foe_saved, True, 0, 0)
         self.assertEqual(foe.name, loaded_foe.name)
         self.assertEqual(foe.position, loaded_foe.position)
         self.assertEqual(foe.hit_points, loaded_foe.hit_points)
