@@ -2,26 +2,6 @@
 <level>
     <chapter>1</chapter>
     <name>Crypt Vandalism</name>
-    <width>16</width>
-    <height>10</height>
-    <placementArea>
-        <position>
-            <x>12</x>
-            <y>7</y>
-        </position>
-        <position>
-            <x>12</x>
-            <y>8</y>
-        </position>
-        <position>
-            <x>13</x>
-            <y>7</y>
-        </position>
-        <position>
-            <x>13</x>
-            <y>8</y>
-        </position>
-    </placementArea>
     <events>
         <before_init>
             <dialog>
@@ -126,8 +106,6 @@
             </position>
         </ally>
     </allies>
-    <foes>
-    </foes>
     <buildings>
         <building>
             <name>
@@ -273,8 +251,4 @@
             </items>
         </building>
     </buildings>
-    <obstacles>
-    </obstacles>
-    <missions>
-    </missions>
 </level>

@@ -263,8 +263,8 @@ class LevelScene(Scene):
             self.tree.find("events"), self.map["x"], self.map["y"]
         )
 
-        self.player_possible_placements = loader.load_placements(
-            self.tree.findall("placementArea/position"), self.map["x"], self.map["y"]
+        self.player_possible_placements = tmx_loader.load_player_placements(
+            self.tmx_data, self.map["x"], self.map["y"]
         )
 
         self.entities["players"] = self.players

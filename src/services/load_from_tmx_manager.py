@@ -11,6 +11,7 @@ from src.game_entities.mission import Mission, MissionType
 from src.game_entities.objective import Objective
 from src.game_entities.obstacle import Obstacle
 from src.game_entities.player import Player
+from src.gui.position import Position
 from src.services import load_from_xml_manager as xml_loader
 
 objective_tile_by_mission: dict[str, list[Objective]] = {}
@@ -102,3 +103,11 @@ def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) 
             strategy = dynamic_object.properties["strategy"] if "strategy" in dynamic_object.properties else None
             foes.append(xml_loader.load_foe(dynamic_object.name, position, level, strategy))
     return foes
+
+
+def load_player_placements(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Position]:
+    placements = []
+    for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
+        if dynamic_object.type == "placement":
+            placements.append((dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap))
+    return placements
