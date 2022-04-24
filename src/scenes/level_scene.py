@@ -297,6 +297,9 @@ class LevelScene(Scene):
             loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
         )
 
+        if not from_save:
+            self.entities["foes"].extend(tmx_loader.load_foes(self.tmx_data, gap_x, gap_y))
+
         self.missions, self.main_mission = tmx_loader.load_missions(
             self.tmx_data, self.players, self.map["x"], self.map["y"]
         )
