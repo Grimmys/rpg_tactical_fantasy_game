@@ -570,7 +570,7 @@ def load_foe_from_save(foe_element, from_save, gap_x, gap_y):
     return loaded_foe
 
 
-def load_foe(name: str, position: Position, level: int, strategy: Optional[str]):
+def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item]):
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
         # Load grow rates of this kind of foe in the class
@@ -590,12 +590,12 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str])
     )
     attack_kind = foes_data[name].find("attack_kind").text.strip()
     loot = [
-        (
-            parse_item_file(item.find("name").text.strip()),
-            float(item.find("probability").text),
-        )
-        for item in foes_data[name].findall("loot/item")
-    ]
+               (
+                   parse_item_file(item.find("name").text.strip()),
+                   float(item.find("probability").text),
+               )
+               for item in foes_data[name].findall("loot/item")
+           ] + [(item, 1.0) for item in specific_loot]
     gold_looted = foes_data[name].find("loot/gold")
     if gold_looted is not None:
         loot.append(

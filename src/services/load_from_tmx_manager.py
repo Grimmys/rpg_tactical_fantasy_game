@@ -102,7 +102,12 @@ def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) 
             position = (dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap)
             level = dynamic_object.properties["level"]
             strategy = dynamic_object.properties["strategy"] if "strategy" in dynamic_object.properties else None
-            foes.append(xml_loader.load_foe(dynamic_object.name, position, level, strategy))
+            specific_loot = []
+            if "number_items" in dynamic_object.properties:
+                for index in range(dynamic_object.properties["number_items"]):
+                    specific_loot.append(
+                        xml_loader.parse_item_file(dynamic_object.properties[f"loot_item_{index}_name"]))
+            foes.append(xml_loader.load_foe(dynamic_object.name, position, level, strategy, specific_loot))
     return foes
 
 
