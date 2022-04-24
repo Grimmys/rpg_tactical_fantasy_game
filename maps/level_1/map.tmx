@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="1">
+ <properties>
+  <property name="limited_mission_description" value="Win in 10 turns"/>
+  <property name="limited_mission_gold_reward" type="int" value="200"/>
+  <property name="limited_mission_turns" type="int" value="10"/>
+  <property name="limited_mission_type" value="TURN_LIMIT"/>
+  <property name="main_mission_description" value="Defeat the thugs"/>
+  <property name="main_mission_type" value="KILL_EVERYBODY"/>
+  <property name="secondary_missions" value="limited"/>
+ </properties>
  <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
  <layer id="1" name="ground" width="20" height="10">
   <data encoding="csv">
@@ -17,16 +26,17 @@
  </layer>
  <layer id="2" name="obstacles" width="20" height="10">
   <data encoding="csv">
-0,0,0,1,0,0,0,0,0,0,0,0,0,848,0,0,0,0,0,0,
-0,1,1,848,0,0,848,0,0,0,846,0,0,0,847,0,0,1,0,0,
-1,846,848,0,0,0,0,0,847,0,0,847,0,0,0,0,0,847,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,848,0,
-0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,
-0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,
-0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,846,0,0,0,0,0,0,0,0,0,848,0,0,0,848,0,0,0,
-0,0,0,0,0,848,847,0,0,848,0,847,0,0,0,1,0,1,1,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,1,1,1,1,1,
+1,1,1,848,1,1,848,1,1,1,846,1,1,1,847,1,1,1,1,1,
+1,846,848,1,1,1,1,1,847,1,1,847,1,1,1,1,1,847,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,846,1,1,1,1,1,1,1,1,1,848,1,1,1,848,1,1,1,
+1,1,1,1,1,848,847,1,1,848,1,847,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 </data>
  </layer>
+ <objectgroup id="3" name="dynamic_data"/>
 </map>
