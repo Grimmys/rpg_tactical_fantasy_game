@@ -134,3 +134,35 @@ def load_chests(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
             chests.append(Chest(position, image, dynamic_object.properties["opened_sprite"],
                                 content_possibilities))
     return chests
+
+
+def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
+    dialog = {}
+    with open(f"{directory}dialog_{dialog_file_index}.txt") as dialog_file:
+        dialog["title"] = dialog_file.readline().rstrip("\n")
+        dialog_file.readline()  # Skip splitting line between title and body
+        dialog["talks"] = dialog_file.read().splitlines()
+    return dialog
+
+
+def load_events(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> dict[str, any]:
+    events = {}
+    for dynamic_object in tmx_data.get_layer_by_name("events"):
+        events[dynamic_object.type] = {}
+        dialogs: Optional[Sequence[str]] = dynamic_object.properties[
+            "dialogs"].split(",") if "dialogs" in dynamic_object.properties else None
+        if dialogs:
+            events[dynamic_object.type]["dialogs"] = []
+            for dialog in dialogs:
+                events[dynamic_object.type]["dialogs"].append(load_dialog(directory, dialog))
+        new_players: Optional[Sequence[str]] = dynamic_object.properties[
+            "new_players"].split(",") if "new_players" in dynamic_object.properties else None
+        if new_players:
+            events[dynamic_object.type]["new_players"] = []
+            players_position: Position = (
+                dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap)
+            for player in new_players:
+                events[dynamic_object.type]["new_players"].append({"name": player, "position": players_position})
+
+    print(events)
+    return events

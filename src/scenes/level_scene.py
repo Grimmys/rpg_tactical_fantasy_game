@@ -259,8 +259,8 @@ class LevelScene(Scene):
         """
         self.obstacles = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
 
-        self.events = loader.load_events(
-            self.tree.find("events"), self.map["x"], self.map["y"]
+        self.events = tmx_loader.load_events(
+            self.tmx_data, self.directory, self.map["x"], self.map["y"]
         )
 
         self.player_possible_placements = tmx_loader.load_player_placements(
