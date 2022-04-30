@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os
 import random
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Union
 
 import pygame
 from lxml import etree
@@ -47,8 +47,8 @@ class Chest(Entity):
     def __init__(
         self,
         position: Position,
-        sprite_close: str,
-        sprite_open: str,
+        sprite_close: Union[str, pygame.Surface],
+        sprite_open: Union[str, pygame.Surface],
         potential_items: Sequence[tuple[Item, float]],
     ) -> None:
         super().__init__("Chest", position, sprite_close)

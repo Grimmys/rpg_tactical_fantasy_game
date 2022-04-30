@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="21">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="23">
  <properties>
   <property name="limited_mission_description" value="Win in 10 turns"/>
   <property name="limited_mission_gold_reward" type="int" value="200"/>
@@ -110,6 +110,19 @@
     <property name="item_1_name" value="wooden_shield"/>
     <property name="item_1_probability" type="float" value="0.4"/>
     <property name="opened_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_open.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="4" name="events">
+  <object id="21" name="before_init" type="before_init" x="0" y="0" width="32" height="32">
+   <properties>
+    <property name="dialogs" value="0"/>
+   </properties>
+  </object>
+  <object id="22" name="after_init" type="after_init" x="608" y="128" width="32" height="32">
+   <properties>
+    <property name="dialogs" value="1"/>
+    <property name="new_players" value="chrisemon"/>
    </properties>
   </object>
  </objectgroup>
