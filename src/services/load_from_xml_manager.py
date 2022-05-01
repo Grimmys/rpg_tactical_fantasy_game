@@ -234,7 +234,7 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
     for element in data:
         # TODO: Too many branches for a similar behaviour, need refactoring (mapping?)
         if entity_nature == "character":
-            entity = load_ally(element, from_save, gap_x, gap_y)
+            entity = load_ally_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "foe":
             entity = load_foe_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "chest":
@@ -312,7 +312,8 @@ def load_artificial_entity_from_save(entity, data, from_save, gap_x, gap_y, exte
     }
 
 
-def load_artificial_entity(name: str, data: etree.Element, position: Position, level: int, strategy: Optional[str],
+def load_artificial_entity(name: str, data: etree.Element, position: Position, level: Optional[int] = None,
+                           strategy: Optional[str] = None,
                            extension_path: str = ""):
     # Static data
     sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
@@ -320,6 +321,8 @@ def load_artificial_entity(name: str, data: etree.Element, position: Position, l
         strategy = data.find("strategy").text.strip()
 
     # Dynamic data
+    if level is None:
+        level = int(data.find("level").text.strip())
     hit_points = int(data.find("hp").text.strip())
     strength = int(data.find("strength").text.strip())
     defense = int(data.find("defense").text.strip())
@@ -342,7 +345,7 @@ def load_artificial_entity(name: str, data: etree.Element, position: Position, l
     }
 
 
-def load_ally(ally_element, from_save, gap_x, gap_y):
+def load_ally_from_save(ally_element, from_save, gap_x, gap_y):
     """
 
     :param ally_element:
@@ -433,6 +436,70 @@ def load_ally(ally_element, from_save, gap_x, gap_y):
         loaded_ally.stats_up(attributes["level"] - 1)
         # Restore hp due to lvl up
         loaded_ally.healed()
+
+    return loaded_ally
+
+
+def load_ally(name: str, position: Position) -> Character:
+    generic_data = etree.parse("data/characters.xml").find(name)
+
+    attributes = load_artificial_entity(
+        name, generic_data, position
+    )
+
+    # Static data character
+    race = generic_data.find("race").text.strip()
+    classes = [generic_data.find("class").text.strip()]
+    interaction_element = generic_data.find("interaction")
+    dialog = []
+    for talk in interaction_element.findall("talk"):
+        dialog.append(talk.text.strip())
+    interaction = {
+        "dialog": dialog,
+        "join_team": interaction_element.find("join_team") is not None,
+    }
+
+    # Dynamic data character
+    gold = int(generic_data.find("gold").text.strip())
+
+    equipments = []
+    for equipment in generic_data.findall("equipment/*"):
+        equipment_loaded = parse_item_file(equipment.text.strip())
+        equipments.append(equipment_loaded)
+
+    skills = (
+        Character.classes_data[classes[0]]["skills"]
+        + Character.races_data[race]["skills"]
+    )
+
+    loaded_ally = Character(
+        attributes["name"],
+        attributes["position"],
+        attributes["sprite"],
+        attributes["hp"],
+        attributes["defense"],
+        attributes["resistance"],
+        attributes["strength"],
+        classes,
+        equipments,
+        attributes["strategy"],
+        attributes["level"],
+        skills,
+        attributes["alterations"],
+        race,
+        gold,
+        interaction,
+    )
+
+    for item in generic_data.findall("inventory/item"):
+        item_loaded = parse_item_file(item.text.strip())
+
+        loaded_ally.set_item(item_loaded)
+
+    # Up stats according to current lvl
+    loaded_ally.stats_up(attributes["level"] - 1)
+    # Restore hp due to lvl up
+    loaded_ally.healed()
 
     return loaded_ally
 
@@ -570,7 +637,7 @@ def load_foe_from_save(foe_element, from_save, gap_x, gap_y):
     return loaded_foe
 
 
-def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item]):
+def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item]) -> Foe:
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
         # Load grow rates of this kind of foe in the class

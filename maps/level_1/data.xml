@@ -2,48 +2,4 @@
 <level>
     <chapter>1</chapter>
     <name>In the Shadows of the Trees</name>
-    <events>
-        <before_init>
-            <dialog>
-                <title>Assassin</title>
-                <talks>
-                    <talk>
-                        You will not deliver the bones to the crypt! Never!
-                    </talk>
-                    <talk>
-                        We have been sent to retrieve the remains. In any case, they shouldn't be replace in the crypt.
-                    </talk>
-                    <talk>
-                        Prepare to die!
-                    </talk>
-                </talks>
-            </dialog>
-        </before_init>
-        <after_init>
-            <dialog>
-                <title>Chrisemon</title>
-                <talks>
-                    <talk>
-                        Hello dear adventurers!
-                    </talk>
-                    <talk>
-                        I'm Chrisemon, a courageous centaur who travels around the world.
-                    </talk>
-                    <talk>
-                        Not long ago, I went to Nervie... I heard about the terrible event. But I also heard about a team of heroes trying to save the village.
-                    </talk>
-                    <talk>
-                        Chrisemon is not a craven. Please, let me help you in your quest.
-                    </talk>
-                </talks>
-            </dialog>
-            <new_player>
-                <name>chrisemon</name>
-                <position>
-                    <x>19</x>
-                    <y>4</y>
-                </position>
-            </new_player>
-        </after_init>
-    </events>
 </level>
