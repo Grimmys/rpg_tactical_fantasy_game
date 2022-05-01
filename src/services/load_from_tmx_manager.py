@@ -6,6 +6,7 @@ import pygame
 import pytmx
 
 from src.constants import TILE_SIZE
+from src.game_entities.character import Character
 from src.game_entities.chest import Chest
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
@@ -111,6 +112,15 @@ def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) 
     return foes
 
 
+def load_allies(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Character]:
+    allies = []
+    for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
+        if dynamic_object.type == "ally":
+            position = (dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap)
+            allies.append(xml_loader.load_ally(dynamic_object.name, position))
+    return allies
+
+
 def load_player_placements(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Position]:
     placements = []
     for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -164,5 +174,4 @@ def load_events(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, v
             for player in new_players:
                 events[dynamic_object.type]["new_players"].append({"name": player, "position": players_position})
 
-    print(events)
     return events
