@@ -5,6 +5,7 @@ Defines Building class, an entity that can be visited by the player
 from __future__ import annotations
 
 import os
+from typing import Union
 
 import pygame
 from lxml import etree
@@ -47,7 +48,7 @@ class Building(Entity):
         self,
         name: str,
         position: Position,
-        sprite: str,
+        sprite: Union[str, pygame.Surface],
         interaction: dict[str, any] = None,
     ) -> None:
         super().__init__(name, position, sprite)
@@ -82,7 +83,7 @@ class Building(Entity):
         """
         entries: list[list[BoxElement]] = []
 
-        if not self.interaction:
+        if not self.interaction["talks"]:
             pygame.mixer.Sound.play(self.door_sfx)
             entries.append(
                 [
