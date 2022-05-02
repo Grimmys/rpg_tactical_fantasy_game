@@ -6,6 +6,7 @@ import pygame
 import pytmx
 
 from src.constants import TILE_SIZE
+from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.chest import Chest
 from src.game_entities.foe import Foe
@@ -13,6 +14,7 @@ from src.game_entities.mission import Mission, MissionType
 from src.game_entities.objective import Objective
 from src.game_entities.obstacle import Obstacle
 from src.game_entities.player import Player
+from src.game_entities.shop import Shop
 from src.gui.position import Position
 from src.services import load_from_xml_manager as xml_loader
 
@@ -155,6 +157,11 @@ def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
     return dialog
 
 
+def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
+    with open(f"{directory}house_dialog_{dialog_file_index}.txt") as dialog_file:
+        return dialog_file.read().splitlines()
+
+
 def load_events(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> dict[str, any]:
     events = {}
     for dynamic_object in tmx_data.get_layer_by_name("events"):
@@ -175,3 +182,40 @@ def load_events(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, v
                 events[dynamic_object.type]["new_players"].append({"name": player, "position": players_position})
 
     return events
+
+
+def load_buildings(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> Sequence[
+    Building]:
+    buildings = []
+    for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
+        if dynamic_object.type == "building":
+            position = (dynamic_object.x * 1.5 + horizontal_gap, dynamic_object.y * 1.5 + vertical_gap)
+            image = pygame.transform.scale(dynamic_object.image, (TILE_SIZE, TILE_SIZE))
+            interaction: dict[str, any] = {}
+            dialog_ids: Optional[Sequence[str]] = dynamic_object.properties[
+                "house_dialogs"].split(",") if "house_dialogs" in dynamic_object.properties else None
+            interaction["talks"] = []
+            if dialog_ids:
+                for id in dialog_ids:
+                    interaction["talks"] = load_house_dialog(directory, id)
+            interaction["gold"] = dynamic_object.properties["gold"] if "gold" in dynamic_object.properties else 0
+            interaction["item"] = xml_loader.parse_item_file(
+                dynamic_object.properties["items"]) if "items" in dynamic_object.properties else None
+
+            nature = dynamic_object.properties["kind"] if "kind" in dynamic_object.properties else None
+            if nature:
+                if nature == "shop":
+                    stock = []
+                    for item_id in range(dynamic_object.properties["number_items"]):
+                        item_entry = {
+                            "item": xml_loader.parse_item_file(dynamic_object.properties[f"item_{item_id}_name"]),
+                            "quantity": dynamic_object.properties[f"item_{item_id}_quantity"]
+                        }
+                        stock.append(item_entry)
+                    buildings.append(Shop(dynamic_object.name, position, image, interaction, stock))
+                else:
+                    print("Error: building type isn't recognized: ", nature)
+                    raise SystemError
+            else:
+                buildings.append(Building(dynamic_object.name, position, image, interaction))
+    return buildings

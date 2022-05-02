@@ -242,7 +242,7 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
         elif entity_nature == "door":
             entity = load_door(element, from_save, gap_x, gap_y)
         elif entity_nature == "building":
-            entity = load_building(element, from_save, gap_x, gap_y)
+            entity = load_building_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "portal":
             entity, other_entity = load_portal(element, gap_x, gap_y)
             collection.append(other_entity)
@@ -785,7 +785,7 @@ def load_door(door, from_save, gap_x, gap_y):
     return loaded_door
 
 
-def load_building(building, from_save, gap_x, gap_y):
+def load_building_from_save(building, from_save, gap_x, gap_y):
     """
 
     :param building:

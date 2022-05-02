@@ -301,6 +301,7 @@ class LevelScene(Scene):
             self.entities["foes"].extend(tmx_loader.load_foes(self.tmx_data, gap_x, gap_y))
             self.entities["chests"].extend(tmx_loader.load_chests(self.tmx_data, gap_x, gap_y))
             self.entities["allies"].extend(tmx_loader.load_allies(self.tmx_data, gap_x, gap_y))
+            self.entities["buildings"].extend(tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y))
 
         self.missions, self.main_mission = tmx_loader.load_missions(
             self.tmx_data, self.players, self.map["x"], self.map["y"]

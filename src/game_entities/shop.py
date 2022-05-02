@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os
 from copy import copy
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import pygame.mixer
 from lxml import etree
@@ -45,7 +45,7 @@ class Shop(Building):
         self,
         name: str,
         position: Position,
-        sprite: str,
+        sprite: Union[str, pygame.Surface],
         interaction: dict[str, any],
         stock: list[dict[str, any]],
     ) -> None:
