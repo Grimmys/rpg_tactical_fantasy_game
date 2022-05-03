@@ -6,14 +6,18 @@ import pygame
 import pytmx
 
 from src.constants import TILE_SIZE
+from src.game_entities.breakable import Breakable
 from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.chest import Chest
+from src.game_entities.door import Door
 from src.game_entities.foe import Foe
+from src.game_entities.fountain import Fountain
 from src.game_entities.mission import Mission, MissionType
 from src.game_entities.objective import Objective
 from src.game_entities.obstacle import Obstacle
 from src.game_entities.player import Player
+from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
 from src.gui.position import Position
 from src.services import load_from_xml_manager as xml_loader
@@ -98,7 +102,7 @@ def load_missions(tmx_data: pytmx.TiledMap,
     return missions, main_mission
 
 
-def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Foe]:
+def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Foe]:
     foes = []
     for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
         if dynamic_object.type == "foe":
@@ -114,7 +118,7 @@ def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) 
     return foes
 
 
-def load_allies(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Character]:
+def load_allies(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Character]:
     allies = []
     for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
         if dynamic_object.type == "ally":
@@ -131,7 +135,7 @@ def load_player_placements(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertic
     return placements
 
 
-def load_chests(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Chest]:
+def load_chests(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Chest]:
     chests = []
     for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
         if dynamic_object.type == "chest":
@@ -184,7 +188,7 @@ def load_events(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, v
     return events
 
 
-def load_buildings(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> Sequence[
+def load_buildings(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> list[
     Building]:
     buildings = []
     for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -219,3 +223,23 @@ def load_buildings(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int
             else:
                 buildings.append(Building(dynamic_object.name, position, image, interaction))
     return buildings
+
+
+def load_breakables(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Breakable]:
+    # TODO: implementation
+    return []
+
+
+def load_portals(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Portal]:
+    # TODO: implementation
+    return []
+
+
+def load_doors(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Door]:
+    # TODO: implementation
+    return []
+
+
+def load_fountains(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Fountain]:
+    # TODO: implementation
+    return []
