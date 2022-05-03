@@ -198,11 +198,10 @@ class LevelScene(Scene):
             "y": (MAX_MAP_HEIGHT - map_height) // 2,
         }
 
-        self.tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
         self.data: Optional[etree.Element] = data
 
-        self.chapter: int = int(self.tree.find("chapter").text.strip())
-        self.name: str = self.tree.find("name").text.strip()
+        self.chapter: int = self.tmx_data.properties["chapter_id"]
+        self.name: str = self.tmx_data.properties["level_name"]
 
         self.is_loaded: bool = False
 
@@ -272,7 +271,6 @@ class LevelScene(Scene):
         if self.data is None:
             # Game is new
             from_save: bool = False
-            data_tree: etree.Element = self.tree
             gap_x, gap_y = (self.map["x"], self.map["y"])
             if "before_init" in self.events:
                 if "dialogs" in self.events["before_init"]:
@@ -285,23 +283,24 @@ class LevelScene(Scene):
                         self.players.append(player)
 
             self._determine_players_initial_position()
+
+            self.entities["foes"] = tmx_loader.load_foes(self.tmx_data, gap_x, gap_y)
+            self.entities["chests"] = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
+            self.entities["allies"] = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
+            self.entities["buildings"] = tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y)
+            self.entities["breakables"] = tmx_loader.load_breakables(self.tmx_data, gap_x, gap_y)
+            self.entities["portals"] = tmx_loader.load_portals(self.tmx_data, gap_x, gap_y)
+            self.entities["doors"] = tmx_loader.load_doors(self.tmx_data, gap_x, gap_y)
+            self.entities["fountains"] = tmx_loader.load_fountains(self.tmx_data, gap_x, gap_y)
         else:
             # Game is loaded from a save (data)
             from_save = True
-            data_tree = self.data
             gap_x, gap_y = (0, 0)
-            self.players.extend(loader.load_players(data_tree))
-            self.escaped_players = loader.load_escaped_players(data_tree)
-
-        self.entities.update(
-            loader.load_all_entities(data_tree, from_save, gap_x, gap_y)
-        )
-
-        if not from_save:
-            self.entities["foes"].extend(tmx_loader.load_foes(self.tmx_data, gap_x, gap_y))
-            self.entities["chests"].extend(tmx_loader.load_chests(self.tmx_data, gap_x, gap_y))
-            self.entities["allies"].extend(tmx_loader.load_allies(self.tmx_data, gap_x, gap_y))
-            self.entities["buildings"].extend(tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y))
+            self.players.extend(loader.load_players(self.data))
+            self.escaped_players = loader.load_escaped_players(self.data)
+            self.entities.update(
+                loader.load_all_entities(self.data, from_save, gap_x, gap_y)
+            )
 
         self.missions, self.main_mission = tmx_loader.load_missions(
             self.tmx_data, self.players, self.map["x"], self.map["y"]
