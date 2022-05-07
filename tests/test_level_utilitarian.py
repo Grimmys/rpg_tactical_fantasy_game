@@ -82,7 +82,9 @@ class TestLevel(unittest.TestCase):
             if position == (9, 7):
                 specific_necrophage = foe
 
-        entities_distance_to_skeleton = self.level.distance_between_all(specific_skeleton, players)
+        entities_distance_to_skeleton = self.level.distance_between_all(
+            specific_skeleton, players
+        )
         self.assertEqual(5, entities_distance_to_skeleton[raimund])
         self.assertEqual(6, entities_distance_to_skeleton[braern])
         self.assertEqual(2, entities_distance_to_skeleton[thokdrum])

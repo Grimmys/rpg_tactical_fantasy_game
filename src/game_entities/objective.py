@@ -7,8 +7,9 @@ from src.gui.position import Position
 
 
 class Objective(Entity):
-
-    def __init__(self, position: Position, sprite: Union[str, pygame.Surface], walkable: bool):
+    def __init__(
+        self, position: Position, sprite: Union[str, pygame.Surface], walkable: bool
+    ):
         super().__init__("Objective", position, sprite)
         self.walkable = walkable
 
