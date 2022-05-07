@@ -1,40 +1,189 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="22" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="1">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="22" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="35">
+ <properties>
+  <property name="chapter_id" type="int" value="1"/>
+  <property name="level_name" value="Reclaim and Steal"/>
+  <property name="main_mission_description" value="Place the remains back on the altar"/>
+  <property name="main_mission_number_players" type="int" value="1"/>
+  <property name="main_mission_type" value="TOUCH_POSITION"/>
+ </properties>
  <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
  <layer id="1" name="ground" width="22" height="14">
   <data encoding="csv">
-911,913,911,911,914,911,911,911,913,911,911,914,911,913,911,911,914,911,911,911,912,911,
-911,568,564,564,566,566,564,562,562,911,566,562,566,564,564,562,564,913,562,564,562,911,
-911,566,566,562,564,564,566,566,562,912,562,562,562,562,562,562,562,914,562,562,562,913,
-914,562,562,562,566,562,562,562,562,562,568,562,562,911,911,568,564,911,568,564,912,911,
-914,911,911,912,911,912,566,566,562,564,562,566,562,566,911,566,562,914,568,562,562,914,
-911,562,562,564,564,562,568,568,562,562,566,566,566,566,911,914,912,912,912,568,564,911,
-911,564,564,564,911,911,562,562,568,562,564,562,562,566,566,568,568,568,913,566,564,912,
-913,912,912,911,911,566,568,568,562,562,562,568,568,564,566,912,566,564,566,566,566,914,
-911,562,566,562,562,562,568,568,562,566,566,562,562,568,568,912,564,566,566,562,564,911,
-911,562,562,566,562,562,564,564,562,562,562,562,562,566,566,912,912,912,564,568,564,912,
-913,566,562,562,562,568,562,562,564,566,562,562,562,566,566,566,566,562,562,562,564,913,
-911,566,568,562,566,566,568,564,912,562,562,913,566,566,566,562,564,568,568,562,566,911,
-912,911,914,912,911,912,912,912,914,562,562,911,911,911,911,911,914,911,912,911,911,911,
-593,593,593,593,593,593,593,593,913,562,566,911,593,593,593,593,593,593,593,593,593,593
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,568,564,564,566,566,564,562,562,1,566,562,566,564,564,562,564,1,562,564,562,1,
+1,566,566,562,564,564,566,566,562,1,562,562,562,562,562,562,562,1,562,562,562,1,
+1,562,562,562,566,562,562,562,562,562,568,562,562,1,1,568,564,1,568,564,1,1,
+1,1,1,1,1,1,566,566,562,564,562,566,562,566,1,566,562,1,568,562,562,1,
+1,562,562,564,564,562,568,568,562,562,566,566,566,566,1,1,1,1,1,568,564,1,
+1,564,564,564,1,1,562,562,568,562,564,562,562,566,566,568,568,568,1,566,564,1,
+1,1,1,1,1,566,568,568,562,562,562,568,568,564,566,1,566,564,566,566,566,1,
+1,562,566,562,562,562,568,568,562,566,566,562,562,568,568,1,564,566,566,562,564,1,
+1,562,562,566,562,562,564,564,562,562,562,562,562,566,566,1,1,1,564,568,564,1,
+1,566,562,562,562,568,562,562,564,566,562,562,562,566,566,566,566,562,562,562,564,1,
+1,566,568,562,566,566,568,564,1,562,562,1,566,566,566,562,564,568,568,562,566,1,
+1,1,1,1,1,1,1,1,1,562,562,1,1,1,1,1,1,1,1,1,1,1,
+593,593,593,593,593,593,593,593,1,562,566,1,593,593,593,593,593,593,593,593,593,593
 </data>
  </layer>
  <layer id="2" name="obstacles" width="22" height="14">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,22,0,0,
-0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,1,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,1,0,0,786,1,0,784,1,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
-0,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,
-0,0,1,821,0,0,0,0,783,1,0,784,1,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,787,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
+911,913,911,911,914,911,911,911,913,911,911,914,911,913,911,911,914,911,911,911,912,911,
+911,1,1,1,1,1,1,1,1,911,1,1,1,1,1,1,1,913,1,1,1,911,
+911,1,1,1,1,1,1,1,1,912,1,1,1,1,1,1,1,914,1,1,1,913,
+914,1,1,1,1,1,1,1,1,1,1,1,1,911,911,1,1,911,1,1,912,911,
+914,911,911,912,911,912,1,1,1,1,1,1,1,1,911,1,1,914,1,1,1,914,
+911,1,1,1,1,1,1,1,786,1,1,784,1,1,911,914,912,912,912,1,1,911,
+911,1,1,1,911,911,1,1,1,1,1,1,1,1,1,1,1,1,913,1,1,912,
+913,912,912,911,911,1,1,1,1,1,1,1,1,1,1,912,1,1,1,1,1,914,
+911,1,1,821,1,1,1,1,783,1,1,784,1,1,1,912,1,1,1,1,1,911,
+911,1,1,1,1,1,1,1,1,1,1,1,1,1,1,912,912,912,1,787,1,912,
+913,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,913,
+911,1,1,1,1,1,1,1,912,1,1,913,1,1,1,1,1,1,1,1,1,911,
+912,911,914,912,911,912,912,912,914,1,1,911,911,911,911,911,914,911,912,911,911,911,
+1,1,1,1,1,1,1,1,913,1,1,911,1,1,1,1,1,1,1,1,1,1
 </data>
  </layer>
+ <objectgroup id="4" name="dynamic_data">
+  <object id="1" name="placement" type="placement" x="288" y="416" width="32" height="32"/>
+  <object id="2" name="placement" type="placement" x="320" y="416" width="32" height="32"/>
+  <object id="3" name="placement" type="placement" x="320" y="384" width="32" height="32"/>
+  <object id="4" name="placement" type="placement" x="288" y="384" width="32" height="32"/>
+  <object id="7" name="doran" type="ally" x="160" y="320" width="32" height="32"/>
+  <object id="9" type="chest" gid="8" x="32" y="192" width="32" height="32">
+   <properties>
+    <property name="content_possibilities" type="int" value="1"/>
+    <property name="item_0_name" value="topaz"/>
+    <property name="item_0_probability" type="float" value="1"/>
+    <property name="opened_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_open.png"/>
+   </properties>
+  </object>
+  <object id="12" type="chest" gid="8" x="512" y="160" width="32" height="32">
+   <properties>
+    <property name="content_possibilities" type="int" value="1"/>
+    <property name="item_0_name" value="strength_potion"/>
+    <property name="item_0_probability" type="float" value="1"/>
+    <property name="opened_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_open.png"/>
+   </properties>
+  </object>
+  <object id="13" name="skeleton" type="foe" x="96" y="288" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="17" name="skeleton" type="foe" x="96" y="288" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="14" name="skeleton" type="foe" x="96" y="352" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="15" name="necrophage" type="foe" x="160" y="256" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="16" name="skeleton_cobra" type="foe" x="64" y="320" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="18" name="necrophage" x="32" y="96" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="19" name="necrophage" type="foe" x="128" y="32" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="20" name="skeleton" type="foe" x="256" y="192" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="21" name="skeleton" type="foe" x="352" y="224" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="22" name="necrophage" type="foe" x="320" y="160" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="23" name="skeleton" type="foe" x="416" y="64" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="24" name="skeleton_cobra" type="foe" x="480" y="64" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="25" x="-64" y="448"/>
+  <object id="26" name="necrophage" type="foe" x="448" y="32" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="27" name="skeleton" type="foe" x="448" y="352" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="28" name="skeleton" type="foe" x="480" y="320" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="29" name="skeleton_cobra" type="foe" x="544" y="224" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="30" name="necrophage" type="foe" x="640" y="224" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="31" name="necrophage" type="foe" x="608" y="192" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="32" name="skeleton" type="foe" x="576" y="128" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="7"/>
+   </properties>
+  </object>
+  <object id="33" name="lich_boss" type="foe" x="608" y="64" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="7"/>
+   </properties>
+  </object>
+  <object id="34" name="Altar" type="objective" gid="22" x="608" y="64" width="32" height="32">
+   <properties>
+    <property name="mission" value="main"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="events">
+  <object id="5" name="after_init" type="after_init" x="0" y="0" width="32" height="32">
+   <properties>
+    <property name="dialogs" value="0"/>
+   </properties>
+  </object>
+  <object id="6" name="at_end" type="at_end" x="32" y="0" width="32" height="32">
+   <properties>
+    <property name="dialogs" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

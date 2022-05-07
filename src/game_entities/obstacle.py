@@ -7,7 +7,6 @@ from src.gui.position import Position
 
 
 class Obstacle(Entity):
-
     def __init__(self, position: Position, sprite: Union[str, pygame.Surface]):
         super().__init__("Obstacle", position, sprite)
 
