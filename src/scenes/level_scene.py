@@ -47,7 +47,7 @@ from src.game_entities.item import Item
 from src.game_entities.key import Key
 from src.game_entities.mission import MissionType
 from src.game_entities.movable import Movable
-from src.game_entities.obstacle import Obstacle
+from src.game_entities.objective import Objective
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
@@ -205,7 +205,6 @@ class LevelScene(Scene):
 
         self.is_loaded: bool = False
 
-        self.obstacles: Optional[set[Obstacle]] = None
         self.events: dict[str, any] = {}
         self.player_possible_placements: Sequence[Position] = []
 
@@ -256,7 +255,6 @@ class LevelScene(Scene):
         """
         Load all the content of the level
         """
-        self.obstacles = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
 
         self.events = tmx_loader.load_events(
             self.tmx_data, self.directory, self.map["x"], self.map["y"]
@@ -267,6 +265,7 @@ class LevelScene(Scene):
         )
 
         self.entities["players"] = self.players
+        self.entities["obstacles"] = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
 
         if self.data is None:
             # Game is new
@@ -305,6 +304,8 @@ class LevelScene(Scene):
         self.missions, self.main_mission = tmx_loader.load_missions(
             self.tmx_data, self.players, self.map["x"], self.map["y"]
         )
+        self.entities["objectives"] = [objective for mission in self.missions for objective in
+                                       mission.objective_tiles]
 
         self.sidebar = Sidebar(
             (MENU_WIDTH, MENU_HEIGHT),
@@ -528,9 +529,6 @@ class LevelScene(Scene):
         self.active_screen_part.blit(self.map["img"], (self.map["x"], self.map["y"]))
         self.sidebar.display(self.active_screen_part, self.turn, self.hovered_entity)
 
-        for obstacle in self.obstacles:
-            obstacle.display(self.active_screen_part)
-
         for mission in self.missions:
             mission.display(self.active_screen_part)
 
@@ -661,8 +659,8 @@ class LevelScene(Scene):
         return tiles_content
 
     def get_possible_moves(
-        self, position: tuple[int, int], max_moves: int
-    ) -> dict[tuple[int, int], int]:
+        self, position: Position, max_moves: int
+    ) -> dict[Position, int]:
         """
         Return all the possible moves with their distance from the starting position
 
@@ -670,10 +668,10 @@ class LevelScene(Scene):
         position -- the starting position
         max_moves -- the maximum number of tiles that could be traveled
         """
-        tiles: dict[tuple[int, int], int] = {position: 0}
-        previously_computed_tiles: dict[tuple[int, int], int] = tiles
+        tiles: dict[Position, int] = {position: 0}
+        previously_computed_tiles: dict[Position, int] = tiles
         for i in range(1, max_moves + 1):
-            tiles_current_level: dict[tuple[int, int], int] = {}
+            tiles_current_level: dict[Position, int] = {}
             for tile in previously_computed_tiles:
                 for x_coordinate in range(-1, 2):
                     for y_coordinate in (1 - abs(x_coordinate), -1 + abs(x_coordinate)):
@@ -744,7 +742,12 @@ class LevelScene(Scene):
         ):
             return False
 
-        return self.get_entity_on_tile(tile) is None and tile not in self.obstacles
+        entity_on_tile = self.get_entity_on_tile(tile)
+        if isinstance(entity_on_tile, Objective):
+            if entity_on_tile.is_walkable:
+                return True
+
+        return entity_on_tile is None
 
     def get_entity_on_tile(self, tile: Position) -> Optional[Entity]:
         """
