@@ -357,12 +357,27 @@ def load_portals(
 def load_doors(
     tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Door]:
-    # TODO: implementation
-    return []
+    doors = []
+    for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
+        if dynamic_object.type == "door":
+            position = (
+                dynamic_object.x * 1.5 + horizontal_gap,
+                dynamic_object.y * 1.5 + vertical_gap,
+            )
+            image = pygame.transform.scale(dynamic_object.image, (TILE_SIZE, TILE_SIZE))
+            doors.append(Door(position, dynamic_object.properties["sprite_link"], sprite=image))
+    return doors
 
 
 def load_fountains(
     tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Fountain]:
-    # TODO: implementation
-    return []
+    fountains = []
+    for dynamic_object in tmx_data.get_layer_by_name("dynamic_data"):
+        if dynamic_object.type == "fountain":
+            position = (
+                dynamic_object.x * 1.5 + horizontal_gap,
+                dynamic_object.y * 1.5 + vertical_gap,
+            )
+            fountains.append(xml_loader.load_fountain(dynamic_object.name, position))
+    return fountains

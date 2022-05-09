@@ -240,14 +240,14 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
         elif entity_nature == "chest":
             entity = load_chest_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "door":
-            entity = load_door(element, from_save, gap_x, gap_y)
+            entity = load_door_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "building":
             entity = load_building_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "portal":
             entity, other_entity = load_portal(element, gap_x, gap_y)
             collection.append(other_entity)
         elif entity_nature == "fountain":
-            entity = load_fountain(element, from_save, gap_x, gap_y)
+            entity = load_fountain_from_save(element, from_save, gap_x, gap_y)
         elif entity_nature == "breakable":
             entity = load_breakable(element, gap_x, gap_y)
         else:
@@ -761,7 +761,7 @@ def load_chest_from_save(chest, from_save, gap_x, gap_y):
     return loaded_chest
 
 
-def load_door(door, from_save, gap_x, gap_y):
+def load_door_from_save(door, from_save, gap_x, gap_y):
     """
 
     :param door:
@@ -979,7 +979,7 @@ def load_portal(portal_couple, gap_x, gap_y):
     return first_portal, second_portal
 
 
-def load_fountain(fountain, from_save, gap_x, gap_y):
+def load_fountain_from_save(fountain, from_save, gap_x, gap_y):
     """
 
     :param fountain:
@@ -1012,6 +1012,24 @@ def load_fountain(fountain, from_save, gap_x, gap_y):
         loaded_fountain.set_times(times)
 
     return loaded_fountain
+
+
+def load_fountain(name: str, position: Position) -> Fountain:
+    if name not in fountains_data:
+        fountains_data[name] = etree.parse("data/fountains.xml").find(name)
+
+    sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
+    sprite_empty = (
+        "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
+    )
+
+    effect_name = fountains_data[name].find("effect").text.strip()
+    power = int(fountains_data[name].find("power").text.strip())
+    duration = int(fountains_data[name].find("duration").text.strip())
+    effect = Effect(effect_name, power, duration)
+    times = int(fountains_data[name].find("times").text.strip())
+
+    return Fountain(name, position, sprite, sprite_empty, effect, times)
 
 
 def load_breakable(breakable, gap_x, gap_y):

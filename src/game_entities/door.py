@@ -1,7 +1,9 @@
 """
 Defines Door class, a non-living entity that eventually could be opened by the living entities
 """
+from typing import Optional
 
+import pygame
 from lxml import etree
 
 from src.game_entities.entity import Entity
@@ -23,10 +25,11 @@ class Door(Entity):
     """
 
     def __init__(
-        self, position: Position, sprite: str, pick_lock_initiated: bool
+        self, position: Position, sprite_link: str, pick_lock_initiated: bool = False,
+        sprite: Optional[pygame.Surface] = None
     ) -> None:
-        super().__init__("Door", position, sprite)
-        self.sprite_name: str = sprite
+        super().__init__("Door", position, sprite if sprite else sprite_link)
+        self.sprite_name: str = sprite_link
         self.pick_lock_initiated: bool = pick_lock_initiated
 
     def save(self, tree_name: str) -> etree.Element:
