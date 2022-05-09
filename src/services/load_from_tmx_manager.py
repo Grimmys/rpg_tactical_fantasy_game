@@ -71,7 +71,7 @@ def _load_objectives(tmx_data, horizontal_gap, vertical_gap) -> None:
             mission_id = tile_object.properties["mission"]
             walkable = tile_object.properties["walkable"]
             _link_objective_to_mission(
-                Objective(position, objective_image, walkable), mission_id
+                Objective(tile_object.name, position, objective_image, walkable), mission_id
             )
 
 
