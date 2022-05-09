@@ -94,6 +94,7 @@
   <object id="128" x="384" y="256" width="32"/>
   <object id="132" type="chest" gid="8" x="224" y="64" width="32" height="32">
    <properties>
+    <property name="closed_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_closed.png"/>
     <property name="content_possibilities" type="int" value="1"/>
     <property name="item_0_name" value="life_potion"/>
     <property name="item_0_probability" type="float" value="1"/>
@@ -105,21 +106,32 @@
    <properties>
     <property name="gold" type="int" value="500"/>
     <property name="house_dialogs" value="0"/>
+    <property name="sprite_link" value="imgs/houses/blue_house.png"/>
    </properties>
   </object>
-  <object id="144" name="house" type="building" gid="6113" x="96" y="64" width="32" height="32"/>
+  <object id="144" name="house" type="building" gid="6113" x="96" y="64" width="32" height="32">
+   <properties>
+    <property name="sprite_link" value="imgs/houses/blue_house_side.png"/>
+   </properties>
+  </object>
   <object id="145" name="house" type="building" gid="6099" x="192" y="128" width="32" height="32">
    <properties>
     <property name="house_dialogs" value="1"/>
     <property name="items" value="pocket_knife"/>
+    <property name="sprite_link" value="imgs/houses/yellow_house.png"/>
    </properties>
   </object>
   <object id="146" name="house" type="building" gid="6105" x="320" y="160" width="32" height="32">
    <properties>
     <property name="house_dialogs" value="2"/>
+    <property name="sprite_link" value="imgs/houses/red_house.png"/>
    </properties>
   </object>
-  <object id="147" name="tavern" type="building" gid="6103" x="384" y="192" width="32" height="32"/>
+  <object id="147" name="tavern" type="building" gid="6103" x="384" y="192" width="32" height="32">
+   <properties>
+    <property name="sprite_link" value="imgs/houses/tavern.png"/>
+   </properties>
+  </object>
   <object id="151" name="shop" type="building" gid="6109" x="320" y="32" width="32" height="32">
    <properties>
     <property name="house_dialogs" value="3"/>
@@ -133,6 +145,7 @@
     <property name="item_3_quantity" type="int" value="3"/>
     <property name="kind" value="shop"/>
     <property name="number_items" type="int" value="4"/>
+    <property name="sprite_link" value="imgs/houses/shop.png"/>
    </properties>
   </object>
  </objectgroup>

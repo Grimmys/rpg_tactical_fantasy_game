@@ -52,6 +52,7 @@
   <object id="7" name="doran" type="ally" x="160" y="320" width="32" height="32"/>
   <object id="9" type="chest" gid="8" x="32" y="192" width="32" height="32">
    <properties>
+    <property name="closed_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_closed.png"/>
     <property name="content_possibilities" type="int" value="1"/>
     <property name="item_0_name" value="topaz"/>
     <property name="item_0_probability" type="float" value="1"/>
@@ -60,6 +61,7 @@
   </object>
   <object id="12" type="chest" gid="8" x="512" y="160" width="32" height="32">
    <properties>
+    <property name="closed_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_closed.png"/>
     <property name="content_possibilities" type="int" value="1"/>
     <property name="item_0_name" value="strength_potion"/>
     <property name="item_0_probability" type="float" value="1"/>

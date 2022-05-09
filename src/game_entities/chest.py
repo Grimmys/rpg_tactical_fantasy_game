@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os
 import random
-from typing import Sequence, Optional, Union
+from typing import Sequence, Optional
 
 import pygame
 from lxml import etree
@@ -47,11 +47,12 @@ class Chest(Entity):
     def __init__(
         self,
         position: Position,
-        sprite_close: Union[str, pygame.Surface],
-        sprite_open: Union[str, pygame.Surface],
+        sprite_close: str,
+        sprite_open: str,
         potential_items: Sequence[tuple[Item, float]],
+        sprite: Optional[pygame.Surface] = None
     ) -> None:
-        super().__init__("Chest", position, sprite_close)
+        super().__init__("Chest", position, sprite if sprite else sprite_close)
         self.sprite_close_link: str = sprite_close
         self.sprite_open_link: str = sprite_open
         self.sprite_open: pygame.Surface = pygame.transform.scale(
