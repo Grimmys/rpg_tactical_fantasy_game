@@ -40,13 +40,13 @@
 </data>
  </layer>
  <objectgroup id="5" name="dynamic_data">
-  <object id="14" type="objective" gid="1099" x="0" y="96" width="32" height="32">
+  <object id="14" name="Exit" type="objective" gid="1099" x="0" y="96" width="32" height="32">
    <properties>
     <property name="mission" value="main"/>
     <property name="walkable" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="104" type="objective" gid="1093" x="0" y="128" width="32" height="32">
+  <object id="104" name="Exit" type="objective" gid="1093" x="0" y="128" width="32" height="32">
    <properties>
     <property name="mission" value="main"/>
     <property name="walkable" type="bool" value="true"/>
