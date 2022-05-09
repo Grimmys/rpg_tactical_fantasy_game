@@ -216,9 +216,10 @@ def load_chests(
             chests.append(
                 Chest(
                     position,
-                    image,
+                    dynamic_object.properties["closed_sprite"],
                     dynamic_object.properties["opened_sprite"],
                     content_possibilities,
+                    image,
                 )
             )
     return chests
@@ -325,14 +326,16 @@ def load_buildings(
                         }
                         stock.append(item_entry)
                     buildings.append(
-                        Shop(dynamic_object.name, position, image, interaction, stock)
+                        Shop(dynamic_object.name, position, dynamic_object.properties["sprite_link"],
+                             interaction, stock, image)
                     )
                 else:
                     print("Error: building type isn't recognized: ", nature)
                     raise SystemError
             else:
                 buildings.append(
-                    Building(dynamic_object.name, position, image, interaction)
+                    Building(dynamic_object.name, position, dynamic_object.properties["sprite_link"],
+                             interaction, image)
                 )
     return buildings
 

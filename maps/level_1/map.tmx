@@ -106,6 +106,7 @@
   <object id="18" name="placement" type="placement" x="288" y="160" width="32" height="32"/>
   <object id="20" type="chest" gid="8" x="64" y="64" width="32" height="32">
    <properties>
+    <property name="closed_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_closed.png"/>
     <property name="content_possibilities" type="int" value="2"/>
     <property name="item_0_name" value="short_sword"/>
     <property name="item_0_probability" type="float" value="0.6"/>
