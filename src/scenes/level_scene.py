@@ -298,7 +298,7 @@ class LevelScene(Scene):
             self.players.extend(loader.load_players(self.data))
             self.escaped_players = loader.load_escaped_players(self.data)
             self.entities.update(
-                loader.load_all_entities(self.data, from_save, gap_x, gap_y)
+                loader.load_all_entities_from_save(self.data, gap_x, gap_y)
             )
 
         self.missions, self.main_mission = tmx_loader.load_missions(
