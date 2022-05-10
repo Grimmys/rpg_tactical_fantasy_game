@@ -93,7 +93,7 @@
     <property name="level" type="int" value="4"/>
    </properties>
   </object>
-  <object id="18" name="necrophage" x="32" y="96" width="32" height="32">
+  <object id="18" name="necrophage" type="foe" x="32" y="96" width="32" height="32">
    <properties>
     <property name="level" type="int" value="5"/>
    </properties>
