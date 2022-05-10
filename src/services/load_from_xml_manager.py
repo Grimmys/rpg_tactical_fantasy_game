@@ -21,7 +21,6 @@ from src.game_entities.fountain import Fountain
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.key import Key
-from src.game_entities.mission import Mission, MissionType
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.potion import Potion
@@ -184,47 +183,45 @@ def load_placements(positions, gap_x, gap_y) -> Sequence[Position]:
     return placements
 
 
-def load_all_entities(data, from_save, gap_x, gap_y) -> dict[str, list[Entity]]:
+def load_all_entities_from_save(data, gap_x, gap_y) -> dict[str, list[Entity]]:
     """
 
     :param data:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
     """
     return {
-        "allies": load_entities(
-            "character", data.findall("allies/ally"), from_save, gap_x, gap_y
+        "allies": load_entities_from_save(
+            "character", data.findall("allies/ally"), gap_x, gap_y
         ),
-        "foes": load_entities("foe", data.findall("foes/foe"), from_save, gap_x, gap_y),
-        "breakables": load_entities(
-            "breakable", data.findall("breakables/breakable"), from_save, gap_x, gap_y
+        "foes": load_entities_from_save("foe", data.findall("foes/foe"), gap_x, gap_y),
+        "breakables": load_entities_from_save(
+            "breakable", data.findall("breakables/breakable"), gap_x, gap_y
         ),
-        "chests": load_entities(
-            "chest", data.findall("chests/chest"), from_save, gap_x, gap_y
+        "chests": load_entities_from_save(
+            "chest", data.findall("chests/chest"), gap_x, gap_y
         ),
-        "doors": load_entities(
-            "door", data.findall("doors/door"), from_save, gap_x, gap_y
+        "doors": load_entities_from_save(
+            "door", data.findall("doors/door"), gap_x, gap_y
         ),
-        "buildings": load_entities(
-            "building", data.findall("buildings/building"), from_save, gap_x, gap_y
+        "buildings": load_entities_from_save(
+            "building", data.findall("buildings/building"), gap_x, gap_y
         ),
-        "fountains": load_entities(
-            "fountain", data.findall("fountains/fountain"), from_save, gap_x, gap_y
+        "fountains": load_entities_from_save(
+            "fountain", data.findall("fountains/fountain"), gap_x, gap_y
         ),
-        "portals": load_entities(
-            "portal", data.findall("portals/couple"), from_save, gap_x, gap_y
+        "portals": load_entities_from_save(
+            "portal", data.findall("portals/couple"), gap_x, gap_y
         ),
     }
 
 
-def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
+def load_entities_from_save(entity_nature, data, gap_x, gap_y) -> list[Entity]:
     """
 
     :param entity_nature:
     :param data:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -234,22 +231,22 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
     for element in data:
         # TODO: Too many branches for a similar behaviour, need refactoring (mapping?)
         if entity_nature == "character":
-            entity = load_ally_from_save(element, from_save, gap_x, gap_y)
+            entity = load_ally_from_save(element, gap_x, gap_y)
         elif entity_nature == "foe":
-            entity = load_foe_from_save(element, from_save, gap_x, gap_y)
+            entity = load_foe_from_save(element, gap_x, gap_y)
         elif entity_nature == "chest":
-            entity = load_chest_from_save(element, from_save, gap_x, gap_y)
+            entity = load_chest_from_save(element, gap_x, gap_y)
         elif entity_nature == "door":
-            entity = load_door_from_save(element, from_save, gap_x, gap_y)
+            entity = load_door_from_save(element, gap_x, gap_y)
         elif entity_nature == "building":
-            entity = load_building_from_save(element, from_save, gap_x, gap_y)
+            entity = load_building_from_save(element, gap_x, gap_y)
         elif entity_nature == "portal":
-            entity, other_entity = load_portal(element, gap_x, gap_y)
+            entity, other_entity = load_portal_from_save(element, gap_x, gap_y)
             collection.append(other_entity)
         elif entity_nature == "fountain":
-            entity = load_fountain_from_save(element, from_save, gap_x, gap_y)
+            entity = load_fountain_from_save(element, gap_x, gap_y)
         elif entity_nature == "breakable":
-            entity = load_breakable(element, gap_x, gap_y)
+            entity = load_breakable_from_save(element, gap_x, gap_y)
         else:
             print(f"Unrecognized nature : {entity_nature}")
             entity = None
@@ -257,12 +254,11 @@ def load_entities(entity_nature, data, from_save, gap_x, gap_y) -> list[Entity]:
     return collection
 
 
-def load_artificial_entity_from_save(entity, data, from_save, gap_x, gap_y, extension_path=""):
+def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=""):
     """
 
     :param entity:
     :param data:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :param extension_path:
@@ -287,9 +283,7 @@ def load_artificial_entity_from_save(entity, data, from_save, gap_x, gap_y, exte
     if specific_strategy is not None:
         strategy = specific_strategy.text.strip()
 
-    dynamic_data = data
-    if from_save:
-        dynamic_data = entity
+    dynamic_data = entity
     hit_points = int(dynamic_data.find("hp").text.strip())
     strength = int(dynamic_data.find("strength").text.strip())
     defense = int(dynamic_data.find("defense").text.strip())
@@ -345,11 +339,10 @@ def load_artificial_entity(name: str, data: etree.Element, position: Position, l
     }
 
 
-def load_ally_from_save(ally_element, from_save, gap_x, gap_y):
+def load_ally_from_save(ally_element, gap_x, gap_y):
     """
 
     :param ally_element:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -358,7 +351,7 @@ def load_ally_from_save(ally_element, from_save, gap_x, gap_y):
     generic_data = etree.parse("data/characters.xml").find(name)
 
     attributes = load_artificial_entity_from_save(
-        ally_element, generic_data, from_save, gap_x, gap_y
+        ally_element, generic_data, gap_x, gap_y
     )
 
     # Static data character
@@ -374,31 +367,21 @@ def load_ally_from_save(ally_element, from_save, gap_x, gap_y):
     }
 
     # Dynamic data character
-    dynamic_data = ally_element if from_save else generic_data
+    dynamic_data = ally_element
     gold = int(dynamic_data.find("gold").text.strip())
 
     equipments = []
     for equipment in dynamic_data.findall("equipment/*"):
-        if from_save:
-            equipment_loaded = load_item(equipment)
-        else:
-            equipment_loaded = parse_item_file(equipment.text.strip())
-        equipments.append(equipment_loaded)
+        equipments.append(load_item(equipment))
 
-    if from_save:
-        skills = [
-            (
-                get_skill_data(skill.text.strip())
-                if not skill.text.strip() in skills_data
-                else skills_data[skill.text.strip()]
-            )
-            for skill in dynamic_data.findall("skills/skill/name")
-        ]
-    else:
-        skills = (
-            Character.classes_data[classes[0]]["skills"]
-            + Character.races_data[race]["skills"]
+    skills = [
+        (
+            get_skill_data(skill.text.strip())
+            if not skill.text.strip() in skills_data
+            else skills_data[skill.text.strip()]
         )
+        for skill in dynamic_data.findall("skills/skill/name")
+    ]
 
     loaded_ally = Character(
         attributes["name"],
@@ -420,22 +403,14 @@ def load_ally_from_save(ally_element, from_save, gap_x, gap_y):
     )
 
     for item in dynamic_data.findall("inventory/item"):
-        item_loaded = (
-            load_item(item) if from_save else parse_item_file(item.text.strip())
-        )
+        item_loaded = load_item(item)
         loaded_ally.set_item(item_loaded)
 
-    if from_save:
-        current_hit_points = int(ally_element.find("current_hp").text.strip())
-        loaded_ally.hit_points = current_hit_points
+    current_hit_points = int(ally_element.find("current_hp").text.strip())
+    loaded_ally.hit_points = current_hit_points
 
-        experience = int(ally_element.find("exp").text.strip())
-        loaded_ally.earn_xp(experience)
-    else:
-        # Up stats according to current lvl
-        loaded_ally.stats_up(attributes["level"] - 1)
-        # Restore hp due to lvl up
-        loaded_ally.healed()
+    experience = int(ally_element.find("exp").text.strip())
+    loaded_ally.earn_xp(experience)
 
     return loaded_ally
 
@@ -510,11 +485,10 @@ def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
     foes_by_mission[mission_id].append(foe)
 
 
-def load_foe_from_save(foe_element, from_save, gap_x, gap_y):
+def load_foe_from_save(foe_element, gap_x, gap_y):
     """
 
     :param foe_element:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -526,7 +500,7 @@ def load_foe_from_save(foe_element, from_save, gap_x, gap_y):
         Foe.grow_rates[name] = load_stats_up(foes_data[name])
 
     attributes = load_artificial_entity_from_save(
-        foe_element, foes_data[name], from_save, gap_x, gap_y, "dungeon_crawl/monster/"
+        foe_element, foes_data[name], gap_x, gap_y, "dungeon_crawl/monster/"
     )
 
     # Static data foe
@@ -565,32 +539,22 @@ def load_foe_from_save(foe_element, from_save, gap_x, gap_y):
     move = int(foes_data[name].find("move").text.strip())
 
     # Dynamic data foe
-    if from_save:
-        # Overwrite static loaded loot
-        loot = [
+    # Overwrite static loaded loot
+    loot = [
+        (
+            parse_item_file(item.find("name").text.strip()),
+            float(item.find("probability").text),
+        )
+        for item in foe_element.findall("loot/item")
+    ]
+    gold_looted = foe_element.find("loot/gold")
+    if gold_looted is not None:
+        loot.append(
             (
-                parse_item_file(item.find("name").text.strip()),
-                float(item.find("probability").text),
+                Gold(int(gold_looted.find("amount").text)),
+                float(gold_looted.find("probability").text),
             )
-            for item in foe_element.findall("loot/item")
-        ]
-        gold_looted = foe_element.find("loot/gold")
-        if gold_looted is not None:
-            loot.append(
-                (
-                    Gold(int(gold_looted.find("amount").text)),
-                    float(gold_looted.find("probability").text),
-                )
-            )
-    else:
-        dynamic_loot = [
-            (parse_item_file(item.find("name").text.strip()), 1.0)
-            for item in foe_element.findall("loot/item")
-        ]
-        loot.extend(dynamic_loot)
-        gold_looted = foe_element.find("loot/gold")
-        if gold_looted is not None:
-            loot.extend([(Gold(int(gold_looted.find("amount").text)), 1.0)])
+        )
 
     mission_target_element = foe_element.find("mission_target")
     mission_target = (
@@ -619,17 +583,11 @@ def load_foe_from_save(foe_element, from_save, gap_x, gap_y):
         mission_target,
     )
 
-    if from_save:
-        current_hp = int(foe_element.find("current_hp").text.strip())
-        loaded_foe.hit_points = current_hp
+    current_hp = int(foe_element.find("current_hp").text.strip())
+    loaded_foe.hit_points = current_hp
 
-        experience = int(foe_element.find("exp").text.strip())
-        loaded_foe.earn_xp(experience)
-    else:
-        # Up stats according to current lvl
-        loaded_foe.stats_up(attributes["level"] - 1)
-        # Restore hp due to lvl up
-        loaded_foe.healed()
+    experience = int(foe_element.find("exp").text.strip())
+    loaded_foe.earn_xp(experience)
 
     if mission_target is not None:
         _link_foe_to_mission(loaded_foe, mission_target)
@@ -683,7 +641,6 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str],
     move = int(foes_data[name].find("move").text.strip())
 
     # Dynamic data foe
-    # TODO: items + gold loot
 
     # TODO: mission target checking
 
@@ -715,11 +672,10 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str],
     return loaded_foe
 
 
-def load_chest_from_save(chest, from_save, gap_x, gap_y):
+def load_chest_from_save(chest, gap_x, gap_y):
     """
 
     :param chest:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -733,25 +689,11 @@ def load_chest_from_save(chest, from_save, gap_x, gap_y):
 
     # Dynamic data
     potential_items = []
-    if from_save:
-        opened = chest.find("state").text.strip() == "True"
-        it_name = chest.find("contains/item").text.strip()
-        item = parse_item_file(it_name)
+    opened = chest.find("state").text.strip() == "True"
+    it_name = chest.find("contains/item").text.strip()
+    item = parse_item_file(it_name)
 
-        potential_items.append((item, 1.0))
-    else:
-        for item_xml in chest.xpath("contains/item"):
-            it_name = item_xml.find("name").text.strip()
-            item = parse_item_file(it_name)
-            probability = float(item_xml.find("probability").text)
-
-            potential_items.append((item, probability))
-        for gold in chest.xpath("contains/gold"):
-            amount = int(gold.find("amount").text)
-            probability = float(gold.find("probability").text)
-            item = Gold(amount)
-            potential_items.append((item, probability))
-        opened = False
+    potential_items.append((item, 1.0))
 
     loaded_chest = Chest(position, sprite_closed, sprite_opened, potential_items)
 
@@ -761,11 +703,10 @@ def load_chest_from_save(chest, from_save, gap_x, gap_y):
     return loaded_chest
 
 
-def load_door_from_save(door, from_save, gap_x, gap_y):
+def load_door_from_save(door, gap_x, gap_y):
     """
 
     :param door:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -777,19 +718,16 @@ def load_door_from_save(door, from_save, gap_x, gap_y):
     sprite = door.find("sprite").text.strip()
 
     # Dynamic data
-    pick_lock_initiated = False
-    if from_save:
-        pick_lock_initiated = door.find("pick_lock_initiated") is not None
+    pick_lock_initiated = door.find("pick_lock_initiated") is not None
 
     loaded_door = Door(position, sprite, pick_lock_initiated)
     return loaded_door
 
 
-def load_building_from_save(building, from_save, gap_x, gap_y):
+def load_building_from_save(building, gap_x, gap_y):
     """
 
     :param building:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -840,10 +778,9 @@ def load_building_from_save(building, from_save, gap_x, gap_y):
         loaded_building = Building(name, position, sprite, interaction_element)
 
     # Dynamic data
-    if from_save:
-        locked = building.find("state").text.strip()
-        if locked == "True":
-            loaded_building.remove_interaction()
+    locked = building.find("state").text.strip()
+    if locked == "True":
+        loaded_building.remove_interaction()
 
     return loaded_building
 
@@ -882,83 +819,7 @@ def load_obstacles(tree, gap_x, gap_y):
     return loaded_obstacles
 
 
-def load_mission(mission_xml, is_main, number_players, gap_x, gap_y):
-    """
-
-    :param mission_xml:
-    :param is_main:
-    :param number_players:
-    :param gap_x:
-    :param gap_y:
-    :return:
-    """
-    nature = MissionType[mission_xml.find("type").text]
-    description = mission_xml.find("description").text.strip()
-    positions: list[tuple[int, int]] = []
-    targets: Optional[Sequence[Foe]] = None
-    if nature is MissionType.POSITION or nature is MissionType.TOUCH_POSITION:
-        for coordinates in mission_xml.findall("position"):
-            x_coordinate = int(coordinates.find("x").text) * TILE_SIZE + gap_x
-            y_coordinate = int(coordinates.find("y").text) * TILE_SIZE + gap_y
-            positions.append((x_coordinate, y_coordinate))
-    elif nature is MissionType.KILL_TARGETS:
-        targets = foes_by_mission.pop(mission_xml.find("id").text.strip())
-    min_players = mission_xml.find("nb_players")
-    if min_players is not None:
-        min_players = int(min_players.text.strip())
-    else:
-        min_players = number_players
-    if is_main:
-        gold_reward = 0
-        items_reward = []
-    else:
-        # If mission is not main, a reward is associated
-        gold_reward = mission_xml.find("reward/gold")
-        if gold_reward is not None:
-            gold_reward = int(gold_reward.text.strip())
-        items_reward = mission_xml.findall("reward/item")
-        if items_reward is not None:
-            items_reward = [parse_item_file(item) for item in items_reward]
-    turn_limit = mission_xml.find("turns")
-    if turn_limit is not None:
-        turn_limit = int(turn_limit.text.strip())
-    return Mission(
-        is_main,
-        nature,
-        positions,
-        description,
-        min_players,
-        turn_limit,
-        gold_reward,
-        items_reward,
-        targets,
-    )
-
-
-def load_missions(tree, players, gap_x, gap_y):
-    """
-
-    :param tree:
-    :param players:
-    :param gap_x:
-    :param gap_y:
-    :return:
-    """
-    loaded_missions = []
-    #  > Load main mission
-    main_mission = tree.find("missions/main")
-    mission = load_mission(main_mission, True, len(players), gap_x, gap_y)
-    loaded_missions.append(mission)
-    main_mission = mission
-    #  > Load secondary missions
-    for mission_xml in tree.findall("missions/mission"):
-        loaded_missions.append(
-            load_mission(mission_xml, False, len(players), gap_x, gap_y)
-        )
-    return loaded_missions, main_mission
-
-
-def load_portal(portal_couple, gap_x, gap_y):
+def load_portal_from_save(portal_couple, gap_x, gap_y):
     """
 
     :param portal_couple:
@@ -979,11 +840,10 @@ def load_portal(portal_couple, gap_x, gap_y):
     return first_portal, second_portal
 
 
-def load_fountain_from_save(fountain, from_save, gap_x, gap_y):
+def load_fountain_from_save(fountain, gap_x, gap_y):
     """
 
     :param fountain:
-    :param from_save:
     :param gap_x:
     :param gap_y:
     :return:
@@ -1006,10 +866,9 @@ def load_fountain_from_save(fountain, from_save, gap_x, gap_y):
 
     loaded_fountain = Fountain(name, position, sprite, sprite_empty, effect, times)
 
-    if from_save:
-        # Load remaining uses from saved data
-        times = int(fountain.find("times").text.strip())
-        loaded_fountain.set_times(times)
+    # Load remaining uses from saved data
+    times = int(fountain.find("times").text.strip())
+    loaded_fountain.set_times(times)
 
     return loaded_fountain
 
@@ -1032,7 +891,7 @@ def load_fountain(name: str, position: Position) -> Fountain:
     return Fountain(name, position, sprite, sprite_empty, effect, times)
 
 
-def load_breakable(breakable, gap_x, gap_y):
+def load_breakable_from_save(breakable, gap_x, gap_y):
     """
 
     :param breakable:
