@@ -23,6 +23,13 @@ from src.gui.position import Position
 from src.services import load_from_xml_manager as xml_loader
 
 objective_tile_by_mission: dict[str, list[Objective]] = {}
+foes_by_mission: dict[str, list[Foe]] = {}
+
+
+def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
+    if mission_id not in foes_by_mission:
+        foes_by_mission[mission_id] = []
+    foes_by_mission[mission_id].append(foe)
 
 
 def load_ground(tmx_data: pytmx.TiledMap, size: tuple[int, int]) -> pygame.Surface:
@@ -90,7 +97,9 @@ def _load_mission(
     gold_reward = 0
     items_reward = []
     if nature in (MissionType.POSITION, MissionType.TOUCH_POSITION):
-        objective_tiles = objective_tile_by_mission[mission_id]
+        objective_tiles = objective_tile_by_mission.pop(mission_id)
+    elif nature is MissionType.KILL_TARGETS:
+        targets = foes_by_mission.pop(mission_id)
 
     if f"{mission_id}_mission_number_players" in tmx_data.properties:
         min_players = tmx_data.properties[f"{mission_id}_mission_number_players"]
@@ -156,11 +165,17 @@ def load_foes(
                             dynamic_object.properties[f"loot_item_{index}_name"]
                         )
                     )
+            mission_target = dynamic_object.properties[
+                "mission_target"] if "mission_target" in dynamic_object.properties else None
+
+            foe = xml_loader.load_foe(dynamic_object.name, position, level, strategy, specific_loot, mission_target)
             foes.append(
-                xml_loader.load_foe(
-                    dynamic_object.name, position, level, strategy, specific_loot
-                )
+                foe
             )
+
+            if mission_target:
+                _link_foe_to_mission(foe, mission_target)
+
     return foes
 
 
