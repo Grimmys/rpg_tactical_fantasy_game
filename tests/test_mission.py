@@ -1,6 +1,8 @@
 import random as rd
 import unittest
 
+import pygame
+
 from src.constants import TILE_SIZE
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
@@ -9,7 +11,7 @@ from tests.random_data_library import (
     random_position,
     random_player_entity,
     random_entities,
-    random_foe_entity,
+    random_foe_entity, random_objective,
 )
 from tests.tools import minimal_setup_for_game
 
@@ -22,7 +24,8 @@ class TestMission(unittest.TestCase):
     def test_init_mision(self):
         is_main = True
         nature = MissionType.POSITION
-        positions = [(1 * TILE_SIZE, 2 * TILE_SIZE), (3 * TILE_SIZE, 4 * TILE_SIZE)]
+        objectives = [random_objective(),
+                      random_objective()]
         description = "Test main mission"
         nb_players = 2
         turn_limit = 10
@@ -31,7 +34,7 @@ class TestMission(unittest.TestCase):
         mission = Mission(
             is_main,
             nature,
-            positions,
+            objectives,
             description,
             nb_players,
             turn_limit,
@@ -40,7 +43,7 @@ class TestMission(unittest.TestCase):
         )
         self.assertEqual(is_main, mission.main)
         self.assertEqual(nature, mission.type)
-        self.assertEqual(positions, mission.positions)
+        self.assertEqual(objectives, mission.objective_tiles)
         self.assertEqual(description, mission.description)
         self.assertFalse(mission.ended)
         self.assertEqual(turn_limit, mission.turn_limit)
@@ -51,23 +54,25 @@ class TestMission(unittest.TestCase):
 
     def test_position_is_valid_to_go(self):
         nature = MissionType.POSITION
-        positions = [(1 * TILE_SIZE, 0 * TILE_SIZE), (3 * TILE_SIZE, 2 * TILE_SIZE)]
-        mission = Mission(True, nature, positions, "Test mission", 0)
-        self.assertTrue(mission.is_position_valid(positions[0]))
-        self.assertTrue(mission.is_position_valid(positions[1]))
+        objectives = [random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
+                      random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE))]
+        mission = Mission(True, nature, objectives, "Test mission", 0)
+        self.assertTrue(mission.is_position_valid(objectives[0].position))
+        self.assertTrue(mission.is_position_valid(objectives[1].position))
         invalid_position = random_position()
-        while invalid_position in positions:
+        while invalid_position in map(lambda objective: objective.position, objectives):
             invalid_position = random_position()
-        self.assertFalse(mission.is_position_valid(random_position))
+        self.assertFalse(mission.is_position_valid(invalid_position))
 
     def test_position_is_valid_to_touch(self):
         nature = MissionType.TOUCH_POSITION
-        positions = [(1 * TILE_SIZE, 0 * TILE_SIZE), (3 * TILE_SIZE, 2 * TILE_SIZE)]
-        mission = Mission(True, nature, positions, "Test mission", 0)
-        self.assertFalse(mission.is_position_valid(positions[0]))
-        self.assertFalse(mission.is_position_valid(positions[1]))
+        objectives = [random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
+                      random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE))]
+        mission = Mission(True, nature, objectives, "Test mission", 0)
+        self.assertFalse(mission.is_position_valid(objectives[0].position))
+        self.assertFalse(mission.is_position_valid(objectives[1].position))
 
-        first_position = positions[0]
+        first_position = objectives[0].position
         self.assertTrue(
             mission.is_position_valid(
                 (first_position[0] + TILE_SIZE, first_position[1])
@@ -89,7 +94,7 @@ class TestMission(unittest.TestCase):
             )
         )
 
-        second_position = positions[1]
+        second_position = objectives[1].position
         self.assertTrue(
             mission.is_position_valid(
                 (second_position[0] + TILE_SIZE, second_position[1])
@@ -98,9 +103,9 @@ class TestMission(unittest.TestCase):
 
     def test_update_state_position_objective(self):
         nature = rd.choice([MissionType.POSITION, MissionType.TOUCH_POSITION])
-        position = [random_position()]
+        objective = [random_objective()]
         players = [random_player_entity(), random_player_entity()]
-        mission = Mission(True, nature, position, "Test mission", 2)
+        mission = Mission(True, nature, objective, "Test mission", 2)
 
         mission.update_state(players[0])
         self.assertFalse(mission.ended)

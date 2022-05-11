@@ -13,6 +13,7 @@ from src.game_entities.foe import Foe, Keyword
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
+from src.game_entities.objective import Objective
 from src.game_entities.player import Player
 from src.game_entities.shield import Shield
 from src.game_entities.weapon import Weapon
@@ -27,6 +28,10 @@ EFFECTS = (
     "resistance_up",
     "hp_up",
 )
+
+
+def random_boolean():
+    return random.choice([True, False])
 
 
 def random_string(min_len=4, max_len=10):
@@ -726,3 +731,11 @@ def random_alteration(name=None, effects=None, min_duration=1, max_duration=5):
     )
 
     return Alteration(name, abbr, power, duration, desc, effects)
+
+
+def random_objective(name=None, position=None):
+    name = name if name else random_string()
+    position = position if position else random_position()
+    sprite = "imgs/dungeon_crawl/dungeon/gateways/abyssal_stair.png"
+
+    return Objective(name, position, sprite, random_boolean())
