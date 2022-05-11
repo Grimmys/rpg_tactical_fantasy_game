@@ -128,7 +128,7 @@ class Building(Entity):
         """
         Remove the inner interaction of the building
         """
-        self.interaction = None
+        self.interaction = {"talks": None}
 
     def save(self, tree_name: str) -> etree.Element:
         """
