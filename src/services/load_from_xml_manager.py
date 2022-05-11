@@ -595,7 +595,8 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
     return loaded_foe
 
 
-def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item]) -> Foe:
+def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item],
+             mission_target: str) -> Foe:
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
         # Load grow rates of this kind of foe in the class
@@ -640,10 +641,6 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str],
     )
     move = int(foes_data[name].find("move").text.strip())
 
-    # Dynamic data foe
-
-    # TODO: mission target checking
-
     loaded_foe = Foe(
         attributes["name"],
         attributes["position"],
@@ -661,7 +658,7 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str],
         keywords,
         attributes["level"],
         attributes["alterations"],
-        None,
+        mission_target,
     )
 
     # Up stats according to current lvl
