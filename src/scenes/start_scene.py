@@ -128,6 +128,9 @@ class StartScene(Scene):
         if StartScene.screen_size == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
+            import os
+            os.environ['SDL_VIDEO_CENTERED'] = '1'
+            pygame.init()
         return pygame.display.set_mode(size, flags)
 
     def update_state(self) -> bool:
@@ -206,7 +209,7 @@ class StartScene(Scene):
                         ]
                     ],
                     width=width,
-                    background_path="imgs/interface/PopUpMenu.png",
+                    background_path="imgs/interface/PopUpMenuLandscape.png",
                 )
             )
 
@@ -225,7 +228,7 @@ class StartScene(Scene):
                         ]
                     ],
                     width=width,
-                    background_path="imgs/interface/PopUpMenu.png",
+                    background_path="imgs/interface/PopUpMenuLandscape.png",
                 )
             )
 

@@ -185,12 +185,15 @@ class LevelScene(Scene):
         self.number: int = number
 
         map_image: pygame.Surface = pygame.image.load(self.directory + "map.png")
+        map_bg: pygame.Surface = pygame.image.load(self.directory + "bg.png")
+        map_bg = pygame.transform.scale(map_bg, (WIN_WIDTH, WIN_HEIGHT))
         self.map: dict[str, any] = {
             "img": map_image,
             "width": map_image.get_width(),
             "height": map_image.get_height(),
             "x": (MAX_MAP_WIDTH - map_image.get_width()) // 2,
             "y": (MAX_MAP_HEIGHT - map_image.get_height()) // 2,
+            "bg": map_bg,
         }
 
         self.tree: etree.Element = etree.parse(self.directory + "data.xml").getroot()
@@ -517,6 +520,7 @@ class LevelScene(Scene):
         Display also all the menus in the background (that should be visible)
         and lastly the active menu.
         """
+        self.screen.blit(self.map["bg"],(0,0))
         self.active_screen_part.blit(self.map["img"], (self.map["x"], self.map["y"]))
         self.sidebar.display(self.active_screen_part, self.turn, self.hovered_entity)
 
