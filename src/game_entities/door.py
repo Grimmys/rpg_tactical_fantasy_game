@@ -16,8 +16,10 @@ class Door(Entity):
 
     Keyword arguments:
     position -- the position of the door on screen
-    sprite -- the relative path to the visual representation of the door
+    sprite_link -- the relative path to the visual representation of the door
     pick_lock_initiated -- whether the door is currently being pick-locked or not
+    sprite -- the pygame Surface corresponding to the appearance of the door on screen,
+    would be loaded from sprite_link if not provided
 
     Attributes:
     sprite_name -- the relative path to the visual representation of the door
