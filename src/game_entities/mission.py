@@ -35,7 +35,7 @@ class Mission:
     Keyword Arguments:
     is_main -- whether the mission is primary or not
     nature -- the kind of the mission
-    positions -- the positions of the key elements of the mission
+    objective_tiles -- the objectives linked to the mission that should be displayed on the map
     description -- the description of the mission
     nb_players -- the number of player characters that should validate the mission
     turn_limit -- the limit of turns until the mission would be considered as failed
@@ -46,7 +46,7 @@ class Mission:
     Attributes:
     main -- whether the mission is primary or not
     type -- the kind of the mission
-    positions -- the positions of the key elements of the mission
+    objective_tiles -- the objectives linked to the mission that should be displayed on the map
     description -- the description of the mission
     ended -- whether the mission is ended or not
     turn_limit -- the limit of turns until the mission would be considered as failed
