@@ -27,12 +27,14 @@ class Building(Entity):
     Keyword arguments:
     name -- the name of the building
     position -- the current position of the building on screen
-    sprite -- the pygame Surface corresponding to the appearance of the building on screen
+    sprite_link -- the relative path to the visual representation of the building on screen
     interaction -- the data structure indicating what should happen the first time someone
     is visiting the building
+    sprite -- the pygame Surface corresponding to the appearance of the building on screen,
+    would be loaded from sprite_link if not provided
 
     Attributes:
-    sprite_link -- the relative path to the visual representation of the element
+    sprite_link -- the relative path to the visual representation of the building on screen
     interaction -- the data structure indicating what should happen the first time someone
     is visiting the building
     door_sfx -- the sound that should be started when someone is visiting the building
@@ -84,7 +86,7 @@ class Building(Entity):
         """
         entries: list[list[BoxElement]] = []
 
-        if not self.interaction["talks"]:
+        if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
             entries.append(
                 [
@@ -94,10 +96,10 @@ class Building(Entity):
                 ]
             )
         else:
+            pygame.mixer.Sound.play(self.talk_sfx)
             for talk in self.interaction["talks"]:
-                pygame.mixer.Sound.play(self.talk_sfx)
                 entries.append([TextElement(talk, font=fonts["ITEM_DESC_FONT"])])
-            if self.interaction["gold"] > 0:
+            if "gold" in self.interaction and self.interaction["gold"] > 0:
                 pygame.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction["gold"]
                 earn_text: str = f'[You received {self.interaction["gold"]} gold]'
@@ -108,7 +110,7 @@ class Building(Entity):
                         )
                     ]
                 )
-            if self.interaction["item"] is not None:
+            if "item" in self.interaction and self.interaction["item"]:
                 pygame.mixer.Sound.play(self.inventory_sfx)
                 actor.set_item(self.interaction["item"])
                 earn_text: str = f'[You received {self.interaction["item"]}]'
@@ -128,7 +130,7 @@ class Building(Entity):
         """
         Remove the inner interaction of the building
         """
-        self.interaction = {"talks": None}
+        self.interaction = None
 
     def save(self, tree_name: str) -> etree.Element:
         """
@@ -156,10 +158,10 @@ class Building(Entity):
             for talk in self.interaction["talks"]:
                 talk_tag: etree.SubElement = etree.SubElement(talks, "talk")
                 talk_tag.text = talk
-            if self.interaction["gold"] > 0:
+            if "gold" in self.interaction and self.interaction["gold"] > 0:
                 gold: etree.SubElement = etree.SubElement(interaction, "gold")
                 gold.text = str(self.interaction["gold"])
-            if self.interaction["item"] is not None:
+            if "item" in self.interaction and self.interaction["item"]:
                 item: etree.SubElement = etree.SubElement(interaction, "item")
                 item.text = self.interaction["item"].name
 

@@ -301,26 +301,22 @@ def load_buildings(
                 dynamic_object.y * 1.5 + vertical_gap,
             )
             image = pygame.transform.scale(dynamic_object.image, (TILE_SIZE, TILE_SIZE))
-            interaction: dict[str, any] = {}
+            interaction: Optional[dict[str, any]] = {}
             dialog_ids: Optional[Sequence[str]] = (
                 dynamic_object.properties["house_dialogs"].split(",")
                 if "house_dialogs" in dynamic_object.properties
                 else None
             )
-            interaction["talks"] = []
             if dialog_ids:
-                for id in dialog_ids:
-                    interaction["talks"] = load_house_dialog(directory, id)
-            interaction["gold"] = (
-                dynamic_object.properties["gold"]
-                if "gold" in dynamic_object.properties
-                else 0
-            )
-            interaction["item"] = (
-                xml_loader.parse_item_file(dynamic_object.properties["items"])
-                if "items" in dynamic_object.properties
-                else None
-            )
+                for dialog_id in dialog_ids:
+                    interaction["talks"] = load_house_dialog(directory, dialog_id)
+            if "gold" in dynamic_object.properties:
+                interaction["gold"] = dynamic_object.properties["gold"]
+            if "items" in dynamic_object.properties:
+                interaction["item"] = xml_loader.parse_item_file(dynamic_object.properties["items"])
+
+            if not interaction:
+                interaction = None
 
             nature = (
                 dynamic_object.properties["kind"]
@@ -342,7 +338,7 @@ def load_buildings(
                         stock.append(item_entry)
                     buildings.append(
                         Shop(dynamic_object.name, position, dynamic_object.properties["sprite_link"],
-                             interaction, stock, image)
+                             stock, interaction, image)
                     )
                 else:
                     print("Error: building type isn't recognized: ", nature)
