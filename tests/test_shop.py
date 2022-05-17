@@ -20,7 +20,7 @@ class TestShop(unittest.TestCase):
             {"item": random_item(), "quantity": rd.randint(1, 10)},
             {"item": random_item(), "quantity": rd.randint(1, 10)},
         ]
-        shop = Shop(name, pos, sprite, interaction, items)
+        shop = Shop(name, pos, sprite, items, interaction)
         self.assertEqual(name, shop.name)
         self.assertEqual(pos, shop.position)
         self.assertEqual("Tavern", str(shop))
@@ -36,7 +36,7 @@ class TestShop(unittest.TestCase):
             {"item": random_item(), "quantity": rd.randint(1, 10)},
             {"item": random_item(), "quantity": rd.randint(1, 10)},
         ]
-        shop = Shop(name, pos, sprite, interaction, items)
+        shop = Shop(name, pos, sprite, items, interaction)
         actor = random_character_entity()
         shop.interact(actor)
         # No assert for the moment
