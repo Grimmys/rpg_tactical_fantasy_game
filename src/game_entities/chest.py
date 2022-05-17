@@ -31,6 +31,8 @@ class Chest(Entity):
     sprite_close -- the relative path to the visual representation of the chest when closed
     sprite_open -- the relative path to the visual representation of the chest when opened
     potential_items -- the items that could be found in the chest
+    sprite -- the pygame Surface corresponding to the appearance of the chest on screen,
+    would be loaded from sprite_close if not provided
 
     Attributes:
     sprite_close_link -- the relative path to the visual representation of the chest when closed
