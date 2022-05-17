@@ -1,6 +1,5 @@
-import unittest
-
 import random as rd
+import unittest
 
 from src.game_entities.building import Building
 from tests.random_data_library import (
@@ -17,11 +16,12 @@ class TestBuilding(unittest.TestCase):
     def setUpClass(cls):
         minimal_setup_for_game()
 
-    def test_init_building_no_interaction(self):
+    def test_init_building_empty_interaction(self):
         name = "house"
         pos = (3, 2)
         sprite = "imgs/houses/blue_house.png"
-        house = Building(name, pos, sprite)
+        interaction = {}
+        house = Building(name, pos, sprite, interaction)
 
         self.assertEqual(name, house.name)
         self.assertEqual(pos, house.position)

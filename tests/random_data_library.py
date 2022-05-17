@@ -670,15 +670,17 @@ def random_building(
     name = random_string()
     position = random_position()
     sprite = "imgs/houses/blue_house.png"
-    talks_el = [
-        random_string(min_len=10, max_len=100)
-        for _ in range(random.randint(min_talks, max_talks))
-    ]
-    interaction = {
-        "talks": talks_el if is_interactive else None,
-        "gold": random.randint(min_gold, 1000) if gold else 0,
-        "item": random_item() if item else None,
-    }
+    interaction = None
+    if is_interactive:
+        talks_el = [
+            random_string(min_len=10, max_len=100)
+            for _ in range(random.randint(min_talks, max_talks))
+        ]
+        interaction = {
+            "talks": talks_el,
+            "gold": random.randint(min_gold, 1000) if gold else 0,
+            "item": random_item() if item else None,
+        }
     return Building(name, position, sprite, interaction)
 
 

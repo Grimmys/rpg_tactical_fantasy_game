@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os
 from copy import copy
-from typing import List, Optional
+from typing import Optional
 
 import pygame.mixer
 from lxml import etree
@@ -27,11 +27,14 @@ class Shop(Building):
     Keyword arguments:
     name -- the name of the shop
     position -- the current position of the shop on screen
-    sprite -- the relative path to the visual representation of the shop
-    interaction -- the interaction that should be triggered when a character player try to interact with the shop
+    sprite_link -- the relative path to the visual representation of the shop
     stock -- the data structure containing all the available items to be bought with their associated quantity
+    interaction -- the interaction that should be triggered when a character player try to interact with the shop
+    sprite -- the pygame Surface corresponding to the appearance of the shop on screen,
+    would be loaded from sprite_link if not provided
 
     Attributes:
+    current_visitor -- the reference to the current character visiting the shop
     stock -- the data structure containing all the available items to be bought with their associated quantity
     menu -- the shop menu displaying all the items that could be bought
     gold_sfx -- the sound that should be started when an item is sold or bought
@@ -46,13 +49,12 @@ class Shop(Building):
         name: str,
         position: Position,
         sprite_link: str,
-        interaction: dict[str, any],
         stock: list[dict[str, any]],
+        interaction: Optional[dict[str, any]] = None,
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__(name, position, sprite_link, interaction, sprite)
         self.current_visitor: Optional[Character] = None
-        self.stock: List[dict[str, any]] = stock
         self.stock: list[dict[str, any]] = stock
         self.interaction: dict[str, any] = interaction
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
