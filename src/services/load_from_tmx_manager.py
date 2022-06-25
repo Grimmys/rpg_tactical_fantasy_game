@@ -50,8 +50,8 @@ def load_ground(tmx_data: pytmx.TiledMap, size: tuple[int, int]) -> pygame.Surfa
 
 def load_obstacles(
     tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> set[Obstacle]:
-    obstacles = set()
+) -> list[Obstacle]:
+    obstacles = list()
     for x, y, gid in tmx_data.get_layer_by_name("obstacles"):
         tile = tmx_data.get_tile_properties_by_gid(gid)
         if tile and tile["type"] == "void":
@@ -60,7 +60,7 @@ def load_obstacles(
             tmx_data.get_tile_image_by_gid(gid), (TILE_SIZE, TILE_SIZE)
         )
         position = (x * TILE_SIZE + horizontal_gap, y * TILE_SIZE + vertical_gap)
-        obstacles.add(Obstacle(position, obstacle_image))
+        obstacles.append(Obstacle(position, obstacle_image))
     return obstacles
 
 

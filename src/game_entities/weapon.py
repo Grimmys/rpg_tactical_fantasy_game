@@ -13,7 +13,6 @@ from src.game_entities.destroyable import DamageKind
 from src.game_entities.effect import Effect
 from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Keyword
-from src.game_entities.movable import Movable
 from src.game_entities.skill import SkillNature
 from src.gui.tools import distance
 
@@ -126,7 +125,7 @@ class Weapon(Equipment):
         return self.durability
 
     def apply_effects(
-        self, user: Character, target: Movable  # NOQA
+        self, user: Character, target: Destroyable  # NOQA
     ) -> Sequence[Effect]:
         """
         Check if some effects from the list of possible effects are triggered after the use of the weapon

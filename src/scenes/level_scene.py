@@ -48,6 +48,7 @@ from src.game_entities.key import Key
 from src.game_entities.mission import MissionType
 from src.game_entities.movable import Movable
 from src.game_entities.objective import Objective
+from src.game_entities.obstacle import Obstacle
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
@@ -80,6 +81,27 @@ class LevelStatus(IntEnum):
     IN_PROGRESS = auto()
     ENDED_VICTORY = auto()
     ENDED_DEFEAT = auto()
+
+
+class LevelEntityCollections:
+    def __init__(self):
+        self.obstacles: list[Obstacle] = []
+        self.players: list[Player] = []
+        self.allies: list[Character] = []
+        self.foes: list[Foe] = []
+        self.chests: list[Chest] = []
+        self.buildings: list[Building] = []
+        self.breakables: list[Breakable] = []
+        self.portals: list[Portal] = []
+        self.fountains: list[Fountain] = []
+        self.objectives: list[Objective] = []
+        self.doors: list[Door] = []
+
+    def values(self):
+        return self.__dict__.values()
+
+    def update(self, entities: dict[str, Sequence[Entity]]):
+        self.__dict__.update(entities)
 
 
 class EntityTurn(IntEnum):
@@ -212,7 +234,7 @@ class LevelScene(Scene):
         self.players: list[Player] = players
         self.escaped_players: list[Player] = []
 
-        self.entities: dict[str, list[Entity]] = {}
+        self.entities = LevelEntityCollections()
 
         self.missions, self.main_mission = None, None
 
@@ -264,8 +286,8 @@ class LevelScene(Scene):
             self.tmx_data, self.map["x"], self.map["y"]
         )
 
-        self.entities["players"] = self.players
-        self.entities["obstacles"] = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
+        self.entities.players = self.players
+        self.entities.obstacles = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
 
         if self.data is None:
             # Game is new
@@ -283,14 +305,14 @@ class LevelScene(Scene):
 
             self._determine_players_initial_position()
 
-            self.entities["foes"] = tmx_loader.load_foes(self.tmx_data, gap_x, gap_y)
-            self.entities["chests"] = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
-            self.entities["allies"] = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
-            self.entities["buildings"] = tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y)
-            self.entities["breakables"] = tmx_loader.load_breakables(self.tmx_data, gap_x, gap_y)
-            self.entities["portals"] = tmx_loader.load_portals(self.tmx_data, gap_x, gap_y)
-            self.entities["doors"] = tmx_loader.load_doors(self.tmx_data, gap_x, gap_y)
-            self.entities["fountains"] = tmx_loader.load_fountains(self.tmx_data, gap_x, gap_y)
+            self.entities.foes = tmx_loader.load_foes(self.tmx_data, gap_x, gap_y)
+            self.entities.chests = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
+            self.entities.allies = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
+            self.entities.buildings = tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y)
+            self.entities.breakables = tmx_loader.load_breakables(self.tmx_data, gap_x, gap_y)
+            self.entities.portals = tmx_loader.load_portals(self.tmx_data, gap_x, gap_y)
+            self.entities.doors = tmx_loader.load_doors(self.tmx_data, gap_x, gap_y)
+            self.entities.fountains = tmx_loader.load_fountains(self.tmx_data, gap_x, gap_y)
         else:
             # Game is loaded from a save (data)
             from_save = True
@@ -304,8 +326,8 @@ class LevelScene(Scene):
         self.missions, self.main_mission = tmx_loader.load_missions(
             self.tmx_data, self.players, self.map["x"], self.map["y"]
         )
-        self.entities["objectives"] = [objective for mission in self.missions for objective in
-                                       mission.objective_tiles]
+        self.entities.objectives = [objective for mission in self.missions for objective in
+                                    mission.objective_tiles]
 
         self.sidebar = Sidebar(
             (MENU_WIDTH, MENU_HEIGHT),
@@ -462,13 +484,13 @@ class LevelScene(Scene):
                 self.open_player_menu()
             return False
 
-        entities = []
+        entities: list[Movable] = []
         if self.side_turn is EntityTurn.PLAYER:
             entities = self.players
         elif self.side_turn is EntityTurn.ALLIES:
-            entities = self.entities["allies"]
+            entities = self.entities.allies
         elif self.side_turn is EntityTurn.FOES:
-            entities = self.entities["foes"]
+            entities = self.entities.foes
 
         for entity in entities:
             if not entity.turn_is_finished():
@@ -485,12 +507,12 @@ class LevelScene(Scene):
         """
         Open the menu displaying all the actions a playable character can do
         """
-        interactable_entities = (
-            self.entities["chests"]
-            + self.entities["portals"]
-            + self.entities["doors"]
-            + self.entities["fountains"]
-            + self.entities["allies"]
+        interactable_entities: list[Entity] = (
+            self.entities.chests
+            + self.entities.portals
+            + self.entities.doors
+            + self.entities.fountains
+            + self.entities.allies
             + self.players
         )
         self.menu_manager.open_menu(
@@ -512,10 +534,10 @@ class LevelScene(Scene):
                     "attack": self.select_attack_target,
                 },
                 self.selected_player,
-                self.entities["buildings"],
+                self.entities.buildings,
                 interactable_entities,
                 self.missions,
-                self.entities["foes"],
+                self.entities.foes,
             )
         )
 
@@ -704,11 +726,11 @@ class LevelScene(Scene):
         """
         tiles: list[tuple[float, float]] = []
 
-        entities = list(self.entities["breakables"])
+        entities = list(self.entities.breakables)
         if from_ally_side:
-            entities += self.entities["foes"]
+            entities += self.entities.foes
         else:
-            entities += self.entities["allies"] + self.players
+            entities += self.entities.allies + self.players
 
         for entity in entities:
             for i in reach:
@@ -876,7 +898,7 @@ class LevelScene(Scene):
         Keyword arguments:
         door -- the door that should be opened
         """
-        self.entities["doors"].remove(door)
+        self.entities.doors.remove(door)
 
         # TODO: move the creation of the pop-up in menu_creator_manager
         grid_element = [
@@ -900,7 +922,7 @@ class LevelScene(Scene):
         Keyword argument:
         character -- the character that should be cast
         """
-        self.entities["allies"].remove(character)
+        self.entities.allies.remove(character)
         player = Player(
             name=character.name,
             sprite=character.sprite,
@@ -916,7 +938,7 @@ class LevelScene(Scene):
             skills=character.skills,
             alterations=character.alterations,
         )
-        self.entities["players"].append(player)
+        self.entities.players.append(player)
         player.earn_xp(character.experience)
         player.hit_points = character.hit_points
         player.position = character.position
@@ -1103,13 +1125,13 @@ class LevelScene(Scene):
         """
         collection = None
         if isinstance(entity, Foe):
-            collection = self.entities["foes"]
+            collection = self.entities.foes
         elif isinstance(entity, Player):
-            collection = self.entities["players"]
+            collection = self.entities.players
         elif isinstance(entity, Breakable):
-            collection = self.entities["breakables"]
+            collection = self.entities.breakables
         elif isinstance(entity, Character):
-            collection = self.entities["allies"]
+            collection = self.entities.allies
         collection.remove(entity)
 
     def duel(
@@ -1159,14 +1181,14 @@ class LevelScene(Scene):
             # If target has less than 0 HP at the end of the attack
             if target.hit_points <= 0:
                 # XP gain increased
-                if isinstance(attacker, Character):
+                if isinstance(attacker, Character) and isinstance(target, Foe):
                     experience += target.xp_gain
 
                 self.diary_entries.append(
                     [TextElement(f"{target} died!", font=fonts["ITEM_DESC_FONT"])]
                 )
                 # Loot
-                if isinstance(attacker, Player):
+                if isinstance(attacker, Player) and isinstance(target, Foe):
                     # Check if foe dropped an item
                     loot: Sequence[Item] = target.roll_for_loot()
                     for item in loot:
@@ -1252,10 +1274,10 @@ class LevelScene(Scene):
             tuple(entity.position), entity.max_moves
         )
         targets: Sequence[Movable] = (
-            self.entities["foes"] if is_ally else self.players + self.entities["allies"]
+            self.entities.foes if is_ally else self.players + self.entities.allies
         )
         allies: Sequence[Movable] = (
-            self.players + self.entities["allies"] if is_ally else self.entities["foes"]
+            self.players + self.entities.allies if is_ally else self.entities.foes
         )
         tile: Optional[Position] = entity.act(
             possible_moves, self.distance_between_all(entity, targets)
@@ -1931,9 +1953,9 @@ class LevelScene(Scene):
             self.new_turn()
             entities = self.players
         elif self.side_turn is EntityTurn.ALLIES:
-            entities = self.entities["allies"]
+            entities = self.entities.allies
         elif self.side_turn is EntityTurn.FOES:
-            entities = self.entities["foes"]
+            entities = self.entities.foes
 
         for entity in entities:
             entity.new_turn()
@@ -1991,8 +2013,8 @@ class LevelScene(Scene):
                             self.duel(
                                 self.selected_player,
                                 entity,
-                                self.players + self.entities["allies"],
-                                self.entities["foes"],
+                                self.players + self.entities.allies,
+                                self.entities.foes,
                                 self.selected_player.attack_kind,
                             )
                             # Turn is finished
@@ -2048,7 +2070,7 @@ class LevelScene(Scene):
                         else {}
                     )
                 return
-        for entity in self.entities["foes"] + self.entities["allies"]:
+        for entity in self.entities.foes + self.entities.allies:
             if entity.is_on_position(position_inside_level):
                 self.menu_manager.open_menu(
                     menu_creator_manager.create_status_entity_menu(
