@@ -50,7 +50,7 @@ class TestLevel(unittest.TestCase):
         self.import_save_file("tests/test_saves/simple_save.xml")
 
         players = self.level.players
-        foe = self.level.entities["foes"][0]
+        foe = self.level.entities.foes[0]
         entities_with_dist = self.level.distance_between_all(foe, players)
 
         self.assertEqual(5, entities_with_dist[players[0]])
@@ -60,7 +60,7 @@ class TestLevel(unittest.TestCase):
         self.import_save_file("tests/test_saves/complete_first_level_save.xml")
 
         players = self.level.players
-        foes = self.level.entities["foes"]
+        foes = self.level.entities.foes
 
         raimund = None
         braern = None
