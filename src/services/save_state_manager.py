@@ -1,4 +1,9 @@
+from typing import Sequence
+
 from lxml import etree
+from lxml.etree import Element
+
+from src.game_entities.entity import Entity
 
 
 class SaveStateManager:
@@ -17,7 +22,7 @@ class SaveStateManager:
         file_id -- the id of the save file to use
         """
         with open(f"saves/save_{file_id}.xml", "w+") as save_file:
-            level = self.save_level()
+            level = self._save_level()
             self.tree.append(level)
 
             # Store XML tree in file
@@ -25,7 +30,7 @@ class SaveStateManager:
                 etree.tostring(self.tree, pretty_print=True, encoding="unicode")
             )
 
-    def save_level(self):
+    def _save_level(self):
         """
 
         :return:
@@ -46,56 +51,32 @@ class SaveStateManager:
             turn.text = str(self.level.turn)
 
         # Save current entities stats and position
-        entities = self.save_entities()
+        entities = self._save_entities()
         level.append(entities)
 
         return level
 
-    def save_entities(self):
+    def _save_entities(self):
         """
 
         :return:
         """
         entities = etree.Element("entities")
-
-        entities.append(
-            self.save_collection("allies", "ally", self.level.entities["allies"])
+        entities.extend(
+            [self.save_collection("allies", "ally", self.level.entities.allies),
+             self.save_collection("foes", "foe", self.level.entities.foes),
+             self.save_collection("breakables", "breakable", self.level.entities.breakables),
+             self.save_collection("chests", "chest", self.level.entities.chests),
+             self.save_collection("fountains", "fountain", self.level.entities.fountains),
+             self.save_collection("buildings", "building", self.level.entities.buildings),
+             self.save_collection("doors", "door", self.level.entities.doors),
+             self.save_collection("players", "player", self.level.players),
+             self.save_collection("escaped_players", "player", self.level.escaped_players)]
         )
-        entities.append(
-            self.save_collection("foes", "foe", self.level.entities["foes"])
-        )
-        entities.append(
-            self.save_collection(
-                "breakables", "breakable", self.level.entities["breakables"]
-            )
-        )
-        entities.append(
-            self.save_collection("chests", "chest", self.level.entities["chests"])
-        )
-        entities.append(
-            self.save_collection(
-                "fountains", "fountain", self.level.entities["fountains"]
-            )
-        )
-        entities.append(
-            self.save_collection(
-                "buildings", "building", self.level.entities["buildings"]
-            )
-        )
-        entities.append(
-            self.save_collection("doors", "door", self.level.entities["doors"])
-        )
-        entities.append(self.save_collection("players", "player", self.level.players))
-        entities.append(
-            self.save_collection(
-                "escaped_players", "player", self.level.escaped_players
-            )
-        )
-
         return entities
 
     @staticmethod
-    def save_collection(collection_name, element_name, collection):
+    def save_collection(collection_name: str, element_name: str, collection: Sequence[Entity]) -> Element:
         """
 
         :param collection_name:
@@ -104,5 +85,5 @@ class SaveStateManager:
         :return:
         """
         element = etree.Element(collection_name)
-        element.extend([ent.save(element_name) for ent in collection])
+        element.extend([entity.save(element_name) for entity in collection])
         return element
