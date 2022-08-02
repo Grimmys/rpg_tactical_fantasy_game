@@ -127,7 +127,7 @@ class Mission:
             self.succeeded_chars.append(player)
             self.ended = len(self.succeeded_chars) == self.min_chars
         elif self.type is MissionType.KILL_EVERYBODY:
-            self.ended = len(entities["foes"]) == 0
+            self.ended = len(entities.foes) == 0
         elif self.type is MissionType.KILL_TARGETS:
             self.ended = all((target.hit_points <= 0 for target in self.targets))
         elif self.type is MissionType.TURN_LIMIT:
