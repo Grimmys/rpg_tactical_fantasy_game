@@ -6,17 +6,22 @@ accomplished by the player during a level.
 from __future__ import annotations
 
 from enum import Enum, auto
-from typing import Sequence, Optional
+from typing import Sequence, Optional, TYPE_CHECKING
+
+from typing import TYPE_CHECKING
+
 
 import pygame
 
 from src.constants import TILE_SIZE
 from src.game_entities.destroyable import Destroyable
-from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.objective import Objective
 from src.game_entities.player import Player
 from src.gui.position import Position
+
+if TYPE_CHECKING:
+    from src.scenes.level_scene import LevelEntityCollections
 
 
 class MissionType(Enum):
@@ -108,7 +113,7 @@ class Mission:
     def update_state(
         self,
         player: Player = None,
-        entities: Optional[dict[str, Sequence[Entity]]] = None,
+        entities: Optional[LevelEntityCollections] = None,
         turns: int = 0,
     ) -> None:
         """
@@ -127,7 +132,7 @@ class Mission:
             self.succeeded_chars.append(player)
             self.ended = len(self.succeeded_chars) == self.min_chars
         elif self.type is MissionType.KILL_EVERYBODY:
-            self.ended = len(entities["foes"]) == 0
+            self.ended = len(entities.foes) == 0
         elif self.type is MissionType.KILL_TARGETS:
             self.ended = all((target.hit_points <= 0 for target in self.targets))
         elif self.type is MissionType.TURN_LIMIT:

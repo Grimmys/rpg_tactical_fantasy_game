@@ -6,6 +6,7 @@ import pygame
 from src.constants import TILE_SIZE
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
+from src.scenes.level_scene import LevelEntityCollections
 from tests.random_data_library import (
     random_item,
     random_position,
@@ -119,7 +120,8 @@ class TestMission(unittest.TestCase):
         nature = MissionType.KILL_EVERYBODY
         mission = Mission(True, nature, [], "Test mission", 0)
         foes = random_entities(Foe, min_number=2)
-        entities = {"foes": foes}
+        entities = LevelEntityCollections()
+        entities.foes = foes
 
         mission.update_state(entities=entities)
         self.assertFalse(mission.ended)

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os
 from enum import IntEnum, auto
-from typing import Sequence, Union, Optional, Set, Type
+from typing import Sequence, Union, Optional, Set, Type, List
 
 import pygame
 import pytmx
@@ -45,7 +45,7 @@ from src.game_entities.fountain import Fountain
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.key import Key
-from src.game_entities.mission import MissionType
+from src.game_entities.mission import MissionType, Mission
 from src.game_entities.movable import Movable
 from src.game_entities.objective import Objective
 from src.game_entities.obstacle import Obstacle
@@ -234,9 +234,10 @@ class LevelScene(Scene):
         self.players: list[Player] = players
         self.escaped_players: list[Player] = []
 
-        self.entities = LevelEntityCollections()
+        self.entities: LevelEntityCollections = LevelEntityCollections()
 
-        self.missions, self.main_mission = None, None
+        self.missions: Optional[List[Mission]] = None
+        self.main_mission: Optional[Mission] = None
 
         # Booleans for end game
         # TODO : these booleans are mutually exclusive and so seem a little redundant.
