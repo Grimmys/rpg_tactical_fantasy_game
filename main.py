@@ -4,7 +4,7 @@
 The entry point of the game.
 Initiate pygame, load game generic data & fonts, initiate pygame window
 and let the main loop running.
-The pygame events are catch here and delegated to the start screen.
+The pygame events are caught here and delegated to the start screen.
 """
 
 import pygame
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     pygame.mixer.music.load(os.path.join("sound_fx", "soundtrack.ogg"))
     pygame.mixer.music.play(-1)
 
-    # Let's the game start!
+    # Lets the game start!
     main_loop(scene_manager, main_screen, pygame.time.Clock())
 
     pygame.quit()

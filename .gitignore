@@ -1,6 +1,7 @@
 __pycache__/
 build/
 *.zip
+*.whl
 saves/*.xml
 .coverage
 .coverage.*
