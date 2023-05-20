@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="23">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="18" height="9" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="23">
  <properties>
   <property name="chapter_id" type="int" value="1"/>
   <property name="level_name" value="In the Shadows of the Trees"/>
@@ -12,32 +12,30 @@
   <property name="secondary_missions" value="limited"/>
  </properties>
  <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
- <layer id="1" name="ground" width="20" height="10">
+ <layer id="1" name="ground" width="18" height="9">
   <data encoding="csv">
-591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,
-591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,
-591,591,591,591,591,591,593,593,591,591,591,591,591,591,591,591,591,591,591,591,
-591,592,591,591,592,591,593,591,591,591,591,591,593,591,592,592,591,591,591,591,
-592,592,592,592,592,592,591,591,592,591,591,592,591,592,592,592,592,592,591,591,
-592,591,592,593,593,592,592,592,592,592,592,592,592,592,591,591,592,592,592,592,
-591,591,593,593,591,591,592,592,591,591,592,591,591,591,591,591,591,591,591,592,
-591,591,591,591,591,593,591,591,591,593,591,591,593,591,593,591,591,591,591,591,
-591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,
-591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591
+591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,
+591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,
+591,591,591,591,591,591,593,593,591,591,591,591,591,591,591,591,591,591,
+591,592,591,591,592,591,593,591,591,591,591,591,592,592,591,591,591,591,
+592,592,592,592,592,592,591,591,592,591,591,592,592,592,592,592,591,591,
+592,591,592,593,593,592,592,592,592,592,592,592,591,591,592,592,592,592,
+591,591,593,593,591,591,592,592,591,591,592,591,591,591,591,591,591,592,
+591,591,591,591,591,593,591,591,591,593,591,591,593,591,591,591,591,591,
+591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591,591
 </data>
  </layer>
- <layer id="2" name="obstacles" width="20" height="10">
+ <layer id="2" name="obstacles" width="18" height="9">
   <data encoding="csv">
-1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,1,1,1,1,1,
-1,1,1,848,1,1,848,1,1,1,846,1,1,1,847,1,1,1,1,1,
-1,846,848,1,1,1,1,1,847,1,1,847,1,1,1,1,1,847,1,1,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-1,1,846,1,1,1,1,1,1,1,1,1,848,1,1,1,848,1,1,1,
-1,1,1,1,1,848,847,1,1,848,1,847,1,1,1,1,1,1,1,1,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,1,1,1,
+1,1,1,848,1,1,848,1,1,1,846,1,1,1,847,1,1,1,
+1,846,848,1,1,1,1,1,847,1,1,847,1,1,1,1,1,847,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,846,1,1,1,1,1,1,1,1,1,848,1,1,1,848,1,
+1,1,1,1,1,848,847,1,1,848,1,847,1,1,1,1,1,1
 </data>
  </layer>
  <objectgroup id="3" name="dynamic_data">
@@ -70,12 +68,7 @@
     <property name="level" type="int" value="2"/>
    </properties>
   </object>
-  <object id="8" name="assassin" type="foe" x="544" y="32" width="32" height="32">
-   <properties>
-    <property name="level" type="int" value="3"/>
-   </properties>
-  </object>
-  <object id="9" name="assassin" type="foe" x="576" y="256" width="32" height="32">
+  <object id="9" name="assassin" type="foe" x="544" y="256" width="32" height="32">
    <properties>
     <property name="level" type="int" value="1"/>
    </properties>
@@ -85,17 +78,12 @@
     <property name="level" type="int" value="2"/>
    </properties>
   </object>
-  <object id="12" name="cultist" type="foe" x="480" y="256" width="32" height="32">
-   <properties>
-    <property name="level" type="int" value="1"/>
-   </properties>
-  </object>
   <object id="13" name="cultist" type="foe" x="32" y="192" width="32" height="32">
    <properties>
     <property name="level" type="int" value="2"/>
    </properties>
   </object>
-  <object id="14" name="cultist" type="foe" x="320" y="288" width="32" height="32">
+  <object id="14" name="cultist" type="foe" x="320" y="256" width="32" height="32">
    <properties>
     <property name="level" type="int" value="2"/>
    </properties>
@@ -122,7 +110,7 @@
     <property name="dialogs" value="0"/>
    </properties>
   </object>
-  <object id="22" name="after_init" type="after_init" x="608" y="128" width="32" height="32">
+  <object id="22" name="after_init" type="after_init" x="544" y="128" width="32" height="32">
    <properties>
     <property name="dialogs" value="1"/>
     <property name="new_players" value="chrisemon"/>
