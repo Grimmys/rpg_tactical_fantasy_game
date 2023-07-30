@@ -1227,49 +1227,6 @@ def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
     )
 
 
-def create_trade_item_menu(
-        buttons_callback: dict[str, Callable],
-        item_button_position: Position,
-        item: Item,
-        players: Sequence[Player],
-        is_first_player_owner: bool,
-) -> InfoBox:
-    """
-    Return the interface of an item that is in a player inventory
-    and can be trade to another player.
-
-    Keyword arguments:
-    item_button_position -- the position of the item (so the pop-up could be displayed beside it)
-    item -- the concerned item
-    players -- the two players that are currently involve in the trade
-    """
-    grid_elements = [
-        [Button(title="Info", callback=buttons_callback["info_item"])],
-        [
-            Button(
-                title="Trade",
-                callback=lambda: buttons_callback["trade_item"](
-                    players[0], players[1], is_first_player_owner
-                ),
-            )
-        ],
-    ]
-    formatted_item_name = str(item)
-
-    item_rect = pygame.Rect(
-        item_button_position[0] - 20,
-        item_button_position[1],
-        TRADE_ITEM_BUTTON_SIZE[0],
-        TRADE_ITEM_BUTTON_SIZE[1],
-    )
-
-    return InfoBox(
-        formatted_item_name,
-        grid_elements,
-        width=ACTION_MENU_WIDTH,
-        element_linked=item_rect,
-    )
-
 def create_reward_menu(mission: Mission) -> InfoBox:
     """
     Return the interface for an accomplished mission.
@@ -1426,17 +1383,3 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         )
 
     return InfoBox("Save Game", element_grid, width=START_MENU_WIDTH)
-
-
-def create_save_dialog(buttons_callback: dict[str, Callable],) -> InfoBox:
-
-    element_grid = [
-        [Button(title="Yes", callback=buttons_callback["yes"])],
-        [Button(title="No", callback=buttons_callback["no"])],
-    ]
-    return InfoBox(
-        "Save the Game?",
-        element_grid,
-        width=ACTION_MENU_WIDTH,
-        has_close_button=False
-    )
