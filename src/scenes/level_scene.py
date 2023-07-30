@@ -68,6 +68,7 @@ from src.gui.tools import blit_alpha
 from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
+    create_save_dialog,
     create_event_dialog,
     INVENTORY_MENU_ID,
     SHOP_MENU_ID,
@@ -184,14 +185,14 @@ class LevelScene(Scene):
     IDS = [0, 1, 2, 3]
 
     def __init__(
-        self,
-        screen: pygame.Surface,
-        directory: str,
-        number: int,
-        status: LevelStatus = LevelStatus.INITIALIZATION,
-        turn: int = 0,
-        data: Optional[etree.Element] = None,
-        players: Optional[Sequence[Player]] = None,
+            self,
+            screen: pygame.Surface,
+            directory: str,
+            number: int,
+            status: LevelStatus = LevelStatus.INITIALIZATION,
+            turn: int = 0,
+            data: Optional[etree.Element] = None,
+            players: Optional[Sequence[Player]] = None,
     ) -> None:
         if players is None:
             players = []
@@ -274,6 +275,13 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
+    def no_dont(self):
+        self.menu_manager.close_active_menu()
+
+    def yes_save(self):
+        self.menu_manager.close_active_menu()
+        self.open_save_menu()
+
     def load_level_content(self) -> None:
         """
         Load all the content of the level
@@ -303,6 +311,8 @@ class LevelScene(Scene):
                         player = loader.init_player(player_el["name"])
                         player.position = player_el["position"]
                         self.players.append(player)
+            if self.directory != "maps/level_0/":
+                self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont}))
 
             self._determine_players_initial_position()
 
@@ -438,8 +448,8 @@ class LevelScene(Scene):
             if self.animation.animate():
                 self.animation = None
                 if (
-                    self.game_phase > LevelStatus.IN_PROGRESS
-                    and not self.menu_manager.active_menu
+                        self.game_phase > LevelStatus.IN_PROGRESS
+                        and not self.menu_manager.active_menu
                 ):
                     self.exit_game()
             return False
@@ -448,8 +458,8 @@ class LevelScene(Scene):
             return False
 
         if (
-            self.game_phase is LevelStatus.ENDED_DEFEAT
-            or self.game_phase is LevelStatus.ENDED_VICTORY
+                self.game_phase is LevelStatus.ENDED_DEFEAT
+                or self.game_phase is LevelStatus.ENDED_VICTORY
         ):
             return True
 
@@ -478,9 +488,9 @@ class LevelScene(Scene):
         if self.selected_player:
             self.selected_player.move()
             if (
-                self.selected_player.is_waiting_post_action()
-                and not self.possible_attacks
-                and not self.possible_interactions
+                    self.selected_player.is_waiting_post_action()
+                    and not self.possible_attacks
+                    and not self.possible_interactions
             ):
                 self.open_player_menu()
             return False
@@ -509,12 +519,12 @@ class LevelScene(Scene):
         Open the menu displaying all the actions a playable character can do
         """
         interactable_entities: list[Entity] = (
-            self.entities.chests
-            + self.entities.portals
-            + self.entities.doors
-            + self.entities.fountains
-            + self.entities.allies
-            + self.players
+                self.entities.chests
+                + self.entities.portals
+                + self.entities.doors
+                + self.entities.fountains
+                + self.entities.allies
+                + self.players
         )
         self.menu_manager.open_menu(
             menu_creator_manager.create_player_menu(
@@ -682,7 +692,7 @@ class LevelScene(Scene):
         return tiles_content
 
     def get_possible_moves(
-        self, position: Position, max_moves: int
+            self, position: Position, max_moves: int
     ) -> dict[Position, int]:
         """
         Return all the possible moves with their distance from the starting position
@@ -702,8 +712,8 @@ class LevelScene(Scene):
                         tile_y: int = tile[1] + (y_coordinate * TILE_SIZE)
                         tile_position = (tile_x, tile_y)
                         if (
-                            self.is_tile_available(tile_position)
-                            and tile_position not in tiles
+                                self.is_tile_available(tile_position)
+                                and tile_position not in tiles
                         ):
                             tiles_current_level[tile_position] = i
             tiles.update(previously_computed_tiles)
@@ -712,10 +722,10 @@ class LevelScene(Scene):
         return tiles
 
     def get_possible_attacks(
-        self,
-        possible_moves: Sequence[tuple[int, int]],
-        reach: Sequence[int],
-        from_ally_side: bool,
+            self,
+            possible_moves: Sequence[tuple[int, int]],
+            reach: Sequence[int],
+            from_ally_side: bool,
     ) -> Set[tuple[float, float]]:
         """
         Return all the tiles that could be targeted for an attack from a specific entity
@@ -758,10 +768,10 @@ class LevelScene(Scene):
             self.map["y"] + self.map["height"],
         )
         if not (
-            all(
-                minimum <= case < maximum
-                for minimum, case, maximum in zip(min_case, tile, max_case)
-            )
+                all(
+                    minimum <= case < maximum
+                    for minimum, case, maximum in zip(min_case, tile, max_case)
+                )
         ):
             return False
 
@@ -787,7 +797,7 @@ class LevelScene(Scene):
         return None
 
     def determine_path_to(
-        self, destination_tile: Position, distance_for_tile: dict[tuple[int, int], int]
+            self, destination_tile: Position, distance_for_tile: dict[tuple[int, int], int]
     ) -> list[Position]:
         """
         Return an ordered list of position that represent the path from one tile to another
@@ -812,7 +822,7 @@ class LevelScene(Scene):
         return path
 
     def distance_between_all(
-        self, entity: Entity, all_other_entities: Sequence
+            self, entity: Entity, all_other_entities: Sequence
     ) -> dict[Entity, int]:
         """
         Return the distance between each different given entities for a reference entity
@@ -832,8 +842,8 @@ class LevelScene(Scene):
         for tile, distance in free_tiles_distance.items():
             for neighbour in self.get_next_cases(tile):
                 if (
-                    neighbour in all_other_entities
-                    and distance < entities_distance[neighbour]
+                        neighbour in all_other_entities
+                        and distance < entities_distance[neighbour]
                 ):
                     entities_distance[neighbour] = distance
         return entities_distance
@@ -946,7 +956,7 @@ class LevelScene(Scene):
         player.items = character.items
 
     def interact(
-        self, actor: Character, target: Entity, target_position: Position
+            self, actor: Character, target: Entity, target_position: Position
     ) -> None:
         """
         Handle the interaction of a character with a given entity
@@ -1136,12 +1146,12 @@ class LevelScene(Scene):
         collection.remove(entity)
 
     def duel(
-        self,
-        attacker: Movable,
-        target: Destroyable,
-        attacker_allies: Sequence[Destroyable],
-        target_allies: Sequence[Destroyable],
-        kind: DamageKind,
+            self,
+            attacker: Movable,
+            target: Destroyable,
+            attacker_allies: Sequence[Destroyable],
+            target_allies: Sequence[Destroyable],
+            kind: DamageKind,
     ) -> None:
         """
         Handle the development of an attack from one entity to another
@@ -1344,7 +1354,7 @@ class LevelScene(Scene):
             self.active_shop.current_visitor.items
         )
         items: list[Optional[Item]] = (
-            list(self.active_shop.current_visitor.items) + [None] * free_spaces
+                list(self.active_shop.current_visitor.items) + [None] * free_spaces
         )
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
@@ -1385,8 +1395,8 @@ class LevelScene(Scene):
         """
         for mission in self.missions:
             if (
-                mission.type is MissionType.POSITION
-                or mission.type is MissionType.TOUCH_POSITION
+                    mission.type is MissionType.POSITION
+                    or mission.type is MissionType.TOUCH_POSITION
             ):
                 # Verify that character is not the last if the mission is not the main one
                 if mission.main or len(self.players) > 1:
@@ -1421,7 +1431,7 @@ class LevelScene(Scene):
         self.possible_interactions = []
         for entity in self.get_next_cases(self.selected_player.position):
             if (isinstance(entity, Chest) and not entity.opened) or isinstance(
-                entity, Door
+                    entity, Door
             ):
                 self.possible_interactions.append(entity.position)
 
@@ -1530,7 +1540,7 @@ class LevelScene(Scene):
             self.selected_player.items
         )
         items: list[Optional[Item]] = (
-            list(self.selected_player.items) + [None] * free_spaces
+                list(self.selected_player.items) + [None] * free_spaces
         )
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
@@ -1579,11 +1589,11 @@ class LevelScene(Scene):
         )
 
     def interact_trade_item(
-        self,
-        item: Item,
-        item_button: Button,
-        players: Sequence[Player],
-        is_first_player_owner: bool,
+            self,
+            item: Item,
+            item_button: Button,
+            players: Sequence[Player],
+            is_first_player_owner: bool,
     ) -> None:
         """
         Handle the interaction with an item from player inventory or equipment during a trade
@@ -1610,7 +1620,7 @@ class LevelScene(Scene):
         )
 
     def trade_item(
-        self, first_player: Player, second_player: Player, is_first_player_owner: bool
+            self, first_player: Player, second_player: Player, is_first_player_owner: bool
     ) -> None:
         """
         Trade an item between to playable characters
@@ -1674,11 +1684,11 @@ class LevelScene(Scene):
         )
 
     def send_gold(
-        self,
-        first_player: Player,
-        second_player: Player,
-        is_first_player_sender: bool,
-        value: int,
+            self,
+            first_player: Player,
+            second_player: Player,
+            is_first_player_sender: bool,
+            value: int,
     ) -> None:
         """
         Trade some gold between to playable characters
@@ -1713,7 +1723,7 @@ class LevelScene(Scene):
         self.menu_manager.close_active_menu()
         # Remove item from inventory/equipment according to the index
         if isinstance(
-            self.selected_item, Equipment
+                self.selected_item, Equipment
         ) and self.selected_player.has_exact_equipment(self.selected_item):
             self.selected_player.remove_equipment(self.selected_item)
             equipments = list(self.selected_player.equipments)
@@ -1726,7 +1736,7 @@ class LevelScene(Scene):
                 self.selected_player.items
             )
             items: list[Optional[Item]] = (
-                list(self.selected_player.items) + [None] * free_spaces
+                    list(self.selected_player.items) + [None] * free_spaces
             )
             new_items_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
@@ -1768,7 +1778,7 @@ class LevelScene(Scene):
                 self.active_shop.current_visitor.items
             )
             items: list[Optional[Item]] = (
-                list(self.active_shop.current_visitor.items) + [None] * free_spaces
+                    list(self.active_shop.current_visitor.items) + [None] * free_spaces
             )
             new_sell_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_sell_item,
@@ -1909,7 +1919,7 @@ class LevelScene(Scene):
             self.selected_player.items
         )
         items: list[Optional[Item]] = (
-            list(self.selected_player.items) + [None] * free_spaces
+                list(self.selected_player.items) + [None] * free_spaces
         )
         new_inventory_menu = menu_creator_manager.create_inventory_menu(
             self.interact_item, items, self.selected_player.gold
@@ -1994,7 +2004,7 @@ class LevelScene(Scene):
                     # Player is waiting to move
                     for move in self.possible_moves:
                         if pygame.Rect(move, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                            position_inside_level
+                                position_inside_level
                         ):
                             path = self.determine_path_to(move, self.possible_moves)
                             self.selected_player.set_move(path)
@@ -2008,7 +2018,7 @@ class LevelScene(Scene):
                     # Player is waiting to attack
                     for attack in self.possible_attacks:
                         if pygame.Rect(attack, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                            position_inside_level
+                                position_inside_level
                         ):
                             entity = self.get_entity_on_tile(attack)
                             self.duel(
@@ -2025,7 +2035,7 @@ class LevelScene(Scene):
                     # Player is waiting to interact
                     for interact in self.possible_interactions:
                         if pygame.Rect(interact, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                            position_inside_level
+                                position_inside_level
                         ):
                             entity = self.get_entity_on_tile(interact)
                             self.interact(self.selected_player, entity, interact)
@@ -2034,7 +2044,7 @@ class LevelScene(Scene):
                 # Initialization phase : player try to change the place of the selected character
                 for tile in self.player_possible_placements:
                     if pygame.Rect(tile, (TILE_SIZE, TILE_SIZE)).collidepoint(
-                        position_inside_level
+                            position_inside_level
                     ):
                         # Test if a character is on the tile, in this case, characters are swapped
                         entity = self.get_entity_on_tile(tile)
@@ -2175,15 +2185,15 @@ class LevelScene(Scene):
         """
         if button == 3:
             if (
-                not self.menu_manager.active_menu
-                and not self.selected_player
-                and self.side_turn is EntityTurn.PLAYER
+                    not self.menu_manager.active_menu
+                    and not self.selected_player
+                    and self.side_turn is EntityTurn.PLAYER
             ):
                 position_inside_level = self._compute_relative_position(position)
                 for collection in self.entities.values():
                     for entity in collection:
                         if isinstance(
-                            entity, Movable
+                                entity, Movable
                         ) and entity.get_rect().collidepoint(position_inside_level):
                             self.watched_entity = entity
                             self.possible_moves = self.get_possible_moves(
