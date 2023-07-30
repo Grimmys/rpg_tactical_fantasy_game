@@ -68,7 +68,6 @@ from src.gui.tools import blit_alpha
 from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
-    create_save_dialog,
     create_event_dialog,
     INVENTORY_MENU_ID,
     SHOP_MENU_ID,
@@ -275,13 +274,6 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
-    def no_dont(self):
-        self.menu_manager.close_active_menu()
-
-    def yes_save(self):
-        self.menu_manager.close_active_menu()
-        self.open_save_menu()
-
     def load_level_content(self) -> None:
         """
         Load all the content of the level
@@ -311,8 +303,6 @@ class LevelScene(Scene):
                         player = loader.init_player(player_el["name"])
                         player.position = player_el["position"]
                         self.players.append(player)
-            if self.directory != "maps/level_0/":
-                self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont}))
 
             self._determine_players_initial_position()
 
