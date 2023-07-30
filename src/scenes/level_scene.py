@@ -312,6 +312,7 @@ class LevelScene(Scene):
                         player.position = player_el["position"]
                         self.players.append(player)
             if self.directory != "maps/level_0/":
+                # Not in level0
                 self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont}))
 
             self._determine_players_initial_position()
