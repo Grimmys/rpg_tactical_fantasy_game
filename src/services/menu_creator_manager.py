@@ -1386,7 +1386,9 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
 
 
 def create_save_dialog(buttons_callback: dict[str, Callable],) -> InfoBox:
-
+    """
+    Return the interface of the save game reminder
+    """
     element_grid = [
         [Button(title="Yes", callback=buttons_callback["yes"])],
         [Button(title="No", callback=buttons_callback["no"])],
