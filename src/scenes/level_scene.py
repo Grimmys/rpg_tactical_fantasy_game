@@ -267,6 +267,7 @@ class LevelScene(Scene):
         self.wait_for_teleportation_destination: bool = False
         self.diary_entries: list[list[BoxElement]] = []
         self.traded_items: list[list[Union[Item, Player]]] = []
+        self.traded_gold: list[list[Union[int, Player]]] = []
 
         self.wait_sfx: Optional[pygame.mixer.Sound] = None
         self.inventory_sfx: Optional[pygame.mixer.Sound] = None
@@ -1505,6 +1506,7 @@ class LevelScene(Scene):
         self.selected_player.end_turn()
         self.selected_player = None
         self.traded_items.clear()
+        self.traded_gold.clear()
         self.possible_moves.clear()
         self.possible_attacks.clear()
         self.possible_interactions.clear()
@@ -1694,6 +1696,7 @@ class LevelScene(Scene):
         sender: Player = first_player if is_first_player_sender else second_player
         receiver: Player = second_player if is_first_player_sender else first_player
         Player.trade_gold(sender, receiver, value)
+        self.traded_gold.append([value, sender, receiver])
         self.menu_manager.close_active_menu()
         self.menu_manager.open_menu(
             menu_creator_manager.create_trade_menu(
@@ -2118,6 +2121,7 @@ class LevelScene(Scene):
                 if self.menu_manager.active_menu.title == "Select an action":
                     if self.selected_player.cancel_move():
                         if self.traded_items:
+                            # Return traded items
                             for item in self.traded_items:
                                 if item[1] == self.selected_player:
                                     item[2].remove_item(item[0])
@@ -2126,6 +2130,15 @@ class LevelScene(Scene):
                                     self.selected_player.remove_item(item[0])
                                     item[1].set_item(item[0])
                             self.traded_items.clear()
+                        if self.traded_gold:
+                            # Return traded gold
+                            for gold in self.traded_gold:
+                                if gold[1] == self.selected_player:
+                                    self.selected_player.gold += gold[0]
+                                    gold[2].gold -= gold[0]
+                                else:
+                                    self.selected_player.gold -= gold[0]
+                                    gold[2].gold += gold[0]
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
