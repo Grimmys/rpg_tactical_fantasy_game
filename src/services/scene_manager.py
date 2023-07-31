@@ -49,6 +49,8 @@ class SceneManager:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button in (1, 3):
                     self.active_scene.button_down(event.button, event.pos)
+            elif event.type == pygame.KEYDOWN:
+                self.active_scene.key_down(event.key)
         if self.active_scene.update_state():
             self.start_new_scene()
             return False
