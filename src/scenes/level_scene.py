@@ -173,7 +173,8 @@ class LevelScene(Scene):
     wait_for_teleportation_destination -- a boolean indicating if the level is waiting for player
     to choose for the destination of a teleportation
     diary_entries -- the log of the most recent battles
-    turn_items -- the items that have been trade during the current player turn
+    traded_items -- the items that have been trade during the current player turn
+    traded_gold -- the gold that have been trade during the current player turn
     wait_sfx -- the sound that should be started when a player ends his turn
     inventory_sfx -- the sound that should be started when the inventory screen is opening
     armor_sfx -- the sound that should be started when the equipment screen is opening
