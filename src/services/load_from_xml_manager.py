@@ -1078,10 +1078,12 @@ def load_player(player_element, from_save, gap_x=0, gap_y=0):
     return player
 
 
-def load_players(data, gap_x, gap_y):
+def load_players(data, gap_x=0, gap_y=0):
     """
 
     :param data:
+    :param gap_x, default 0:
+    :param gap_y, default 0:
     :return:
     """
     players = []
