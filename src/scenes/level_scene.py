@@ -318,7 +318,16 @@ class LevelScene(Scene):
             # Game is loaded from a save (data)
             from_save = True
             gap_x, gap_y = (0, 0)
-            self.players.extend(loader.load_players(self.data))
+            if (self.map["width"] / TILE_SIZE) % 2 == 1:
+                # If the number of columns is odd, calibrate the x-axis coordinates
+                # Translate the x-coordinate half TILE_SIZE to the right
+                # TODO: Check whether the sign of the following formula is correct.
+                gap_x = 0.5 * TILE_SIZE
+            if (self.map["height"] / TILE_SIZE) % 2 == 1:
+                # If the number of rows is odd, calibrate the y-axis coordinates
+                # Translate the y-coordinate half TILE_SIZE downward
+                gap_y = 0.5 * TILE_SIZE
+            self.players.extend(loader.load_players(self.data, gap_x, gap_y))
             self.escaped_players = loader.load_escaped_players(self.data)
             self.entities.update(
                 loader.load_all_entities_from_save(self.data, gap_x, gap_y)
