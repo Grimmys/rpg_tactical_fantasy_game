@@ -971,11 +971,13 @@ def load_events(events_el, gap_x, gap_y):
     return events
 
 
-def load_player(player_element, from_save):
+def load_player(player_element, from_save, gap_x=0, gap_y=0):
     """
 
     :param player_element:
     :param from_save:
+    :param gap_x, default value 0:
+    :param gap_y, default value 0:
     :return:
     """
     name = player_element.find("name").text.strip()
@@ -1060,8 +1062,8 @@ def load_player(player_element, from_save):
     player.hit_points = current_hp
     if from_save:
         position = (
-            int(player_element.find("position/x").text.strip()) * TILE_SIZE,
-            int(player_element.find("position/y").text.strip()) * TILE_SIZE,
+            int(player_element.find("position/x").text.strip()) * TILE_SIZE + gap_x,
+            int(player_element.find("position/y").text.strip()) * TILE_SIZE + gap_y,
         )
         player.position = position
         state = player_element.find("turnFinished").text.strip()
@@ -1076,7 +1078,7 @@ def load_player(player_element, from_save):
     return player
 
 
-def load_players(data):
+def load_players(data, gap_x, gap_y):
     """
 
     :param data:
@@ -1084,7 +1086,7 @@ def load_players(data):
     """
     players = []
     for player_element in data.findall("players/player"):
-        players.append(load_player(player_element, True))
+        players.append(load_player(player_element, True, gap_x, gap_y))
     return players
 
 
