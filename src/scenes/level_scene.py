@@ -318,12 +318,12 @@ class LevelScene(Scene):
             # Game is loaded from a save (data)
             from_save = True
             gap_x, gap_y = (0, 0)
-            if (self.map["width"] / TILE_SIZE) % 2 == 1:
+            if (self.map["width"] // TILE_SIZE) % 2 == 1:
                 # If the number of columns is odd, calibrate the x-axis coordinates
                 # Translate the x-coordinate half TILE_SIZE to the right
                 # TODO: Check whether the sign of the following formula is correct.
                 gap_x = 0.5 * TILE_SIZE
-            if (self.map["height"] / TILE_SIZE) % 2 == 1:
+            if (self.map["height"] // TILE_SIZE) % 2 == 1:
                 # If the number of rows is odd, calibrate the y-axis coordinates
                 # Translate the y-coordinate half TILE_SIZE downward
                 gap_y = 0.5 * TILE_SIZE
