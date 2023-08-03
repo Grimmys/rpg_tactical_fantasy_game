@@ -1,0 +1,13 @@
+<map>
+ <properties>
+  <property name="chapter_id" type="int" value="1"/>
+  <property name="level_name" value="树影之间"/>
+  <property name="limited_mission_description" value="在10个回合内取得胜利"/>
+  <property name="limited_mission_gold_reward" type="int" value="200"/>
+  <property name="limited_mission_turns" type="int" value="10"/>
+  <property name="limited_mission_type" value="TURN_LIMIT"/>
+  <property name="main_mission_description" value="击败暴徒"/>
+  <property name="main_mission_type" value="KILL_EVERYBODY"/>
+  <property name="secondary_missions" value="limited"/>
+ </properties>
+</map>

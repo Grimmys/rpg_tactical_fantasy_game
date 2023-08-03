@@ -10,6 +10,7 @@ from lxml import etree
 
 from src.constants import TILE_SIZE
 from src.gui.position import Position
+from src.gui.language import *
 
 
 class Entity:
@@ -63,10 +64,13 @@ class Entity:
         Return the formatted text version of the entity based on its name,
         underscores are replaced by spaces and numbers are removed.
         """
-        string_entity: str = self.name.replace("_", " ").title()
-        string_entity = re.sub(
-            r"[0-9]+", "", string_entity
-        )  # Remove numbers like the id
+        try:
+            string_entity: str = dict_entity_names[re.sub(r"[0-9]+", "", self.name)]
+        except KeyError:
+            string_entity: str = self.name.replace("_", " ").title()
+            string_entity = re.sub(
+                r"[0-9]+", "", string_entity
+            )  # Remove numbers like the id
         return string_entity.strip()
 
     def is_on_position(self, position: Position) -> bool:

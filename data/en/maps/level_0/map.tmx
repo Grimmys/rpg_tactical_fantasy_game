@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="152">
+ <editorsettings>
+  <export format="tmx"/>
+ </editorsettings>
+ <properties>
+  <property name="chapter_id" type="int" value="1"/>
+  <property name="level_name" value="Crypt Vandalism"/>
+  <property name="main_mission_description" value="Leave the village"/>
+  <property name="main_mission_type" value="POSITION"/>
+ </properties>
+ <tileset firstgid="1" source="../../../../imgs/tiled_tilesets/dungeon.tsx"/>
+ <tileset firstgid="6081" source="../../../../imgs/tiled_tilesets/houses.tsx"/>
+ <layer id="1" name="ground" width="16" height="10">
+  <data encoding="csv">
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,
+589,589,589,589,589,589,589,589,589,589,589,589,589,589,589,589
+</data>
+ </layer>
+ <layer id="2" name="obstacles" width="16" height="10">
+  <data encoding="csv">
+1,850,1,1,1,1,1,851,6116,1,1,848,6129,6093,6095,6131,
+848,1,854,1,848,1,852,1,1,850,1,1,1,1,1,853,
+1,1,1,1,1,850,1,848,1,1,848,1,1,1,851,854,
+1,1,1,1,1,1,1,1,1,1,1,1,1,848,1,6081,
+854,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6087,
+847,852,1,1,1,1,1,1,1,1,1,1,1,1,1,6093,
+848,1,1,854,1,1,1,1,1,1,1,1,1,1,1,849,
+1,852,1,1,1,848,1,848,1,1,1,1,1,1,1,848,
+1,854,848,1,848,1,848,1,852,1,854,1,1,1,1,850,
+1,1,1,854,1,852,1,854,852,854,1,6081,6082,6083,848,1
+</data>
+ </layer>
+ <objectgroup id="5" name="dynamic_data">
+  <object id="14" name="Exit" type="objective" gid="1099" x="0" y="96" width="32" height="32">
+   <properties>
+    <property name="mission" value="main"/>
+    <property name="walkable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="104" name="Exit" type="objective" gid="1093" x="0" y="128" width="32" height="32">
+   <properties>
+    <property name="mission" value="main"/>
+    <property name="walkable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="112" name="skeleton" type="foe" x="416" y="128" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="115" name="skeleton" type="foe" x="320" y="192" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="119" name="skeleton" type="foe" x="224" y="96" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="120" name="skeleton" type="foe" x="32" y="32" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="121" name="necrophage" type="foe" x="384" y="64" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="122" name="necrophage" type="foe" x="192" y="160" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="123" name="necrophage" type="foe" x="64" y="128" width="32" height="32">
+   <properties>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="125" name="placement" type="placement" x="384" y="224" width="32" height="32"/>
+  <object id="130" name="placement" type="placement" x="384" y="256" width="32" height="32"/>
+  <object id="131" name="placement" type="placement" x="416" y="256" width="32" height="32"/>
+  <object id="126" name="placement" type="placement" x="416" y="224" width="32" height="32"/>
+  <object id="128" x="384" y="256" width="32"/>
+  <object id="132" type="chest" gid="8" x="224" y="64" width="32" height="32">
+   <properties>
+    <property name="closed_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_closed.png"/>
+    <property name="content_possibilities" type="int" value="1"/>
+    <property name="item_0_name" value="life_potion"/>
+    <property name="item_0_probability" type="float" value="1"/>
+    <property name="opened_sprite" value="imgs/dungeon_crawl/dungeon/chest_2_open.png"/>
+   </properties>
+  </object>
+  <object id="140" name="jist" type="ally" x="384" y="192" width="32" height="32"/>
+  <object id="143" name="house" type="building" gid="6111" x="128" y="192" width="32" height="32">
+   <properties>
+    <property name="gold" type="int" value="500"/>
+    <property name="house_dialogs" value="0"/>
+    <property name="sprite_link" value="imgs/houses/blue_house.png"/>
+   </properties>
+  </object>
+  <object id="144" name="house" type="building" gid="6113" x="96" y="64" width="32" height="32">
+   <properties>
+    <property name="sprite_link" value="imgs/houses/blue_house_side.png"/>
+   </properties>
+  </object>
+  <object id="145" name="house" type="building" gid="6099" x="192" y="128" width="32" height="32">
+   <properties>
+    <property name="house_dialogs" value="1"/>
+    <property name="items" value="pocket_knife"/>
+    <property name="sprite_link" value="imgs/houses/yellow_house.png"/>
+   </properties>
+  </object>
+  <object id="146" name="house" type="building" gid="6105" x="320" y="160" width="32" height="32">
+   <properties>
+    <property name="house_dialogs" value="2"/>
+    <property name="sprite_link" value="imgs/houses/red_house.png"/>
+   </properties>
+  </object>
+  <object id="147" name="tavern" type="building" gid="6103" x="384" y="192" width="32" height="32">
+   <properties>
+    <property name="sprite_link" value="imgs/houses/tavern.png"/>
+   </properties>
+  </object>
+  <object id="151" name="shop" type="building" gid="6109" x="320" y="32" width="32" height="32">
+   <properties>
+    <property name="house_dialogs" value="3"/>
+    <property name="item_0_name" value="life_potion"/>
+    <property name="item_0_quantity" type="int" value="5"/>
+    <property name="item_1_name" value="short_sword"/>
+    <property name="item_1_quantity" type="int" value="2"/>
+    <property name="item_2_name" value="wooden_shield"/>
+    <property name="item_2_quantity" type="int" value="2"/>
+    <property name="item_3_name" value="scroll_of_knowledge"/>
+    <property name="item_3_quantity" type="int" value="3"/>
+    <property name="kind" value="shop"/>
+    <property name="number_items" type="int" value="4"/>
+    <property name="sprite_link" value="imgs/houses/shop.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="6" name="events">
+  <object id="139" name="before_init" type="before_init" x="0" y="0" width="32" height="32">
+   <properties>
+    <property name="dialogs" value="0,1"/>
+    <property name="new_players" value="raimund,braern,thokdrum"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

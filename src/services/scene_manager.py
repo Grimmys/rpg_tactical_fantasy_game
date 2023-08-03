@@ -11,6 +11,7 @@ from src.scenes.level_loading_scene import LevelLoadingScene
 from src.scenes.level_scene import LevelStatus, LevelScene
 from src.scenes.scene import Scene
 from src.scenes.start_scene import StartScene
+from src.gui.language import DATA_PATH
 
 
 class SceneManager:

@@ -128,17 +128,18 @@ def _load_mission(
 
 def load_missions(
     tmx_data: pytmx.TiledMap,
+    tmx_map_properties_data: pytmx.TiledMap,
     players: Sequence[Player],
     horizontal_gap: int,
     vertical_gap: int,
 ) -> tuple[Sequence[Mission], Mission]:
     _load_objectives(tmx_data, horizontal_gap, vertical_gap)
-    main_mission = _load_mission(tmx_data, True, "main", players)
+    main_mission = _load_mission(tmx_map_properties_data, True, "main", players)
     missions = [main_mission]
-    if "secondary_missions" in tmx_data.properties:
-        secondary_missions = tmx_data.properties["secondary_missions"].split(",")
+    if "secondary_missions" in tmx_map_properties_data.properties:
+        secondary_missions = tmx_map_properties_data.properties["secondary_missions"].split(",")
         for mission_id in secondary_missions:
-            missions.append(_load_mission(tmx_data, False, mission_id, players))
+            missions.append(_load_mission(tmx_map_properties_data, False, mission_id, players))
 
     return missions, main_mission
 
@@ -232,16 +233,26 @@ def load_chests(
 
 def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
     dialog = {}
-    with open(f"{directory}dialog_{dialog_file_index}.txt") as dialog_file:
-        dialog["title"] = dialog_file.readline().rstrip("\n")
-        dialog_file.readline()  # Skip splitting line between title and body
-        dialog["talks"] = dialog_file.read().splitlines()
+    try:
+        with open(f"{directory}dialog_{dialog_file_index}.txt") as dialog_file:
+            dialog["title"] = dialog_file.readline().rstrip("\n")
+            dialog_file.readline()  # Skip splitting line between title and body
+            dialog["talks"] = dialog_file.read().splitlines()
+    except UnicodeDecodeError:
+        with open(f"{directory}dialog_{dialog_file_index}.txt", encoding="utf-8") as dialog_file:
+            dialog["title"] = dialog_file.readline().rstrip("\n")
+            dialog_file.readline()  # Skip splitting line between title and body
+            dialog["talks"] = dialog_file.read().splitlines()
     return dialog
 
 
 def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
-    with open(f"{directory}house_dialog_{dialog_file_index}.txt") as dialog_file:
-        return dialog_file.read().splitlines()
+    try:
+        with open(f"{directory}house_dialog_{dialog_file_index}.txt") as dialog_file:
+            return dialog_file.read().splitlines()
+    except UnicodeDecodeError:
+        with open(f"{directory}house_dialog_{dialog_file_index}.txt", encoding='utf-8') as dialog_file:
+            return dialog_file.read().splitlines()
 
 
 def load_events(

@@ -1,0 +1,7 @@
+CONTROLS
+
+The game starts in the initialization phase.
+During this phase, you can switch the initial position of your characters by selecting them (left click) and clicking on the desired position.
+Don't forget to unselect the character (right click) when you're done.
+When you are ready to play, just click on any empty square to open the main menu.
+Enjoy the experience.

@@ -8,6 +8,7 @@ import pygame
 from lxml import etree
 
 from src.constants import TILE_SIZE
+from src.gui.language import *
 
 
 class Item:
@@ -48,7 +49,10 @@ class Item:
         Item.internal_identifier += 1
 
     def __str__(self) -> str:
-        return self.name.replace("_", " ").title().strip()
+        try:
+            return dict_items[self.name]
+        except KeyError:
+            return self.name.replace("_", " ").title().strip()
 
     def __eq__(self, item: Item) -> bool:
         return self.name == item.name

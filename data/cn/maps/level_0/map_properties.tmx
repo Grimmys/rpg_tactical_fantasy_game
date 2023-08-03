@@ -1,0 +1,8 @@
+<map>
+ <properties>
+  <property name="chapter_id" type="int" value="1"/>
+  <property name="level_name" value="地窖魔骨"/>
+  <property name="main_mission_description" value="离开村庄"/>
+  <property name="main_mission_type" value="POSITION"/>
+ </properties>
+</map>

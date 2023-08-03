@@ -13,7 +13,6 @@ import pygamepopup
 from src.gui.tools import show_fps
 from src.services.scene_manager import SceneManager
 
-
 def main_loop(
     game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock
 ) -> None:
@@ -43,11 +42,11 @@ if __name__ == "__main__":
     from src.constants import (
         MAIN_WIN_WIDTH,
         MAIN_WIN_HEIGHT,
-        GAME_TITLE,
         BLACK,
         FRAME_RATE,
     )
     from src.gui import constant_sprites, fonts
+    from src.gui.language import STR_GAME_TITLE
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
     from src.services import load_from_xml_manager as loader
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     )
     pygamepopup.configuration.set_text_element_font(fonts.fonts["ITEM_FONT"])
 
-    pygame.display.set_caption(GAME_TITLE)
+    pygame.display.set_caption(STR_GAME_TITLE)
     main_screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     # Make sure the game will display correctly on high DPI monitors on Windows.

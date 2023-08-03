@@ -10,6 +10,7 @@ from src.constants import WHITE
 from src.gui.animation import Frame
 from src.gui.fade_in_out_animation import FadeInOutAnimation
 from src.gui.fonts import fonts
+from src.gui.language import *
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import Scene
 
@@ -69,11 +70,11 @@ class LevelLoadingScene(Scene):
         Return the surface containing the rendered text.
         """
         chapter_rendering = fonts["LEVEL_TITLE_FONT"].render(
-            f"Chapter {self.level.chapter}", True, WHITE
+            f_CHAPTER_NUMBER(self.level.chapter), True, WHITE
         )
 
         level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(
-            f"Level {self.level.number}: {self.level.name}", True, WHITE
+            f_LEVEL_NUMBER_AND_NAME(self.level.number, self.level.name), True, WHITE
         )
 
         surface_size = (

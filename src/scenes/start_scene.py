@@ -9,17 +9,19 @@ from typing import Sequence, Callable, Optional
 import pygame
 from lxml import etree
 from lxml.etree import XMLSyntaxError
-from pygamepopup.components import InfoBox, TextElement
-from pygamepopup.menu_manager import MenuManager
+from pygamepopup.components import TextElement
 
 from src.constants import SCREEN_SIZE, WIN_WIDTH, WIN_HEIGHT
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
 from src.gui.position import Position
+from src.gui.info_box import InfoBox
 from src.scenes.level_scene import LevelScene, LevelStatus
 from src.scenes.scene import Scene
 from src.services import menu_creator_manager
+from src.services.menu_manager import MenuManager
+from src.gui.language import DATA_PATH
 
 
 class StartScene(Scene):

@@ -12,9 +12,8 @@ from typing import Sequence, Union, Optional, Set, Type, List
 import pygame
 import pytmx
 from lxml import etree
-from pygamepopup.components import InfoBox, BoxElement, Button, TextElement
+from pygamepopup.components import BoxElement, Button, TextElement
 from pygamepopup.components.image_button import ImageButton
-from pygamepopup.menu_manager import MenuManager
 
 from src.constants import (
     MAX_MAP_WIDTH,
@@ -55,6 +54,7 @@ from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.animation import Animation, Frame
+from src.gui.info_box import InfoBox
 from src.gui.constant_sprites import (
     ATTACKABLE_OPACITY,
     LANDING_OPACITY,
@@ -65,6 +65,7 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
+from src.gui.language import *
 from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
@@ -74,6 +75,7 @@ from src.services.menu_creator_manager import (
 )
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
+from src.services.menu_manager import MenuManager
 
 
 class LevelStatus(IntEnum):
@@ -209,6 +211,7 @@ class LevelScene(Scene):
         self.number: int = number
 
         self.tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
+        self.tmx_map_properties_data = pytmx.load_pygame(DATA_PATH + self.directory + "map_properties.tmx")
         map_width, map_height = self.tmx_data.width * TILE_SIZE, self.tmx_data.height * TILE_SIZE
         map_static_content = tmx_loader.load_ground(self.tmx_data, (map_width, map_height))
 
@@ -222,8 +225,8 @@ class LevelScene(Scene):
 
         self.data: Optional[etree.Element] = data
 
-        self.chapter: int = self.tmx_data.properties["chapter_id"]
-        self.name: str = self.tmx_data.properties["level_name"]
+        self.chapter: int = self.tmx_map_properties_data.properties["chapter_id"]
+        self.name: str = self.tmx_map_properties_data.properties["level_name"]
 
         self.is_loaded: bool = False
 
@@ -280,7 +283,7 @@ class LevelScene(Scene):
         """
 
         self.events = tmx_loader.load_events(
-            self.tmx_data, self.directory, self.map["x"], self.map["y"]
+            self.tmx_data, DATA_PATH + self.directory, self.map["x"], self.map["y"]
         )
 
         self.player_possible_placements = tmx_loader.load_player_placements(
@@ -309,7 +312,7 @@ class LevelScene(Scene):
             self.entities.foes = tmx_loader.load_foes(self.tmx_data, gap_x, gap_y)
             self.entities.chests = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
             self.entities.allies = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
-            self.entities.buildings = tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y)
+            self.entities.buildings = tmx_loader.load_buildings(self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y)
             self.entities.breakables = tmx_loader.load_breakables(self.tmx_data, gap_x, gap_y)
             self.entities.portals = tmx_loader.load_portals(self.tmx_data, gap_x, gap_y)
             self.entities.doors = tmx_loader.load_doors(self.tmx_data, gap_x, gap_y)
@@ -325,7 +328,7 @@ class LevelScene(Scene):
             )
 
         self.missions, self.main_mission = tmx_loader.load_missions(
-            self.tmx_data, self.players, self.map["x"], self.map["y"]
+            self.tmx_data, self.tmx_map_properties_data, self.players, self.map["x"], self.map["y"]
         )
         self.entities.objectives = [objective for mission in self.missions for objective in
                                     mission.objective_tiles]
@@ -354,7 +357,7 @@ class LevelScene(Scene):
                     player.set_initial_pos(tile)
                     break
             else:
-                print("Error ! Not enough free tiles to set players...")
+                print(STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS)
 
     def open_save_menu(self) -> None:
         """
@@ -374,7 +377,7 @@ class LevelScene(Scene):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
         self.menu_manager.open_menu(
-            InfoBox("Game has been saved", [[]], width=ITEM_MENU_WIDTH)
+            InfoBox(STR_GAME_HAS_BEEN_SAVED, [[]], width=ITEM_MENU_WIDTH)
         )
 
     def exit_game(self) -> None:
@@ -875,7 +878,7 @@ class LevelScene(Scene):
             [item_element],
             [
                 TextElement(
-                    "Item has been added to your inventory",
+                    STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY,
                     font=fonts["ITEM_DESC_FONT"],
                 )
             ],
@@ -883,7 +886,7 @@ class LevelScene(Scene):
 
         self.menu_manager.open_menu(
             InfoBox(
-                "You found in the chest",
+                STR_YOU_FOUND_IN_THE_CHEST,
                 element_grid,
                 width=ITEM_MENU_WIDTH,
             )
@@ -903,7 +906,7 @@ class LevelScene(Scene):
 
         # TODO: move the creation of the pop-up in menu_creator_manager
         grid_element = [
-            [TextElement("Door has been opened", font=fonts["ITEM_DESC_FONT"])]
+            [TextElement(STR_DOOR_HAS_BEEN_OPENED, font=fonts["ITEM_DESC_FONT"])]
         ]
         self.menu_manager.open_menu(
             InfoBox(
@@ -984,14 +987,14 @@ class LevelScene(Scene):
                         element_grid = [
                             [
                                 TextElement(
-                                    "Started picking, one more turn to go",
+                                    STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO,
                                     font=fonts["ITEM_DESC_FONT"],
                                 )
                             ]
                         ]
                         self.menu_manager.open_menu(
                             InfoBox(
-                                "Chest",
+                                STR_CHEST,
                                 element_grid,
                                 width=ITEM_MENU_WIDTH,
                             )
@@ -1005,7 +1008,7 @@ class LevelScene(Scene):
                 # TODO: move the creation of the pop-up in menu_creator_manager
                 self.menu_manager.open_menu(
                     InfoBox(
-                        "You have no free space in your inventory",
+                        STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY,
                         [],
                         width=ITEM_MENU_WIDTH,
                     )
@@ -1023,7 +1026,7 @@ class LevelScene(Scene):
                     grid_element = [
                         [
                             TextElement(
-                                "Started picking, one more turn to go",
+                                STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO,
                                 font=fonts["ITEM_DESC_FONT"],
                             )
                         ]
@@ -1053,7 +1056,7 @@ class LevelScene(Scene):
             else:
                 self.menu_manager.open_menu(
                     InfoBox(
-                        "There is no free square around the other portal",
+                        STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL,
                         [],
                         width=ITEM_MENU_WIDTH,
                     )
@@ -1159,7 +1162,7 @@ class LevelScene(Scene):
 
             if isinstance(target, Character) and target.parried():
                 # Target parried attack
-                message: str = f"{attacker} attacked {target}... But {target} parried!"
+                message: str = f_ATTACKER_ATTACKED_TARGET_BUT_PARRIED(attacker, target)
                 self.diary_entries.append(
                     [TextElement(message, font=fonts["ITEM_DESC_FONT"])]
                 )
@@ -1172,7 +1175,7 @@ class LevelScene(Scene):
             self.diary_entries.append(
                 [
                     TextElement(
-                        f"{attacker} dealt {real_damage} damage to {target}",
+                        f_ATTACKER_DEALT_DAMAGE_TO_TARGET(attacker, target, real_damage),
                         font=fonts["ITEM_DESC_FONT"],
                     )
                 ]
@@ -1186,7 +1189,7 @@ class LevelScene(Scene):
                     experience += target.xp_gain
 
                 self.diary_entries.append(
-                    [TextElement(f"{target} died!", font=fonts["ITEM_DESC_FONT"])]
+                    [TextElement(f_TARGET_DIED(target), font=fonts["ITEM_DESC_FONT"])]
                 )
                 # Loot
                 if isinstance(attacker, Player) and isinstance(target, Foe):
@@ -1196,7 +1199,7 @@ class LevelScene(Scene):
                         self.diary_entries.append(
                             [
                                 TextElement(
-                                    f"{target} dropped {item}",
+                                    f_TARGET_DROPPED_ITEM(target, item),
                                     font=fonts["ITEM_DESC_FONT"],
                                 )
                             ]
@@ -1207,8 +1210,7 @@ class LevelScene(Scene):
                             self.diary_entries.append(
                                 [
                                     TextElement(
-                                        "But there is not enough space "
-                                        "in inventory to take it!",
+                                        STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT,
                                         font=fonts["ITEM_DESC_FONT"],
                                     )
                                 ]
@@ -1218,7 +1220,7 @@ class LevelScene(Scene):
                 self.diary_entries.append(
                     [
                         TextElement(
-                            f"{target} has now {target.hit_points} HP",
+                            f_TARGET_HAS_NOW_NUMBER_HP(target, target.hit_points),
                             font=fonts["ITEM_DESC_FONT"],
                         )
                     ]
@@ -1241,7 +1243,7 @@ class LevelScene(Scene):
                 self.diary_entries.append(
                     [
                         TextElement(
-                            f"{attacker} earned {experience} XP",
+                            f_ATTACKER_EARNED_NUMBER_XP(attacker, experience),
                             font=fonts["ITEM_DESC_FONT"],
                         )
                     ]
@@ -1251,7 +1253,7 @@ class LevelScene(Scene):
                     self.diary_entries.append(
                         [
                             TextElement(
-                                f"{attacker} gained a level!",
+                                f_ATTACKER_GAINED_A_LEVEL(attacker),
                                 font=fonts["ITEM_DESC_FONT"],
                             )
                         ]
@@ -1437,7 +1439,7 @@ class LevelScene(Scene):
                 break
         if not has_key:
             info_box = InfoBox(
-                "You have no key to open a door",
+                STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR,
                 [],
                 width=ITEM_MENU_WIDTH,
             )
@@ -1457,7 +1459,7 @@ class LevelScene(Scene):
                 break
         if not has_key:
             info_box = InfoBox(
-                "You have no key to open a chest",
+                STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST,
                 [],
                 width=ITEM_MENU_WIDTH,
             )
@@ -1631,7 +1633,7 @@ class LevelScene(Scene):
             grid_elements = [
                 [
                     TextElement(
-                        f"Item can't be traded: not enough place in {receiver}'s inventory",
+                        f_ITEM_CANNOT_BE_TRADED_NOT_ENOUGH_PLACE_IN_RECEIVERS_INVENTORY(receiver),
                         font=fonts["ITEM_DESC_FONT"],
                         margin=(20, 0, 20, 0),
                     )
@@ -1656,7 +1658,7 @@ class LevelScene(Scene):
             grid_elements = [
                 [
                     TextElement(
-                        "Item has been traded",
+                        STR_ITEM_HAS_BEEN_TRADED,
                         font=fonts["ITEM_DESC_FONT"],
                         margin=(20, 0, 20, 0),
                     ),
@@ -1736,7 +1738,7 @@ class LevelScene(Scene):
         grid_elements = [
             [
                 TextElement(
-                    "Item has been thrown away",
+                    STR_ITEM_HAS_BEEN_THROWN_AWAY,
                     font=fonts["ITEM_DESC_FONT"],
                     margin=(20, 0, 20, 0),
                 )
@@ -1816,10 +1818,10 @@ class LevelScene(Scene):
         self.menu_manager.close_active_menu()
         unequipped = self.selected_player.unequip(self.selected_item)
         result_message = (
-            "The item can't be unequipped : Not enough space in your inventory."
+            STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY
         )
         if unequipped:
-            result_message = "The item has been unequipped"
+            result_message = STR_THE_ITEM_HAS_BEEN_UNEQUIPPED
 
             # Update equipment screen content
             new_equipment_menu = menu_creator_manager.create_equipment_menu(
@@ -1852,13 +1854,13 @@ class LevelScene(Scene):
         return_equipped: int = self.selected_player.equip(self.selected_item)
         if return_equipped == -1:
             # Item can't be equipped by this player
-            result_message = f"This item can't be equipped: {self.selected_player} doesn't satisfy the requirements"
+            result_message = f_THIS_ITEM_CANNOT_BE_EQUIPPED_PLAYER_DOESNT_SATISFY_THE_REQUIREMENTS(self.selected_player)
         else:
             # In this case returned value is > 0, item has been equipped
-            result_message = "The item has been equipped"
+            result_message = STR_THE_ITEM_HAS_BEEN_EQUIPPED
             if return_equipped == 1:
                 result_message += (
-                    "Previous equipped item has been added to your inventory"
+                    STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY
                 )
 
             # Inventory has changed
@@ -2115,7 +2117,7 @@ class LevelScene(Scene):
                 # Test if player is on character's main menu, in this case,
                 # current move should be cancelled if possible*
                 # TODO: Find a better way to test if active menu is the character's main menu
-                if self.menu_manager.active_menu.title == "Select an action":
+                if self.menu_manager.active_menu.title == STR_SELECT_AN_ACTION:
                     if self.selected_player.cancel_move():
                         if self.traded_items:
                             for item in self.traded_items:

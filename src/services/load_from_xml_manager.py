@@ -30,6 +30,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
 from src.gui.position import Position
+from src.gui.language import DATA_PATH, language
 
 foes_data = {}
 fountains_data = {}
@@ -128,7 +129,10 @@ def get_skill_data(name) -> Skill:
         skill_element = etree.parse("data/skills.xml").find(name)
         formatted_name = skill_element.find("name").text.strip()
         nature = skill_element.find("type").text.strip()
-        description = skill_element.find("info").text.strip()
+        try:
+            description = skill_element.find("info/" + language).text.strip()
+        except AttributeError:
+            description = skill_element.find("info").text.strip()
 
         # Not required elements
         power = 0
@@ -1163,7 +1167,10 @@ def parse_item_file(name):
     item_tree_root = etree.parse("data/items.xml").getroot().find(".//" + name)
 
     sprite = "imgs/dungeon_crawl/item/" + item_tree_root.find("sprite").text.strip()
-    info = item_tree_root.find("info").text.strip()
+    try:
+        info = item_tree_root.find("info/" + language).text.strip()
+    except AttributeError:
+        info = item_tree_root.find("info").text.strip()
     price = item_tree_root.find("price")
     if price is not None:
         price = int(price.text.strip())

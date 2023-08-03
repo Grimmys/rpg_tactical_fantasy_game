@@ -8,6 +8,7 @@ from lxml import etree
 
 from src.game_entities.alteration import Alteration
 from src.game_entities.destroyable import Destroyable
+from src.gui.language import *
 
 
 class Effect:
@@ -32,18 +33,28 @@ class Effect:
         self.duration: int = duration
         if self.name in ("speed_up", "strength_up", "defense_up"):
             alteration_root = etree.parse("data/alterations.xml").find(name)
-            desc = (
-                alteration_root.find("info")
-                .text.strip()
-                .replace("{val}", str(self.power))
-            )
+            try:
+                desc = (
+                    alteration_root.find("info/" + language)
+                    .text.strip()
+                    .replace("{val}", str(self.power))
+                )
+            except AttributeError:
+                desc = (
+                    alteration_root.find("info")
+                    .text.strip()
+                    .replace("{val}", str(self.power))
+                )
             abbr = alteration_root.find("abbreviated_name").text.strip()
             self.alteration = Alteration(
                 self.name, abbr, self.power, self.duration, desc
             )
         elif self.name == "stun":
             alteration_root = etree.parse("data/alterations.xml").find(name)
-            desc = alteration_root.find("info").text.strip()
+            try:
+                desc = alteration_root.find("info/" + language).text.strip()
+            except AttributeError:
+                desc = alteration_root.find("info").text.strip()
             abbr = alteration_root.find("abbreviated_name").text.strip()
             effs_el = alteration_root.find("effects")
             durable_effects = (
@@ -67,30 +78,26 @@ class Effect:
         if self.name == "heal":
             recovered = entity.healed(self.power)
             if recovered > 0:
-                msg = f"{entity} recovered {recovered} HP."
+                msg = f_ENTITY_RECOVERED_NUMBER_HP(entity, recovered)
             else:
-                msg = f"{entity} is at full health and can't be healed!"
+                msg = f_ENTITY_IS_AT_FULL_HEALTH_AND_CANT_BE_HEALED(entity)
                 success = False
         elif self.name == "xp_up":
-            msg = f"{entity} earned {self.power} XP"
+            msg = f_ENTITY_EARNED_NUMBER_XP(entity, self.power)
             if entity.earn_xp(self.power):
-                msg += f". {entity} gained a level!"
+                msg += f_ENTITY_GAINED_A_LEVEL(entity)
         elif self.name == "speed_up":
             entity.set_alteration(self.alteration)
-            msg = f"The speed of {entity} has been increased for {self.duration} turns"
+            msg = f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
         elif self.name == "strength_up":
             entity.set_alteration(self.alteration)
-            msg = (
-                f"The strength of {entity} has been increased for {self.duration} turns"
-            )
+            msg = f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
         elif self.name == "defense_up":
             entity.set_alteration(self.alteration)
-            msg = (
-                f"The defense of {entity} has been increased for {self.duration} turns"
-            )
+            msg = f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
         elif self.name == "stun":
             entity.set_alteration(self.alteration)
-            msg = f"{entity} has been stunned for {self.duration} turns"
+            msg = f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, self.duration)
         return success, msg
 
     def get_formatted_description(self) -> str:
@@ -98,10 +105,13 @@ class Effect:
         Return the description of the effect in a formatted way
         """
         if self.name == "heal":
-            return f"Recover {self.power} HP"
+            return f_RECOVER_NUMBER_HP(self.power)
         if self.name == "xp_up":
-            return f"Earn {self.power} XP"
+            return f_EARN_NUMBER_XP(self.power)
         return self.alteration.description
 
     def __str__(self) -> str:
-        return self.name.replace("_", " ").title()
+        try:
+            return dict_effects[self.name]
+        except KeyError:
+            return self.name.replace("_", " ").title()

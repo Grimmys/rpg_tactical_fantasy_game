@@ -3,12 +3,6 @@
  <editorsettings>
   <export format="tmx"/>
  </editorsettings>
- <properties>
-  <property name="chapter_id" type="int" value="1"/>
-  <property name="level_name" value="Crypt Vandalism"/>
-  <property name="main_mission_description" value="Leave the village"/>
-  <property name="main_mission_type" value="POSITION"/>
- </properties>
  <tileset firstgid="1" source="../../imgs/tiled_tilesets/dungeon.tsx"/>
  <tileset firstgid="6081" source="../../imgs/tiled_tilesets/houses.tsx"/>
  <layer id="1" name="ground" width="16" height="10">
