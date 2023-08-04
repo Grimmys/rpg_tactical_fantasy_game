@@ -1309,7 +1309,7 @@ def load_parameter_button(
 
 
 def create_options_menu(
-    parameters: dict[str, int], modify_option_function: Callable
+    parameters: dict[str, int], modify_option_function: Callable,
 ) -> InfoBox:
     """
     Return the interface of the game options menu.
@@ -1321,6 +1321,12 @@ def create_options_menu(
     return InfoBox(
         STR_OPTIONS_MENU,
         [
+            [
+                Button(
+                    title=STR_LANGUAGE,
+                    callback=lambda: modify_option_function("language")
+                ),
+            ],
             [
                 load_parameter_button(
                     STR_MOVE_SPEED_,
@@ -1385,3 +1391,18 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         )
 
     return InfoBox(STR_SAVE_GAME_MENU, element_grid, width=START_MENU_WIDTH)
+
+def create_choose_language_menu(buttons_callback: Callable,) -> InfoBox:
+    """
+    Return the interface of the save game reminder
+    """
+    element_grid = [
+        [Button(title="English", callback=lambda: buttons_callback("en"))],
+        [Button(title="Chinese Simp.", callback=lambda answer=False: buttons_callback("zh_cn"))],
+    ]
+    return InfoBox(
+        STR_CHOOSE_LANGUAGE,
+        element_grid,
+        width=ACTION_MENU_WIDTH,
+        has_close_button=False
+    )

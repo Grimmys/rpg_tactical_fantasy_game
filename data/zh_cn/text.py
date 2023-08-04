@@ -16,6 +16,9 @@ def f_SAVE_NUMBER(serial_number: int):
 
 # Options menu
 STR_OPTIONS_MENU = "选项"
+STR_LANGUAGE_ = "语言："
+STR_LANGUAGE = "语言"
+STR_CHOOSE_LANGUAGE = "选择语言"
 STR_MOVE_SPEED_ = "移动速度："
 STR_SCREEN_MODE_ = "屏幕模式："
 STR_NORMAL = "正常"

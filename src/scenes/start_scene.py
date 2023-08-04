@@ -21,7 +21,7 @@ from src.scenes.level_scene import LevelScene, LevelStatus
 from src.scenes.scene import Scene
 from src.services import menu_creator_manager
 from src.services.menu_manager import MenuManager
-from src.gui.language import DATA_PATH
+from src.gui.language import *
 
 
 class StartScene(Scene):
@@ -70,7 +70,7 @@ class StartScene(Scene):
         )
 
         self.level: Optional[LevelScene] = None
-        self.exit: bool = False
+        self.exit: int = False
 
         StartScene.load_options()
 
@@ -249,6 +249,7 @@ class StartScene(Scene):
         self.menu_manager.open_menu(
             menu_creator_manager.create_options_menu(
                 {
+                    "language": str(self.read_options_file("language")),
                     "move_speed": int(self.read_options_file("move_speed")),
                     "screen_size": int(self.read_options_file("screen_size")),
                 },
@@ -256,21 +257,32 @@ class StartScene(Scene):
             )
         )
 
+    def choose_language_menu(self) -> None:
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_choose_language_menu(self.change_language)
+        )
+
+    def change_language(self, language):
+        StartScene.modify_options_file("language", language)
+        self.exit = 2
+
     def exit_game(self) -> None:
         """
         Handle an exit game request.
         """
         self.exit = True
 
-    @staticmethod
-    def modify_option_value(option_name: str, option_value: int) -> None:
+    def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
         """
 
         Keyword arguments:
         option_name --
         option_value --
         """
-        if option_name == "move_speed":
+        if option_name == "language":
+            self.choose_language_menu()
+            return
+        elif option_name == "move_speed":
             Movable.move_speed = option_value
         elif option_name == "screen_size":
             StartScene.screen_size = option_value

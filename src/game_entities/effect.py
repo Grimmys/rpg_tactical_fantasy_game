@@ -33,28 +33,18 @@ class Effect:
         self.duration: int = duration
         if self.name in ("speed_up", "strength_up", "defense_up"):
             alteration_root = etree.parse("data/alterations.xml").find(name)
-            try:
-                desc = (
-                    alteration_root.find("info/" + language)
-                    .text.strip()
-                    .replace("{val}", str(self.power))
-                )
-            except AttributeError:
-                desc = (
-                    alteration_root.find("info")
-                    .text.strip()
-                    .replace("{val}", str(self.power))
-                )
+            desc = (
+                get_languaged_text(alteration_root.find("info"))
+                .strip()
+                .replace("{val}", str(self.power))
+            )
             abbr = alteration_root.find("abbreviated_name").text.strip()
             self.alteration = Alteration(
                 self.name, abbr, self.power, self.duration, desc
             )
         elif self.name == "stun":
             alteration_root = etree.parse("data/alterations.xml").find(name)
-            try:
-                desc = alteration_root.find("info/" + language).text.strip()
-            except AttributeError:
-                desc = alteration_root.find("info").text.strip()
+            desc = get_languaged_text(alteration_root.find("info")).strip()
             abbr = alteration_root.find("abbreviated_name").text.strip()
             effs_el = alteration_root.find("effects")
             durable_effects = (

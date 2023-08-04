@@ -7,15 +7,32 @@ and let the main loop running.
 The pygame events are caught here and delegated to the start screen.
 """
 
+import os
+import sys
+import platform
+import subprocess
+
 import pygame
 import pygamepopup
 
+import src.gui.language as language
+
+from src.constants import (
+    MAIN_WIN_WIDTH,
+    MAIN_WIN_HEIGHT,
+    BLACK,
+    FRAME_RATE,
+)
 from src.gui.tools import show_fps
+from src.gui import constant_sprites, fonts
+from src.game_entities.movable import Movable
+from src.game_entities.character import Character
+from src.services import load_from_xml_manager as loader
 from src.services.scene_manager import SceneManager
 
 def main_loop(
     game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock
-) -> None:
+) -> bool:
     """
     Run the game until a quit request happened.
     Pygame events are catch and delegated to the scene manager.
@@ -26,31 +43,20 @@ def main_loop(
     screen -- the screen on which the current frame rate is displayed
     clock -- the clock regulating the maximum frame rate of the game
     """
-    quit_game: bool = False
+    quit_game: int = False
     while not quit_game:
         screen.fill(BLACK)
         quit_game = game_controller.process_game_iteration()
         show_fps(screen, clock, fonts.fonts["FPS_FONT"])
         pygame.display.update()
         clock.tick(FRAME_RATE)
+    if quit_game == 2:
+        return 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":
-    import os
-    import platform
-
-    from src.constants import (
-        MAIN_WIN_WIDTH,
-        MAIN_WIN_HEIGHT,
-        BLACK,
-        FRAME_RATE,
-    )
-    from src.gui import constant_sprites, fonts
-    from src.gui.language import STR_GAME_TITLE
-    from src.game_entities.movable import Movable
-    from src.game_entities.character import Character
-    from src.services import load_from_xml_manager as loader
-
     pygame.init()
     pygamepopup.init()
 
@@ -66,7 +72,7 @@ if __name__ == "__main__":
     )
     pygamepopup.configuration.set_text_element_font(fonts.fonts["ITEM_FONT"])
 
-    pygame.display.set_caption(STR_GAME_TITLE)
+    pygame.display.set_caption(language.STR_GAME_TITLE)
     main_screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
 
     # Make sure the game will display correctly on high DPI monitors on Windows.
@@ -91,6 +97,10 @@ if __name__ == "__main__":
     pygame.mixer.music.play(-1)
 
     # Lets the game start!
-    main_loop(scene_manager, main_screen, pygame.time.Clock())
+    restart = main_loop(scene_manager, main_screen, pygame.time.Clock())
 
     pygame.quit()
+
+    if restart:
+        restart_process = subprocess.Popen([sys.executable, 'main.py'])
+        restart_process.wait()

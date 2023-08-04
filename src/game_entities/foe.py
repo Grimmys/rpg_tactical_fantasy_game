@@ -139,7 +139,6 @@ class Foe(Movable):
         formatted_string: str = ""
         for keyword in self.keywords:
             try:
-                print(keyword.name)
                 formatted_string += dict_foe_keywords[keyword.name.lower()] + ", "
             except KeyError:
                 formatted_string += keyword.name.lower().capitalize()
