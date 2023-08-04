@@ -204,7 +204,7 @@ STR_OPTIONAL_OBJECTIVES = "次要任务"
 
 # effect.py
 def f_ENTITY_RECOVERED_NUMBER_HP(entity, recovered):
-    return "{entity}恢复了{recovered}点血量" # f"{entity} recovered {recovered} HP."
+    return f"{entity}恢复了{recovered}点血量" # f"{entity} recovered {recovered} HP."
 def f_ENTITY_IS_AT_FULL_HEALTH_AND_CANT_BE_HEALED(entity):
     return f"{entity}正处于满血状态，不能被治愈" #f"{entity} is at full health and can't be healed!"
 def f_ENTITY_EARNED_NUMBER_XP(entity, power):

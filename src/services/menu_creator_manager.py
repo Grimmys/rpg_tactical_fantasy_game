@@ -353,7 +353,7 @@ def create_trade_menu(
             font=fonts["ITEM_DESC_FONT"]
         ),
         TextElement(
-            f_GOLD_AT_END(first_player, first_player.gold),
+            f_GOLD_AT_END(second_player, second_player.gold),
             font=fonts["ITEM_DESC_FONT"],
         ),
     ]
