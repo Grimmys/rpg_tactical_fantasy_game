@@ -168,7 +168,7 @@ class TestStartScreen(unittest.TestCase):
         position = self.generate_position(
             EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE
         )
-        self.assertEqual(self.start_screen.click(LEFT_BUTTON, position), True)
+        self.assertEqual(self.start_screen.click(LEFT_BUTTON, position), 1)
 
     def test_click_on_nothing(self):
         # Make a copy of the current window
