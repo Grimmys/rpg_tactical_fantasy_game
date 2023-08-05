@@ -61,6 +61,7 @@ This update adds an interface for implementing multilingual functionality to the
    + When quit_game == 1 exit game
    + When quit_game == 0 loop continues
 8. Created src/gui/info_box.py to rewrite InfoBox class. This is because there is a Close button in InfoBox, and I couldn't find a better way to change its text.
+9. Added language-related UI in `Option menu`.
 
 # 多语言支持说明
 ## 简介
@@ -120,3 +121,4 @@ This update adds an interface for implementing multilingual functionality to the
    + 当 `quit_game == 1` 时退出游戏
    + 当 `quit_game == 0` 时循环继续
 8. 创建了 `src/gui/info_box.py` 以重写 `InfoBox` 类。这是因为 `InfoBox` 中有一个 `Close` 按钮，我没有找到更好的使它改变文字的方法。
+9. 在 `Option menu` 中添加了切换语言相关的UI。
