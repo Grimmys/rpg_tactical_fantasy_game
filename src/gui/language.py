@@ -1,13 +1,7 @@
-import sys
-
 from lxml import etree
 
+# Get language from options.xml
 language: str = etree.parse("saves/options.xml").find("language").text
-
-# Surpported language names
-STR_ENGLISH = "English"
-STR_CHINESE_SIMP = "Chinese"
-
 DATA_PATH = "data/" + language + "/"
 
 if language == "en":
@@ -19,6 +13,17 @@ elif language == "zh_cn":
 
 
 def get_languaged_text(tree: etree._Element):
+    """
+    Get string of the text in current language from etree element containing language name tags.
+    If cannot find current language tag, return English text.
+    If the etree element doesn't contain any language tag, return the element's text.
+
+    Arguments:
+    tree -- etree element containing language name tags
+
+    Returns:
+    String of the text in current language
+    """
     languaged_text = tree.find(language)
     if languaged_text is not None:
         return languaged_text.text

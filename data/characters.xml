@@ -13,11 +13,11 @@
         <interaction>
             <talk>
                 <en> Hurry up ! Leave the village from the west, and enter the necropolis. </en>
-                <cn> 快呀！从西面离开村庄，进入墓地。</cn>
+                <zh_cn> 快呀！从西面离开村庄，进入墓地。</zh_cn>
             </talk>
             <talk>
                 <en> The clock is ticking... The ogre's bones must be returned to their original place. </en>
-                <cn> 时钟在滴答作响……食人魔的骨头必须放回原来的地方。 </cn>
+                <zh_cn> 时钟在滴答作响……食人魔的骨头必须放回原来的地方。 </zh_cn>
             </talk>
         </interaction>
         <gold> 100 </gold>

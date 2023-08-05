@@ -16,7 +16,7 @@ from src.services.scene_manager import SceneManager
 
 def main_loop(
     game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock
-) -> int:
+) -> bool:
     """
     Run the game until a quit request happened.
     Pygame events are catch and delegated to the scene manager.
@@ -26,6 +26,10 @@ def main_loop(
     controller -- the scene manager acting as the main controller of the game
     screen -- the screen on which the current frame rate is displayed
     clock -- the clock regulating the maximum frame rate of the game
+
+    Returns:
+    True -- restart game
+    False -- exit game
     """
     quit_game: int = False
     while not quit_game:
@@ -35,9 +39,9 @@ def main_loop(
         pygame.display.update()
         clock.tick(FRAME_RATE)
     if quit_game == 2:
-        return 1
+        return True
     else:
-        return 0
+        return False
 
 
 if __name__ == "__main__":

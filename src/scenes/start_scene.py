@@ -312,7 +312,7 @@ class StartScene(Scene):
         """
         self.menu_manager.motion(position)
 
-    def click(self, button: int, position: Position) -> bool:
+    def click(self, button: int, position: Position) -> int:
         """
         Handle the triggering of a click event.
         Delegate it to the active menu if it is a left-click.
