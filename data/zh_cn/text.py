@@ -39,7 +39,7 @@ def f_LEVEL_NUMBER_AND_NAME(number: int, name: str):
 # Main menu
 STR_MAIN_MENU = "主菜单"
 STR_SAVE = "保存游戏"
-STR_SUSPEND = "返回"
+STR_SUSPEND = "悬挂"
 STR_START = "开始"
 STR_DIARY = "日志"
 STR_END_TURN = "下一回合"
@@ -122,15 +122,15 @@ def f_STAT_NAME_(stat_name):
     return f"{stat_name}："  # f"{stat_name}: "
 
 # Item description menu
-STR_RESERVED_TO = "？保留给" # "RESERVED TO"
+STR_RESERVED_TO = "装备给" # "RESERVED TO"
 STR_POWER = "力量" # "POWER"
 STR_DEFENSE = "防御" # "DEFENSE"
 STR_MAGICAL_RES = "魔抗" # "MAGICAL RES"
 STR_TYPE_OF_DAMAGE = "伤害类型" # "TYPE OF DAMAGE"
 STR_REACH = "攻击距离" # "REACH"
 STR_EFFECT = "效果" # "EFFECT"
-STR_STRONG_AGAINST = "？克制" # "STRONG AGAINST"
-STR_PARRY_RATE = "？格挡率" # "PARRY RATE"
+STR_STRONG_AGAINST = "克制" # "STRONG AGAINST"
+STR_PARRY_RATE = "格挡率" # "PARRY RATE"
 STR_DURABILITY = "持久性" # "DURABILITY"
 STR_WEIGHT = "重量" # "WEIGHT"
 
@@ -300,6 +300,10 @@ dict_foe_keywords = {
 dict_entity_names = {
     "skeleton": "骷髅",
     "necrophage": "死灵",
+    "obstacle": "障碍",
+    "shop": "商店",
+    "house": "房子",
+    "chest": "箱子",
 }
 
 # src.services.menu_creater_manager

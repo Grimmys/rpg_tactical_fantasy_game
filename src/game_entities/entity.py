@@ -65,7 +65,7 @@ class Entity:
         underscores are replaced by spaces and numbers are removed.
         """
         try:
-            string_entity: str = dict_entity_names[re.sub(r"[0-9]+", "", self.name)]
+            string_entity: str = dict_entity_names[re.sub(r"[0-9]+", "", self.name).lower()]
         except KeyError:
             string_entity: str = self.name.replace("_", " ").title()
             string_entity = re.sub(
