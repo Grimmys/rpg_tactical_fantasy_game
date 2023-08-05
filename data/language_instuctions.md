@@ -1,8 +1,8 @@
-# <a name="Content"></a> Content 目录
-- English 英文
-- Chinese 中文
+# Content 目录
+- [English 英文](#Multilingual Support Description)
+- [Chinese 中文](#多语言支持说明)
 
-# <a name="English 英文"></a> Multilingual Support Description
+# Multilingual Support Description
 
 ## Introduction
 This update adds an interface for implementing multilingual functionality to the game.
@@ -62,7 +62,7 @@ This update adds an interface for implementing multilingual functionality to the
    + When quit_game == 0 loop continues
 8. Created src/gui/info_box.py to rewrite InfoBox class. This is because there is a Close button in InfoBox, and I couldn't find a better way to change its text.
 
-# <a name="Chinese 中文"></a> 多语言支持说明
+# 多语言支持说明
 ## 简介
 这个更新为游戏添加了实现多语言功能的接口。
 
