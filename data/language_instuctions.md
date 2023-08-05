@@ -5,10 +5,10 @@
 # Multilingual Support Description
 
 ## Introduction
-This update adds an interface for implementing multilingual functionality to the game.
+This update adds an interface for implementing multilingual functionality to the game. Due to the unfinished translation work, some content is temporarily missing, but it is harmless, the interface has been completed. I will continue to finish Chinese translation.
 
 ## How to add a new language
-1. Create a language directory: Create a copy of the `en` folder under the `data` folder and rename it to the name of the language you need, assuming it is `language_name`.
+1. Create a language directory: Create a copy of the `en` folder under the `data` folder and rename it to the name of the language you need, assuming it is `language_name`. (Due to the unfinished translation work, some content is temporarily missing.)
 2. Copy font files: Add the font files required for your language in ttf format under the `fonts` folder.
 3. Import font files: Modify the contents of `data/language_name/fonts_description.py` and change the name of the font file to the name of the font file you need.
 4. Add language button: Modify the content of the `element_grid` list in the `create_choose_language_menu` function in `menu_creater_manager.py`. Add a button with your language's full name as `title` and `language_name` as `callback`. For example:
@@ -64,7 +64,7 @@ This update adds an interface for implementing multilingual functionality to the
 
 # 多语言支持说明
 ## 简介
-这个更新为游戏添加了实现多语言功能的接口。
+这个更新为游戏添加了实现多语言功能的接口。由于翻译工作暂未完成，一些内容暂缺，但是无伤大雅，接口都已经完成了。
 
 ## 如何添加一门新的语言
 1. 创建语言目录：在 `data` 文件夹下创建 en 文件夹的副本，重命名为您需要的语言名称，下面假定为 `language_name`。
