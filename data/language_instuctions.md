@@ -51,7 +51,7 @@ This update adds an interface for implementing multilingual functionality to the
 
 # Changes and Explanations
 1. Created `src/gui/language.py` to handle language-related matters. `language.py` will import the corresponding `text.py` according to the language in `saves/options.xml`.
-2. Moved all static strings involving output in all files to variables in `text.py`, with variable names composed of uppercase letters and underscores of English content of strings. If the last character of a variable name is an underscore, it means that there is a quotation mark at the end of the string.
+2. Moved all static strings involving output in all files to variables in `text.py`, with variable names composed of uppercase letters and underscores of English content of strings. If the last character of a variable name is an underscore, it means that there is a colon at the end of the string.
 3. Moved all contents involving variables and output in all files to be processed as functions in `text.py`.
 4. Corresponded all contents involving class names and output in all files with dictionaries in `text.py`. (The original processing method is temporarily retained for English)
 5. Changed the method of reading `<info>` or `<talk>` tags from xml files under the `data` folder. Added `<language_name>` tag. (But still retained the original processing method because translation work has not been completed)
@@ -110,7 +110,7 @@ This update adds an interface for implementing multilingual functionality to the
 
 # 修改与解释
 1. 创建了 `src/gui/language.py` 用于处理语言相关的事情。`language.py` 会按照 `saves/options.xml` 中的语言导入相应的 `text.py`。
-2. 将所有文件中涉及输出的静态字符串挪到了 `text.py` 的变量中，变量名由字符串的英文内容的大写和下划线组成。如果变量名的最后一个字符为下划线，说明字符串末尾是引号。
+2. 将所有文件中涉及输出的静态字符串挪到了 `text.py` 的变量中，变量名由字符串的英文内容的大写和下划线组成。如果变量名的最后一个字符为下划线，说明字符串末尾是冒号。
 3. 将所有文件中涉及变量且涉及输出的内容挪到 `text.py` 中以函数的方式处理。
 4. 将所有文件中涉及类名且涉及输出的内容用 `text.py` 中的字典对应。（英文暂时保留原有的处理方法）
 5. 改变读取 `data` 文件夹下的 xml 文件 `<info>` 或 `<talk>` 标签的方法。加入`<language_name>`标签。（但仍保留了原有的处理方法，因为翻译工作并未做完）
