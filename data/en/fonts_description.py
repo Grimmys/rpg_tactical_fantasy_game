@@ -34,7 +34,7 @@ fonts_description: Dict[str, Dict[str, Union[str, int]]] = {
         "size": 26,
     },
     "SIDEBAR_TITLE_FONT": {
-        "name": "fonts/fusion-pixel-12px-proportional-zh_hans.ttf",
+        "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
         "size": 26,
     },
     "TITLE_FONT": {
