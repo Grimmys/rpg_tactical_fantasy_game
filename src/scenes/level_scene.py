@@ -1993,10 +1993,6 @@ class LevelScene(Scene):
             60,
         )
 
-    def leave_menu(self):
-        if self.menu_manager.active_menu is not None:
-            self.menu_manager.close_active_menu()
-
     def left_click(self, position: Position) -> None:
         """
         Handle the triggering of a left-click event.
