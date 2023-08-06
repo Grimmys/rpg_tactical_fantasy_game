@@ -28,7 +28,7 @@ from src.constants import (
     TILE_SIZE,
     BLACK,
     WIN_HEIGHT,
-    WIN_WIDTH,
+    WIN_WIDTH, GRID_WIDTH, GRID_HEIGHT,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
@@ -217,8 +217,8 @@ class LevelScene(Scene):
             "img": map_static_content,
             "width": map_width,
             "height": map_height,
-            "x": (MAX_MAP_WIDTH - map_width) // 2,
-            "y": (MAX_MAP_HEIGHT - map_height) // 2,
+            "x": (GRID_WIDTH - self.tmx_data.width) // 2 * TILE_SIZE,
+            "y": (GRID_HEIGHT - self.tmx_data.height) // 2 * TILE_SIZE,
         }
 
         self.data: Optional[etree.Element] = data
