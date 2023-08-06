@@ -291,7 +291,7 @@ def create_trade_menu(
         Button(
             title="50G ->",
             size=(90, 30),
-            margin=(30, 0, 0, 0),
+            margin=(0, 0, 0, 0),
             font=fonts["ITEM_DESC_FONT"],
             callback=lambda: buttons_callback["send_gold"](
                 first_player, second_player, True, 50
@@ -300,7 +300,7 @@ def create_trade_menu(
         Button(
             title="200G ->",
             size=(90, 30),
-            margin=(30, 0, 0, 0),
+            margin=(0, 0, 0, 0),
             font=fonts["ITEM_DESC_FONT"],
             callback=lambda: buttons_callback["send_gold"](
                 first_player, second_player, True, 200
@@ -309,7 +309,7 @@ def create_trade_menu(
         Button(
             title="All ->",
             size=(90, 30),
-            margin=(30, 0, 0, 0),
+            margin=(0, 0, 0, 0),
             font=fonts["ITEM_DESC_FONT"],
             callback=lambda: buttons_callback["send_gold"](
                 first_player, second_player, True, first_player.gold
@@ -318,7 +318,7 @@ def create_trade_menu(
         Button(
             title="<- 50G",
             size=(90, 30),
-            margin=(30, 0, 0, 0),
+            margin=(0, 0, 0, 0),
             font=fonts["ITEM_DESC_FONT"],
             callback=lambda: buttons_callback["send_gold"](
                 first_player, second_player, False, 50
@@ -327,7 +327,7 @@ def create_trade_menu(
         Button(
             title="<- 200G",
             size=(90, 30),
-            margin=(30, 0, 0, 0),
+            margin=(0, 0, 0, 0),
             font=fonts["ITEM_DESC_FONT"],
             callback=lambda: buttons_callback["send_gold"](
                 first_player, second_player, False, 200
@@ -336,7 +336,7 @@ def create_trade_menu(
         Button(
             title="<- All",
             size=(90, 30),
-            margin=(30, 0, 0, 0),
+            margin=(0, 0, 0, 0),
             font=fonts["ITEM_DESC_FONT"],
             callback=lambda: buttons_callback["send_gold"](
                 first_player, second_player, False, second_player.gold
