@@ -312,8 +312,8 @@ class LevelScene(Scene):
                         player = loader.init_player(player_el["name"])
                         player.position = player_el["position"]
                         self.players.append(player)
-            if self.directory != "maps/level_0/":
-                # Not in level0
+            if self.number == 0:
+                # Level_0 doesn't need save reminder
                 self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save}))
 
             self._determine_players_initial_position()
