@@ -1994,47 +1994,8 @@ class LevelScene(Scene):
         )
 
     def leave_menu(self):
-        # This part I copied the code from function self.right_click
-        # to prevent being infected by future changes of function self.right_click
-        if self.selected_player:
-            if self.possible_moves:
-                # Player was waiting to move
-                self.selected_player.selected = False
-                self.selected_player = None
-                self.possible_moves = {}
-            elif self.menu_manager.active_menu is not None:
-                # Test if player is on character's main menu, in this case,
-                # current move should be cancelled if possible*
-                if self.menu_manager.active_menu.title == "Select an action":
-                    if self.selected_player.cancel_move():
-                        if self.traded_items:
-                            for item in self.traded_items:
-                                if item[1] == self.selected_player:
-                                    item[2].remove_item(item[0])
-                                    self.selected_player.set_item(item[0])
-                                else:
-                                    self.selected_player.remove_item(item[0])
-                                    item[1].set_item(item[0])
-                            self.traded_items.clear()
-                        self.selected_player.selected = False
-                        self.selected_player = None
-                        self.possible_moves = {}
-                        self.menu_manager.clear_menus()
-                    return
-                self.menu_manager.close_active_menu()
-            # Want to cancel an interaction (not already performed)
-            elif self.possible_interactions or self.possible_attacks:
-                self.selected_player.cancel_interaction()
-                self.possible_interactions = []
-                self.possible_attacks = []
-                self.menu_manager.close_active_menu()
-            return
         if self.menu_manager.active_menu is not None:
             self.menu_manager.close_active_menu()
-        if self.watched_entity:
-            self.watched_entity = None
-            self.possible_moves = {}
-            self.possible_attacks = []
 
     def left_click(self, position: Position) -> None:
         """
@@ -2053,9 +2014,12 @@ class LevelScene(Scene):
                     self.menu_manager.active_menu._InfoBox__size[0],
                     self.menu_manager.active_menu._InfoBox__size[1]
                 )
-                if not my_rect.collidepoint(position):
-                    # Leave the menu if click is not on menu
-                    self.leave_menu()
+                if (
+                    self.menu_manager.active_menu is not None
+                    and not my_rect.collidepoint(position)
+                    and self.menu_manager.active_menu.title != "Select an action"
+                ):
+                    self.menu_manager.close_active_menu()
             self.menu_manager.click(1, position)
             return
 
@@ -2298,7 +2262,10 @@ class LevelScene(Scene):
         keyname -- an integer value representing which key button is down
         """
         if keyname == pygame.K_ESCAPE:
-            self.leave_menu()
+            if (self.menu_manager.active_menu is not None
+                and self.menu_manager.active_menu.title != "Select an action"
+            ):
+                self.menu_manager.close_active_menu()
 
     def motion(self, position: Position) -> None:
         """
