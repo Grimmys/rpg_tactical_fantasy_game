@@ -2250,6 +2250,7 @@ class LevelScene(Scene):
                                     isinstance(entity, Character),
                                 )
                             return
+                        
     def key_down(self, keyname):
         """
         Handle the triggering of a key down event.
