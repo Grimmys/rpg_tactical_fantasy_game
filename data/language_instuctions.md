@@ -15,7 +15,7 @@ This update adds an interface for implementing multilingual functionality to the
    ```python
     element_grid = [
         [Button(title="English", callback=lambda: buttons_callback("en"))],
-        [Button(title="Chinese Simp.", callback=lambda answer=False: buttons_callback("zh_cn"))],
+        [Button(title="Chinese Simp.", callback=lambda: buttons_callback("zh_cn"))],
         ...
         [Button(title="Language Full Name", callback=lambda: buttons_callback("language_name"))],
     ]
@@ -75,7 +75,7 @@ This update adds an interface for implementing multilingual functionality to the
    ```python
     element_grid = [
         [Button(title="English", callback=lambda: buttons_callback("en"))],
-        [Button(title="Chinese Simp.", callback=lambda answer=False: buttons_callback("zh_cn"))],
+        [Button(title="Chinese Simp.", callback=lambda: buttons_callback("zh_cn"))],
         ...
         [Button(title="Language Full Name", callback=lambda: buttons_callback("language_name"))],
     ]

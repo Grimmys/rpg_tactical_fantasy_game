@@ -49,5 +49,6 @@ fonts_description: Dict[str, Dict[str, Union[str, int]]] = {
     },
     "ITALIC_ITEM_FONT": {"name": "fonts/fusion-pixel-12px-proportional-zh_hans.ttf", "size": 14},
     "ITALIC_ITEM_FONT_HOVER": {"name": "fonts/fusion-pixel-12px-proportional-zh_hans.ttf", "size": 16},
+    "LANGUAGE_FONT": {"name": "fonts/Autonym.ttf", "size": 18},
     "FPS_FONT": {"default": True},
 }
