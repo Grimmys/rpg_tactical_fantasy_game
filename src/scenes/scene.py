@@ -69,3 +69,13 @@ class Scene:
         position -- the position of the mouse
         """
         pass
+
+    def key_down(self, keyname: int) -> None:
+        """
+        Handle the triggering of a key down event.
+
+        Keyword arguments:
+        keyname -- an integer value representing which key button is down
+        (27 for Escape key)
+        """
+        pass

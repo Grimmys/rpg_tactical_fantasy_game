@@ -1392,17 +1392,34 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
 
     return InfoBox(STR_SAVE_GAME_MENU, element_grid, width=START_MENU_WIDTH)
 
-def create_choose_language_menu(buttons_callback: Callable,) -> InfoBox:
+
+def create_save_dialog(buttons_callback: dict[str, Callable],) -> InfoBox:
     """
     Return the interface of the save game reminder
     """
     element_grid = [
-        [Button(title="English", callback=lambda: buttons_callback("en"))],
-        [Button(title="Chinese Simp.", callback=lambda answer=False: buttons_callback("zh_cn"))],
+        [Button(title="Yes", callback=buttons_callback["yes"])],
+        [Button(title="No", callback=buttons_callback["no"])],
     ]
     return InfoBox(
-        STR_CHOOSE_LANGUAGE,
+        "Save the Game?",
         element_grid,
         width=ACTION_MENU_WIDTH,
         has_close_button=False
     )
+
+  
+def create_choose_language_menu(buttons_callback: Callable,) -> InfoBox:
+  """
+  Return the interface the choose language menu
+  """
+  element_grid = [
+      [Button(title="English", font=fonts["LANGUAGE_FONT"], callback=lambda: buttons_callback("en"))],
+      [Button(title="中文简体", font=fonts["LANGUAGE_FONT"], callback=lambda: buttons_callback("zh_cn"))],
+  ]
+  return InfoBox(
+      STR_CHOOSE_LANGUAGE,
+      element_grid,
+      width=ACTION_MENU_WIDTH,
+      has_close_button=False
+  )

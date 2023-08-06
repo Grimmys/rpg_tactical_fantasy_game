@@ -27,7 +27,7 @@ from src.constants import (
     TILE_SIZE,
     BLACK,
     WIN_HEIGHT,
-    WIN_WIDTH,
+    WIN_WIDTH, GRID_WIDTH, GRID_HEIGHT,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
@@ -69,6 +69,7 @@ from src.gui.language import *
 from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
+    create_save_dialog,
     create_event_dialog,
     INVENTORY_MENU_ID,
     SHOP_MENU_ID,
@@ -79,6 +80,7 @@ from src.services.menu_manager import MenuManager
 
 
 class LevelStatus(IntEnum):
+    VERY_BEGINNING = auto()
     INITIALIZATION = auto()
     IN_PROGRESS = auto()
     ENDED_VICTORY = auto()
@@ -175,7 +177,8 @@ class LevelScene(Scene):
     wait_for_teleportation_destination -- a boolean indicating if the level is waiting for player
     to choose for the destination of a teleportation
     diary_entries -- the log of the most recent battles
-    turn_items -- the items that have been trade during the current player turn
+    traded_items -- the items that have been trade during the current player turn
+    traded_gold -- the gold that have been trade during the current player turn
     wait_sfx -- the sound that should be started when a player ends his turn
     inventory_sfx -- the sound that should be started when the inventory screen is opening
     armor_sfx -- the sound that should be started when the equipment screen is opening
@@ -190,7 +193,7 @@ class LevelScene(Scene):
         screen: pygame.Surface,
         directory: str,
         number: int,
-        status: LevelStatus = LevelStatus.INITIALIZATION,
+        status: LevelStatus = LevelStatus.VERY_BEGINNING,
         turn: int = 0,
         data: Optional[etree.Element] = None,
         players: Optional[Sequence[Player]] = None,
@@ -219,8 +222,8 @@ class LevelScene(Scene):
             "img": map_static_content,
             "width": map_width,
             "height": map_height,
-            "x": (MAX_MAP_WIDTH - map_width) // 2,
-            "y": (MAX_MAP_HEIGHT - map_height) // 2,
+            "x": (GRID_WIDTH - self.tmx_data.width) // 2 * TILE_SIZE,
+            "y": (GRID_HEIGHT - self.tmx_data.height) // 2 * TILE_SIZE,
         }
 
         self.data: Optional[etree.Element] = data
@@ -270,12 +273,20 @@ class LevelScene(Scene):
         self.wait_for_teleportation_destination: bool = False
         self.diary_entries: list[list[BoxElement]] = []
         self.traded_items: list[list[Union[Item, Player]]] = []
+        self.traded_gold: list[list[Union[int, Player]]] = []
 
         self.wait_sfx: Optional[pygame.mixer.Sound] = None
         self.inventory_sfx: Optional[pygame.mixer.Sound] = None
         self.armor_sfx: Optional[pygame.mixer.Sound] = None
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
+
+    def no_dont_save(self):
+        self.menu_manager.close_active_menu()
+
+    def yes_save(self):
+        self.menu_manager.close_active_menu()
+        self.open_save_menu()
 
     def load_level_content(self) -> None:
         """
@@ -306,6 +317,9 @@ class LevelScene(Scene):
                         player = loader.init_player(player_el["name"])
                         player.position = player_el["position"]
                         self.players.append(player)
+            if self.number != 0:
+                # Level_0 doesn't need save reminder
+                self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save}))
 
             self._determine_players_initial_position()
 
@@ -321,6 +335,12 @@ class LevelScene(Scene):
             # Game is loaded from a save (data)
             from_save = True
             gap_x, gap_y = (0, 0)
+            if self.game_phase == LevelStatus.VERY_BEGINNING:
+                # If game is in very beginning, show dialogs
+                if "before_init" in self.events:
+                    if "dialogs" in self.events["before_init"]:
+                        for dialog in self.events["before_init"]["dialogs"]:
+                            self.menu_manager.open_menu(create_event_dialog(dialog))
             self.players.extend(loader.load_players(self.data))
             self.escaped_players = loader.load_escaped_players(self.data)
             self.entities.update(
@@ -1507,6 +1527,7 @@ class LevelScene(Scene):
         self.selected_player.end_turn()
         self.selected_player = None
         self.traded_items.clear()
+        self.traded_gold.clear()
         self.possible_moves.clear()
         self.possible_attacks.clear()
         self.possible_interactions.clear()
@@ -1696,6 +1717,7 @@ class LevelScene(Scene):
         sender: Player = first_player if is_first_player_sender else second_player
         receiver: Player = second_player if is_first_player_sender else first_player
         Player.trade_gold(sender, receiver, value)
+        self.traded_gold.append([value, sender, receiver])
         self.menu_manager.close_active_menu()
         self.menu_manager.open_menu(
             menu_creator_manager.create_trade_menu(
@@ -1982,6 +2004,20 @@ class LevelScene(Scene):
         """
         if self.menu_manager.active_menu:
             # TODO: check if the raw value could be replaced by a meaningful constant
+            # Check if the click is on menu
+            menu_position = self.menu_manager.active_menu.determine_position(self.active_screen_part)
+            if menu_position != None:
+                my_rect = pygame.Rect(
+                    menu_position.x, menu_position.y,
+                    self.menu_manager.active_menu._InfoBox__size[0],
+                    self.menu_manager.active_menu._InfoBox__size[1]
+                )
+                if (
+                    not my_rect.collidepoint(position)
+                
+                    and self.menu_manager.active_menu.title != "Select an action"
+                ):
+                    self.menu_manager.close_active_menu()
             self.menu_manager.click(1, position)
             return
 
@@ -2120,6 +2156,7 @@ class LevelScene(Scene):
                 if self.menu_manager.active_menu.title == STR_SELECT_AN_ACTION:
                     if self.selected_player.cancel_move():
                         if self.traded_items:
+                            # Return traded items
                             for item in self.traded_items:
                                 if item[1] == self.selected_player:
                                     item[2].remove_item(item[0])
@@ -2128,6 +2165,16 @@ class LevelScene(Scene):
                                     self.selected_player.remove_item(item[0])
                                     item[1].set_item(item[0])
                             self.traded_items.clear()
+                        if self.traded_gold:
+                            # Return traded gold
+                            for gold in self.traded_gold:
+                                if gold[1] == self.selected_player:
+                                    self.selected_player.gold += gold[0]
+                                    gold[2].gold -= gold[0]
+                                else:
+                                    self.selected_player.gold -= gold[0]
+                                    gold[2].gold += gold[0]
+                            self.traded_gold.clear()
                         self.selected_player.selected = False
                         self.selected_player = None
                         self.possible_moves = {}
@@ -2166,6 +2213,11 @@ class LevelScene(Scene):
         elif button == 3:
             self.right_click()
 
+        if self.game_phase == LevelStatus.VERY_BEGINNING:
+            # Update game phase if dialogs at the very beginning are all closed
+            if not self.menu_manager.active_menu:
+                self.game_phase = LevelStatus.INITIALIZATION
+
     def button_down(self, button: int, position: Position) -> None:
         """
         Handle the triggering of a mouse button down event.
@@ -2200,6 +2252,19 @@ class LevelScene(Scene):
                                     isinstance(entity, Character),
                                 )
                             return
+
+    def key_down(self, keyname):
+        """
+        Handle the triggering of a key down event.
+
+        Keyword arguments:
+        keyname -- an integer value representing which key button is down
+        """
+        if keyname == pygame.K_ESCAPE:
+            if (self.menu_manager.active_menu is not None
+                and self.menu_manager.active_menu.title != "Select an action"
+            ):
+                self.menu_manager.close_active_menu()
 
     def motion(self, position: Position) -> None:
         """
