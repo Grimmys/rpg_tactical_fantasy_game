@@ -12,7 +12,7 @@ STR_CLOSE = "Close"
 # Load game menu
 STR_LOAD_GAME_MENU = "Load Game"
 def f_SAVE_NUMBER(number: int):
-    return (f"Save {number}")
+    return f"Save {number}"
 
 # Options menu
 STR_OPTIONS_MENU = "Options"
@@ -33,7 +33,6 @@ STR_SAVE_GAME_MENU = "Save Game"
 # Level loading scene
 def f_CHAPTER_NUMBER(number: int):
     return(f"Chapter {number}")
-
 def f_LEVEL_NUMBER_AND_NAME(number: int, name: str):
     return(f"Level {number}: {name}")
 
@@ -50,7 +49,6 @@ STR_REWARD_CONGRATULATIONS = "Congratulations! Objective has been completed!"
 
 def f_EARNED_GOLD(gold: int):
     return(f"Earned gold: {gold} (all characters)")
-
 def f_EARNED_ITEMS(item):
     return(f"Earned item: {item}")
 
@@ -222,7 +220,6 @@ def f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration
     return f"The defense of {entity} has been increased for {duration} turns"
 def f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, duration):
     return f"{entity} has been stunned for {duration} turns"
-
 def f_RECOVER_NUMBER_HP(power):
     return f"Recover {power} HP"
 def f_EARN_NUMBER_XP(power):
@@ -230,26 +227,85 @@ def f_EARN_NUMBER_XP(power):
 
 # Items
 dict_items = {
-    "":""
+    "key": "Key",
+    "bones": "Bones",
+    "topaz": "Topaz",
+    "iron_ring": "Iron Ring",
+    "monster_meat": "Monster Meat",
+    "life_potion": "Life Potion",
+    "speed_potion": "Speed Potion",
+    "rabbit_step_potion": "Rabbit Step Potion",
+    "strength_potion": "Strength Potion",
+    "vigor_potion": "Vigor Potion",
+    "scroll_of_knowledge": "Scroll of Knowledge",
+    "scroll_of_cerberus": "Scroll of Cerberus",
+    "chest_key": "Chest Key",
+    "door_key": "Door Key",
+    "green_book": "Green Book",
+    "poket_knife": "Poket Knife",
+    "dagger": "Dagger",
+    "club": "Club",
+    "short_sword": "Short Sword",
+    "wooden_spear": "Wooden Spear",
+    "halberd": "Halberd",
+    "pickaxe": "Pickaxe",
+    "wooden_bow": "Wooden Bow",
+    "basic_bow": "Basic Bow",
+    "wooden_staff": "Wooden Staff",
+    "necromancer_staff": "Necromancer Staff",
+    "plumed_helmet": "Plumed Helmet",
+    "black_hood": "Black Hood",
+    "helmet": "Helmet",
+    "horned_helmet": "Horned Helmet",
+    "gold_helmet": "Gold Helmet",
+    "chainmail": "Chainmail",
+    "leather_armor": "Leather Armor",
+    "scale_mail": "Scale Mail",
+    "gold_armor": "Gold Armor",
+    "spy_outfit": "Spu Outfit",
+    "barding_magenta": "Barding Magenta",
+    "brown_boots": "Brown Boots",
+    "black_boots": "Black Boots",
+    "gold_boots": "Gold Boots",
+    "wooden_shield": "Wooden Shield",
 }
 
 # Effects
-dict_effects = {"":""}
+dict_effects = {
+    "":""
+}
 
 # src.game_entities.character
 # Races
-dict_races = {"":""}
+dict_races = {
+    "human": "Human",
+    "elf": "Elf",
+    "dwarf": "Dwarf",
+}
 
 # Classes
-dict_classes = {"":""}
+dict_classes = {
+    "warrior": "Warrior",
+    "ranger": "Ranger",
+}
 
 # src.game_entities.foe
 # Foe keywords
-dict_foe_keywords = {"":""}
+dict_foe_keywords = {
+    "undead": "Undead",
+    "large": "Large"
+}
 
 # src.game_entities.entity
 # Entity names
-dict_entity_names = {"":""}
+dict_entity_names = {
+    "skeleton": "Skeleton",
+    "necrophage": "Necrophage",
+    "obstacle": "Obstacle",
+    "shop": "Shop",
+    "house": "House",
+    "chest": "Chest",
+}
 
 # src.services.menu_creater_manager
 # Attack kinds

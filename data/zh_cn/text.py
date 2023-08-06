@@ -219,7 +219,6 @@ def f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration
     return f"{entity}的防御在{duration}个回合内提升" #f"The defense of {entity} has been increased for {self.duration} turns"
 def f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, duration):
     return f"{entity}被击晕了{duration}回合" # f"{entity} has been stunned for {duration} turns"
-
 def f_RECOVER_NUMBER_HP(power):
     return f"恢复{power}点血量"# f"Recover {power} HP"
 def f_EARN_NUMBER_XP(power):
@@ -272,7 +271,9 @@ dict_items = {
 }
 
 # Effects
-dict_effects = {"":""}
+dict_effects = {
+    "":""
+}
 
 # src.game_entities.character
 # Races

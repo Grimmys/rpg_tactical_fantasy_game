@@ -2015,7 +2015,7 @@ class LevelScene(Scene):
                 if (
                     not my_rect.collidepoint(position)
                 
-                    and self.menu_manager.active_menu.title != "Select an action"
+                    and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
                 ):
                     self.menu_manager.close_active_menu()
             self.menu_manager.click(1, position)
@@ -2262,7 +2262,7 @@ class LevelScene(Scene):
         """
         if keyname == pygame.K_ESCAPE:
             if (self.menu_manager.active_menu is not None
-                and self.menu_manager.active_menu.title != "Select an action"
+                and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
             ):
                 self.menu_manager.close_active_menu()
 
