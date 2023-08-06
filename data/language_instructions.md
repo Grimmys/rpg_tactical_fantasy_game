@@ -1,6 +1,4 @@
-# Content 目录
-- [English 英文](#Multilingual Support Description)
-- [Chinese 中文](#多语言支持说明)
+[ [English 英文](#Introduction) | [Chinese 中文](#多语言支持说明) ]
 
 # Multilingual Support Description
 
@@ -15,12 +13,11 @@ This update adds an interface for implementing multilingual functionality to the
    ```python
     element_grid = [
         [Button(title="English", callback=lambda: buttons_callback("en"))],
-        [Button(title="Chinese Simp.", callback=lambda: buttons_callback("zh_cn"))],
+        [Button(title="中文简体", callback=lambda: buttons_callback("zh_cn"))],
         ...
         [Button(title="Language Full Name", callback=lambda: buttons_callback("language_name"))],
     ]
    ```
-   Please note that the full name of the language should be written in English. This is because the default language of the game is English, and the default font library is also an English font library, which, as far as I know, does not support CJK characters. Perhaps in future updates, this part will use fonts that support various languages.
 5. The content that needs to be translated includes:
     * Strings, function outputs, and dictionaries in `text.py`.
     * The content of each txt file under `data/language_name/maps/level_number`.
@@ -75,12 +72,11 @@ This update adds an interface for implementing multilingual functionality to the
    ```python
     element_grid = [
         [Button(title="English", callback=lambda: buttons_callback("en"))],
-        [Button(title="Chinese Simp.", callback=lambda: buttons_callback("zh_cn"))],
+        [Button(title="中文简体", callback=lambda: buttons_callback("zh_cn"))],
         ...
         [Button(title="Language Full Name", callback=lambda: buttons_callback("language_name"))],
     ]
    ```
-   请注意，语言的全名请用英语填写。这是因为游戏默认的语言是英语，默认的字体库也是英语字体库，就我所知，它不支持CJK字符。也许在以后的版更新中会在这部分使用支持各国语言的字体。
 5. 需要翻译的内容有：
     * `text.py` 中的字符串、函数输出和字典。
     * `data/language_name/maps/level_number` 下各个 txt 文件中的内容。
