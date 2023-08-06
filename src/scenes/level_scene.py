@@ -1989,8 +1989,8 @@ class LevelScene(Scene):
                     self.menu_manager.active_menu._InfoBox__size[1]
                 )
                 if (
-                    self.menu_manager.active_menu is not None
-                    and not my_rect.collidepoint(position)
+                    not my_rect.collidepoint(position)
+                
                     and self.menu_manager.active_menu.title != "Select an action"
                 ):
                     self.menu_manager.close_active_menu()
@@ -2212,7 +2212,7 @@ class LevelScene(Scene):
                                     isinstance(entity, Character),
                                 )
                             return
-                        
+
     def key_down(self, keyname):
         """
         Handle the triggering of a key down event.
