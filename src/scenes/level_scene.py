@@ -68,6 +68,7 @@ from src.gui.tools import blit_alpha
 from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
+    create_save_dialog,
     create_event_dialog,
     INVENTORY_MENU_ID,
     SHOP_MENU_ID,
@@ -77,6 +78,7 @@ from src.services.save_state_manager import SaveStateManager
 
 
 class LevelStatus(IntEnum):
+    VERY_BEGINNING = auto()
     INITIALIZATION = auto()
     IN_PROGRESS = auto()
     ENDED_VICTORY = auto()
@@ -189,7 +191,7 @@ class LevelScene(Scene):
         screen: pygame.Surface,
         directory: str,
         number: int,
-        status: LevelStatus = LevelStatus.INITIALIZATION,
+        status: LevelStatus = LevelStatus.VERY_BEGINNING,
         turn: int = 0,
         data: Optional[etree.Element] = None,
         players: Optional[Sequence[Player]] = None,
@@ -276,6 +278,13 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
+    def no_dont_save(self):
+        self.menu_manager.close_active_menu()
+
+    def yes_save(self):
+        self.menu_manager.close_active_menu()
+        self.open_save_menu()
+
     def load_level_content(self) -> None:
         """
         Load all the content of the level
@@ -305,6 +314,9 @@ class LevelScene(Scene):
                         player = loader.init_player(player_el["name"])
                         player.position = player_el["position"]
                         self.players.append(player)
+            if self.number != 0:
+                # Level_0 doesn't need save reminder
+                self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save}))
 
             self._determine_players_initial_position()
 
@@ -320,6 +332,12 @@ class LevelScene(Scene):
             # Game is loaded from a save (data)
             from_save = True
             gap_x, gap_y = (0, 0)
+            if self.game_phase == LevelStatus.VERY_BEGINNING:
+                # If game is in very beginning, show dialogs
+                if "before_init" in self.events:
+                    if "dialogs" in self.events["before_init"]:
+                        for dialog in self.events["before_init"]["dialogs"]:
+                            self.menu_manager.open_menu(create_event_dialog(dialog))
             self.players.extend(loader.load_players(self.data))
             self.escaped_players = loader.load_escaped_players(self.data)
             self.entities.update(
@@ -2178,6 +2196,11 @@ class LevelScene(Scene):
             self.left_click(position)
         elif button == 3:
             self.right_click()
+
+        if self.game_phase == LevelStatus.VERY_BEGINNING:
+            # Update game phase if dialogs at the very beginning are all closed
+            if not self.menu_manager.active_menu:
+                self.game_phase = LevelStatus.INITIALIZATION
 
     def button_down(self, button: int, position: Position) -> None:
         """
