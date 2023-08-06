@@ -268,6 +268,7 @@ dict_items = {
     "black_boots": "Black Boots",
     "gold_boots": "Gold Boots",
     "wooden_shield": "Wooden Shield",
+    # "500_gold": "500 Gold",
 }
 
 # Effects
@@ -293,7 +294,8 @@ dict_classes = {
 # Foe keywords
 dict_foe_keywords = {
     "undead": "Undead",
-    "large": "Large"
+    "large": "Large",
+    "caval": "Caval",
 }
 
 # src.game_entities.entity
@@ -305,6 +307,7 @@ dict_entity_names = {
     "shop": "Shop",
     "house": "House",
     "chest": "Chest",
+    "healer": "Healer",
 }
 
 # src.services.menu_creater_manager

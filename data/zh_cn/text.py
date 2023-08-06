@@ -268,6 +268,7 @@ dict_items = {
     "black_boots": "黑靴子",
     "gold_boots": "金靴子",
     "wooden_shield": "木盾牌",
+    # "500_gold": "500金币",
 }
 
 # Effects
@@ -293,7 +294,8 @@ dict_classes = {
 # Foe keywords
 dict_foe_keywords = {
     "undead": "不死族",
-    "large": "大型"
+    "large": "大型",
+    "caval": "骑兵",
 }
 
 # src.game_entities.entity
@@ -305,6 +307,7 @@ dict_entity_names = {
     "shop": "商店",
     "house": "房子",
     "chest": "箱子",
+    "healer": "愈伤池",
 }
 
 # src.services.menu_creater_manager

@@ -183,10 +183,12 @@
         <gold> 100 </gold>
         <interaction>
             <talk>
-                Thank you for rescuing me!
+                <en> Thank you for rescuing me! </en>
+                <zh_cn> 感谢你救了我！ </zh_cn>
             </talk>
             <talk>
-                As I promised, I'll help you now! As a spy, I could open locked doors and chests.
+                <en> As I promised, I'll help you now! As a spy, I could open locked doors and chests. </en>
+                <zh_cn> 正如我保证的那样，我现在讲帮助你！作为一个间谍，我可以打开上锁的门和箱子。 </zh_cn>
             </talk>
             <join_team />
         </interaction>
