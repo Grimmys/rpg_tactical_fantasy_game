@@ -21,7 +21,7 @@ class SaveStateManager:
         Keyword Arguments:
         file_id -- the id of the save file to use
         """
-        with open(f"saves/save_{file_id}.xml", "w+") as save_file:
+        with open(f"saves/save_{file_id}.xml", "w+", encoding="utf-8") as save_file:
             level = self._save_level()
             self.tree.append(level)
 
