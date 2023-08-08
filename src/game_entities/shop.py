@@ -17,7 +17,7 @@ from src.game_entities.character import Character
 from src.game_entities.item import Item
 from src.gui.fonts import fonts
 from src.gui.position import Position
-from src.gui.language import STR_BUY, STR_SELL
+from src.services.language import STR_BUY, STR_SELL
 from src.services import menu_creator_manager
 from src.gui.info_box import InfoBox
 

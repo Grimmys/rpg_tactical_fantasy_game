@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Sequence, Optional
 
 import pygame
-from lxml import etree
 
 from src.constants import TILE_SIZE
 from src.game_entities.alteration import Alteration
@@ -30,7 +29,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
 from src.gui.position import Position
-from src.gui.language import *
+from src.services.language import *
 
 foes_data = {}
 fountains_data = {}

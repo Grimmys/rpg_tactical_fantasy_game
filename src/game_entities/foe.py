@@ -9,14 +9,13 @@ from enum import Enum, auto
 from typing import Union, Sequence, Optional
 
 import pygame
-from lxml import etree
 
 from src.game_entities.alteration import Alteration
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
 from src.gui.position import Position
-from src.gui.language import *
+from src.services.language import *
 
 
 class Keyword(Enum):
@@ -141,7 +140,7 @@ class Foe(Movable):
             try:
                 formatted_string += dict_foe_keywords[keyword.name.lower()] + ", "
             except KeyError:
-                formatted_string += keyword.name.lower().capitalize()
+                formatted_string += keyword.name.lower().capitalize() + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]

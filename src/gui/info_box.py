@@ -24,7 +24,7 @@ from pygamepopup.components.text_element import TextElement
 from pygamepopup.components.button import Button
 from pygamepopup.types import Position
 
-from src.gui.language import STR_CLOSE
+from src.services.language import STR_CLOSE
 
 class _Row:
     def __init__(self, elements: list[BoxElement], height: int = 0):

@@ -316,3 +316,8 @@ dict_attack_kinds = {
     "physical": "物理",
     "spiritual": "精神"
 }
+
+# src.game_entities.skills
+dict_skills = {
+    "Ally Protection": "友军保护",
+}

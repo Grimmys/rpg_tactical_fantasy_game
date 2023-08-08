@@ -5,6 +5,7 @@ Defines Skill class, the class describing the definition of the skills of player
 from enum import Enum, auto
 from typing import Optional, Sequence
 
+from src.services.language import dict_skills
 from src.game_entities.alteration import Alteration
 
 
@@ -64,4 +65,8 @@ class Skill:
         return self.name == name
 
     def __str__(self):
-        return self.name
+        print(self.name)
+        try:
+            return dict_skills[self.name]
+        except KeyError:
+            return self.name

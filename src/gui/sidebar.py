@@ -25,7 +25,7 @@ from src.gui.constant_sprites import constant_sprites
 from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.tools import determine_gauge_color
-from src.gui.language import *
+from src.services.language import *
 
 SHIFT = 2
 SIDEBAR_SPRITE = "imgs/interface/sidebar.png"

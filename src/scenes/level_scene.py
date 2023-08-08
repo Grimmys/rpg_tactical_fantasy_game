@@ -11,12 +11,13 @@ from typing import Sequence, Union, Optional, Set, Type, List
 
 import pygame
 import pytmx
-from lxml import etree
+from pygamepopup.menu_manager import MenuManager
 from pygamepopup.components import BoxElement, Button, TextElement
 from pygamepopup.components.image_button import ImageButton
 
+from src.scenes.scene import QuitActionKind
+
 from src.constants import (
-    MAX_MAP_WIDTH,
     MAX_MAP_HEIGHT,
     MENU_WIDTH,
     MENU_HEIGHT,
@@ -65,7 +66,7 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
-from src.gui.language import *
+from src.services.language import *
 from src.scenes.scene import Scene
 from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
 from src.services.menu_creator_manager import (
@@ -76,7 +77,6 @@ from src.services.menu_creator_manager import (
 )
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
-from src.services.menu_manager import MenuManager
 
 
 class LevelStatus(IntEnum):
@@ -2195,7 +2195,7 @@ class LevelScene(Scene):
             self.possible_moves = {}
             self.possible_attacks = []
 
-    def click(self, button: int, position: Position) -> None:
+    def click(self, button: int, position: Position) -> QuitActionKind:
         """
         Handle the triggering of a click event.
 
@@ -2206,7 +2206,7 @@ class LevelScene(Scene):
         """
         # No event if there is an animation or it is not player turn
         if self.animation:
-            return
+            return QuitActionKind.CONTINUE
 
         if button == 1:
             self.left_click(position)
@@ -2217,6 +2217,8 @@ class LevelScene(Scene):
             # Update game phase if dialogs at the very beginning are all closed
             if not self.menu_manager.active_menu:
                 self.game_phase = LevelStatus.INITIALIZATION
+
+        return QuitActionKind.CONTINUE
 
     def button_down(self, button: int, position: Position) -> None:
         """

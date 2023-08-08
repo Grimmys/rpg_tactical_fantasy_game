@@ -11,12 +11,12 @@ import pygame
 import pygamepopup
 
 from src.gui.tools import show_fps
-from src.services.scene_manager import SceneManager
+from src.services.scene_manager import SceneManager, QuitActionKind
 
 
 def main_loop(
     game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock
-) -> bool:
+) -> QuitActionKind:
     """
     Run the game until a quit request happened.
     Pygame events are catch and delegated to the scene manager.
@@ -28,20 +28,16 @@ def main_loop(
     clock -- the clock regulating the maximum frame rate of the game
 
     Returns:
-    True -- restart game
-    False -- exit game
+    whether quit or restart
     """
-    quit_game: int = False
-    while not quit_game:
+    action: QuitActionKind = QuitActionKind.CONTINUE
+    while action == QuitActionKind.CONTINUE:
         screen.fill(BLACK)
-        quit_game = game_controller.process_game_iteration()
+        action = game_controller.process_game_iteration()
         show_fps(screen, clock, fonts.fonts["FPS_FONT"])
         pygame.display.update()
         clock.tick(FRAME_RATE)
-    if quit_game == 2:
-        return True
-    else:
-        return False
+    return action
 
 
 if __name__ == "__main__":
@@ -57,7 +53,7 @@ if __name__ == "__main__":
         FRAME_RATE,
     )
     from src.gui import constant_sprites, fonts
-    from src.gui.language import STR_GAME_TITLE
+    from src.services.language import STR_GAME_TITLE
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
     from src.services import load_from_xml_manager as loader
@@ -102,10 +98,10 @@ if __name__ == "__main__":
     pygame.mixer.music.play(-1)
 
     # Lets the game start!
-    restart = main_loop(scene_manager, main_screen, pygame.time.Clock())
+    quit_action = main_loop(scene_manager, main_screen, pygame.time.Clock())
 
     pygame.quit()
 
-    if restart:
-        restart_process = subprocess.Popen([sys.executable, 'main.py'])
-        restart_process.wait()
+    if quit_action == QuitActionKind.RESTART:
+        # Restart game
+        subprocess.Popen([sys.executable, 'main.py']).wait()

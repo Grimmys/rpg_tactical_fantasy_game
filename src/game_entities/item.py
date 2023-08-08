@@ -5,10 +5,9 @@ Defines Item, the base class for all items in the game.
 from __future__ import annotations
 
 import pygame
-from lxml import etree
 
 from src.constants import TILE_SIZE
-from src.gui.language import *
+from src.services.language import *
 
 
 class Item:

@@ -4,11 +4,9 @@ Defines Effect class, corresponding to the application of a specific effect to a
 
 from __future__ import annotations
 
-from lxml import etree
-
 from src.game_entities.alteration import Alteration
 from src.game_entities.destroyable import Destroyable
-from src.gui.language import *
+from src.services.language import *
 
 
 class Effect:

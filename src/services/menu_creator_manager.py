@@ -63,7 +63,7 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.tools import determine_gauge_color
 from src.gui.info_box import InfoBox
-from src.gui.language import *
+from src.services.language import *
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10

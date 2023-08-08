@@ -9,7 +9,6 @@ import random
 from typing import Union, Sequence, Optional
 
 import pygame
-from lxml import etree
 from pygamepopup.components import BoxElement, TextElement
 
 from src.game_entities.alteration import Alteration
@@ -24,7 +23,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
 from src.gui.position import Position
-from src.gui.language import *
+from src.services.language import *
 
 
 class Character(Movable):

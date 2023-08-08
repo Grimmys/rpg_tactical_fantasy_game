@@ -9,9 +9,8 @@ import pygame
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
 from src.scenes.level_loading_scene import LevelLoadingScene
 from src.scenes.level_scene import LevelStatus, LevelScene
-from src.scenes.scene import Scene
+from src.scenes.scene import Scene, QuitActionKind
 from src.scenes.start_scene import StartScene
-from src.gui.language import DATA_PATH
 
 
 class SceneManager:
@@ -30,7 +29,7 @@ class SceneManager:
     def __init__(self, screen: pygame.Surface) -> None:
         self.active_scene: Scene = StartScene(screen)
 
-    def process_game_iteration(self) -> bool:
+    def process_game_iteration(self) -> QuitActionKind:
         """
         Handle a single game iteration.
         Extract every ongoing event and delegate them to the active scene.
@@ -38,10 +37,10 @@ class SceneManager:
 
         Return whether the game should be ended or not.
         """
-        quit_game = False
+        quit_game = QuitActionKind.CONTINUE
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True
+                return QuitActionKind.QUIT
             elif event.type == pygame.MOUSEMOTION:
                 self.active_scene.motion(event.pos)
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -54,7 +53,7 @@ class SceneManager:
                 self.active_scene.key_down(event.key)
         if self.active_scene.update_state():
             self.start_new_scene()
-            return False
+            return QuitActionKind.CONTINUE
         self.active_scene.display()
         return quit_game
 

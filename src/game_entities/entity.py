@@ -6,11 +6,10 @@ import re
 from typing import Union
 
 import pygame
-from lxml import etree
 
 from src.constants import TILE_SIZE
 from src.gui.position import Position
-from src.gui.language import *
+from src.services.language import *
 
 
 class Entity:

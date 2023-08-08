@@ -7,7 +7,7 @@ after pygame initialization and after the initialization of at least one pygame 
 import pygame
 
 from src.gui.fonts import fonts
-from src.gui.language import *
+from src.services.language import *
 from src.constants import TILE_SIZE, MAX_MAP_WIDTH, MAX_MAP_HEIGHT, WHITE, BLACK
 
 LANDING_OPACITY = 80

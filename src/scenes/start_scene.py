@@ -7,9 +7,9 @@ from __future__ import annotations
 from typing import Sequence, Callable, Optional
 
 import pygame
-from lxml import etree
 from lxml.etree import XMLSyntaxError
 from pygamepopup.components import TextElement
+from pygamepopup.menu_manager import MenuManager
 
 from src.constants import SCREEN_SIZE, WIN_WIDTH, WIN_HEIGHT
 from src.game_entities.movable import Movable
@@ -18,10 +18,9 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.info_box import InfoBox
 from src.scenes.level_scene import LevelScene, LevelStatus
-from src.scenes.scene import Scene
+from src.scenes.scene import Scene, QuitActionKind
 from src.services import menu_creator_manager
-from src.services.menu_manager import MenuManager
-from src.gui.language import *
+from src.services.language import *
 
 
 class StartScene(Scene):
@@ -70,7 +69,7 @@ class StartScene(Scene):
         )
 
         self.level: Optional[LevelScene] = None
-        self.exit: int = False
+        self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
         StartScene.load_options()
 
@@ -262,15 +261,15 @@ class StartScene(Scene):
             menu_creator_manager.create_choose_language_menu(self.change_language)
         )
 
-    def change_language(self, language):
+    def change_language(self, language) -> None:
         StartScene.modify_options_file("language", language)
-        self.exit = 2
+        self.exit = QuitActionKind.RESTART
 
     def exit_game(self) -> None:
         """
         Handle an exit game request.
         """
-        self.exit = True
+        self.exit = QuitActionKind.QUIT
 
     def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
         """
@@ -312,7 +311,7 @@ class StartScene(Scene):
         """
         self.menu_manager.motion(position)
 
-    def click(self, button: int, position: Position) -> int:
+    def click(self, button: int, position: Position) -> QuitActionKind:
         """
         Handle the triggering of a click event.
         Delegate it to the active menu if it is a left-click.
