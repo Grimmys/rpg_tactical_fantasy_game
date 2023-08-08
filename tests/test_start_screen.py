@@ -7,6 +7,7 @@ import pygame
 from pygame.rect import Rect
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
+from src.scenes.scene import QuitActionKind
 from src.scenes.level_scene import LevelScene
 from src.scenes.start_scene import StartScene
 from tests.tools import minimal_setup_for_game
@@ -145,7 +146,7 @@ class TestStartScreen(unittest.TestCase):
         self.start_screen.click(LEFT_BUTTON, position)
 
         self.assertIsInstance(self.start_screen.level, self.level_class)
-        self.assertEqual(self.start_screen.level.number, 0)
+        self.assertEqual(self.start_screen.level.number, QuitActionKind.QUIT)
         self.assertNotEqual(self.start_screen.screen.get_rect(), screen.get_rect())
 
     def test_options_menu(self):

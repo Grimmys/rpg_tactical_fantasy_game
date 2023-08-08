@@ -8,7 +8,7 @@ from typing import Sequence, Callable, Optional
 
 import pygame
 from lxml.etree import XMLSyntaxError
-from pygamepopup.components import TextElement
+from pygamepopup.components import TextElement, InfoBox
 from pygamepopup.menu_manager import MenuManager
 
 from src.constants import SCREEN_SIZE, WIN_WIDTH, WIN_HEIGHT
@@ -16,7 +16,6 @@ from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
 from src.gui.position import Position
-from src.gui.info_box import InfoBox
 from src.scenes.level_scene import LevelScene, LevelStatus
 from src.scenes.scene import Scene, QuitActionKind
 from src.services import menu_creator_manager

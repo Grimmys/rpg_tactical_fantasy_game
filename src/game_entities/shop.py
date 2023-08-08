@@ -10,7 +10,7 @@ from typing import Optional
 
 import pygame.mixer
 from lxml import etree
-from pygamepopup.components import BoxElement, Button, TextElement
+from pygamepopup.components import BoxElement, Button, TextElement, InfoBox
 
 from src.game_entities.building import Building
 from src.game_entities.character import Character
@@ -19,7 +19,6 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.services.language import STR_BUY, STR_SELL
 from src.services import menu_creator_manager
-from src.gui.info_box import InfoBox
 
 
 class Shop(Building):

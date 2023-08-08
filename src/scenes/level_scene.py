@@ -12,7 +12,7 @@ from typing import Sequence, Union, Optional, Set, Type, List
 import pygame
 import pytmx
 from pygamepopup.menu_manager import MenuManager
-from pygamepopup.components import BoxElement, Button, TextElement
+from pygamepopup.components import BoxElement, Button, TextElement, InfoBox
 from pygamepopup.components.image_button import ImageButton
 
 from src.scenes.scene import QuitActionKind
@@ -55,7 +55,6 @@ from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.animation import Animation, Frame
-from src.gui.info_box import InfoBox
 from src.gui.constant_sprites import (
     ATTACKABLE_OPACITY,
     LANDING_OPACITY,
@@ -397,7 +396,7 @@ class LevelScene(Scene):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
         self.menu_manager.open_menu(
-            InfoBox(STR_GAME_HAS_BEEN_SAVED, [[]], width=ITEM_MENU_WIDTH)
+            InfoBox(STR_GAME_HAS_BEEN_SAVED, [[]], width=ITEM_MENU_WIDTH, close_button_text=STR_CLOSE,)
         )
 
     def exit_game(self) -> None:
@@ -909,6 +908,7 @@ class LevelScene(Scene):
                 STR_YOU_FOUND_IN_THE_CHEST,
                 element_grid,
                 width=ITEM_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
@@ -933,6 +933,7 @@ class LevelScene(Scene):
                 str(door),
                 grid_element,
                 width=ITEM_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1017,6 +1018,7 @@ class LevelScene(Scene):
                                 STR_CHEST,
                                 element_grid,
                                 width=ITEM_MENU_WIDTH,
+                                close_button_text=STR_CLOSE,
                             )
                         )
                         self.end_active_character_turn(clear_menus=False)
@@ -1031,6 +1033,7 @@ class LevelScene(Scene):
                         STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY,
                         [],
                         width=ITEM_MENU_WIDTH,
+                        close_button_text=STR_CLOSE,
                     )
                 )
         # Check if player tries to open a door
@@ -1056,6 +1059,7 @@ class LevelScene(Scene):
                             str(target),
                             grid_element,
                             width=ITEM_MENU_WIDTH,
+                            close_button_text=STR_CLOSE,
                         )
                     )
                     self.end_active_character_turn(clear_menus=False)
@@ -1079,6 +1083,7 @@ class LevelScene(Scene):
                         STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL,
                         [],
                         width=ITEM_MENU_WIDTH,
+                        close_button_text=STR_CLOSE,
                     )
                 )
         # Check if player tries to drink in a fountain
@@ -1089,6 +1094,7 @@ class LevelScene(Scene):
                     str(target),
                     element_grid,
                     width=ITEM_MENU_WIDTH,
+                    close_button_text=STR_CLOSE,
                 )
             )
 
@@ -1116,6 +1122,7 @@ class LevelScene(Scene):
                     element_grid,
                     width=ITEM_MENU_WIDTH,
                     title_color=ORANGE,
+                    close_button_text=STR_CLOSE,
                 )
             )
             # Check if character is now a player
@@ -1135,6 +1142,7 @@ class LevelScene(Scene):
                     element_grid,
                     width=ITEM_MENU_WIDTH,
                     title_color=ORANGE,
+                    close_button_text=STR_CLOSE,
                 )
             )
 
@@ -1462,6 +1470,7 @@ class LevelScene(Scene):
                 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR,
                 [],
                 width=ITEM_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
             self.menu_manager.open_menu(info_box)
         else:
@@ -1482,6 +1491,7 @@ class LevelScene(Scene):
                 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST,
                 [],
                 width=ITEM_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
             self.menu_manager.open_menu(info_box)
         else:
@@ -1693,6 +1703,7 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 grid_elements,
                 width=ITEM_DELETE_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1771,6 +1782,7 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 grid_elements,
                 width=ITEM_DELETE_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
         self.selected_item = None
@@ -1813,6 +1825,7 @@ class LevelScene(Scene):
                 popup_title,
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1830,7 +1843,7 @@ class LevelScene(Scene):
         ]
         self.menu_manager.replace_given_menu(SHOP_MENU_ID, self.active_shop.menu)
         self.menu_manager.open_menu(
-            InfoBox(str(self.selected_item), element_grid, width=ITEM_INFO_MENU_WIDTH)
+            InfoBox(str(self.selected_item), element_grid, width=ITEM_INFO_MENU_WIDTH, close_button_text=STR_CLOSE,)
         )
 
     def unequip_selected_item(self) -> None:
@@ -1864,6 +1877,7 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1899,6 +1913,7 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1922,6 +1937,7 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 entries,
                 width=ITEM_INFO_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
             )
         )
 
