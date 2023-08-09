@@ -20,7 +20,7 @@ from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.skill import SkillNature, Skill
 from src.gui.position import Position
-from src.services.language import DICT
+from src.services.language import TRANSLATIONS
 
 TIMER = 60
 NB_ITEMS_MAX = 8
@@ -301,7 +301,7 @@ class Movable(Destroyable):
         formatted_string: str = ""
         for alteration in self.alterations:
             try:
-                formatted_string += DICT[str(alteration).lower().replace(" ", "_")] + ", "
+                formatted_string += TRANSLATIONS["Effects&Alternations"][str(alteration).lower().replace(" ", "_")] + ", "
             except KeyError:
                 formatted_string += str(alteration) + ", "
         if formatted_string == "":

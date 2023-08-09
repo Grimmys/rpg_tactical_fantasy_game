@@ -64,12 +64,10 @@ class Entity:
         underscores are replaced by spaces and numbers are removed.
         """
         try:
-            string_entity: str = DICT[re.sub(r"[0-9]+", "", self.name).lower()]
+            string_entity: str = TRANSLATIONS["EntityNames"][self.get_proper_entity_name(self.name).lower()]
         except KeyError:
             string_entity: str = self.name.replace("_", " ").title()
-            string_entity = re.sub(
-                r"[0-9]+", "", string_entity
-            )  # Remove numbers like the id
+            string_entity = self.get_proper_entity_name(string_entity)
         return string_entity.strip()
 
     def is_on_position(self, position: Position) -> bool:
@@ -105,3 +103,10 @@ class Entity:
         y_coordinate.text = str(int(self.position[1] // TILE_SIZE))
 
         return tree
+
+    @staticmethod
+    def get_proper_entity_name(string_entity: str) -> str:
+        """
+        Return string that removed numbers like the id
+        """
+        return re.sub(r"[0-9]+", "", string_entity)

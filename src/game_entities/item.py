@@ -49,7 +49,7 @@ class Item:
 
     def __str__(self) -> str:
         try:
-            return DICT[self.name]
+            return TRANSLATIONS["Items"][self.name]
         except KeyError:
             return self.name.replace("_", " ").title().strip()
 

@@ -11,7 +11,7 @@ import pygame
 
 from src.constants import TILE_SIZE, LIGHT_GREY
 from src.game_entities.item import Item
-from src.services.language import DICT
+from src.services.language import TRANSLATIONS
 
 
 class Equipment(Item):
@@ -105,7 +105,7 @@ class Equipment(Item):
                 formatted_string += (
                     ", ".join(
                         [
-                            DICT[restriction.lower().replace(" ", "_")]
+                            TRANSLATIONS["Races&Classes"][restriction.lower().replace(" ", "_")]
                             for restriction in self.restrictions[key]
                         ]
                     )

@@ -100,6 +100,6 @@ class Effect:
 
     def __str__(self) -> str:
         try:
-            return DICT[self.name]
+            return TRANSLATIONS["Effects&Alternations"][self.name]
         except KeyError:
             return self.name.replace("_", " ").title()
