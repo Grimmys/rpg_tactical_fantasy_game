@@ -1,7 +1,8 @@
 <alterations>
     <speed_up>
         <info>
-            The move cap is increased by {val}
+            <en> The move cap is increased by {val} </en>
+            <zh_cn> 移动能力提升{val}点 </zh_cn>
         </info>
         <effects>
             speed_up
@@ -12,7 +13,8 @@
     </speed_up>
     <strength_up>
         <info>
-            The strength is increased by {val}
+            <en> The strength is increased by {val} </en>
+            <zh_cn> 力量提升{val}点 </zh_cn>
         </info>
         <effects>
             strength_up
@@ -23,7 +25,8 @@
     </strength_up>
     <defense_up>
         <info>
-            The defense is increased by {val}
+            <en> The defense is increased by {val} </en>
+            <zh_cn> 防御力提升{val}点 </zh_cn>
         </info>
         <effects>
             defense_up
@@ -34,7 +37,8 @@
     </defense_up>
     <stun>
        <info>
-           Unit can't attack
+           <en> Unit can't attack </en>
+           <zh_cn> 单位不能攻击 </zh_cn>
        </info>
         <effects>
             no_attack

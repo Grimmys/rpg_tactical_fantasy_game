@@ -5,9 +5,9 @@ Defines Item, the base class for all items in the game.
 from __future__ import annotations
 
 import pygame
-from lxml import etree
 
 from src.constants import TILE_SIZE
+from src.services.language import *
 
 
 class Item:
@@ -48,7 +48,10 @@ class Item:
         Item.internal_identifier += 1
 
     def __str__(self) -> str:
-        return self.name.replace("_", " ").title().strip()
+        try:
+            return TRANSLATIONS["items"][self.name]
+        except KeyError:
+            return self.name.replace("_", " ").title().strip()
 
     def __eq__(self, item: Item) -> bool:
         return self.name == item.name

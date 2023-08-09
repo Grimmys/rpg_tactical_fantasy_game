@@ -7,7 +7,8 @@
             food/bone.png
         </sprite>
         <info>
-            The remains of a skeleton... Maybe there is a way to bring it back to life
+            <en> The remains of a skeleton... Maybe there is a way to bring it back to life </en>
+            <zh_cn> 骷髅残骸……也许有办法让它复活 </zh_cn>
         </info>
         <price>
             200
@@ -24,7 +25,8 @@
             ring/iron.png
         </sprite>
         <info>
-            A simple ring, made of iron. Can be enchanted or sold
+            <en> A simple ring, made of iron. Can be enchanted or sold </en>
+            <zh_cn> 一个简单的戒指，由铁制成。 可以附魔或出售 </zh_cn>
         </info>
         <price>
             400
@@ -41,7 +43,8 @@
             gem_stone/topaz.png
         </sprite>
         <info>
-            A somewhat precious stone, could be sold for a good price
+            <en> A somewhat precious stone, could be sold for a good price </en>
+            <zh_cn> 有点珍贵的石头，可以卖个好价钱 </zh_cn>
         </info>
         <price>
             2000
@@ -60,7 +63,8 @@
                     food/chunk.png
                 </sprite>
                 <info>
-                    It smells bad... Can be eaten to recover HP
+                    <en> It smells bad... Can be eaten to recover HP </en>
+                    <zh_cn> 味道很臭...可以吃来恢复HP </zh_cn>
                 </info>
                 <category>
                     consumable
@@ -90,7 +94,8 @@
                     potion/ruby_new.png
                 </sprite>
                 <info>
-                    Use it to recover some HP
+                    <en> Use it to recover some HP </en>
+                    <zh_cn> 用它来恢复一些HP </zh_cn>
                 </info>
                 <category>
                     potion
@@ -118,7 +123,8 @@
                     potion/orange_new.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost move speed
+                    <en> Use it to temporarily boost move speed </en>
+                    <zh_cn> 用它来暂时提高移动速度 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -146,7 +152,8 @@
                     potion/white_new.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost move speed, but be stun too
+                    <en> Use it to temporarily boost move speed, but be stun too </en>
+                    <zh_cn> 使用它可以暂时提高移动速度，但也会被击晕 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -184,7 +191,8 @@
                     potion/yellow_new.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost strength
+                    <en> Use it to temporarily boost strength </en>
+                    <zh_cn> 用它来暂时增强力量 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -212,7 +220,8 @@
                     potion/bubbly.png
                 </sprite>
                 <info>
-                    Use it to temporarily boost defense and strength
+                    <en> Use it to temporarily boost defense and strength </en>
+                    <zh_cn> 用它来暂时提升防御力和力量 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -255,7 +264,8 @@
                     scroll/scroll-blue.png
                 </sprite>
                 <info>
-                    This scroll can gives some XP to the reader
+                    <en> This scroll can gives some XP to the reader </en>
+                    <zh_cn> 这个卷轴可以给读者一些经验 </zh_cn>
                 </info>
                 <category>
                     consumable
@@ -282,7 +292,8 @@
                     scroll/scroll-red.png
                 </sprite>
                 <info>
-                    This scroll contains the secret of Cerberus' strength
+                    <en> This scroll contains the secret of Cerberus' strength </en>
+                    <zh_cn> 这卷轴包含了塞伯鲁斯力量的秘密 </zh_cn>
                 </info>
                 <category>
                     consumable
@@ -310,7 +321,8 @@
                 misc/key.png
             </sprite>
             <info>
-                Could be used to open some chest
+                <en> Could be used to open some chest </en>
+                <zh_cn> 可以用来打开一些箱子 </zh_cn>
             </info>
             <open_chest/>
             <category>
@@ -328,7 +340,8 @@
                 misc/key.png
             </sprite>
             <info>
-                Could be used to open some door.
+                <en> Could be used to open some door. </en>
+                <zh_cn> 可以用来打开一些门。 </zh_cn>
             </info>
             <open_door/>
             <category>
@@ -348,7 +361,8 @@
                 book/dark_green_new.png
             </sprite>
             <info>
-                A beautiful and polished green book...
+                <en> A beautiful and polished green book... </en>
+                <zh_cn> 一本美丽而精致的绿书...... </zh_cn>
             </info>
             <category>
                 spellbook
@@ -371,7 +385,8 @@
                     weapon/knife.png
                 </sprite>
                 <info>
-                    A very fast blade, with discretion guaranteed
+                    <en> A very fast blade, with discretion guaranteed </en>
+                    <zh_cn> 非常快的刀片，保证谨慎 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -406,7 +421,8 @@
                     weapon/dagger_new.png
                 </sprite>
                 <info>
-                    A simple dagger. A small blade, but it's sharp
+                    <en> A simple dagger. A small blade, but it's sharp </en>
+                    <zh_cn> 一把简单的匕首。 刀虽小，但很锋利 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -441,7 +457,8 @@
                     weapon/club_new.png
                 </sprite>
                 <info>
-                    Not a real weapon, but you could hurt someone with. Very frail
+                    <en> Not a real weapon, but you could hurt someone with. Very frail </en>
+                    <zh_cn> 不是真正的武器，但你可以用它伤害别人。 非常弱 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -481,7 +498,8 @@
                     weapon/short_sword_2_old.png
                 </sprite>
                 <info>
-                    A basic little sword, but one that can already prove very useful
+                    <en> A basic little sword, but one that can already prove very useful </en>
+                    <zh_cn> 一把基本的小剑，但已经证明非常有用 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -521,7 +539,8 @@
                     weapon/spear.png
                 </sprite>
                 <info>
-                    A spear can be really useful to charge the opponent
+                    <en> A spear can be really useful to charge the opponent </en>
+                    <zh_cn> 长矛对于冲锋对手来说非常有用 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -569,7 +588,8 @@
                     weapon/halberd_2.png
                 </sprite>
                 <info>
-                    An halberd can helps to get rid of cavalry
+                    <en> An halberd can helps to get rid of cavalry </en>
+                    <zh_cn> 戟可以帮助摆脱骑兵 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -614,7 +634,8 @@
                     weapon/pickaxe.png
                 </sprite>
                 <info>
-                    This doesn't look like a weapon, but still, well handled it could stun someone
+                    <en> This doesn't look like a weapon, but still, well handled it could stun someone </en>
+                    <zh_cn> 这看起来不像武器，但如果处理得当，它可以击晕某人 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -667,7 +688,8 @@
                     weapon/ranged/bow_1.png
                 </sprite>
                 <info>
-                    A simple wooden bow, effective at a short distance
+                    <en> A simple wooden bow, effective at a short distance </en>
+                    <zh_cn> 简单的木弓，短距离有效 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -707,7 +729,8 @@
                     staff/staff_2.png
                 </sprite>
                 <info>
-                    A frail staff, usable to make a range attack with weak spells
+                    <en> A frail staff, usable to make a range attack with weak spells </en>
+                    <zh_cn> 脆弱的法杖，可用于以弱法术进行范围攻击 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -747,7 +770,8 @@
                     weapon/artefact/spwpn_sceptre_of_torment.png
                 </sprite>
                 <info>
-                    A really dark staff, aimed to the occultists
+                    <en> A really dark staff, aimed to the occultists </en>
+                    <zh_cn> 一支非常黑暗的法杖，针对的是神秘主义者 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -788,7 +812,8 @@
                 armor/headgear/plumed_helmet.png
             </sprite>
             <info>
-                A helmet, with a nice plume
+                <en> A helmet, with a nice plume </en>
+                <zh_cn> 头盔，有漂亮的羽毛 </zh_cn>
             </info>
             <category>
                 armor
@@ -817,7 +842,8 @@
                 armor/headgear/black_hood.png
             </sprite>
             <info>
-                A discret hood, to watch but not to be watched
+                <en> A discret hood, to watch but not to be watched </en>
+                <zh_cn> 一种离散的商品，可以观看但不可以被观看 </zh_cn>
             </info>
             <category>
                 armor
@@ -851,7 +877,8 @@
                 armor/headgear/helmet_1.png
             </sprite>
             <info>
-                A very basic helmet
+                <en> A very basic helmet </en>
+                <zh_cn> 一个非常基本的头盔 </zh_cn>
             </info>
             <category>
                 armor
@@ -880,7 +907,8 @@
                 armor/headgear/helmet_4.png
             </sprite>
             <info>
-                A basic helmet, but with impressive horns
+                <en> A basic helmet, but with impressive horns </en>
+                <zh_cn> 一个基本的头盔，但有令人印象深刻的角 </zh_cn>
             </info>
             <category>
                 armor
@@ -909,7 +937,8 @@
                 armor/headgear/helmet_3_old.png
             </sprite>
             <info>
-                A full gold helmet... Seems really nice
+                <en> A full gold helmet... Seems really nice </en>
+                <zh_cn> 24K纯金头盔……看起来真不错 </zh_cn>
             </info>
             <category>
                 armor
@@ -935,7 +964,8 @@
                 armor/torso/chain_mail_3.png
             </sprite>
             <info>
-                A basic chainmail... Useful to have a good defense and keep an average speed
+                <en> A basic chainmail... Useful to have a good defense and keep an average speed </en>
+                <zh_cn> 基本的链甲...有助于良好的防御并保持平均速度 </zh_cn>
             </info>
             <category>
                 armor
@@ -969,7 +999,8 @@
                 armor/torso/leather_armor_2.png
             </sprite>
             <info>
-                A basic light armor, useful for beginning an adventure !
+                <en> A basic light armor, useful for beginning an adventure ! </en>
+                <zh_cn> 基本的轻甲，对于开始冒险很有用！ </zh_cn>
             </info>
             <category>
                 armor
@@ -1004,7 +1035,8 @@
                 armor/torso/scale_mail_1_new.png
             </sprite>
             <info>
-                A veritable scale mail. Particularly useful for avoiding arrows
+                <en> A veritable scale mail. Particularly useful for avoiding arrows </en>
+                <zh_cn> 名副其实的规模邮件。 对于躲避箭头特别有用 </zh_cn>
             </info>
             <category>
                 armor
@@ -1038,7 +1070,8 @@
                 armor/torso/gold_dragon_armor_new.png
             </sprite>
             <info>
-                An armor inspired from a gold dragon
+                <en> An armor inspired from a gold dragon </en>
+                <zh_cn> 灵感来自金龙的盔甲 </zh_cn>
             </info>
             <category>
                 armor
@@ -1072,7 +1105,8 @@
                 armor/artefact/urand_thief.png
             </sprite>
             <info>
-                A very black outfit for someone who needs some discretion
+                <en> A very black outfit for someone who needs some discretion </en>
+                <zh_cn> 非常黑色的服装，适合需要谨慎行事的人 </zh_cn>
             </info>
             <category>
                 armor
@@ -1106,7 +1140,8 @@
                 armor/bardings/centaur_barding_magenta.png
             </sprite>
             <info>
-                Armor reserved to centaur. Not really efficient, but very elegant
+                <en> Armor reserved to centaur. Not really efficient, but very elegant </en>
+                <zh_cn> 半人马专用的盔甲。 效率不高，但非常优雅 </zh_cn>
             </info>
             <category>
                 armor
@@ -1137,7 +1172,8 @@
                 armor/feet/boots_1_brown_new.png
             </sprite>
             <info>
-                Brown boots, most basic boots you can find
+                <en> Brown boots, most basic boots you can find </en>
+                <zh_cn> 棕色靴子，你能找到的最基本的靴子 </zh_cn>
             </info>
             <category>
                 armor
@@ -1166,7 +1202,8 @@
                 armor/feet/dark_boots.png
             </sprite>
             <info>
-                Black boots, fashion ones
+                <en> Black boots, fashion ones </en>
+                <zh_cn> 时髦的黑靴子 </zh_cn>
             </info>
             <category>
                 armor
@@ -1195,7 +1232,8 @@
                 armor/feet/boots_iron_2.png
             </sprite>
             <info>
-                Beautiful boots with golden style
+                <en> Beautiful boots with golden style </en>
+                <zh_cn> 金色风格的漂亮靴子 </zh_cn>
             </info>
             <category>
                 armor
@@ -1221,7 +1259,8 @@
                 armor/shields/buckler_1_new.png
             </sprite>
             <info>
-                A small light shield that could help dodging attacks
+                <en> A small light shield that could help dodging attacks </en>
+                <zh_cn> 可以帮助躲避攻击的小型光盾 </zh_cn>
             </info>
             <category>
                 shield

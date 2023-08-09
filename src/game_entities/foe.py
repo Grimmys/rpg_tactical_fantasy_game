@@ -9,13 +9,13 @@ from enum import Enum, auto
 from typing import Union, Sequence, Optional
 
 import pygame
-from lxml import etree
 
 from src.game_entities.alteration import Alteration
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.movable import Movable
 from src.gui.position import Position
+from src.services.language import *
 
 
 class Keyword(Enum):
@@ -135,9 +135,15 @@ class Foe(Movable):
 
     def get_formatted_keywords(self) -> str:
         """Return the list of keywords of the foe in a formatted version"""
-        return ", ".join(
-            [keyword.name.lower().capitalize() for keyword in self.keywords]
-        )
+        formatted_string: str = ""
+        for keyword in self.keywords:
+            try:
+                formatted_string += TRANSLATIONS["foe_keywords"][keyword.name.lower()] + ", "
+            except KeyError:
+                formatted_string += keyword.name.lower().capitalize() + ", "
+        if formatted_string == "":
+            return "None"
+        return formatted_string[:-2]
 
     def get_formatted_reach(self) -> str:
         """

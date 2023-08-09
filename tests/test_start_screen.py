@@ -7,6 +7,7 @@ import pygame
 from pygame.rect import Rect
 
 from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
+from src.scenes.scene import QuitActionKind
 from src.scenes.level_scene import LevelScene
 from src.scenes.start_scene import StartScene
 from tests.tools import minimal_setup_for_game
@@ -168,7 +169,7 @@ class TestStartScreen(unittest.TestCase):
         position = self.generate_position(
             EXIT_GAME_BUTTON_POS, EXIT_GAME_BUTTON_POS + BUTTON_SIZE
         )
-        self.assertEqual(self.start_screen.click(LEFT_BUTTON, position), True)
+        self.assertEqual(self.start_screen.click(LEFT_BUTTON, position), QuitActionKind.QUIT)
 
     def test_click_on_nothing(self):
         # Make a copy of the current window
