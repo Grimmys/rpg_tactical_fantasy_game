@@ -4,6 +4,7 @@ Defines Alteration class, permitting to temporary modify the state of a living-e
 
 from lxml import etree
 
+from src.services.language import dict_alternations
 
 class Alteration:
     """
@@ -67,7 +68,10 @@ class Alteration:
         return self.time >= self.duration
 
     def __str__(self) -> str:
-        return self.name.replace("_", " ").capitalize()
+        try:
+            return dict_alternations[self.name]
+        except KeyError:
+            return self.name.replace("_", " ").capitalize()
 
     def __eq__(self, name: str) -> bool:
         return self.name == name

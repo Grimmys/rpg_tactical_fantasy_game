@@ -8,7 +8,7 @@
         </sprite>
         <info>
             <en> The remains of a skeleton... Maybe there is a way to bring it back to life </en>
-            <cn> 骷髅残骸……也许有办法让它复活 </cn>
+            <zh_cn> 骷髅残骸……也许有办法让它复活 </zh_cn>
         </info>
         <price>
             200
@@ -26,7 +26,7 @@
         </sprite>
         <info>
             <en> A simple ring, made of iron. Can be enchanted or sold </en>
-            <cn> 一个简单的戒指，由铁制成。 可以附魔或出售 </cn>
+            <zh_cn> 一个简单的戒指，由铁制成。 可以附魔或出售 </zh_cn>
         </info>
         <price>
             400
@@ -44,7 +44,7 @@
         </sprite>
         <info>
             <en> A somewhat precious stone, could be sold for a good price </en>
-            <cn> 有点珍贵的石头，可以卖个好价钱 </cn>
+            <zh_cn> 有点珍贵的石头，可以卖个好价钱 </zh_cn>
         </info>
         <price>
             2000
@@ -64,7 +64,7 @@
                 </sprite>
                 <info>
                     <en> It smells bad... Can be eaten to recover HP </en>
-                    <cn> 味道很臭...可以吃来恢复HP </cn>
+                    <zh_cn> 味道很臭...可以吃来恢复HP </zh_cn>
                 </info>
                 <category>
                     consumable
@@ -95,7 +95,7 @@
                 </sprite>
                 <info>
                     <en> Use it to recover some HP </en>
-                    <cn> 用它来恢复一些HP </cn>
+                    <zh_cn> 用它来恢复一些HP </zh_cn>
                 </info>
                 <category>
                     potion
@@ -124,7 +124,7 @@
                 </sprite>
                 <info>
                     <en> Use it to temporarily boost move speed </en>
-                    <cn> 用它来暂时提高移动速度 </cn>
+                    <zh_cn> 用它来暂时提高移动速度 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -153,7 +153,7 @@
                 </sprite>
                 <info>
                     <en> Use it to temporarily boost move speed, but be stun too </en>
-                    <cn> 使用它可以暂时提高移动速度，但也会被击晕 </cn>
+                    <zh_cn> 使用它可以暂时提高移动速度，但也会被击晕 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -192,7 +192,7 @@
                 </sprite>
                 <info>
                     <en> Use it to temporarily boost strength </en>
-                    <cn> 用它来暂时增强力量 </cn>
+                    <zh_cn> 用它来暂时增强力量 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -221,7 +221,7 @@
                 </sprite>
                 <info>
                     <en> Use it to temporarily boost defense and strength </en>
-                    <cn> 用它来暂时提升防御力和力量 </cn>
+                    <zh_cn> 用它来暂时提升防御力和力量 </zh_cn>
                 </info>
                 <category>
                     potion
@@ -265,7 +265,7 @@
                 </sprite>
                 <info>
                     <en> This scroll can gives some XP to the reader </en>
-                    <cn> 这个卷轴可以给读者一些经验 </cn>
+                    <zh_cn> 这个卷轴可以给读者一些经验 </zh_cn>
                 </info>
                 <category>
                     consumable
@@ -293,7 +293,7 @@
                 </sprite>
                 <info>
                     <en> This scroll contains the secret of Cerberus' strength </en>
-                    <cn> 这卷轴包含了塞伯鲁斯力量的秘密 </cn>
+                    <zh_cn> 这卷轴包含了塞伯鲁斯力量的秘密 </zh_cn>
                 </info>
                 <category>
                     consumable
@@ -322,7 +322,7 @@
             </sprite>
             <info>
                 <en> Could be used to open some chest </en>
-                <cn> 可以用来打开一些箱子 </cn>
+                <zh_cn> 可以用来打开一些箱子 </zh_cn>
             </info>
             <open_chest/>
             <category>
@@ -341,7 +341,7 @@
             </sprite>
             <info>
                 <en> Could be used to open some door. </en>
-                <cn> 可以用来打开一些门。 </cn>
+                <zh_cn> 可以用来打开一些门。 </zh_cn>
             </info>
             <open_door/>
             <category>
@@ -362,7 +362,7 @@
             </sprite>
             <info>
                 <en> A beautiful and polished green book... </en>
-                <cn> 一本美丽而精致的绿书...... </cn>
+                <zh_cn> 一本美丽而精致的绿书...... </zh_cn>
             </info>
             <category>
                 spellbook
@@ -386,7 +386,7 @@
                 </sprite>
                 <info>
                     <en> A very fast blade, with discretion guaranteed </en>
-                    <cn> 非常快的刀片，保证谨慎 </cn>
+                    <zh_cn> 非常快的刀片，保证谨慎 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -422,7 +422,7 @@
                 </sprite>
                 <info>
                     <en> A simple dagger. A small blade, but it's sharp </en>
-                    <cn> 一把简单的匕首。 刀虽小，但很锋利 </cn>
+                    <zh_cn> 一把简单的匕首。 刀虽小，但很锋利 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -458,7 +458,7 @@
                 </sprite>
                 <info>
                     <en> Not a real weapon, but you could hurt someone with. Very frail </en>
-                    <cn> 不是真正的武器，但你可以用它伤害别人。 非常弱 </cn>
+                    <zh_cn> 不是真正的武器，但你可以用它伤害别人。 非常弱 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -499,7 +499,7 @@
                 </sprite>
                 <info>
                     <en> A basic little sword, but one that can already prove very useful </en>
-                    <cn> 一把基本的小剑，但已经证明非常有用 </cn>
+                    <zh_cn> 一把基本的小剑，但已经证明非常有用 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -540,7 +540,7 @@
                 </sprite>
                 <info>
                     <en> A spear can be really useful to charge the opponent </en>
-                    <cn> 长矛对于冲锋对手来说非常有用 </cn>
+                    <zh_cn> 长矛对于冲锋对手来说非常有用 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -589,7 +589,7 @@
                 </sprite>
                 <info>
                     <en> An halberd can helps to get rid of cavalry </en>
-                    <cn> 戟可以帮助摆脱骑兵 </cn>
+                    <zh_cn> 戟可以帮助摆脱骑兵 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -635,7 +635,7 @@
                 </sprite>
                 <info>
                     <en> This doesn't look like a weapon, but still, well handled it could stun someone </en>
-                    <cn> 这看起来不像武器，但如果处理得当，它可以击晕某人 </cn>
+                    <zh_cn> 这看起来不像武器，但如果处理得当，它可以击晕某人 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -689,7 +689,7 @@
                 </sprite>
                 <info>
                     <en> A simple wooden bow, effective at a short distance </en>
-                    <cn> 简单的木弓，短距离有效 </cn>
+                    <zh_cn> 简单的木弓，短距离有效 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -730,7 +730,7 @@
                 </sprite>
                 <info>
                     <en> A frail staff, usable to make a range attack with weak spells </en>
-                    <cn> 脆弱的法杖，可用于以弱法术进行范围攻击 </cn>
+                    <zh_cn> 脆弱的法杖，可用于以弱法术进行范围攻击 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -771,7 +771,7 @@
                 </sprite>
                 <info>
                     <en> A really dark staff, aimed to the occultists </en>
-                    <cn> 一支非常黑暗的法杖，针对的是神秘主义者 </cn>
+                    <zh_cn> 一支非常黑暗的法杖，针对的是神秘主义者 </zh_cn>
                 </info>
                 <category>
                     weapon
@@ -813,7 +813,7 @@
             </sprite>
             <info>
                 <en> A helmet, with a nice plume </en>
-                <cn> 头盔，有漂亮的羽毛 </cn>
+                <zh_cn> 头盔，有漂亮的羽毛 </zh_cn>
             </info>
             <category>
                 armor
@@ -843,7 +843,7 @@
             </sprite>
             <info>
                 <en> A discret hood, to watch but not to be watched </en>
-                <cn> 一种离散的商品，可以观看但不可以被观看 </cn>
+                <zh_cn> 一种离散的商品，可以观看但不可以被观看 </zh_cn>
             </info>
             <category>
                 armor
@@ -878,7 +878,7 @@
             </sprite>
             <info>
                 <en> A very basic helmet </en>
-                <cn> 一个非常基本的头盔 </cn>
+                <zh_cn> 一个非常基本的头盔 </zh_cn>
             </info>
             <category>
                 armor
@@ -908,7 +908,7 @@
             </sprite>
             <info>
                 <en> A basic helmet, but with impressive horns </en>
-                <cn> 一个基本的头盔，但有令人印象深刻的角 </cn>
+                <zh_cn> 一个基本的头盔，但有令人印象深刻的角 </zh_cn>
             </info>
             <category>
                 armor
@@ -938,7 +938,7 @@
             </sprite>
             <info>
                 <en> A full gold helmet... Seems really nice </en>
-                <cn> 24K纯金头盔……看起来真不错 </cn>
+                <zh_cn> 24K纯金头盔……看起来真不错 </zh_cn>
             </info>
             <category>
                 armor
@@ -965,7 +965,7 @@
             </sprite>
             <info>
                 <en> A basic chainmail... Useful to have a good defense and keep an average speed </en>
-                <cn> 基本的链甲...有助于良好的防御并保持平均速度 </cn>
+                <zh_cn> 基本的链甲...有助于良好的防御并保持平均速度 </zh_cn>
             </info>
             <category>
                 armor
@@ -1000,7 +1000,7 @@
             </sprite>
             <info>
                 <en> A basic light armor, useful for beginning an adventure ! </en>
-                <cn> 基本的轻甲，对于开始冒险很有用！ </cn>
+                <zh_cn> 基本的轻甲，对于开始冒险很有用！ </zh_cn>
             </info>
             <category>
                 armor
@@ -1036,7 +1036,7 @@
             </sprite>
             <info>
                 <en> A veritable scale mail. Particularly useful for avoiding arrows </en>
-                <cn> 名副其实的规模邮件。 对于躲避箭头特别有用 </cn>
+                <zh_cn> 名副其实的规模邮件。 对于躲避箭头特别有用 </zh_cn>
             </info>
             <category>
                 armor
@@ -1071,7 +1071,7 @@
             </sprite>
             <info>
                 <en> An armor inspired from a gold dragon </en>
-                <cn> 灵感来自金龙的盔甲 </cn>
+                <zh_cn> 灵感来自金龙的盔甲 </zh_cn>
             </info>
             <category>
                 armor
@@ -1106,7 +1106,7 @@
             </sprite>
             <info>
                 <en> A very black outfit for someone who needs some discretion </en>
-                <cn> 非常黑色的服装，适合需要谨慎行事的人 </cn>
+                <zh_cn> 非常黑色的服装，适合需要谨慎行事的人 </zh_cn>
             </info>
             <category>
                 armor
@@ -1141,7 +1141,7 @@
             </sprite>
             <info>
                 <en> Armor reserved to centaur. Not really efficient, but very elegant </en>
-                <cn> 半人马专用的盔甲。 效率不高，但非常优雅 </cn>
+                <zh_cn> 半人马专用的盔甲。 效率不高，但非常优雅 </zh_cn>
             </info>
             <category>
                 armor
@@ -1173,7 +1173,7 @@
             </sprite>
             <info>
                 <en> Brown boots, most basic boots you can find </en>
-                <cn> 棕色靴子，你能找到的最基本的靴子 </cn>
+                <zh_cn> 棕色靴子，你能找到的最基本的靴子 </zh_cn>
             </info>
             <category>
                 armor
@@ -1203,7 +1203,7 @@
             </sprite>
             <info>
                 <en> Black boots, fashion ones </en>
-                <cn> 时髦的黑靴子 </cn>
+                <zh_cn> 时髦的黑靴子 </zh_cn>
             </info>
             <category>
                 armor
@@ -1233,7 +1233,7 @@
             </sprite>
             <info>
                 <en> Beautiful boots with golden style </en>
-                <cn> 金色风格的漂亮靴子 </cn>
+                <zh_cn> 金色风格的漂亮靴子 </zh_cn>
             </info>
             <category>
                 armor
@@ -1260,7 +1260,7 @@
             </sprite>
             <info>
                 <en> A small light shield that could help dodging attacks </en>
-                <cn> 可以帮助躲避攻击的小型光盾 </cn>
+                <zh_cn> 可以帮助躲避攻击的小型光盾 </zh_cn>
             </info>
             <category>
                 shield

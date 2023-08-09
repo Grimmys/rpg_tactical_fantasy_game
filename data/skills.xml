@@ -1,6 +1,9 @@
 <skills>
     <lock_picking>
-        <name>Lock Picking</name>
+        <name>
+            <en> Lock Picking </en>
+            <zh_cn> 撬锁 </zh_cn>
+        </name>
         <type>ACTIVE</type>
         <info>
             <en> Ability to open some doors and chests. A door (or a chest) needs two turns of picking to be open </en>
@@ -8,7 +11,10 @@
         </info>
     </lock_picking>
     <double_attack>
-        <name>Double Attack</name>
+        <name>
+            <en> Double Attack </en>
+            <zh_cn> 双重攻击 </zh_cn>
+        </name>
         <type>MULTIPLE_ATTACKS</type>
         <info>
             <en> When attacking, this character will deal damage twice </en>
@@ -16,7 +22,10 @@
         </info>
     </double_attack>
     <covered>
-        <name>Ally Protection</name>
+        <name>
+            <en> Ally Protection </en>
+            <zh_cn> 友军保护 </zh_cn>
+        </name>
         <type>ALLY_BOOST</type>
         <stats>defense, resistance</stats>
         <power>1</power>
@@ -26,7 +35,10 @@
         </info>
     </covered>
     <brutal_hitter>
-        <name>Brutal Hitter</name>
+        <name>
+            <en> Brutal Hitter </en>
+            <zh_cn> 暴酷球手 </zh_cn>
+        </name>
         <type>ALTERATION_CHANCE_BOOST</type>
         <alteration>stun</alteration>
         <power>5</power>

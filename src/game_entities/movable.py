@@ -20,6 +20,7 @@ from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.skill import SkillNature, Skill
 from src.gui.position import Position
+from src.services.language import dict_alternations
 
 TIMER = 60
 NB_ITEMS_MAX = 8
@@ -299,7 +300,10 @@ class Movable(Destroyable):
         """
         formatted_string: str = ""
         for alteration in self.alterations:
-            formatted_string += str(alteration) + ", "
+            try:
+                formatted_string += dict_alternations[str(alteration).lower().replace(" ", "_")] + ", "
+            except KeyError:
+                formatted_string += str(alteration) + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]

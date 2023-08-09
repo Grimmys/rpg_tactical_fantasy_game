@@ -89,8 +89,8 @@ def create_shop_menu(
     row = []
     for item in stock:
         item_text_data = [
-            f"Price: {item['item'].price}",
-            f"Quantity: {item['quantity']}",
+            f_PRICE_NUMBER(item['item'].price),
+            f_QUANTITY_NUMBER(item['quantity'])
         ]
         item_button = ImageButton(
             image_path=item["item"].sprite_path,
@@ -114,11 +114,11 @@ def create_shop_menu(
         element_grid.append(row)
 
     # Gold at end
-    player_gold_line = [TextElement(f"Your gold: {gold}", font=fonts["ITEM_DESC_FONT"])]
+    player_gold_line = [TextElement(f_UR_GOLD(gold), font=fonts["ITEM_DESC_FONT"])]
     element_grid.append(player_gold_line)
 
     return InfoBox(
-        "Shop - Buying",
+        STR_SHOP_BUYING,
         element_grid,
         width=ITEM_MENU_WIDTH,
         title_color=ORANGE,
@@ -943,7 +943,7 @@ def create_item_description_menu(item: Item) -> InfoBox:
             reach_txt = reach_txt[: len(reach_txt) - 2]
             grid_elements.append(
                 create_item_description_stat(
-                    STR_TYPE_OF_DAMAGE, str(item.attack_kind.value)
+                    STR_TYPE_OF_DAMAGE, dict_attack_kinds[str(item.attack_kind.value).lower().replace(" ", "_")]
                 )
             )
             grid_elements.append(create_item_description_stat(STR_REACH, reach_txt))
@@ -1001,7 +1001,7 @@ def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
         ],
         [
             TextElement(
-                f"Turns left: {turns_left}",
+                f_TURNS_LEFT_NUMBER(turns_left),
                 font=fonts["ITEM_DESC_FONT"],
                 margin=(0, 0, 10, 0),
                 text_color=ORANGE,
@@ -1412,11 +1412,11 @@ def create_save_dialog(buttons_callback: dict[str, Callable],) -> InfoBox:
     Return the interface of the save game reminder
     """
     element_grid = [
-        [Button(title="Yes", callback=buttons_callback["yes"])],
-        [Button(title="No", callback=buttons_callback["no"])],
+        [Button(title=STR_YES, callback=buttons_callback["yes"])],
+        [Button(title=STR_NO, callback=buttons_callback["no"])],
     ]
     return InfoBox(
-        "Save the Game?",
+        STR_SAVE_THE_GAME_,
         element_grid,
         width=ACTION_MENU_WIDTH,
         has_close_button=False

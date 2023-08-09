@@ -29,7 +29,7 @@ This update adds an interface for implementing multilingual functionality to the
         + The content within the `<talk>` tag in `characters.xml`.
         + The content within the `<info>` tag in `alternations.xml`.
         + The content within the `<info>` tag in `items.xml`.
-        + The content within the `<info>` tag in `skills.xml`.
+        + The content within the `<info>` and the `<name>` tags in `skills.xml`.
     Please note that the format of the above changes must be: `<language_name> translated content </language_name>`. For example:
         ```xml
         ...
@@ -88,7 +88,7 @@ This update adds an interface for implementing multilingual functionality to the
         + `characters.xml` 中 `<talk>` 标签内的内容。
         + `alternations.xml` 中 `<info>` 标签内的内容。 
         + `items.xml` 中 `<info>` 标签内的内容。
-        + `skills.xml` 中 `<info>` 标签内的内容。  
+        + `skills.xml` 中 `<info>` 和 `<name>` 标签内的内容。  
     请注意，以上修改的格式必须为： `<language_name> 翻译内容 </language_name>`。例如：
         ```xml
         ...

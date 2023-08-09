@@ -126,7 +126,11 @@ def get_skill_data(name) -> Skill:
     if name not in skills_data:
         # Required data
         skill_element = etree.parse("data/skills.xml").find(name)
-        formatted_name = skill_element.find("name").text.strip()
+        formatted_name = skill_element.find("name/"+language)
+        if formatted_name is not None:
+            formatted_name = formatted_name.text.strip()
+        else:
+            formatted_name = skill_element.find("name/en").text.strip()
         nature = skill_element.find("type").text.strip()
         description = get_languaged_text(skill_element.find("info")).strip()
 

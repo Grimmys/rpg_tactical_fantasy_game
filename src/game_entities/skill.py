@@ -65,7 +65,6 @@ class Skill:
         return self.name == name
 
     def __str__(self):
-        print(self.name)
         try:
             return dict_skills[self.name]
         except KeyError:

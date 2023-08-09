@@ -59,7 +59,7 @@ STR_WAIT = "等待"
 STR_VISIT = "拜访"
 STR_TRADE = "交易"
 STR_OPEN_CHEST = "开箱子"
-STR_PICK_LOCK = "捡起锁"
+STR_PICK_LOCK = "撬锁"
 STR_OPEN_DOOR = "开门"
 STR_USE_PORTAL = "传送门"
 STR_DRINK = "喝"
@@ -70,8 +70,6 @@ STR_SELECT_AN_ACTION = "选择行为"
 
 # Inventory menu
 STR_SHOPPING_SELLING = "购入 - 卖出" # "Shop - Selling"
-def f_PRICE_NUMBER(price):
-    return f"价格: {price}"  # f"Price: {price}"
 def f_UR_GOLD(gold):
     return f"你的金币: {gold}"  # f"Your gold: {gold}"
 
@@ -95,11 +93,11 @@ STR_XP_ = "经验：" # "  XP :"
 STR_STATS = "数值" # "STATS"
 STR_HP_ = "血量：" # "HP :"
 STR_MOVE_ = "移动：" # "MOVE :"
-STR_CONSTITUTION_ = "？宪法：" # "CONSTITUTION :"
+STR_CONSTITUTION_ = "体质：" # "CONSTITUTION :"
 STR_ATTACK_ = "攻击：" # "ATTACK :"
 STR_DEFENSE_ = "防御：" # "DEFENSE :"
 STR_MAGICAL_RES_ = "魔抗：" # "MAGICAL RES :"
-STR_ALTERATIONS = "？变更" # "ALTERATIONS"
+STR_ALTERATIONS = "变更" # "ALTERATIONS"
 STR_NONE = "无" # "None"
 def f_DIV(partial, maximum):
     return f"{partial} / {maximum}"
@@ -107,6 +105,13 @@ def f_DIV(partial, maximum):
 # Item shop menu
 STR_BUY = "购买"
 STR_INFO = "信息"
+
+# Item buy menu
+STR_SHOP_BUYING = "商店 - 购买"
+def f_PRICE_NUMBER(price):
+    return f"价格: {price}"  # f"Price: {price}"
+def f_QUANTITY_NUMBER(quantity):
+    return f"数量：{quantity}"
 
 # Item sell menu
 STR_SELL = "卖出" # "Sell"
@@ -147,7 +152,7 @@ STR_PLAYER = "玩家" # "PLAYER"
 STR_ALLY = "盟友" # "ALLY"
 STR_UNLIVING_ENTITY = "无生命实体" # "UNLIVING ENTITY"
 STR_NAME_SIDEBAR_ = "名称：" # "NAME : "
-STR_ALTERATIONS_ = "？更改：" # "ALTERATIONS : "
+STR_ALTERATIONS_ = "变更：" # "ALTERATIONS : "
 def f_TURN_NUMBER_SIDEBAR(number_turns):
     return f"第 {number_turns} 回合" # f"TURN {number_turns}"
 def f_LEVEL_NUMBER_SIDEBAR(level_id):
@@ -156,6 +161,21 @@ def f_LEVEL_NUMBER_SIDEBAR(level_id):
 # Chest menu
 STR_CHEST = "箱子" # "Chest"
 
+# Alternation info menu
+def f_TURNS_LEFT_NUMBER(turns_left):
+    return f"剩余轮数：{turns_left}"
+
+# Ask save menu
+STR_SAVE_THE_GAME_ = "保存游戏？"
+STR_YES = "是"
+STR_NO = "否"
+
+# src.game_entities.building
+def f_YOU_RECEIVED_NUMBER_GOLD(gold):
+    return f'[你得到了{gold}金币]'
+def f_YOU_RECEIVED_ITEM(item):
+    return f'[你得到了 {item}]'
+
 # Messages
 STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = "错误！没有足够的地图空间来安置玩家..."# "Error ! Not enough free tiles to set players..."
 STR_GAME_HAS_BEEN_SAVED = "游戏已保存" # "Game has been saved"
@@ -163,7 +183,7 @@ STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY = "物品已放入背包" # "Item has be
 STR_YOU_FOUND_IN_THE_CHEST = "你在箱子中找到了" # "You found in the chest"
 STR_DOOR_HAS_BEEN_OPENED = "门已打开了" # "Door has been opened"
 STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = "背包没有剩余的空间了" # "You have no free space in your inventory"
-STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = "开始采集，需要一个回合结束" # "Started picking, one more turn to go"
+STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = "开始撬锁，需要一个回合结束" # "Started picking, one more turn to go"
 STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = "传送门的另一侧被堵死了" # "There is no free square around the other portal"
 STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT = "但背包里没有足够的空间来装它了！" #But there is not enough space in inventory to take it!"
 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR = "你没有打开门的钥匙" # "You have no key to open a door"
@@ -174,7 +194,12 @@ STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = "不能卸�
 STR_THE_ITEM_HAS_BEEN_UNEQUIPPED = "装备已卸下" # "The item has been unequipped"
 STR_THE_ITEM_HAS_BEEN_EQUIPPED = "物品已被装备" # "The item has been equipped"
 STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = "先前装备的物品已被放入背包中" # "Previous equipped item has been added to your inventory"
-
+STR_THE_ITEM_HAS_BEEN_BOUGHT = "物品已购入"
+STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = "背包里没有足够的空间来购买这个物品"
+STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "没有足够的金币来购买这件物品"
+STR_THE_ITEM_HAS_BEEN_SOLD = "物品已被卖出"
+STR_THIS_ITEM_CANT_BE_SOLD = "这个物品不能被卖出"
+STR_THIS_HOUSE_SEEMS_CLOSED = "这个房子看起来关门了"
 
 def f_ATTACKER_ATTACKED_TARGET_BUT_PARRIED(attacker, target):
     return f"{attacker}攻击了{target}...但是{target}闪避了" # f"{attacker} attacked {target}... But {target} parried!"
@@ -225,7 +250,6 @@ def f_EARN_NUMBER_XP(power):
     return f"获得{power}点经验" # f"Earn {power} XP"
 
 # Items
-# 也许只需要info sheet用分语言储存
 dict_items = {
     "key": "钥匙",
     "bones": "骨头",
@@ -268,12 +292,18 @@ dict_items = {
     "black_boots": "黑靴子",
     "gold_boots": "金靴子",
     "wooden_shield": "木盾牌",
-    # "500_gold": "500金币",
+    "pocket_knife": "小刀",
+    "basic_spear": "基础的矛",
+    "basic_halberd": "基础的戟",
 }
 
 # Effects
 dict_effects = {
-    "":""
+    "defense_up": "防御提升",
+    "strength_up": "力量提升",
+    "speed_up": "速度提升",
+    "stun": "晕厥",
+    "no_attack": "不能攻击",
 }
 
 # src.game_entities.character
@@ -282,12 +312,15 @@ dict_races = {
     "human": "人类",
     "elf": "小精灵",
     "dwarf": "矮人",
+    "centaur": "半人马",
+    "gnome": "侏儒",
 }
 
 # Classes
 dict_classes = {
     "warrior": "战士",
     "ranger": "游骑兵",
+    "spy": "间谍",
 }
 
 # src.game_entities.foe
@@ -295,19 +328,33 @@ dict_classes = {
 dict_foe_keywords = {
     "undead": "不死族",
     "large": "大型",
-    "caval": "骑兵",
+    "cavalry": "骑兵",
+    "mutant": "变异体",
+    "fly": "飞行体",
+    "none": "无",
 }
 
 # src.game_entities.entity
 # Entity names
 dict_entity_names = {
     "skeleton": "骷髅",
+    "skeleton_cobra": "骷髅蟒",
     "necrophage": "死灵",
+    "lich_boss": "Lich灵主",
+    "mutant_bee": "变异蜜蜂",
+    "mutant_lizard": "变异蜥蜴",
+    "mutant_cultist": "变异邪教徒",
+    "mutant_ant": "变异蚂蚁",
     "obstacle": "障碍",
     "shop": "商店",
     "house": "房子",
     "chest": "箱子",
     "healer": "愈伤池",
+    "tavern": "酒馆",
+    "door": "门",
+    "altar": "祭坛",
+    "armory": "军械店",
+    "apothecary": "药剂店",
 }
 
 # src.services.menu_creater_manager
@@ -319,5 +366,8 @@ dict_attack_kinds = {
 
 # src.game_entities.skills
 dict_skills = {
-    "Ally Protection": "友军保护",
+    "": "",
 }
+
+# src.game_entities.weapon
+dict_alternations = dict_effects

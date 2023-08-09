@@ -1,4 +1,4 @@
 lxml>=4.6.1
 pygame>=2.0.0
-pygame-popup>=0.7.0
+pygame-popup>=0.8.0
 pytmx>=3.31

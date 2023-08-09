@@ -46,7 +46,6 @@ STR_END_TURN = "End turn"
 
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "Congratulations! Objective has been completed!"
-
 def f_EARNED_GOLD(gold: int):
     return(f"Earned gold: {gold} (all characters)")
 def f_EARNED_ITEMS(item):
@@ -71,8 +70,6 @@ STR_SELECT_AN_ACTION = "Select an action"
 
 # Inventory menu
 STR_SHOPPING_SELLING = "Shop - Selling"
-def f_PRICE_NUMBER(price):
-    return f"Price: {price}"
 def f_UR_GOLD(gold):
     return f"Your gold: {gold}"
 
@@ -108,6 +105,13 @@ def f_DIV(partial, maximum):
 # Item shop menu
 STR_BUY = "Buy"
 STR_INFO = "Info"
+
+# Item buy menu
+STR_SHOP_BUYING = "Shop - Buying"
+def f_PRICE_NUMBER(price):
+    return f"Price: {price}"
+def f_QUANTITY_NUMBER(quantity):
+    return f"Quantity: {quantity}"
 
 # Item sell menu
 STR_SELL = "Sell"
@@ -157,6 +161,21 @@ def f_LEVEL_NUMBER_SIDEBAR(level_id):
 # Chest menu
 STR_CHEST = "Chest"
 
+# Alternation info menu
+def f_TURNS_LEFT_NUMBER(turns_left):
+    return f"Turns left: {turns_left}"
+
+# Ask save menu
+STR_SAVE_THE_GAME_ = "Save the Game?"
+STR_YES = "Yes"
+STR_NO = "No"
+
+# src.game_entities.building
+def f_YOU_RECEIVED_NUMBER_GOLD(gold):
+    return f'[You received {gold} gold]'
+def f_YOU_RECEIVED_ITEM(item):
+    return f'[You received {item}]'
+
 # Messages
 STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = "Error ! Not enough free tiles to set players..."
 STR_GAME_HAS_BEEN_SAVED = "Game has been saved"
@@ -175,7 +194,12 @@ STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = "The item c
 STR_THE_ITEM_HAS_BEEN_UNEQUIPPED = "The item has been unequipped"
 STR_THE_ITEM_HAS_BEEN_EQUIPPED = "The item has been equipped"
 STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = "Previous equipped item has been added to your inventory"
-
+STR_THE_ITEM_HAS_BEEN_BOUGHT = "The item has been bought."
+STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = "Not enough space in inventory to buy this item."
+STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "Not enough gold to buy this item."
+STR_THE_ITEM_HAS_BEEN_SOLD = "The item has been sold."
+STR_THIS_ITEM_CANT_BE_SOLD = "This item can't be sold !"
+STR_THIS_HOUSE_SEEMS_CLOSED = "This house seems closed..."
 
 def f_ATTACKER_ATTACKED_TARGET_BUT_PARRIED(attacker, target):
     return f"{attacker} attacked {target}... But {target} parried!"
@@ -268,12 +292,18 @@ dict_items = {
     "black_boots": "Black Boots",
     "gold_boots": "Gold Boots",
     "wooden_shield": "Wooden Shield",
-    # "500_gold": "500 Gold",
+    "pocket_knife": "Pocket Knife",
+    "basic_spear": "Basic Spear",
+    "basic_halberd": "Basic Halberd",
 }
 
 # Effects
 dict_effects = {
-    "":""
+    "defense_up": "Defense up",
+    "strength_up": "Strength up",
+    "speed_up": "Speed up",
+    "stun": "Stun",
+    "no_attack": "No attack",
 }
 
 # src.game_entities.character
@@ -282,12 +312,15 @@ dict_races = {
     "human": "Human",
     "elf": "Elf",
     "dwarf": "Dwarf",
+    "centaur": "Centaur",
+    "gnome": "Gnome",
 }
 
 # Classes
 dict_classes = {
     "warrior": "Warrior",
     "ranger": "Ranger",
+    "spy": "Spy",
 }
 
 # src.game_entities.foe
@@ -295,19 +328,33 @@ dict_classes = {
 dict_foe_keywords = {
     "undead": "Undead",
     "large": "Large",
-    "caval": "Caval",
+    "cavalry": "Cavalry",
+    "mutant": "Mutant",
+    "fly": "Fly",
+    "none": "None",
 }
 
 # src.game_entities.entity
 # Entity names
 dict_entity_names = {
     "skeleton": "Skeleton",
+    "skeleton_cobra": "Skeleton Cobra",
     "necrophage": "Necrophage",
+    "lich_boss": "Lich Boss",
+    "mutant_bee": "Mutant Bee",
+    "mutant_lizard": "Mutant Lizard",
+    "mutant_cultist": "Mutant Cultist",
+    "mutant_ant": "Mutant Ant",
     "obstacle": "Obstacle",
     "shop": "Shop",
     "house": "House",
     "chest": "Chest",
     "healer": "Healer",
+    "tavern": "Tavern",
+    "door": "Door",
+    "altar": "Altar",
+    "armory": "Armory",
+    "apothecary": "Apothecary",
 }
 
 # src.services.menu_creater_manager
@@ -319,5 +366,8 @@ dict_attack_kinds = {
 
 # src.game_entities.skills
 dict_skills = {
-    "Ally Protection": "Ally Protection",
+    "": "",
 }
+
+# src.game_entities.weapon
+dict_alternations = dict_effects

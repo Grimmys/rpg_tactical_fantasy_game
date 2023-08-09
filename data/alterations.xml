@@ -2,7 +2,7 @@
     <speed_up>
         <info>
             <en> The move cap is increased by {val} </en>
-            <zh_cn> 移动能力提升了{val}点 </zh_cn>
+            <zh_cn> 移动能力提升{val}点 </zh_cn>
         </info>
         <effects>
             speed_up
@@ -14,7 +14,7 @@
     <strength_up>
         <info>
             <en> The strength is increased by {val} </en>
-            <zh_cn> 力量提升了{val}点 </zh_cn>
+            <zh_cn> 力量提升{val}点 </zh_cn>
         </info>
         <effects>
             strength_up
@@ -26,7 +26,7 @@
     <defense_up>
         <info>
             <en> The defense is increased by {val} </en>
-            <zh_cn> 防御力提升了{val}点 </zh_cn>
+            <zh_cn> 防御力提升{val}点 </zh_cn>
         </info>
         <effects>
             defense_up
