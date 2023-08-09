@@ -11,7 +11,7 @@ import pygame
 
 from src.constants import TILE_SIZE, LIGHT_GREY
 from src.game_entities.item import Item
-from src.services.language import dict_classes
+from src.services.language import DICT
 
 
 class Equipment(Item):
@@ -105,7 +105,7 @@ class Equipment(Item):
                 formatted_string += (
                     ", ".join(
                         [
-                            dict_classes[restriction.lower().replace(" ", "_")]
+                            DICT[restriction.lower().replace(" ", "_")]
                             for restriction in self.restrictions[key]
                         ]
                     )

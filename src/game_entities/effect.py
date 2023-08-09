@@ -100,6 +100,6 @@ class Effect:
 
     def __str__(self) -> str:
         try:
-            return dict_effects[self.name]
+            return DICT[self.name]
         except KeyError:
             return self.name.replace("_", " ").title()

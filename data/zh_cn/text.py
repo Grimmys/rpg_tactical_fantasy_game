@@ -249,8 +249,8 @@ def f_RECOVER_NUMBER_HP(power):
 def f_EARN_NUMBER_XP(power):
     return f"获得{power}点经验" # f"Earn {power} XP"
 
-# Items
-dict_items = {
+DICT = {
+    # Items
     "key": "钥匙",
     "bones": "骨头",
     "topaz": "黄玉",
@@ -295,48 +295,30 @@ dict_items = {
     "pocket_knife": "小刀",
     "basic_spear": "基础的矛",
     "basic_halberd": "基础的戟",
-}
-
-# Effects
-dict_effects = {
+    # Effects
     "defense_up": "防御提升",
     "strength_up": "力量提升",
     "speed_up": "速度提升",
     "stun": "晕厥",
     "no_attack": "不能攻击",
-}
-
-# src.game_entities.character
-# Races
-dict_races = {
+    # Races
     "human": "人类",
     "elf": "小精灵",
     "dwarf": "矮人",
     "centaur": "半人马",
     "gnome": "侏儒",
-}
-
-# Classes
-dict_classes = {
+    # Classes
     "warrior": "战士",
     "ranger": "游骑兵",
     "spy": "间谍",
-}
-
-# src.game_entities.foe
-# Foe keywords
-dict_foe_keywords = {
+    # Foe keywords
     "undead": "不死族",
     "large": "大型",
     "cavalry": "骑兵",
     "mutant": "变异体",
     "fly": "飞行体",
     "none": "无",
-}
-
-# src.game_entities.entity
-# Entity names
-dict_entity_names = {
+    # Entity names
     "skeleton": "骷髅",
     "skeleton_cobra": "骷髅蟒",
     "necrophage": "死灵",
@@ -355,19 +337,7 @@ dict_entity_names = {
     "altar": "祭坛",
     "armory": "军械店",
     "apothecary": "药剂店",
-}
-
-# src.services.menu_creater_manager
-# Attack kinds
-dict_attack_kinds = {
+    # Attack kinds
     "physical": "物理",
     "spiritual": "精神"
 }
-
-# src.game_entities.skills
-dict_skills = {
-    "": "",
-}
-
-# src.game_entities.weapon
-dict_alternations = dict_effects

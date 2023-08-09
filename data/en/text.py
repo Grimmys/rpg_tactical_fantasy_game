@@ -249,8 +249,8 @@ def f_RECOVER_NUMBER_HP(power):
 def f_EARN_NUMBER_XP(power):
     return f"Earn {power} XP"
 
-# Items
-dict_items = {
+DICT = {
+    # Items
     "key": "Key",
     "bones": "Bones",
     "topaz": "Topaz",
@@ -295,48 +295,30 @@ dict_items = {
     "pocket_knife": "Pocket Knife",
     "basic_spear": "Basic Spear",
     "basic_halberd": "Basic Halberd",
-}
-
-# Effects
-dict_effects = {
+    # Effects & Alternations
     "defense_up": "Defense up",
     "strength_up": "Strength up",
     "speed_up": "Speed up",
     "stun": "Stun",
     "no_attack": "No attack",
-}
-
-# src.game_entities.character
-# Races
-dict_races = {
+    # Races
     "human": "Human",
     "elf": "Elf",
     "dwarf": "Dwarf",
     "centaur": "Centaur",
     "gnome": "Gnome",
-}
-
-# Classes
-dict_classes = {
+    # Classes
     "warrior": "Warrior",
     "ranger": "Ranger",
     "spy": "Spy",
-}
-
-# src.game_entities.foe
-# Foe keywords
-dict_foe_keywords = {
+    # Foe keywords
     "undead": "Undead",
     "large": "Large",
     "cavalry": "Cavalry",
     "mutant": "Mutant",
     "fly": "Fly",
     "none": "None",
-}
-
-# src.game_entities.entity
-# Entity names
-dict_entity_names = {
+    # Entity names
     "skeleton": "Skeleton",
     "skeleton_cobra": "Skeleton Cobra",
     "necrophage": "Necrophage",
@@ -355,19 +337,7 @@ dict_entity_names = {
     "altar": "Altar",
     "armory": "Armory",
     "apothecary": "Apothecary",
-}
-
-# src.services.menu_creater_manager
-# Attack kinds
-dict_attack_kinds = {
+    # Attack kinds
     "physical": "Physical",
     "spiritual": "Spiritual"
 }
-
-# src.game_entities.skills
-dict_skills = {
-    "": "",
-}
-
-# src.game_entities.weapon
-dict_alternations = dict_effects

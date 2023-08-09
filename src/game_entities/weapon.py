@@ -15,7 +15,7 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Keyword
 from src.game_entities.skill import SkillNature
 from src.gui.tools import distance
-from src.services.language import dict_foe_keywords
+from src.services.language import DICT
 
 
 class Weapon(Equipment):
@@ -91,7 +91,7 @@ class Weapon(Equipment):
     def get_formatted_strong_against(self):
         """Return the list of keywords against which the weapon is stronger in a formatted way"""
         return ", ".join(
-            [dict_foe_keywords[keyword.name.lower().replace(" ", "_")] for keyword in self.strong_against]
+            [DICT[keyword.name.lower().replace(" ", "_")] for keyword in self.strong_against]
         )
 
     def hit(self, holder, target):

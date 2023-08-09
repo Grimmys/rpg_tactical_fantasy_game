@@ -302,7 +302,7 @@ class Character(Movable):
         formatted_string: str = ""
         for cls in self.classes:
             try:
-                formatted_string += dict_classes[cls] + ", "
+                formatted_string += DICT[cls] + ", "
             except KeyError:
                 formatted_string += cls.capitalize() + ", "
         if formatted_string == "":
@@ -315,7 +315,7 @@ class Character(Movable):
         way
         """
         try:
-            return dict_races[self.race]
+            return DICT[self.race]
         except KeyError:
             return self.race.capitalize()
 

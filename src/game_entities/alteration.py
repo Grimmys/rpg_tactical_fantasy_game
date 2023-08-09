@@ -4,7 +4,7 @@ Defines Alteration class, permitting to temporary modify the state of a living-e
 
 from lxml import etree
 
-from src.services.language import dict_alternations
+from src.services.language import DICT
 
 class Alteration:
     """
@@ -69,7 +69,7 @@ class Alteration:
 
     def __str__(self) -> str:
         try:
-            return dict_alternations[self.name]
+            return DICT[self.name]
         except KeyError:
             return self.name.replace("_", " ").capitalize()
 

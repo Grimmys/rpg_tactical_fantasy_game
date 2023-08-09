@@ -49,7 +49,7 @@ class Item:
 
     def __str__(self) -> str:
         try:
-            return dict_items[self.name]
+            return DICT[self.name]
         except KeyError:
             return self.name.replace("_", " ").title().strip()
 

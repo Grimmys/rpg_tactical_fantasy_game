@@ -138,7 +138,7 @@ class Foe(Movable):
         formatted_string: str = ""
         for keyword in self.keywords:
             try:
-                formatted_string += dict_foe_keywords[keyword.name.lower()] + ", "
+                formatted_string += DICT[keyword.name.lower()] + ", "
             except KeyError:
                 formatted_string += keyword.name.lower().capitalize() + ", "
         if formatted_string == "":
