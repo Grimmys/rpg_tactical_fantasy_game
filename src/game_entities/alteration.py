@@ -69,7 +69,7 @@ class Alteration:
 
     def __str__(self) -> str:
         try:
-            return TRANSLATIONS["Effects&Alternations"][self.name]
+            return TRANSLATIONS["alterations"][self.name]
         except KeyError:
             return self.name.replace("_", " ").capitalize()
 

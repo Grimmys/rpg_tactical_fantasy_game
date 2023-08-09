@@ -301,7 +301,7 @@ class Movable(Destroyable):
         formatted_string: str = ""
         for alteration in self.alterations:
             try:
-                formatted_string += TRANSLATIONS["Effects&Alternations"][str(alteration).lower().replace(" ", "_")] + ", "
+                formatted_string += TRANSLATIONS["alterations"][str(alteration).lower().replace(" ", "_")] + ", "
             except KeyError:
                 formatted_string += str(alteration) + ", "
         if formatted_string == "":

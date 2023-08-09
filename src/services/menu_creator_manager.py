@@ -943,7 +943,7 @@ def create_item_description_menu(item: Item) -> InfoBox:
             reach_txt = reach_txt[: len(reach_txt) - 2]
             grid_elements.append(
                 create_item_description_stat(
-                    STR_TYPE_OF_DAMAGE, TRANSLATIONS["AttackKinds"][str(item.attack_kind.value).lower().replace(" ", "_")]
+                    STR_TYPE_OF_DAMAGE, TRANSLATIONS["attack_kinds"][str(item.attack_kind.value).lower().replace(" ", "_")]
                 )
             )
             grid_elements.append(create_item_description_stat(STR_REACH, reach_txt))
@@ -1081,7 +1081,7 @@ def create_status_entity_menu(
         ],
         [
             TextElement(STR_TYPE_),
-            TextElement(TRANSLATIONS["AttackKinds"][str(entity.attack_kind.value).lower()]),
+            TextElement(TRANSLATIONS["attack_kinds"][str(entity.attack_kind.value).lower()]),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),

@@ -250,7 +250,7 @@ def f_EARN_NUMBER_XP(power):
     return f"获得{power}点经验" # f"Earn {power} XP"
 
 TRANSLATIONS = {
-    "Items": {
+    "items": {
         "key": "钥匙",
         "bones": "骨头",
         "topaz": "黄玉",
@@ -296,14 +296,21 @@ TRANSLATIONS = {
         "basic_spear": "基础的矛",
         "basic_halberd": "基础的戟",
     },
-    "Effects&Alternations": {
+    "effects": {
         "defense_up": "防御提升",
         "strength_up": "力量提升",
         "speed_up": "速度提升",
         "stun": "晕厥",
         "no_attack": "不能攻击",
     },
-    "Races&Classes": {
+    "alterations": {
+        "defense_up": "防御提升",
+        "strength_up": "力量提升",
+        "speed_up": "速度提升",
+        "stun": "晕厥",
+        "no_attack": "不能攻击",
+    },
+    "races_and_classes": {
         # Races
         "human": "人类",
         "elf": "小精灵",
@@ -315,7 +322,7 @@ TRANSLATIONS = {
         "ranger": "游骑兵",
         "spy": "间谍",
     },
-    "FoeKeywords": {
+    "foe_keywords": {
         "undead": "不死族",
         "large": "大型",
         "cavalry": "骑兵",
@@ -323,7 +330,7 @@ TRANSLATIONS = {
         "fly": "飞行体",
         "none": "无",
     },
-    "EntityNames": {
+    "entity_names": {
         "skeleton": "骷髅",
         "skeleton_cobra": "骷髅蟒",
         "necrophage": "死灵",
@@ -343,7 +350,7 @@ TRANSLATIONS = {
         "armory": "军械店",
         "apothecary": "药剂店",
     },
-    "AttackKinds": {
+    "attack_kinds": {
         "physical": "物理",
         "spiritual": "精神",
     },

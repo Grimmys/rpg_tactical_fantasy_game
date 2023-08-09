@@ -250,7 +250,7 @@ def f_EARN_NUMBER_XP(power):
     return f"Earn {power} XP"
 
 TRANSLATIONS = {
-    "Items": {
+    "items": {
         "key": "Key",
         "bones": "Bones",
         "topaz": "Topaz",
@@ -296,14 +296,21 @@ TRANSLATIONS = {
         "basic_spear": "Basic Spear",
         "basic_halberd": "Basic Halberd",
     },
-    "Effects&Alternations": {
+    "effects": {
         "defense_up": "Defense up",
         "strength_up": "Strength up",
         "speed_up": "Speed up",
         "stun": "Stun",
         "no_attack": "No attack",
     },
-    "Races&Classes": {
+    "alterations": {
+        "defense_up": "Defense up",
+        "strength_up": "Strength up",
+        "speed_up": "Speed up",
+        "stun": "Stun",
+        "no_attack": "No attack",
+    },
+    "races_and_classes": {
         # Races
         "human": "Human",
         "elf": "Elf",
@@ -315,7 +322,7 @@ TRANSLATIONS = {
         "ranger": "Ranger",
         "spy": "Spy",
     },
-    "FoeKeywords": {
+    "foe_keywords": {
         "undead": "Undead",
         "large": "Large",
         "cavalry": "Cavalry",
@@ -323,7 +330,7 @@ TRANSLATIONS = {
         "fly": "Fly",
         "none": "None",
     },
-    "EntityNames": {
+    "entity_names": {
         "skeleton": "Skeleton",
         "skeleton_cobra": "Skeleton Cobra",
         "necrophage": "Necrophage",
@@ -343,7 +350,7 @@ TRANSLATIONS = {
         "armory": "Armory",
         "apothecary": "Apothecary",
     },
-    "AttackKinds": {
+    "attack_kinds": {
         "physical": "Physical",
         "spiritual": "Spiritual",
     },

@@ -92,7 +92,7 @@ class Weapon(Equipment):
         """Return the list of keywords against which the weapon is stronger in a formatted way"""
         return ", ".join(
             [
-                TRANSLATIONS["FoeKeywords"][keyword.name.lower().replace(" ", "_")]
+                TRANSLATIONS["foe_keywords"][keyword.name.lower().replace(" ", "_")]
                 for keyword in self.strong_against
             ]
         )
