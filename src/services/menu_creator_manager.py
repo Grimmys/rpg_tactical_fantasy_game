@@ -89,8 +89,8 @@ def create_shop_menu(
     row = []
     for item in stock:
         item_text_data = [
-            f_PRICE_NUMBER(item['item'].price),
-            f_QUANTITY_NUMBER(item['quantity'])
+            f_PRICE_NUMBER(item["item"].price),
+            f_QUANTITY_NUMBER(item["quantity"]),
         ]
         item_button = ImageButton(
             image_path=item["item"].sprite_path,
@@ -236,7 +236,12 @@ def create_equipment_menu(
             )
             row.append(element)
         grid_elements.append(row)
-    return InfoBox(STR_EQUIPMENT, grid_elements, width=EQUIPMENT_MENU_WIDTH, close_button_text=STR_CLOSE,)
+    return InfoBox(
+        STR_EQUIPMENT,
+        grid_elements,
+        width=EQUIPMENT_MENU_WIDTH,
+        close_button_text=STR_CLOSE,
+    )
 
 
 def create_trade_menu(
@@ -351,8 +356,7 @@ def create_trade_menu(
     # Gold at end
     gold_row = [
         TextElement(
-            f_GOLD_AT_END(first_player, first_player.gold),
-            font=fonts["ITEM_DESC_FONT"]
+            f_GOLD_AT_END(first_player, first_player.gold), font=fonts["ITEM_DESC_FONT"]
         ),
         TextElement(
             f_GOLD_AT_END(second_player, second_player.gold),
@@ -663,7 +667,8 @@ def create_player_menu(
                     == TILE_SIZE * reach
                 ):
                     grid_elements.insert(
-                        0, [Button(title=STR_ATTACK, callback=buttons_callback["attack"])]
+                        0,
+                        [Button(title=STR_ATTACK, callback=buttons_callback["attack"])],
                     )
                     end = True
                     break
@@ -865,7 +870,8 @@ def create_item_menu(
     elif isinstance(item, Equipment):
         if is_equipped:
             element_grid.insert(
-                0, [Button(title=STR_UNEQUIP, callback=buttons_callback["unequip_item"])]
+                0,
+                [Button(title=STR_UNEQUIP, callback=buttons_callback["unequip_item"])],
             )
         else:
             element_grid.insert(
@@ -943,7 +949,10 @@ def create_item_description_menu(item: Item) -> InfoBox:
             reach_txt = reach_txt[: len(reach_txt) - 2]
             grid_elements.append(
                 create_item_description_stat(
-                    STR_TYPE_OF_DAMAGE, TRANSLATIONS["attack_kinds"][str(item.attack_kind.value).lower().replace(" ", "_")]
+                    STR_TYPE_OF_DAMAGE,
+                    TRANSLATIONS["attack_kinds"][
+                        str(item.attack_kind.value).lower().replace(" ", "_")
+                    ],
                 )
             )
             grid_elements.append(create_item_description_stat(STR_REACH, reach_txt))
@@ -980,7 +989,12 @@ def create_item_description_menu(item: Item) -> InfoBox:
                 )
             )
 
-    return InfoBox(item_title, grid_elements, width=ITEM_INFO_MENU_WIDTH, close_button_text=STR_CLOSE,)
+    return InfoBox(
+        item_title,
+        grid_elements,
+        width=ITEM_INFO_MENU_WIDTH,
+        close_button_text=STR_CLOSE,
+    )
 
 
 def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
@@ -1081,7 +1095,9 @@ def create_status_entity_menu(
         ],
         [
             TextElement(STR_TYPE_),
-            TextElement(TRANSLATIONS["attack_kinds"][str(entity.attack_kind.value).lower()]),
+            TextElement(
+                TRANSLATIONS["attack_kinds"][str(entity.attack_kind.value).lower()]
+            ),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
@@ -1193,7 +1209,7 @@ def create_status_entity_menu(
     if isinstance(entity, Foe):
         loot = entity.potential_loot
         line_index = 3
-        for (item, probability) in loot:
+        for item, probability in loot:
             name = str(item)
             grid_elements[line_index][3] = TextElement(name)
             grid_elements[line_index][4] = TextElement(f" ({probability * 100} %)")
@@ -1258,13 +1274,16 @@ def create_reward_menu(mission: Mission) -> InfoBox:
         ]
     ]
     if mission.gold:
-        grid_element.append(
-            [TextElement(f_EARNED_GOLD(mission.gold))]
-        )
+        grid_element.append([TextElement(f_EARNED_GOLD(mission.gold))])
     for item in mission.items:
         grid_element.append([TextElement(f_EARNED_ITEMS(item))])
 
-    return InfoBox(mission.description, grid_element, width=REWARD_MENU_WIDTH, close_button_text=STR_CLOSE,)
+    return InfoBox(
+        mission.description,
+        grid_element,
+        width=REWARD_MENU_WIDTH,
+        close_button_text=STR_CLOSE,
+    )
 
 
 def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
@@ -1322,7 +1341,8 @@ def load_parameter_button(
 
 
 def create_options_menu(
-    parameters: dict[str, int], modify_option_function: Callable,
+    parameters: dict[str, int],
+    modify_option_function: Callable,
 ) -> InfoBox:
     """
     Return the interface of the game options menu.
@@ -1337,7 +1357,7 @@ def create_options_menu(
             [
                 Button(
                     title=STR_LANGUAGE,
-                    callback=lambda: modify_option_function("language")
+                    callback=lambda: modify_option_function("language"),
                 ),
             ],
             [
@@ -1385,7 +1405,12 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
             ]
         )
 
-    return InfoBox(STR_LOAD_GAME_MENU, element_grid, width=START_MENU_WIDTH, close_button_text=STR_CLOSE,)
+    return InfoBox(
+        STR_LOAD_GAME_MENU,
+        element_grid,
+        width=START_MENU_WIDTH,
+        close_button_text=STR_CLOSE,
+    )
 
 
 def create_save_menu(save_game_function: Callable) -> InfoBox:
@@ -1404,10 +1429,15 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
             ]
         )
 
-    return InfoBox(STR_SAVE_GAME_MENU, element_grid, width=START_MENU_WIDTH, close_button_text=STR_CLOSE,)
+    return InfoBox(
+        STR_SAVE_GAME_MENU,
+        element_grid,
+        width=START_MENU_WIDTH,
+        close_button_text=STR_CLOSE,
+    )
 
 
-def create_save_dialog(buttons_callback: dict[str, Callable],) -> InfoBox:
+def create_save_dialog(buttons_callback: dict[str, Callable]) -> InfoBox:
     """
     Return the interface of the save game reminder
     """
@@ -1419,22 +1449,34 @@ def create_save_dialog(buttons_callback: dict[str, Callable],) -> InfoBox:
         STR_SAVE_THE_GAME_,
         element_grid,
         width=ACTION_MENU_WIDTH,
-        has_close_button=False
+        has_close_button=False,
     )
 
-  
-def create_choose_language_menu(buttons_callback: Callable,) -> InfoBox:
-  """
-  Return the interface the choose language menu
-  """
-  element_grid = [
-      [Button(title="English", font=fonts["LANGUAGE_FONT"], callback=lambda: buttons_callback("en"))],
-      [Button(title="中文简体", font=fonts["LANGUAGE_FONT"], callback=lambda: buttons_callback("zh_cn"))],
-  ]
-  return InfoBox(
-      STR_CHOOSE_LANGUAGE,
-      element_grid,
-      width=ACTION_MENU_WIDTH,
-      has_close_button=False,
-      close_button_text=STR_CLOSE,
-  )
+
+def create_choose_language_menu(buttons_callback: Callable) -> InfoBox:
+    """
+    Return the interface to choose language
+    """
+    element_grid = [
+        [
+            Button(
+                title="English",
+                font=fonts["LANGUAGE_FONT"],
+                callback=lambda: buttons_callback("en"),
+            )
+        ],
+        [
+            Button(
+                title="中文简体",
+                font=fonts["LANGUAGE_FONT"],
+                callback=lambda: buttons_callback("zh_cn"),
+            )
+        ],
+    ]
+    return InfoBox(
+        STR_CHOOSE_LANGUAGE,
+        element_grid,
+        width=ACTION_MENU_WIDTH,
+        has_close_button=True,
+        close_button_text=STR_CLOSE,
+    )
