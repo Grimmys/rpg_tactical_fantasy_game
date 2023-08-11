@@ -52,7 +52,7 @@ class Chest(Entity):
         sprite_close: str,
         sprite_open: str,
         potential_items: Sequence[tuple[Item, float]],
-        sprite: Optional[pygame.Surface] = None
+        sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__("Chest", position, sprite if sprite else sprite_close)
         self.sprite_close_link: str = sprite_close
@@ -80,7 +80,7 @@ class Chest(Entity):
         """
         bag: list[Item] = []
         # probability : between 0.1 and 1
-        for (item, probability) in potential_items:
+        for item, probability in potential_items:
             times = int(probability * 100)
             bag += [item] * times
 

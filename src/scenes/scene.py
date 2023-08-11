@@ -14,6 +14,7 @@ class QuitActionKind(IntEnum):
     """
     Defines the different kind of actions when trying to quit game
     """
+
     CONTINUE = auto()
     QUIT = auto()
     RESTART = auto()

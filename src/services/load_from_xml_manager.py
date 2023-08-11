@@ -126,7 +126,7 @@ def get_skill_data(name) -> Skill:
     if name not in skills_data:
         # Required data
         skill_element = etree.parse("data/skills.xml").find(name)
-        formatted_name = skill_element.find("name/"+language)
+        formatted_name = skill_element.find("name/" + language)
         if formatted_name is not None:
             formatted_name = formatted_name.text.strip()
         else:
@@ -310,9 +310,14 @@ def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=
     }
 
 
-def load_artificial_entity(name: str, data: etree.Element, position: Position, level: Optional[int] = None,
-                           strategy: Optional[str] = None,
-                           extension_path: str = ""):
+def load_artificial_entity(
+    name: str,
+    data: etree.Element,
+    position: Position,
+    level: Optional[int] = None,
+    strategy: Optional[str] = None,
+    extension_path: str = "",
+):
     # Static data
     sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
     if strategy is None:
@@ -422,9 +427,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
 def load_ally(name: str, position: Position) -> Character:
     generic_data = etree.parse("data/characters.xml").find(name)
 
-    attributes = load_artificial_entity(
-        name, generic_data, position
-    )
+    attributes = load_artificial_entity(name, generic_data, position)
 
     # Static data character
     race = generic_data.find("race").text.strip()
@@ -599,8 +602,14 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
     return loaded_foe
 
 
-def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item],
-             mission_target: str) -> Foe:
+def load_foe(
+    name: str,
+    position: Position,
+    level: int,
+    strategy: Optional[str],
+    specific_loot: Sequence[Item],
+    mission_target: str,
+) -> Foe:
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
         # Load grow rates of this kind of foe in the class
@@ -620,12 +629,12 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str],
     )
     attack_kind = foes_data[name].find("attack_kind").text.strip()
     loot = [
-               (
-                   parse_item_file(item.find("name").text.strip()),
-                   float(item.find("probability").text),
-               )
-               for item in foes_data[name].findall("loot/item")
-           ] + [(item, 1.0) for item in specific_loot]
+        (
+            parse_item_file(item.find("name").text.strip()),
+            float(item.find("probability").text),
+        )
+        for item in foes_data[name].findall("loot/item")
+    ] + [(item, 1.0) for item in specific_loot]
     gold_looted = foes_data[name].find("loot/gold")
     if gold_looted is not None:
         loot.append(

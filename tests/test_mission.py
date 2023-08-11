@@ -12,7 +12,8 @@ from tests.random_data_library import (
     random_position,
     random_player_entity,
     random_entities,
-    random_foe_entity, random_objective,
+    random_foe_entity,
+    random_objective,
 )
 from tests.tools import minimal_setup_for_game
 
@@ -25,8 +26,7 @@ class TestMission(unittest.TestCase):
     def test_init_mision(self):
         is_main = True
         nature = MissionType.POSITION
-        objectives = [random_objective(),
-                      random_objective()]
+        objectives = [random_objective(), random_objective()]
         description = "Test main mission"
         nb_players = 2
         turn_limit = 10
@@ -55,8 +55,10 @@ class TestMission(unittest.TestCase):
 
     def test_position_is_valid_to_go(self):
         nature = MissionType.POSITION
-        objectives = [random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
-                      random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE))]
+        objectives = [
+            random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
+            random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE)),
+        ]
         mission = Mission(True, nature, objectives, "Test mission", 0)
         self.assertTrue(mission.is_position_valid(objectives[0].position))
         self.assertTrue(mission.is_position_valid(objectives[1].position))
@@ -67,8 +69,10 @@ class TestMission(unittest.TestCase):
 
     def test_position_is_valid_to_touch(self):
         nature = MissionType.TOUCH_POSITION
-        objectives = [random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
-                      random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE))]
+        objectives = [
+            random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
+            random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE)),
+        ]
         mission = Mission(True, nature, objectives, "Test mission", 0)
         self.assertFalse(mission.is_position_valid(objectives[0].position))
         self.assertFalse(mission.is_position_valid(objectives[1].position))

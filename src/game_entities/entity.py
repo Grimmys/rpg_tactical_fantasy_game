@@ -64,7 +64,9 @@ class Entity:
         underscores are replaced by spaces and numbers are removed.
         """
         try:
-            string_entity: str = TRANSLATIONS["entity_names"][self.get_proper_entity_name(self.name).lower()]
+            string_entity: str = TRANSLATIONS["entity_names"][
+                self.get_proper_entity_name(self.name).lower()
+            ]
         except KeyError:
             string_entity: str = self.name.replace("_", " ").title()
             string_entity = self.get_proper_entity_name(string_entity)

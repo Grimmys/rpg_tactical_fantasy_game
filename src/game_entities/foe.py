@@ -128,7 +128,7 @@ class Foe(Movable):
         Return the loot list
         """
         loot: list[Item] = []
-        for (item, probability) in self.potential_loot:
+        for item, probability in self.potential_loot:
             if rd.random() < probability:
                 loot.append(item)
         return loot
@@ -138,7 +138,9 @@ class Foe(Movable):
         formatted_string: str = ""
         for keyword in self.keywords:
             try:
-                formatted_string += TRANSLATIONS["foe_keywords"][keyword.name.lower()] + ", "
+                formatted_string += (
+                    TRANSLATIONS["foe_keywords"][keyword.name.lower()] + ", "
+                )
             except KeyError:
                 formatted_string += keyword.name.lower().capitalize() + ", "
         if formatted_string == "":
@@ -165,7 +167,7 @@ class Foe(Movable):
 
         # Save loot
         loot_element: etree.SubElement = etree.SubElement(tree, "loot")
-        for (item, probability) in self.potential_loot:
+        for item, probability in self.potential_loot:
             if isinstance(item, Gold):
                 item_element: etree.SubElement = etree.SubElement(loot_element, "gold")
                 item_name = etree.SubElement(item_element, "amount")

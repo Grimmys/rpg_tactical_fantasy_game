@@ -105,7 +105,9 @@ class Equipment(Item):
                 formatted_string += (
                     ", ".join(
                         [
-                            TRANSLATIONS["races_and_classes"][restriction.lower().replace(" ", "_")]
+                            TRANSLATIONS["races_and_classes"][
+                                restriction.lower().replace(" ", "_")
+                            ]
                             for restriction in self.restrictions[key]
                         ]
                     )

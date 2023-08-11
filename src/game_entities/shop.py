@@ -20,6 +20,7 @@ from src.gui.position import Position
 from src.services.language import *
 from src.services import menu_creator_manager
 
+
 class Shop(Building):
     """
     A Shop is a Building in which items can be sold or bought.

@@ -33,8 +33,12 @@ def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
     foes_by_mission[mission_id].append(foe)
 
 
-def _get_object_position(tile_object: TiledObject, horizontal_gap: int, vertical_gap: int) -> Position:
-    return pygame.Vector2(tile_object.x * 1.5 + horizontal_gap, tile_object.y * 1.5 + vertical_gap)
+def _get_object_position(
+    tile_object: TiledObject, horizontal_gap: int, vertical_gap: int
+) -> Position:
+    return pygame.Vector2(
+        tile_object.x * 1.5 + horizontal_gap, tile_object.y * 1.5 + vertical_gap
+    )
 
 
 def load_ground(tmx_data: pytmx.TiledMap, size: tuple[int, int]) -> pygame.Surface:
@@ -80,7 +84,8 @@ def _load_objectives(tmx_data, horizontal_gap, vertical_gap) -> None:
             mission_id = tile_object.properties["mission"]
             walkable = tile_object.properties["walkable"]
             _link_objective_to_mission(
-                Objective(tile_object.name, position, objective_image, walkable), mission_id
+                Objective(tile_object.name, position, objective_image, walkable),
+                mission_id,
             )
 
 
@@ -137,9 +142,13 @@ def load_missions(
     main_mission = _load_mission(tmx_map_properties_data, True, "main", players)
     missions = [main_mission]
     if "secondary_missions" in tmx_map_properties_data.properties:
-        secondary_missions = tmx_map_properties_data.properties["secondary_missions"].split(",")
+        secondary_missions = tmx_map_properties_data.properties[
+            "secondary_missions"
+        ].split(",")
         for mission_id in secondary_missions:
-            missions.append(_load_mission(tmx_map_properties_data, False, mission_id, players))
+            missions.append(
+                _load_mission(tmx_map_properties_data, False, mission_id, players)
+            )
 
     return missions, main_mission
 
@@ -165,13 +174,21 @@ def load_foes(
                             tile_object.properties[f"loot_item_{index}_name"]
                         )
                     )
-            mission_target = tile_object.properties[
-                "mission_target"] if "mission_target" in tile_object.properties else None
-
-            foe = xml_loader.load_foe(tile_object.name, position, level, strategy, specific_loot, mission_target)
-            foes.append(
-                foe
+            mission_target = (
+                tile_object.properties["mission_target"]
+                if "mission_target" in tile_object.properties
+                else None
             )
+
+            foe = xml_loader.load_foe(
+                tile_object.name,
+                position,
+                level,
+                strategy,
+                specific_loot,
+                mission_target,
+            )
+            foes.append(foe)
 
             if mission_target:
                 _link_foe_to_mission(foe, mission_target)
@@ -239,7 +256,9 @@ def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
             dialog_file.readline()  # Skip splitting line between title and body
             dialog["talks"] = dialog_file.read().splitlines()
     except UnicodeDecodeError:
-        with open(f"{directory}dialog_{dialog_file_index}.txt", encoding="utf-8") as dialog_file:
+        with open(
+            f"{directory}dialog_{dialog_file_index}.txt", encoding="utf-8"
+        ) as dialog_file:
             dialog["title"] = dialog_file.readline().rstrip("\n")
             dialog_file.readline()  # Skip splitting line between title and body
             dialog["talks"] = dialog_file.read().splitlines()
@@ -251,7 +270,9 @@ def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
         with open(f"{directory}house_dialog_{dialog_file_index}.txt") as dialog_file:
             return dialog_file.read().splitlines()
     except UnicodeDecodeError:
-        with open(f"{directory}house_dialog_{dialog_file_index}.txt", encoding='utf-8') as dialog_file:
+        with open(
+            f"{directory}house_dialog_{dialog_file_index}.txt", encoding="utf-8"
+        ) as dialog_file:
             return dialog_file.read().splitlines()
 
 
@@ -279,7 +300,9 @@ def load_events(
         )
         if new_players:
             events[tile_object.type]["new_players"] = []
-            players_position: Position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
+            players_position: Position = _get_object_position(
+                tile_object, horizontal_gap, vertical_gap
+            )
             for player in new_players:
                 events[tile_object.type]["new_players"].append(
                     {"name": player, "position": players_position}
@@ -308,7 +331,9 @@ def load_buildings(
             if "gold" in tile_object.properties:
                 interaction["gold"] = tile_object.properties["gold"]
             if "items" in tile_object.properties:
-                interaction["item"] = xml_loader.parse_item_file(tile_object.properties["items"])
+                interaction["item"] = xml_loader.parse_item_file(
+                    tile_object.properties["items"]
+                )
 
             if not interaction:
                 interaction = None
@@ -320,8 +345,13 @@ def load_buildings(
             )
             if not nature:
                 buildings.append(
-                    Building(tile_object.name, position, tile_object.properties["sprite_link"],
-                             interaction, image)
+                    Building(
+                        tile_object.name,
+                        position,
+                        tile_object.properties["sprite_link"],
+                        interaction,
+                        image,
+                    )
                 )
                 continue
 
@@ -332,14 +362,18 @@ def load_buildings(
                         "item": xml_loader.parse_item_file(
                             tile_object.properties[f"item_{item_id}_name"]
                         ),
-                        "quantity": tile_object.properties[
-                            f"item_{item_id}_quantity"
-                        ],
+                        "quantity": tile_object.properties[f"item_{item_id}_quantity"],
                     }
                     stock.append(item_entry)
                 buildings.append(
-                    Shop(tile_object.name, position, tile_object.properties["sprite_link"],
-                         stock, interaction, image)
+                    Shop(
+                        tile_object.name,
+                        position,
+                        tile_object.properties["sprite_link"],
+                        stock,
+                        interaction,
+                        image,
+                    )
                 )
             else:
                 print("Error: building type isn't recognized: ", nature)
@@ -370,7 +404,9 @@ def load_doors(
         if tile_object.type == "door":
             position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
             image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
-            doors.append(Door(position, tile_object.properties["sprite_link"], sprite=image))
+            doors.append(
+                Door(position, tile_object.properties["sprite_link"], sprite=image)
+            )
     return doors
 
 

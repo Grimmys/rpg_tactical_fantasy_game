@@ -104,4 +104,4 @@ if __name__ == "__main__":
 
     if quit_action == QuitActionKind.RESTART:
         # Restart game
-        subprocess.Popen([sys.executable, 'main.py']).wait()
+        subprocess.Popen([sys.executable, "main.py"]).wait()

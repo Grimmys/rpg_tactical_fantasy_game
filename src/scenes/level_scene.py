@@ -28,7 +28,9 @@ from src.constants import (
     TILE_SIZE,
     BLACK,
     WIN_HEIGHT,
-    WIN_WIDTH, GRID_WIDTH, GRID_HEIGHT,
+    WIN_WIDTH,
+    GRID_WIDTH,
+    GRID_HEIGHT,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
@@ -67,7 +69,11 @@ from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
 from src.services.language import *
 from src.scenes.scene import Scene
-from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
+from src.services import (
+    load_from_xml_manager as loader,
+    load_from_tmx_manager as tmx_loader,
+    menu_creator_manager,
+)
 from src.services.menu_creator_manager import (
     create_save_dialog,
     create_event_dialog,
@@ -213,9 +219,16 @@ class LevelScene(Scene):
         self.number: int = number
 
         self.tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
-        self.tmx_map_properties_data = pytmx.load_pygame(DATA_PATH + self.directory + "map_properties.tmx")
-        map_width, map_height = self.tmx_data.width * TILE_SIZE, self.tmx_data.height * TILE_SIZE
-        map_static_content = tmx_loader.load_ground(self.tmx_data, (map_width, map_height))
+        self.tmx_map_properties_data = pytmx.load_pygame(
+            DATA_PATH + self.directory + "map_properties.tmx"
+        )
+        map_width, map_height = (
+            self.tmx_data.width * TILE_SIZE,
+            self.tmx_data.height * TILE_SIZE,
+        )
+        map_static_content = tmx_loader.load_ground(
+            self.tmx_data, (map_width, map_height)
+        )
 
         self.map: dict[str, any] = {
             "img": map_static_content,
@@ -301,7 +314,9 @@ class LevelScene(Scene):
         )
 
         self.entities.players = self.players
-        self.entities.obstacles = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
+        self.entities.obstacles = tmx_loader.load_obstacles(
+            self.tmx_data, self.map["x"], self.map["y"]
+        )
 
         if self.data is None:
             # Game is new
@@ -318,18 +333,26 @@ class LevelScene(Scene):
                         self.players.append(player)
             if self.number != 0:
                 # Level_0 doesn't need save reminder
-                self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save}))
+                self.menu_manager.open_menu(
+                    create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save})
+                )
 
             self._determine_players_initial_position()
 
             self.entities.foes = tmx_loader.load_foes(self.tmx_data, gap_x, gap_y)
             self.entities.chests = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
             self.entities.allies = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
-            self.entities.buildings = tmx_loader.load_buildings(self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y)
-            self.entities.breakables = tmx_loader.load_breakables(self.tmx_data, gap_x, gap_y)
+            self.entities.buildings = tmx_loader.load_buildings(
+                self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y
+            )
+            self.entities.breakables = tmx_loader.load_breakables(
+                self.tmx_data, gap_x, gap_y
+            )
             self.entities.portals = tmx_loader.load_portals(self.tmx_data, gap_x, gap_y)
             self.entities.doors = tmx_loader.load_doors(self.tmx_data, gap_x, gap_y)
-            self.entities.fountains = tmx_loader.load_fountains(self.tmx_data, gap_x, gap_y)
+            self.entities.fountains = tmx_loader.load_fountains(
+                self.tmx_data, gap_x, gap_y
+            )
         else:
             # Game is loaded from a save (data)
             from_save = True
@@ -347,10 +370,17 @@ class LevelScene(Scene):
             )
 
         self.missions, self.main_mission = tmx_loader.load_missions(
-            self.tmx_data, self.tmx_map_properties_data, self.players, self.map["x"], self.map["y"]
+            self.tmx_data,
+            self.tmx_map_properties_data,
+            self.players,
+            self.map["x"],
+            self.map["y"],
         )
-        self.entities.objectives = [objective for mission in self.missions for objective in
-                                    mission.objective_tiles]
+        self.entities.objectives = [
+            objective
+            for mission in self.missions
+            for objective in mission.objective_tiles
+        ]
 
         self.sidebar = Sidebar(
             (MENU_WIDTH, MENU_HEIGHT),
@@ -396,7 +426,12 @@ class LevelScene(Scene):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
         self.menu_manager.open_menu(
-            InfoBox(STR_GAME_HAS_BEEN_SAVED, [[]], width=ITEM_MENU_WIDTH, close_button_text=STR_CLOSE,)
+            InfoBox(
+                STR_GAME_HAS_BEEN_SAVED,
+                [[]],
+                width=ITEM_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
+            )
         )
 
     def exit_game(self) -> None:
@@ -1203,7 +1238,9 @@ class LevelScene(Scene):
             self.diary_entries.append(
                 [
                     TextElement(
-                        f_ATTACKER_DEALT_DAMAGE_TO_TARGET(attacker, target, real_damage),
+                        f_ATTACKER_DEALT_DAMAGE_TO_TARGET(
+                            attacker, target, real_damage
+                        ),
                         font=fonts["ITEM_DESC_FONT"],
                     )
                 ]
@@ -1664,7 +1701,9 @@ class LevelScene(Scene):
             grid_elements = [
                 [
                     TextElement(
-                        f_ITEM_CANNOT_BE_TRADED_NOT_ENOUGH_PLACE_IN_RECEIVERS_INVENTORY(receiver),
+                        f_ITEM_CANNOT_BE_TRADED_NOT_ENOUGH_PLACE_IN_RECEIVERS_INVENTORY(
+                            receiver
+                        ),
                         font=fonts["ITEM_DESC_FONT"],
                         margin=(20, 0, 20, 0),
                     )
@@ -1843,7 +1882,12 @@ class LevelScene(Scene):
         ]
         self.menu_manager.replace_given_menu(SHOP_MENU_ID, self.active_shop.menu)
         self.menu_manager.open_menu(
-            InfoBox(str(self.selected_item), element_grid, width=ITEM_INFO_MENU_WIDTH, close_button_text=STR_CLOSE,)
+            InfoBox(
+                str(self.selected_item),
+                element_grid,
+                width=ITEM_INFO_MENU_WIDTH,
+                close_button_text=STR_CLOSE,
+            )
         )
 
     def unequip_selected_item(self) -> None:
@@ -1890,7 +1934,11 @@ class LevelScene(Scene):
         return_equipped: int = self.selected_player.equip(self.selected_item)
         if return_equipped == -1:
             # Item can't be equipped by this player
-            result_message = f_THIS_ITEM_CANNOT_BE_EQUIPPED_PLAYER_DOESNT_SATISFY_THE_REQUIREMENTS(self.selected_player)
+            result_message = (
+                f_THIS_ITEM_CANNOT_BE_EQUIPPED_PLAYER_DOESNT_SATISFY_THE_REQUIREMENTS(
+                    self.selected_player
+                )
+            )
         else:
             # In this case returned value is > 0, item has been equipped
             result_message = STR_THE_ITEM_HAS_BEEN_EQUIPPED
@@ -2021,16 +2069,18 @@ class LevelScene(Scene):
         if self.menu_manager.active_menu:
             # TODO: check if the raw value could be replaced by a meaningful constant
             # Check if the click is on menu
-            menu_position = self.menu_manager.active_menu.determine_position(self.active_screen_part)
+            menu_position = self.menu_manager.active_menu.determine_position(
+                self.active_screen_part
+            )
             if menu_position != None:
                 my_rect = pygame.Rect(
-                    menu_position.x, menu_position.y,
+                    menu_position.x,
+                    menu_position.y,
                     self.menu_manager.active_menu._InfoBox__size[0],
-                    self.menu_manager.active_menu._InfoBox__size[1]
+                    self.menu_manager.active_menu._InfoBox__size[1],
                 )
                 if (
                     not my_rect.collidepoint(position)
-                
                     and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
                 ):
                     self.menu_manager.close_active_menu()
@@ -2279,7 +2329,8 @@ class LevelScene(Scene):
         keyname -- an integer value representing which key button is down
         """
         if keyname == pygame.K_ESCAPE:
-            if (self.menu_manager.active_menu is not None
+            if (
+                self.menu_manager.active_menu is not None
                 and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
             ):
                 self.menu_manager.close_active_menu()

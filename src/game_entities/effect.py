@@ -76,13 +76,19 @@ class Effect:
                 msg += f_ENTITY_GAINED_A_LEVEL(entity)
         elif self.name == "speed_up":
             entity.set_alteration(self.alteration)
-            msg = f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
+            msg = f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(
+                entity, self.duration
+            )
         elif self.name == "strength_up":
             entity.set_alteration(self.alteration)
-            msg = f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
+            msg = f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(
+                entity, self.duration
+            )
         elif self.name == "defense_up":
             entity.set_alteration(self.alteration)
-            msg = f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
+            msg = f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(
+                entity, self.duration
+            )
         elif self.name == "stun":
             entity.set_alteration(self.alteration)
             msg = f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, self.duration)

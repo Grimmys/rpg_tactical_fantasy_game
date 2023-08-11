@@ -6,6 +6,7 @@ from lxml import etree
 
 from src.services.language import TRANSLATIONS
 
+
 class Alteration:
     """
     An Alteration is representing a status that will stay on the entity for one or more turns.

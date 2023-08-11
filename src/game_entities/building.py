@@ -18,6 +18,7 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.services.language import *
 
+
 class Building(Entity):
     """
     A Building represents a static entity that can be visited by the player.
@@ -89,11 +90,7 @@ class Building(Entity):
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
             entries.append(
-                [
-                    TextElement(
-                        STR_THIS_HOUSE_SEEMS_CLOSED, font=fonts["ITEM_DESC_FONT"]
-                    )
-                ]
+                [TextElement(STR_THIS_HOUSE_SEEMS_CLOSED, font=fonts["ITEM_DESC_FONT"])]
             )
         else:
             pygame.mixer.Sound.play(self.talk_sfx)
