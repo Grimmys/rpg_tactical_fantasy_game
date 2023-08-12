@@ -2065,23 +2065,19 @@ class LevelScene(Scene):
         position -- the position of the mouse
         """
         if self.menu_manager.active_menu:
-            # TODO: check if the raw value could be replaced by a meaningful constant
             # Check if the click is on menu
-            menu_position = self.menu_manager.active_menu.determine_position(
-                self.active_screen_part
+            my_rect = pygame.Rect(
+                self.menu_manager.active_menu.position.x,
+                self.menu_manager.active_menu.position.y,
+                self.menu_manager.active_menu._InfoBox__size[0],
+                self.menu_manager.active_menu._InfoBox__size[1],
             )
-            if menu_position != None:
-                my_rect = pygame.Rect(
-                    menu_position.x,
-                    menu_position.y,
-                    self.menu_manager.active_menu._InfoBox__size[0],
-                    self.menu_manager.active_menu._InfoBox__size[1],
-                )
-                if (
-                    not my_rect.collidepoint(position)
-                    and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
-                ):
-                    self.menu_manager.close_active_menu()
+            if (
+                not my_rect.collidepoint(position)
+                and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
+            ):
+                self.menu_manager.close_active_menu()
+            # TODO: check if the raw value could be replaced by a meaningful constant
             self.menu_manager.click(1, position)
             return
 
