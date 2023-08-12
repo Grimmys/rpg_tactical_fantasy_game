@@ -320,7 +320,6 @@ class LevelScene(Scene):
 
         if self.data is None:
             # Game is new
-            from_save: bool = False
             gap_x, gap_y = (self.map["x"], self.map["y"])
             if "before_init" in self.events:
                 if "dialogs" in self.events["before_init"]:
@@ -355,7 +354,6 @@ class LevelScene(Scene):
             )
         else:
             # Game is loaded from a save (data)
-            from_save = True
             gap_x, gap_y = (0, 0)
             if self.game_phase == LevelStatus.VERY_BEGINNING:
                 # If game is in very beginning, show dialogs
@@ -553,7 +551,7 @@ class LevelScene(Scene):
         for entity in entities:
             if not entity.turn_is_finished():
                 if self.side_turn is not EntityTurn.PLAYER:
-                    self.entity_action(entity, (self.side_turn is EntityTurn.ALLIES))
+                    self.process_entity_action(entity, (self.side_turn is EntityTurn.ALLIES))
                 break
         else:
             self.side_turn = self.side_turn.get_next()
@@ -1330,7 +1328,7 @@ class LevelScene(Scene):
         while len(self.diary_entries) > 10:
             self.diary_entries.pop(0)
 
-    def entity_action(self, entity: Movable, is_ally: bool) -> None:
+    def process_entity_action(self, entity: Movable, is_ally: bool) -> None:
         """
         Compute the action of a non-playable entity (AI)
 
@@ -1411,7 +1409,7 @@ class LevelScene(Scene):
             self.active_shop.current_visitor.items
         )
         items: list[Optional[Item]] = (
-            list(self.active_shop.current_visitor.items) + [None] * free_spaces
+            self.active_shop.current_visitor.items + [None] * free_spaces
         )
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
