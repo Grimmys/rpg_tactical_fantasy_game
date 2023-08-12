@@ -137,7 +137,7 @@ class Sidebar:
 
         # Display the current information about the entity hovered
         if hovered_entity:
-            # Set up color depending of entity's nature
+            # Set up color depending on entity's nature
             if isinstance(hovered_entity, Foe):
                 nature: str = STR_FOE
                 color: pygame.Color = RED

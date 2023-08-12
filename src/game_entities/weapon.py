@@ -1,5 +1,5 @@
 """
-Defines Weapon class, a specific equipment with which an entity can attack.
+Defines Weapon class, specific equipment with which an entity can attack.
 """
 
 from __future__ import annotations
@@ -97,10 +97,10 @@ class Weapon(Equipment):
             ]
         )
 
-    def hit(self, holder, target):
+    def hit(self, holder, target) -> int:
         """
         Handle the hit of an entity with the weapon.
-        Return the damage of the attack.
+        Return the damage dealt by the attack.
 
         Keyword arguments:
         holder -- the bearer of the weapon

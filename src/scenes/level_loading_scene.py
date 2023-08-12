@@ -23,7 +23,7 @@ CHAPTER_LEVEL_SEPARATION_HEIGHT = 100
 class LevelLoadingScene(Scene):
     """
     This scene is always loaded right before a level scene.
-    It is responsible of displaying generic information about the next level to get the player ready for it while
+    It is responsible for displaying generic information about the next level to get the player ready for it while
     the level is being loaded.
 
     Keyword arguments:

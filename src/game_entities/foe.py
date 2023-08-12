@@ -1,5 +1,5 @@
 """
-Defines Foe class, an hostile entity which targets players and allies.
+Defines Foe class, a hostile entity which targets players and allies.
 """
 
 from __future__ import annotations

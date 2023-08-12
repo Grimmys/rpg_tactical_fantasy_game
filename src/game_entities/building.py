@@ -8,7 +8,6 @@ import os
 from typing import Optional
 
 import pygame
-from lxml import etree
 from pygamepopup.components import BoxElement, TextElement
 
 from src.constants import GREEN
@@ -118,7 +117,7 @@ class Building(Entity):
                         )
                     ]
                 )
-            # Interaction could not been repeated : should be remove after been used
+            # Interaction could not been repeated : should be removed after being used
             self.remove_interaction()
 
         return entries

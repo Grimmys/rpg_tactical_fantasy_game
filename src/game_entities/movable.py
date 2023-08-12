@@ -48,9 +48,9 @@ class EntityStrategy(Enum):
     PASSIVE = auto()
     # Entity will only move if an opponent is at reach
     SEMI_ACTIVE = auto()
-    # Entity always move to get closer from opponents
+    # Entity always move to get closer to opponents
     ACTIVE = auto()
-    # Entity is controlled by an human player
+    # Entity is controlled by a human player
     MANUAL = auto()
 
 

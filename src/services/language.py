@@ -15,7 +15,7 @@ elif language == "zh_cn":
 def get_localized_string(tree: etree.Element):
     """
     Get string of the text in current language from etree element containing language name tags.
-    If cannot find current language tag, return English text.
+    If current language tag cannot be found, return English text.
     If the etree element doesn't contain any language tag, return the element's text.
 
     Arguments:

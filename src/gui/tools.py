@@ -1,5 +1,5 @@
 """
-Defines utilitary functions for stuff related to GUI.
+Defines utility functions for stuff related to GUI.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ def show_fps(
     surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.font.Font
 ) -> None:
     """
-    Display at the top left corner of the screen the current frame rate.
+    Display in the top left corner of the screen the current frame rate.
 
     Keyword arguments:
     screen -- the surface on which the framerate should be drawn

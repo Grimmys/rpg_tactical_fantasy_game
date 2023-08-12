@@ -23,7 +23,7 @@ class SceneManager:
     screen -- the pygame Surface corresponding to the initial scene of the game
 
     Attributes:
-    active_scene -- the current active scene that should handles all incoming events
+    active_scene -- the current active scene that should handle all incoming events
     """
 
     def __init__(self, screen: pygame.Surface) -> None:

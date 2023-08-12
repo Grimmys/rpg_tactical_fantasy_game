@@ -410,7 +410,7 @@ class LevelScene(Scene):
 
     def open_save_menu(self) -> None:
         """
-        Replace the current active menu by the a freshly created save game interface
+        Replace the current active menu by a freshly created save game interface
         """
         self.menu_manager.open_menu(
             menu_creator_manager.create_save_menu(self.save_game)
@@ -2270,7 +2270,7 @@ class LevelScene(Scene):
         (1 for left button, 2 for middle button, 3 for right button)
         position -- the position of the mouse
         """
-        # No event if there is an animation or it is not player turn
+        # No event if there is an animation or if it is not player turn
         if self.animation:
             return QuitActionKind.CONTINUE
 
@@ -2356,7 +2356,7 @@ class LevelScene(Scene):
     def _compute_active_screen_part(self) -> pygame.Surface:
         """
         Compute the part of the screen containing the level itself,
-        i.e. the part where the map, the player interface and every entities are.
+        i.e. the part where the map, the player interface and every entity are.
 
         Return the computed sub-screen part.
         """

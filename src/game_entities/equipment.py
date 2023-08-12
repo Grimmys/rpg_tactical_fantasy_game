@@ -16,7 +16,7 @@ from src.services.language import TRANSLATIONS
 
 class Equipment(Item):
     """
-    An Equipment is an Item that can be equipped on some Characters.
+    Equipment is an Item that can be equipped on some Characters.
     It may give any kind of bonus to the bearer.
 
     Keyword arguments:

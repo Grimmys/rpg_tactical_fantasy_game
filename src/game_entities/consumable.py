@@ -1,5 +1,5 @@
 """
-Defines Consumable class, an item that can be consumed by a entity and that might disappear after
+Defines Consumable class, an item that can be consumed by an entity and that might disappear after
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from src.game_entities.item import Item
 
 class Consumable(Item):
     """
-    A Consumable is an item that can be used by a entity and generally has a
+    A Consumable is an item that can be used by an entity and generally has a
     limited number of uses.
 
     Keyword arguments:

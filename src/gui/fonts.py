@@ -14,7 +14,7 @@ def init_fonts() -> None:
     """
     Load all fonts registered in fonts_description.
     System font will be load if the keyword 'default' is present in the description provided.
-    These fonts will be available in all modules by importing the fonts dictionary.
+    These fonts will be available in all modules by importing fonts dictionary.
     """
     for font_name, font in fonts_description.items():
         if "default" in font:

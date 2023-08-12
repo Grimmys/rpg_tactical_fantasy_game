@@ -146,7 +146,7 @@ def create_inventory_menu(
     row = []
     for item in items:
         additional_lines = []
-        # Test if price should appeared
+        # Test if price should appear
         if is_to_sell and item:
             additional_lines.append(f_PRICE_NUMBER(item.resell_price))
         item_button = ImageButton(
@@ -1345,7 +1345,7 @@ def create_options_menu(
     modify_option_function: Callable,
 ) -> InfoBox:
     """
-    Return the interface of the game options menu.
+    Return the interface of the game options' menu.
 
     Keyword arguments:
     parameters -- the dictionary containing all parameters with their current value
