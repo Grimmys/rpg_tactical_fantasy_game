@@ -132,7 +132,7 @@ def get_skill_data(name) -> Skill:
         else:
             formatted_name = skill_element.find("name/en").text.strip()
         nature = skill_element.find("type").text.strip()
-        description = get_languaged_text(skill_element.find("info")).strip()
+        description = get_localized_string(skill_element.find("info")).strip()
 
         # Not required elements
         power = 0
@@ -369,7 +369,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
     interaction_element = generic_data.find("interaction")
     dialog = []
     for talk in interaction_element.findall("talk"):
-        dialog.append(get_languaged_text(talk).strip())
+        dialog.append(get_localized_string(talk).strip())
     interaction = {
         "dialog": dialog,
         "join_team": interaction_element.find("join_team") is not None,
@@ -435,7 +435,7 @@ def load_ally(name: str, position: Position) -> Character:
     interaction_element = generic_data.find("interaction")
     dialog = []
     for talk in interaction_element.findall("talk"):
-        dialog.append(get_languaged_text(talk).strip())
+        dialog.append(get_localized_string(talk).strip())
     interaction = {
         "dialog": dialog,
         "join_team": interaction_element.find("join_team") is not None,
@@ -755,7 +755,7 @@ def load_building_from_save(building, gap_x, gap_y):
         if talks is not None:
             interaction_element["talks"] = []
             for talk in talks.findall("talk"):
-                interaction_element["talks"].append(get_languaged_text(talk).strip())
+                interaction_element["talks"].append(get_localized_string(talk).strip())
         else:
             interaction_element["talks"] = []
         interaction_element["gold"] = (
@@ -1176,7 +1176,7 @@ def parse_item_file(name):
     item_tree_root = etree.parse("data/items.xml").getroot().find(".//" + name)
 
     sprite = "imgs/dungeon_crawl/item/" + item_tree_root.find("sprite").text.strip()
-    info = get_languaged_text(item_tree_root.find("info")).strip()
+    info = get_localized_string(item_tree_root.find("info")).strip()
     price = item_tree_root.find("price")
     if price is not None:
         price = int(price.text.strip())

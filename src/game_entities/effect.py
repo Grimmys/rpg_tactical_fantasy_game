@@ -32,7 +32,7 @@ class Effect:
         if self.name in ("speed_up", "strength_up", "defense_up"):
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = (
-                get_languaged_text(alteration_root.find("info"))
+                get_localized_string(alteration_root.find("info"))
                 .strip()
                 .replace("{val}", str(self.power))
             )
@@ -42,7 +42,7 @@ class Effect:
             )
         elif self.name == "stun":
             alteration_root = etree.parse("data/alterations.xml").find(name)
-            desc = get_languaged_text(alteration_root.find("info")).strip()
+            desc = get_localized_string(alteration_root.find("info")).strip()
             abbr = alteration_root.find("abbreviated_name").text.strip()
             effs_el = alteration_root.find("effects")
             durable_effects = (
