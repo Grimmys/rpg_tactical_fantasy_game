@@ -2065,15 +2065,8 @@ class LevelScene(Scene):
         position -- the position of the mouse
         """
         if self.menu_manager.active_menu:
-            # Check if the click is on menu
-            my_rect = pygame.Rect(
-                self.menu_manager.active_menu.position.x,
-                self.menu_manager.active_menu.position.y,
-                self.menu_manager.active_menu._InfoBox__size[0],
-                self.menu_manager.active_menu._InfoBox__size[1],
-            )
             if (
-                not my_rect.collidepoint(position)
+                not self.menu_manager.active_menu.is_position_inside(position)
                 and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
             ):
                 self.menu_manager.close_active_menu()
