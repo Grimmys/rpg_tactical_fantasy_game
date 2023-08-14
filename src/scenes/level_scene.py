@@ -428,7 +428,6 @@ class LevelScene(Scene):
                 STR_GAME_HAS_BEEN_SAVED,
                 [[]],
                 width=ITEM_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -551,7 +550,9 @@ class LevelScene(Scene):
         for entity in entities:
             if not entity.turn_is_finished():
                 if self.side_turn is not EntityTurn.PLAYER:
-                    self.process_entity_action(entity, (self.side_turn is EntityTurn.ALLIES))
+                    self.process_entity_action(
+                        entity, (self.side_turn is EntityTurn.ALLIES)
+                    )
                 break
         else:
             self.side_turn = self.side_turn.get_next()
@@ -941,7 +942,6 @@ class LevelScene(Scene):
                 STR_YOU_FOUND_IN_THE_CHEST,
                 element_grid,
                 width=ITEM_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -966,7 +966,6 @@ class LevelScene(Scene):
                 str(door),
                 grid_element,
                 width=ITEM_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1051,7 +1050,6 @@ class LevelScene(Scene):
                                 STR_CHEST,
                                 element_grid,
                                 width=ITEM_MENU_WIDTH,
-                                close_button_text=STR_CLOSE,
                             )
                         )
                         self.end_active_character_turn(clear_menus=False)
@@ -1066,7 +1064,6 @@ class LevelScene(Scene):
                         STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY,
                         [],
                         width=ITEM_MENU_WIDTH,
-                        close_button_text=STR_CLOSE,
                     )
                 )
         # Check if player tries to open a door
@@ -1092,7 +1089,6 @@ class LevelScene(Scene):
                             str(target),
                             grid_element,
                             width=ITEM_MENU_WIDTH,
-                            close_button_text=STR_CLOSE,
                         )
                     )
                     self.end_active_character_turn(clear_menus=False)
@@ -1116,7 +1112,6 @@ class LevelScene(Scene):
                         STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL,
                         [],
                         width=ITEM_MENU_WIDTH,
-                        close_button_text=STR_CLOSE,
                     )
                 )
         # Check if player tries to drink in a fountain
@@ -1127,7 +1122,6 @@ class LevelScene(Scene):
                     str(target),
                     element_grid,
                     width=ITEM_MENU_WIDTH,
-                    close_button_text=STR_CLOSE,
                 )
             )
 
@@ -1155,7 +1149,6 @@ class LevelScene(Scene):
                     element_grid,
                     width=ITEM_MENU_WIDTH,
                     title_color=ORANGE,
-                    close_button_text=STR_CLOSE,
                 )
             )
             # Check if character is now a player
@@ -1175,7 +1168,6 @@ class LevelScene(Scene):
                     element_grid,
                     width=ITEM_MENU_WIDTH,
                     title_color=ORANGE,
-                    close_button_text=STR_CLOSE,
                 )
             )
 
@@ -1505,7 +1497,6 @@ class LevelScene(Scene):
                 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR,
                 [],
                 width=ITEM_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
             self.menu_manager.open_menu(info_box)
         else:
@@ -1526,7 +1517,6 @@ class LevelScene(Scene):
                 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST,
                 [],
                 width=ITEM_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
             self.menu_manager.open_menu(info_box)
         else:
@@ -1740,7 +1730,6 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 grid_elements,
                 width=ITEM_DELETE_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1819,7 +1808,6 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 grid_elements,
                 width=ITEM_DELETE_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
         self.selected_item = None
@@ -1862,7 +1850,6 @@ class LevelScene(Scene):
                 popup_title,
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1884,7 +1871,6 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1919,7 +1905,6 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1959,7 +1944,6 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 element_grid,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 
@@ -1983,7 +1967,6 @@ class LevelScene(Scene):
                 str(self.selected_item),
                 entries,
                 width=ITEM_INFO_MENU_WIDTH,
-                close_button_text=STR_CLOSE,
             )
         )
 

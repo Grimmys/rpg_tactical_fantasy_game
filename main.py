@@ -57,6 +57,7 @@ if __name__ == "__main__":
     from src.game_entities.movable import Movable
     from src.game_entities.character import Character
     from src.services import load_from_xml_manager as loader
+    from src.services.language import *
 
     pygame.init()
     pygamepopup.init()
@@ -72,6 +73,7 @@ if __name__ == "__main__":
         "imgs/interface/MenuButtonInactiv.png", "imgs/interface/MenuButtonPreLight.png"
     )
     pygamepopup.configuration.set_text_element_font(fonts.fonts["ITEM_FONT"])
+    pygamepopup.configuration.set_close_button_text(STR_CLOSE)
 
     pygame.display.set_caption(STR_GAME_TITLE)
     main_screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))

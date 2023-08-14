@@ -123,7 +123,6 @@ def create_shop_menu(
         width=ITEM_MENU_WIDTH,
         title_color=ORANGE,
         identifier=SHOP_MENU_ID,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -198,7 +197,6 @@ def create_inventory_menu(
         width=ITEM_MENU_WIDTH,
         title_color=title_color,
         identifier=identifier,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -240,7 +238,6 @@ def create_equipment_menu(
         STR_EQUIPMENT,
         grid_elements,
         width=EQUIPMENT_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -373,7 +370,6 @@ def create_trade_menu(
         width=TRADE_MENU_WIDTH,
         has_vertical_separator=True,
         title_color=title_color,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -513,7 +509,6 @@ def create_status_menu(
         STR_STATUS,
         grid_elements,
         width=STATUS_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -695,7 +690,6 @@ def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
         STR_DIARY,
         grid_elements,
         width=BATTLE_SUMMARY_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -763,7 +757,6 @@ def create_item_shop_menu(
         element_grid,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -794,7 +787,6 @@ def create_item_sell_menu(
         element_grid,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -839,7 +831,6 @@ def create_trade_item_menu(
         grid_elements,
         width=ACTION_MENU_WIDTH,
         element_linked=item_rect,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -883,7 +874,6 @@ def create_item_menu(
         element_grid,
         width=ACTION_MENU_WIDTH,
         element_linked=item_button_rect,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -993,7 +983,6 @@ def create_item_description_menu(item: Item) -> InfoBox:
         item_title,
         grid_elements,
         width=ITEM_INFO_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1027,7 +1016,6 @@ def create_alteration_info_menu(alteration: Alteration) -> InfoBox:
         str(alteration),
         grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1055,7 +1043,6 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
         skill.formatted_name,
         grid_elements,
         width=STATUS_INFO_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1233,7 +1220,6 @@ def create_status_entity_menu(
         str(entity),
         grid_elements,
         width=FOE_STATUS_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1254,7 +1240,6 @@ def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
         width=DIALOG_WIDTH,
         title_color=ORANGE,
         visible_on_background=False,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1282,7 +1267,6 @@ def create_reward_menu(mission: Mission) -> InfoBox:
         mission.description,
         grid_element,
         width=REWARD_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1385,7 +1369,6 @@ def create_options_menu(
             ],
         ],
         width=START_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1409,7 +1392,6 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
         STR_LOAD_GAME_MENU,
         element_grid,
         width=START_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1433,7 +1415,6 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         STR_SAVE_GAME_MENU,
         element_grid,
         width=START_MENU_WIDTH,
-        close_button_text=STR_CLOSE,
     )
 
 
@@ -1478,5 +1459,4 @@ def create_choose_language_menu(buttons_callback: Callable) -> InfoBox:
         element_grid,
         width=ACTION_MENU_WIDTH,
         has_close_button=True,
-        close_button_text=STR_CLOSE,
     )
