@@ -79,6 +79,7 @@ from src.services.menu_creator_manager import (
     create_event_dialog,
     INVENTORY_MENU_ID,
     SHOP_MENU_ID,
+    CHARACTER_ACTION_MENU_ID,
 )
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
@@ -2050,7 +2051,7 @@ class LevelScene(Scene):
         if self.menu_manager.active_menu:
             if (
                 not self.menu_manager.active_menu.is_position_inside(position)
-                and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
+                and self.menu_manager.active_menu.identifier != CHARACTER_ACTION_MENU_ID
             ):
                 self.menu_manager.close_active_menu()
             # TODO: check if the raw value could be replaced by a meaningful constant
@@ -2187,9 +2188,8 @@ class LevelScene(Scene):
                 self.possible_moves = {}
             elif self.menu_manager.active_menu is not None:
                 # Test if player is on character's main menu, in this case,
-                # current move should be cancelled if possible*
-                # TODO: Find a better way to test if active menu is the character's main menu
-                if self.menu_manager.active_menu.title == STR_SELECT_AN_ACTION:
+                # current move should be cancelled if possible
+                if self.menu_manager.active_menu.identifier == CHARACTER_ACTION_MENU_ID:
                     if self.selected_player.cancel_move():
                         if self.traded_items:
                             # Return traded items
@@ -2301,7 +2301,7 @@ class LevelScene(Scene):
         if keyname == pygame.K_ESCAPE:
             if (
                 self.menu_manager.active_menu is not None
-                and self.menu_manager.active_menu.title != STR_SELECT_AN_ACTION
+                and self.menu_manager.active_menu.identifier != CHARACTER_ACTION_MENU_ID
             ):
                 self.menu_manager.close_active_menu()
 

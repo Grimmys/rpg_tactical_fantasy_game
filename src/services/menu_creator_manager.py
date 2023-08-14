@@ -69,6 +69,7 @@ MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 INVENTORY_MENU_ID = "inventory"
 SHOP_MENU_ID = "shop"
+CHARACTER_ACTION_MENU_ID = "character_action"
 
 close_function: Optional[Callable] = None
 
@@ -676,6 +677,7 @@ def create_player_menu(
         width=ACTION_MENU_WIDTH,
         element_linked=player.get_rect(),
         has_close_button=False,
+        identifier=CHARACTER_ACTION_MENU_ID,
     )
 
 
