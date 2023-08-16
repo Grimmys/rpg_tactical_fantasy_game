@@ -49,8 +49,12 @@ STR_SAVE = "Save"
 STR_SUSPEND = "Suspend"
 STR_START = "Start"
 STR_DIARY = "Diary"
+STR_EMPTY_DIARY_TITLE = "No event has been recorded yet"
 STR_END_TURN = "End turn"
 
+
+def f_DIARY_MENU_TITLE(has_event: bool):
+    return STR_DIARY if has_event else STR_EMPTY_DIARY_TITLE
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "Congratulations! Objective has been completed!"
 
