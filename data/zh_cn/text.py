@@ -50,6 +50,8 @@ STR_SUSPEND = "悬挂"
 STR_START = "开始"
 STR_DIARY = "日志"
 STR_END_TURN = "下一回合"
+STR_DEFAULT_DIARY_BODY_CONTENT = "No event has been recorded yet"
+
 
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "恭喜！任务目标已完成！"

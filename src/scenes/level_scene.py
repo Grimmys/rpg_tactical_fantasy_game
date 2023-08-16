@@ -294,6 +294,24 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
+
+    @property
+    def diary_entries_text_element_set(self):
+        """
+        Return a list of TextElements being shown in the menu.
+        """
+        default_diary_entries = [
+            [
+                TextElement(
+                    STR_DEFAULT_DIARY_BODY_CONTENT,
+                    font=fonts["ITEM_DESC_FONT"],
+                )
+            ]
+        ]
+        if self.diary_entries:
+            return self.diary_entries
+        return default_diary_entries
+
     def no_dont_save(self):
         self.menu_manager.close_active_menu()
 
@@ -2167,7 +2185,7 @@ class LevelScene(Scene):
                     "suspend": self.exit_game,
                     "start": self.start_game,
                     "diary": lambda: self.menu_manager.open_menu(
-                        menu_creator_manager.create_diary_menu(self.diary_entries),
+                        menu_creator_manager.create_diary_menu(self.diary_entries_text_element_set),
                     ),
                     "end_turn": self.end_turn,
                 },

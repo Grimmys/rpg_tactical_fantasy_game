@@ -50,6 +50,8 @@ STR_SUSPEND = "Suspend"
 STR_START = "Start"
 STR_DIARY = "Diary"
 STR_END_TURN = "End turn"
+STR_DEFAULT_DIARY_BODY_CONTENT = "No event has been recorded yet"
+
 
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "Congratulations! Objective has been completed!"
