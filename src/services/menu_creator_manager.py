@@ -689,7 +689,7 @@ def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
     entries -- the entries data structure containing all the data needed to build the interface
     """
     return InfoBox(
-        f_DIARY_MENU_TITLE(has_event=bool(grid_elements)),
+        STR_DIARY,
         grid_elements,
         width=BATTLE_SUMMARY_WIDTH,
     )

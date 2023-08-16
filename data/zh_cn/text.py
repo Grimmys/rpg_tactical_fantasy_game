@@ -49,12 +49,9 @@ STR_SAVE = "保存游戏"
 STR_SUSPEND = "悬挂"
 STR_START = "开始"
 STR_DIARY = "日志"
-STR_EMPTY_DIARY_TITLE = "No event has been recorded yet"
 STR_END_TURN = "下一回合"
+STR_DEFAULT_DIARY_BODY_CONTENT = "No event has been recorded yet"
 
-
-def f_DIARY_MENU_TITLE(has_event: bool):
-    return STR_DIARY if has_event else STR_EMPTY_DIARY_TITLE
 
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "恭喜！任务目标已完成！"
