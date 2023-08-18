@@ -5,6 +5,8 @@
 [![latest release](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)](https://github.com/Grimmys/rpg_tactical_fantasy_game/releases/latest)
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/Grimmys/rpg_tactical_fantasy_game/latest/total)
 
+[ [English](README.md) | [简体中文](README/zh-cn.md) | [繁体中文](README/zh-cht.md) ]
+
 **Open to collaborative development.**
 
 The game is a Tactical Fantasy RPG, turn-based and in 2D.
@@ -48,8 +50,9 @@ Then you can run `python main.py` or "./main.py" (only for Python 3) in linux op
 ## Keys
 
 * Left click : Select a player, choose a case to move, select an action to do etc (main button)
-* Left click (on any empty tile) : Open main menu
+* Left click (on any empty tile) : Open or close main menu
 * Left click (on any entity that is not a player who has finished his turn) : Open a window giving information about the
   entity
 * Right click : Deselect a player or cancel last action if possible (secondary button)
 * Right click (on any entity) : Show the possible movements of the entity
+* Ecs key : Close a menu on the top layer
