@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Sequence, Optional
 
 import pygame
-from lxml import etree
 
 from src.constants import TILE_SIZE
 from src.game_entities.alteration import Alteration
@@ -30,6 +29,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
 from src.gui.position import Position
+from src.services.language import *
 
 foes_data = {}
 fountains_data = {}
@@ -126,9 +126,13 @@ def get_skill_data(name) -> Skill:
     if name not in skills_data:
         # Required data
         skill_element = etree.parse("data/skills.xml").find(name)
-        formatted_name = skill_element.find("name").text.strip()
+        formatted_name = skill_element.find("name/" + language)
+        if formatted_name is not None:
+            formatted_name = formatted_name.text.strip()
+        else:
+            formatted_name = skill_element.find("name/en").text.strip()
         nature = skill_element.find("type").text.strip()
-        description = skill_element.find("info").text.strip()
+        description = get_localized_string(skill_element.find("info")).strip()
 
         # Not required elements
         power = 0
@@ -306,9 +310,14 @@ def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=
     }
 
 
-def load_artificial_entity(name: str, data: etree.Element, position: Position, level: Optional[int] = None,
-                           strategy: Optional[str] = None,
-                           extension_path: str = ""):
+def load_artificial_entity(
+    name: str,
+    data: etree.Element,
+    position: Position,
+    level: Optional[int] = None,
+    strategy: Optional[str] = None,
+    extension_path: str = "",
+):
     # Static data
     sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
     if strategy is None:
@@ -360,7 +369,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
     interaction_element = generic_data.find("interaction")
     dialog = []
     for talk in interaction_element.findall("talk"):
-        dialog.append(talk.text.strip())
+        dialog.append(get_localized_string(talk).strip())
     interaction = {
         "dialog": dialog,
         "join_team": interaction_element.find("join_team") is not None,
@@ -418,9 +427,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
 def load_ally(name: str, position: Position) -> Character:
     generic_data = etree.parse("data/characters.xml").find(name)
 
-    attributes = load_artificial_entity(
-        name, generic_data, position
-    )
+    attributes = load_artificial_entity(name, generic_data, position)
 
     # Static data character
     race = generic_data.find("race").text.strip()
@@ -428,7 +435,7 @@ def load_ally(name: str, position: Position) -> Character:
     interaction_element = generic_data.find("interaction")
     dialog = []
     for talk in interaction_element.findall("talk"):
-        dialog.append(talk.text.strip())
+        dialog.append(get_localized_string(talk).strip())
     interaction = {
         "dialog": dialog,
         "join_team": interaction_element.find("join_team") is not None,
@@ -595,8 +602,14 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
     return loaded_foe
 
 
-def load_foe(name: str, position: Position, level: int, strategy: Optional[str], specific_loot: Sequence[Item],
-             mission_target: str) -> Foe:
+def load_foe(
+    name: str,
+    position: Position,
+    level: int,
+    strategy: Optional[str],
+    specific_loot: Sequence[Item],
+    mission_target: str,
+) -> Foe:
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
         # Load grow rates of this kind of foe in the class
@@ -616,12 +629,12 @@ def load_foe(name: str, position: Position, level: int, strategy: Optional[str],
     )
     attack_kind = foes_data[name].find("attack_kind").text.strip()
     loot = [
-               (
-                   parse_item_file(item.find("name").text.strip()),
-                   float(item.find("probability").text),
-               )
-               for item in foes_data[name].findall("loot/item")
-           ] + [(item, 1.0) for item in specific_loot]
+        (
+            parse_item_file(item.find("name").text.strip()),
+            float(item.find("probability").text),
+        )
+        for item in foes_data[name].findall("loot/item")
+    ] + [(item, 1.0) for item in specific_loot]
     gold_looted = foes_data[name].find("loot/gold")
     if gold_looted is not None:
         loot.append(
@@ -742,7 +755,7 @@ def load_building_from_save(building, gap_x, gap_y):
         if talks is not None:
             interaction_element["talks"] = []
             for talk in talks.findall("talk"):
-                interaction_element["talks"].append(talk.text.strip())
+                interaction_element["talks"].append(get_localized_string(talk).strip())
         else:
             interaction_element["talks"] = []
         interaction_element["gold"] = (
@@ -1163,7 +1176,7 @@ def parse_item_file(name):
     item_tree_root = etree.parse("data/items.xml").getroot().find(".//" + name)
 
     sprite = "imgs/dungeon_crawl/item/" + item_tree_root.find("sprite").text.strip()
-    info = item_tree_root.find("info").text.strip()
+    info = get_localized_string(item_tree_root.find("info")).strip()
     price = item_tree_root.find("price")
     if price is not None:
         price = int(price.text.strip())

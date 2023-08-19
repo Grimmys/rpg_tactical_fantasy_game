@@ -1,5 +1,5 @@
 """
-Defines Obstacle class, a class representing an non-movable entity that cannot be crossed by movable entities.
+Defines Obstacle class, a class representing a non-movable entity that cannot be crossed by movable entities.
 """
 
 from typing import Union

@@ -11,13 +11,13 @@ from typing import Sequence, Union, Optional, Set, Type, List
 
 import pygame
 import pytmx
-from lxml import etree
-from pygamepopup.components import InfoBox, BoxElement, Button, TextElement
-from pygamepopup.components.image_button import ImageButton
 from pygamepopup.menu_manager import MenuManager
+from pygamepopup.components import BoxElement, Button, TextElement, InfoBox
+from pygamepopup.components.image_button import ImageButton
+
+from src.scenes.scene import QuitActionKind
 
 from src.constants import (
-    MAX_MAP_WIDTH,
     MAX_MAP_HEIGHT,
     MENU_WIDTH,
     MENU_HEIGHT,
@@ -28,7 +28,9 @@ from src.constants import (
     TILE_SIZE,
     BLACK,
     WIN_HEIGHT,
-    WIN_WIDTH, GRID_WIDTH, GRID_HEIGHT,
+    WIN_WIDTH,
+    GRID_WIDTH,
+    GRID_HEIGHT,
 )
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
@@ -65,13 +67,19 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
+from src.services.language import *
 from src.scenes.scene import Scene
-from src.services import load_from_xml_manager as loader, load_from_tmx_manager as tmx_loader, menu_creator_manager
+from src.services import (
+    load_from_xml_manager as loader,
+    load_from_tmx_manager as tmx_loader,
+    menu_creator_manager,
+)
 from src.services.menu_creator_manager import (
     create_save_dialog,
     create_event_dialog,
     INVENTORY_MENU_ID,
     SHOP_MENU_ID,
+    CHARACTER_ACTION_MENU_ID,
 )
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
@@ -212,8 +220,16 @@ class LevelScene(Scene):
         self.number: int = number
 
         self.tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
-        map_width, map_height = self.tmx_data.width * TILE_SIZE, self.tmx_data.height * TILE_SIZE
-        map_static_content = tmx_loader.load_ground(self.tmx_data, (map_width, map_height))
+        self.tmx_map_properties_data = pytmx.load_pygame(
+            DATA_PATH + self.directory + "map_properties.tmx"
+        )
+        map_width, map_height = (
+            self.tmx_data.width * TILE_SIZE,
+            self.tmx_data.height * TILE_SIZE,
+        )
+        map_static_content = tmx_loader.load_ground(
+            self.tmx_data, (map_width, map_height)
+        )
 
         self.map: dict[str, any] = {
             "img": map_static_content,
@@ -225,8 +241,8 @@ class LevelScene(Scene):
 
         self.data: Optional[etree.Element] = data
 
-        self.chapter: int = self.tmx_data.properties["chapter_id"]
-        self.name: str = self.tmx_data.properties["level_name"]
+        self.chapter: int = self.tmx_map_properties_data.properties["chapter_id"]
+        self.name: str = self.tmx_map_properties_data.properties["level_name"]
 
         self.is_loaded: bool = False
 
@@ -278,6 +294,24 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
+
+    @property
+    def diary_entries_text_element_set(self):
+        """
+        Return a list of TextElements being shown in the menu.
+        """
+        default_diary_entries = [
+            [
+                TextElement(
+                    STR_DEFAULT_DIARY_BODY_CONTENT,
+                    font=fonts["ITEM_DESC_FONT"],
+                )
+            ]
+        ]
+        if self.diary_entries:
+            return self.diary_entries
+        return default_diary_entries
+
     def no_dont_save(self):
         self.menu_manager.close_active_menu()
 
@@ -291,7 +325,7 @@ class LevelScene(Scene):
         """
 
         self.events = tmx_loader.load_events(
-            self.tmx_data, self.directory, self.map["x"], self.map["y"]
+            self.tmx_data, DATA_PATH + self.directory, self.map["x"], self.map["y"]
         )
 
         self.player_possible_placements = tmx_loader.load_player_placements(
@@ -299,11 +333,12 @@ class LevelScene(Scene):
         )
 
         self.entities.players = self.players
-        self.entities.obstacles = tmx_loader.load_obstacles(self.tmx_data, self.map["x"], self.map["y"])
+        self.entities.obstacles = tmx_loader.load_obstacles(
+            self.tmx_data, self.map["x"], self.map["y"]
+        )
 
         if self.data is None:
             # Game is new
-            from_save: bool = False
             gap_x, gap_y = (self.map["x"], self.map["y"])
             if "before_init" in self.events:
                 if "dialogs" in self.events["before_init"]:
@@ -316,21 +351,28 @@ class LevelScene(Scene):
                         self.players.append(player)
             if self.number != 0:
                 # Level_0 doesn't need save reminder
-                self.menu_manager.open_menu(create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save}))
+                self.menu_manager.open_menu(
+                    create_save_dialog({"yes": self.yes_save, "no": self.no_dont_save})
+                )
 
             self._determine_players_initial_position()
 
             self.entities.foes = tmx_loader.load_foes(self.tmx_data, gap_x, gap_y)
             self.entities.chests = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
             self.entities.allies = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
-            self.entities.buildings = tmx_loader.load_buildings(self.tmx_data, self.directory, gap_x, gap_y)
-            self.entities.breakables = tmx_loader.load_breakables(self.tmx_data, gap_x, gap_y)
+            self.entities.buildings = tmx_loader.load_buildings(
+                self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y
+            )
+            self.entities.breakables = tmx_loader.load_breakables(
+                self.tmx_data, gap_x, gap_y
+            )
             self.entities.portals = tmx_loader.load_portals(self.tmx_data, gap_x, gap_y)
             self.entities.doors = tmx_loader.load_doors(self.tmx_data, gap_x, gap_y)
-            self.entities.fountains = tmx_loader.load_fountains(self.tmx_data, gap_x, gap_y)
+            self.entities.fountains = tmx_loader.load_fountains(
+                self.tmx_data, gap_x, gap_y
+            )
         else:
             # Game is loaded from a save (data)
-            from_save = True
             gap_x, gap_y = (0, 0)
             if self.game_phase == LevelStatus.VERY_BEGINNING:
                 # If game is in very beginning, show dialogs
@@ -345,10 +387,17 @@ class LevelScene(Scene):
             )
 
         self.missions, self.main_mission = tmx_loader.load_missions(
-            self.tmx_data, self.players, self.map["x"], self.map["y"]
+            self.tmx_data,
+            self.tmx_map_properties_data,
+            self.players,
+            self.map["x"],
+            self.map["y"],
         )
-        self.entities.objectives = [objective for mission in self.missions for objective in
-                                    mission.objective_tiles]
+        self.entities.objectives = [
+            objective
+            for mission in self.missions
+            for objective in mission.objective_tiles
+        ]
 
         self.sidebar = Sidebar(
             (MENU_WIDTH, MENU_HEIGHT),
@@ -374,11 +423,11 @@ class LevelScene(Scene):
                     player.set_initial_pos(tile)
                     break
             else:
-                print("Error ! Not enough free tiles to set players...")
+                print(STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS)
 
     def open_save_menu(self) -> None:
         """
-        Replace the current active menu by the a freshly created save game interface
+        Replace the current active menu by a freshly created save game interface
         """
         self.menu_manager.open_menu(
             menu_creator_manager.create_save_menu(self.save_game)
@@ -394,7 +443,11 @@ class LevelScene(Scene):
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
         self.menu_manager.open_menu(
-            InfoBox("Game has been saved", [[]], width=ITEM_MENU_WIDTH)
+            InfoBox(
+                STR_GAME_HAS_BEEN_SAVED,
+                [[]],
+                width=ITEM_MENU_WIDTH,
+            )
         )
 
     def exit_game(self) -> None:
@@ -516,7 +569,9 @@ class LevelScene(Scene):
         for entity in entities:
             if not entity.turn_is_finished():
                 if self.side_turn is not EntityTurn.PLAYER:
-                    self.entity_action(entity, (self.side_turn is EntityTurn.ALLIES))
+                    self.process_entity_action(
+                        entity, (self.side_turn is EntityTurn.ALLIES)
+                    )
                 break
         else:
             self.side_turn = self.side_turn.get_next()
@@ -895,7 +950,7 @@ class LevelScene(Scene):
             [item_element],
             [
                 TextElement(
-                    "Item has been added to your inventory",
+                    STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY,
                     font=fonts["ITEM_DESC_FONT"],
                 )
             ],
@@ -903,7 +958,7 @@ class LevelScene(Scene):
 
         self.menu_manager.open_menu(
             InfoBox(
-                "You found in the chest",
+                STR_YOU_FOUND_IN_THE_CHEST,
                 element_grid,
                 width=ITEM_MENU_WIDTH,
             )
@@ -923,7 +978,7 @@ class LevelScene(Scene):
 
         # TODO: move the creation of the pop-up in menu_creator_manager
         grid_element = [
-            [TextElement("Door has been opened", font=fonts["ITEM_DESC_FONT"])]
+            [TextElement(STR_DOOR_HAS_BEEN_OPENED, font=fonts["ITEM_DESC_FONT"])]
         ]
         self.menu_manager.open_menu(
             InfoBox(
@@ -1004,14 +1059,14 @@ class LevelScene(Scene):
                         element_grid = [
                             [
                                 TextElement(
-                                    "Started picking, one more turn to go",
+                                    STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO,
                                     font=fonts["ITEM_DESC_FONT"],
                                 )
                             ]
                         ]
                         self.menu_manager.open_menu(
                             InfoBox(
-                                "Chest",
+                                STR_CHEST,
                                 element_grid,
                                 width=ITEM_MENU_WIDTH,
                             )
@@ -1025,7 +1080,7 @@ class LevelScene(Scene):
                 # TODO: move the creation of the pop-up in menu_creator_manager
                 self.menu_manager.open_menu(
                     InfoBox(
-                        "You have no free space in your inventory",
+                        STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY,
                         [],
                         width=ITEM_MENU_WIDTH,
                     )
@@ -1043,7 +1098,7 @@ class LevelScene(Scene):
                     grid_element = [
                         [
                             TextElement(
-                                "Started picking, one more turn to go",
+                                STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO,
                                 font=fonts["ITEM_DESC_FONT"],
                             )
                         ]
@@ -1073,7 +1128,7 @@ class LevelScene(Scene):
             else:
                 self.menu_manager.open_menu(
                     InfoBox(
-                        "There is no free square around the other portal",
+                        STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL,
                         [],
                         width=ITEM_MENU_WIDTH,
                     )
@@ -1179,7 +1234,7 @@ class LevelScene(Scene):
 
             if isinstance(target, Character) and target.parried():
                 # Target parried attack
-                message: str = f"{attacker} attacked {target}... But {target} parried!"
+                message: str = f_ATTACKER_ATTACKED_TARGET_BUT_PARRIED(attacker, target)
                 self.diary_entries.append(
                     [TextElement(message, font=fonts["ITEM_DESC_FONT"])]
                 )
@@ -1192,7 +1247,9 @@ class LevelScene(Scene):
             self.diary_entries.append(
                 [
                     TextElement(
-                        f"{attacker} dealt {real_damage} damage to {target}",
+                        f_ATTACKER_DEALT_DAMAGE_TO_TARGET(
+                            attacker, target, real_damage
+                        ),
                         font=fonts["ITEM_DESC_FONT"],
                     )
                 ]
@@ -1206,7 +1263,7 @@ class LevelScene(Scene):
                     experience += target.xp_gain
 
                 self.diary_entries.append(
-                    [TextElement(f"{target} died!", font=fonts["ITEM_DESC_FONT"])]
+                    [TextElement(f_TARGET_DIED(target), font=fonts["ITEM_DESC_FONT"])]
                 )
                 # Loot
                 if isinstance(attacker, Player) and isinstance(target, Foe):
@@ -1216,7 +1273,7 @@ class LevelScene(Scene):
                         self.diary_entries.append(
                             [
                                 TextElement(
-                                    f"{target} dropped {item}",
+                                    f_TARGET_DROPPED_ITEM(target, item),
                                     font=fonts["ITEM_DESC_FONT"],
                                 )
                             ]
@@ -1227,8 +1284,7 @@ class LevelScene(Scene):
                             self.diary_entries.append(
                                 [
                                     TextElement(
-                                        "But there is not enough space "
-                                        "in inventory to take it!",
+                                        STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT,
                                         font=fonts["ITEM_DESC_FONT"],
                                     )
                                 ]
@@ -1238,7 +1294,7 @@ class LevelScene(Scene):
                 self.diary_entries.append(
                     [
                         TextElement(
-                            f"{target} has now {target.hit_points} HP",
+                            f_TARGET_HAS_NOW_NUMBER_HP(target, target.hit_points),
                             font=fonts["ITEM_DESC_FONT"],
                         )
                     ]
@@ -1261,7 +1317,7 @@ class LevelScene(Scene):
                 self.diary_entries.append(
                     [
                         TextElement(
-                            f"{attacker} earned {experience} XP",
+                            f_ATTACKER_EARNED_NUMBER_XP(attacker, experience),
                             font=fonts["ITEM_DESC_FONT"],
                         )
                     ]
@@ -1271,7 +1327,7 @@ class LevelScene(Scene):
                     self.diary_entries.append(
                         [
                             TextElement(
-                                f"{attacker} gained a level!",
+                                f_ATTACKER_GAINED_A_LEVEL(attacker),
                                 font=fonts["ITEM_DESC_FONT"],
                             )
                         ]
@@ -1283,7 +1339,7 @@ class LevelScene(Scene):
         while len(self.diary_entries) > 10:
             self.diary_entries.pop(0)
 
-    def entity_action(self, entity: Movable, is_ally: bool) -> None:
+    def process_entity_action(self, entity: Movable, is_ally: bool) -> None:
         """
         Compute the action of a non-playable entity (AI)
 
@@ -1364,7 +1420,7 @@ class LevelScene(Scene):
             self.active_shop.current_visitor.items
         )
         items: list[Optional[Item]] = (
-            list(self.active_shop.current_visitor.items) + [None] * free_spaces
+            self.active_shop.current_visitor.items + [None] * free_spaces
         )
         self.menu_manager.open_menu(
             menu_creator_manager.create_inventory_menu(
@@ -1457,7 +1513,7 @@ class LevelScene(Scene):
                 break
         if not has_key:
             info_box = InfoBox(
-                "You have no key to open a door",
+                STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR,
                 [],
                 width=ITEM_MENU_WIDTH,
             )
@@ -1477,7 +1533,7 @@ class LevelScene(Scene):
                 break
         if not has_key:
             info_box = InfoBox(
-                "You have no key to open a chest",
+                STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST,
                 [],
                 width=ITEM_MENU_WIDTH,
             )
@@ -1652,7 +1708,9 @@ class LevelScene(Scene):
             grid_elements = [
                 [
                     TextElement(
-                        f"Item can't be traded: not enough place in {receiver}'s inventory",
+                        f_ITEM_CANNOT_BE_TRADED_NOT_ENOUGH_PLACE_IN_RECEIVERS_INVENTORY(
+                            receiver
+                        ),
                         font=fonts["ITEM_DESC_FONT"],
                         margin=(20, 0, 20, 0),
                     )
@@ -1677,7 +1735,7 @@ class LevelScene(Scene):
             grid_elements = [
                 [
                     TextElement(
-                        "Item has been traded",
+                        STR_ITEM_HAS_BEEN_TRADED,
                         font=fonts["ITEM_DESC_FONT"],
                         margin=(20, 0, 20, 0),
                     ),
@@ -1758,7 +1816,7 @@ class LevelScene(Scene):
         grid_elements = [
             [
                 TextElement(
-                    "Item has been thrown away",
+                    STR_ITEM_HAS_BEEN_THROWN_AWAY,
                     font=fonts["ITEM_DESC_FONT"],
                     margin=(20, 0, 20, 0),
                 )
@@ -1828,7 +1886,11 @@ class LevelScene(Scene):
         ]
         self.menu_manager.replace_given_menu(SHOP_MENU_ID, self.active_shop.menu)
         self.menu_manager.open_menu(
-            InfoBox(str(self.selected_item), element_grid, width=ITEM_INFO_MENU_WIDTH)
+            InfoBox(
+                str(self.selected_item),
+                element_grid,
+                width=ITEM_INFO_MENU_WIDTH,
+            )
         )
 
     def unequip_selected_item(self) -> None:
@@ -1838,10 +1900,10 @@ class LevelScene(Scene):
         self.menu_manager.close_active_menu()
         unequipped = self.selected_player.unequip(self.selected_item)
         result_message = (
-            "The item can't be unequipped : Not enough space in your inventory."
+            STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY
         )
         if unequipped:
-            result_message = "The item has been unequipped"
+            result_message = STR_THE_ITEM_HAS_BEEN_UNEQUIPPED
 
             # Update equipment screen content
             new_equipment_menu = menu_creator_manager.create_equipment_menu(
@@ -1874,13 +1936,17 @@ class LevelScene(Scene):
         return_equipped: int = self.selected_player.equip(self.selected_item)
         if return_equipped == -1:
             # Item can't be equipped by this player
-            result_message = f"This item can't be equipped: {self.selected_player} doesn't satisfy the requirements"
+            result_message = (
+                f_THIS_ITEM_CANNOT_BE_EQUIPPED_PLAYER_DOESNT_SATISFY_THE_REQUIREMENTS(
+                    self.selected_player
+                )
+            )
         else:
             # In this case returned value is > 0, item has been equipped
-            result_message = "The item has been equipped"
+            result_message = STR_THE_ITEM_HAS_BEEN_EQUIPPED
             if return_equipped == 1:
                 result_message += (
-                    "Previous equipped item has been added to your inventory"
+                    STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY
                 )
 
             # Inventory has changed
@@ -2001,21 +2067,12 @@ class LevelScene(Scene):
         position -- the position of the mouse
         """
         if self.menu_manager.active_menu:
+            if (
+                not self.menu_manager.active_menu.is_position_inside(position)
+                and self.menu_manager.active_menu.identifier != CHARACTER_ACTION_MENU_ID
+            ):
+                self.menu_manager.close_active_menu()
             # TODO: check if the raw value could be replaced by a meaningful constant
-            # Check if the click is on menu
-            menu_position = self.menu_manager.active_menu.determine_position(self.active_screen_part)
-            if menu_position != None:
-                my_rect = pygame.Rect(
-                    menu_position.x, menu_position.y,
-                    self.menu_manager.active_menu._InfoBox__size[0],
-                    self.menu_manager.active_menu._InfoBox__size[1]
-                )
-                if (
-                    not my_rect.collidepoint(position)
-                
-                    and self.menu_manager.active_menu.title != "Select an action"
-                ):
-                    self.menu_manager.close_active_menu()
             self.menu_manager.click(1, position)
             return
 
@@ -2128,7 +2185,7 @@ class LevelScene(Scene):
                     "suspend": self.exit_game,
                     "start": self.start_game,
                     "diary": lambda: self.menu_manager.open_menu(
-                        menu_creator_manager.create_diary_menu(self.diary_entries),
+                        menu_creator_manager.create_diary_menu(self.diary_entries_text_element_set),
                     ),
                     "end_turn": self.end_turn,
                 },
@@ -2149,9 +2206,8 @@ class LevelScene(Scene):
                 self.possible_moves = {}
             elif self.menu_manager.active_menu is not None:
                 # Test if player is on character's main menu, in this case,
-                # current move should be cancelled if possible*
-                # TODO: Find a better way to test if active menu is the character's main menu
-                if self.menu_manager.active_menu.title == "Select an action":
+                # current move should be cancelled if possible
+                if self.menu_manager.active_menu.identifier == CHARACTER_ACTION_MENU_ID:
                     if self.selected_player.cancel_move():
                         if self.traded_items:
                             # Return traded items
@@ -2193,7 +2249,7 @@ class LevelScene(Scene):
             self.possible_moves = {}
             self.possible_attacks = []
 
-    def click(self, button: int, position: Position) -> None:
+    def click(self, button: int, position: Position) -> QuitActionKind:
         """
         Handle the triggering of a click event.
 
@@ -2202,9 +2258,9 @@ class LevelScene(Scene):
         (1 for left button, 2 for middle button, 3 for right button)
         position -- the position of the mouse
         """
-        # No event if there is an animation or it is not player turn
+        # No event if there is an animation or if it is not player turn
         if self.animation:
-            return
+            return QuitActionKind.CONTINUE
 
         if button == 1:
             self.left_click(position)
@@ -2215,6 +2271,8 @@ class LevelScene(Scene):
             # Update game phase if dialogs at the very beginning are all closed
             if not self.menu_manager.active_menu:
                 self.game_phase = LevelStatus.INITIALIZATION
+
+        return QuitActionKind.CONTINUE
 
     def button_down(self, button: int, position: Position) -> None:
         """
@@ -2259,8 +2317,9 @@ class LevelScene(Scene):
         keyname -- an integer value representing which key button is down
         """
         if keyname == pygame.K_ESCAPE:
-            if (self.menu_manager.active_menu is not None
-                and self.menu_manager.active_menu.title != "Select an action"
+            if (
+                self.menu_manager.active_menu is not None
+                and self.menu_manager.active_menu.identifier != CHARACTER_ACTION_MENU_ID
             ):
                 self.menu_manager.close_active_menu()
 
@@ -2285,7 +2344,7 @@ class LevelScene(Scene):
     def _compute_active_screen_part(self) -> pygame.Surface:
         """
         Compute the part of the screen containing the level itself,
-        i.e. the part where the map, the player interface and every entities are.
+        i.e. the part where the map, the player interface and every entity are.
 
         Return the computed sub-screen part.
         """

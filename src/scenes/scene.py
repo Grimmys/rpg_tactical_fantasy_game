@@ -3,10 +3,21 @@ Define Scene class, the abstract base class for any other scene.
 """
 
 from __future__ import annotations
+from enum import IntEnum, auto
 
 import pygame
 
 from src.gui.position import Position
+
+
+class QuitActionKind(IntEnum):
+    """
+    Defines the different kind of actions when trying to quit game
+    """
+
+    CONTINUE = auto()
+    QUIT = auto()
+    RESTART = auto()
 
 
 class Scene:
@@ -48,7 +59,7 @@ class Scene:
         """
         pass
 
-    def click(self, button: int, position: Position) -> bool:
+    def click(self, button: int, position: Position) -> QuitActionKind:
         """
         Handle the triggering of a click event.
 
@@ -57,7 +68,7 @@ class Scene:
         (1 for left button, 2 for middle button, 3 for right button)
         position -- the position of the mouse
         """
-        pass
+        return QuitActionKind.CONTINUE
 
     def button_down(self, button: int, position: Position) -> None:
         """

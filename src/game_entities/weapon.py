@@ -1,5 +1,5 @@
 """
-Defines Weapon class, a specific equipment with which an entity can attack.
+Defines Weapon class, specific equipment with which an entity can attack.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Keyword
 from src.game_entities.skill import SkillNature
 from src.gui.tools import distance
+from src.services.language import TRANSLATIONS
 
 
 class Weapon(Equipment):
@@ -90,13 +91,16 @@ class Weapon(Equipment):
     def get_formatted_strong_against(self):
         """Return the list of keywords against which the weapon is stronger in a formatted way"""
         return ", ".join(
-            [keyword.name.lower().capitalize() for keyword in self.strong_against]
+            [
+                TRANSLATIONS["foe_keywords"][keyword.name.lower().replace(" ", "_")]
+                for keyword in self.strong_against
+            ]
         )
 
-    def hit(self, holder, target):
+    def hit(self, holder, target) -> int:
         """
         Handle the hit of an entity with the weapon.
-        Return the damage of the attack.
+        Return the damage dealt by the attack.
 
         Keyword arguments:
         holder -- the bearer of the weapon

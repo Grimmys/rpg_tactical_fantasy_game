@@ -25,6 +25,7 @@ from src.gui.constant_sprites import constant_sprites
 from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.tools import determine_gauge_color
+from src.services.language import *
 
 SHIFT = 2
 SIDEBAR_SPRITE = "imgs/interface/sidebar.png"
@@ -83,13 +84,13 @@ class Sidebar:
 
         # Turn indication
         turn_text: pygame.Surface = fonts["MENU_TITLE_FONT"].render(
-            f"TURN {number_turns}", True, BLACK
+            f_TURN_NUMBER_SIDEBAR(number_turns), True, BLACK
         )
         screen.blit(turn_text, (self.position[0] + 50, self.position[1] + 15))
 
         # Level indication
         turn_text: pygame.Surface = fonts["MENU_TITLE_FONT"].render(
-            f"LEVEL {self.level_id}", True, BLACK
+            f_LEVEL_NUMBER_SIDEBAR(self.level_id), True, BLACK
         )
         screen.blit(turn_text, (self.position[0] + 50, self.position[1] + 50))
 
@@ -136,18 +137,18 @@ class Sidebar:
 
         # Display the current information about the entity hovered
         if hovered_entity:
-            # Set up color depending of entity's nature
+            # Set up color depending on entity's nature
             if isinstance(hovered_entity, Foe):
-                nature: str = "FOE"
+                nature: str = STR_FOE
                 color: pygame.Color = RED
             elif isinstance(hovered_entity, Player):
-                nature = "PLAYER"
+                nature = STR_PLAYER
                 color = MIDNIGHT_BLUE
             elif isinstance(hovered_entity, Character):
-                nature = "ALLY"
+                nature = STR_ALLY
                 color = DARK_GREEN
             else:
-                nature = "UNLIVING ENTITY"
+                nature = STR_UNLIVING_ENTITY
                 color = BLACK
 
             # Display the entity nature
@@ -178,13 +179,13 @@ class Sidebar:
             elif isinstance(hovered_entity, Breakable):
                 screen.blit(constant_sprites["cracked"], entity_position)
 
-            # Display basic information about the ent
+            # Display basic information about the entity
             # Name
             text_position_x: int = (
                 frame_position[0] + constant_sprites["frame"].get_width() + 15
             )
             name_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                "NAME : ", True, color
+                STR_NAME_SIDEBAR_, True, color
             )
             screen.blit(name_pre_text, (text_position_x, frame_position[1]))
             name_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
@@ -197,7 +198,7 @@ class Sidebar:
                 hit_points: int = hovered_entity.hit_points
                 hit_points_max: int = hovered_entity.hit_points_max
                 hit_points_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                    "HP : ", True, color
+                    STR_HP_, True, color
                 )
                 text_position: Position = (
                     text_position_x,
@@ -240,7 +241,7 @@ class Sidebar:
 
                     # Status
                     status_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                        "ALTERATIONS : ", True, color
+                        STR_ALTERATIONS_, True, color
                     )
                     screen.blit(
                         status_pre_text,
@@ -267,7 +268,7 @@ class Sidebar:
                         race: str = hovered_entity.get_formatted_race()
                         race_pre_text: pygame.Surface = fonts[
                             "ITEM_FONT_STRONG"
-                        ].render("RACE : ", True, color)
+                        ].render(STR_RACE_, True, color)
                         screen.blit(
                             race_pre_text,
                             (
@@ -292,7 +293,7 @@ class Sidebar:
                         if isinstance(hovered_entity, Player):
                             classes = hovered_entity.get_formatted_classes()
                             classes_pre_text = fonts["ITEM_FONT_STRONG"].render(
-                                "CLASS : ", True, color
+                                STR_CLASS_, True, color
                             )
                             screen.blit(
                                 classes_pre_text,

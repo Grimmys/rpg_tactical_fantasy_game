@@ -20,6 +20,7 @@ from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.skill import SkillNature, Skill
 from src.gui.position import Position
+from src.services.language import TRANSLATIONS
 
 TIMER = 60
 NB_ITEMS_MAX = 8
@@ -47,9 +48,9 @@ class EntityStrategy(Enum):
     PASSIVE = auto()
     # Entity will only move if an opponent is at reach
     SEMI_ACTIVE = auto()
-    # Entity always move to get closer from opponents
+    # Entity always move to get closer to opponents
     ACTIVE = auto()
-    # Entity is controlled by an human player
+    # Entity is controlled by a human player
     MANUAL = auto()
 
 
@@ -299,7 +300,15 @@ class Movable(Destroyable):
         """
         formatted_string: str = ""
         for alteration in self.alterations:
-            formatted_string += str(alteration) + ", "
+            try:
+                formatted_string += (
+                    TRANSLATIONS["alterations"][
+                        str(alteration).lower().replace(" ", "_")
+                    ]
+                    + ", "
+                )
+            except KeyError:
+                formatted_string += str(alteration) + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]

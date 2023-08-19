@@ -1,0 +1,8 @@
+<map>
+    <properties>
+        <property name="chapter_id" type="int" value="2"/>
+        <property name="level_name" value="Lost City"/>
+        <property name="main_mission_description" value="Kill the Mutanter"/>
+        <property name="main_mission_type" value="KILL_TARGETS"/>
+    </properties>
+</map>

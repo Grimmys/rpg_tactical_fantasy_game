@@ -11,11 +11,12 @@ import pygame
 
 from src.constants import TILE_SIZE, LIGHT_GREY
 from src.game_entities.item import Item
+from src.services.language import TRANSLATIONS
 
 
 class Equipment(Item):
     """
-    An Equipment is an Item that can be equipped on some Characters.
+    Equipment is an Item that can be equipped on some Characters.
     It may give any kind of bonus to the bearer.
 
     Keyword arguments:
@@ -104,7 +105,9 @@ class Equipment(Item):
                 formatted_string += (
                     ", ".join(
                         [
-                            restriction.capitalize()
+                            TRANSLATIONS["races_and_classes"][
+                                restriction.lower().replace(" ", "_")
+                            ]
                             for restriction in self.restrictions[key]
                         ]
                     )

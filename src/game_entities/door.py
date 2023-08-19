@@ -27,8 +27,11 @@ class Door(Entity):
     """
 
     def __init__(
-        self, position: Position, sprite_link: str, pick_lock_initiated: bool = False,
-        sprite: Optional[pygame.Surface] = None
+        self,
+        position: Position,
+        sprite_link: str,
+        pick_lock_initiated: bool = False,
+        sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__("Door", position, sprite if sprite else sprite_link)
         self.sprite_name: str = sprite_link

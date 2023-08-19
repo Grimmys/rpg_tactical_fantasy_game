@@ -1,8 +1,10 @@
 """
-Defines Alteration class, permitting to temporary modify the state of a living-entity.
+Defines Alteration class, permitting to temporarily modify the state of a living-entity.
 """
 
 from lxml import etree
+
+from src.services.language import TRANSLATIONS
 
 
 class Alteration:
@@ -14,7 +16,7 @@ class Alteration:
     abbreviated_name -- the abbreviated version of the alteration name
     power -- the power of the alteration if it's something that is modifying a statistic for example
     duration -- the duration of the alteration
-    description -- the description of the alteration, can be displayed on a an interface to give
+    description -- the description of the alteration, can be displayed on an interface to give
     information to the player about the alteration
     specificities -- describes some specific data related to the alteration
 
@@ -24,7 +26,7 @@ class Alteration:
     power -- the power of the alteration if it's something that is modifying a statistic for example
     duration -- the duration of the alteration
     time -- the number of turns since the alteration exists
-    description -- the description of the alteration, can be displayed on a an interface to give
+    description -- the description of the alteration, can be displayed on an interface to give
     information to the player about the alteration
     specificities -- describes some specific data related to the alteration
     """
@@ -67,7 +69,10 @@ class Alteration:
         return self.time >= self.duration
 
     def __str__(self) -> str:
-        return self.name.replace("_", " ").capitalize()
+        try:
+            return TRANSLATIONS["alterations"][self.name]
+        except KeyError:
+            return self.name.replace("_", " ").capitalize()
 
     def __eq__(self, name: str) -> bool:
         return self.name == name

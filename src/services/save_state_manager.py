@@ -21,7 +21,7 @@ class SaveStateManager:
         Keyword Arguments:
         file_id -- the id of the save file to use
         """
-        with open(f"saves/save_{file_id}.xml", "w+") as save_file:
+        with open(f"saves/save_{file_id}.xml", "w+", encoding="utf-8") as save_file:
             level = self._save_level()
             self.tree.append(level)
 
@@ -63,20 +63,32 @@ class SaveStateManager:
         """
         entities = etree.Element("entities")
         entities.extend(
-            [self.save_collection("allies", "ally", self.level.entities.allies),
-             self.save_collection("foes", "foe", self.level.entities.foes),
-             self.save_collection("breakables", "breakable", self.level.entities.breakables),
-             self.save_collection("chests", "chest", self.level.entities.chests),
-             self.save_collection("fountains", "fountain", self.level.entities.fountains),
-             self.save_collection("buildings", "building", self.level.entities.buildings),
-             self.save_collection("doors", "door", self.level.entities.doors),
-             self.save_collection("players", "player", self.level.players),
-             self.save_collection("escaped_players", "player", self.level.escaped_players)]
+            [
+                self.save_collection("allies", "ally", self.level.entities.allies),
+                self.save_collection("foes", "foe", self.level.entities.foes),
+                self.save_collection(
+                    "breakables", "breakable", self.level.entities.breakables
+                ),
+                self.save_collection("chests", "chest", self.level.entities.chests),
+                self.save_collection(
+                    "fountains", "fountain", self.level.entities.fountains
+                ),
+                self.save_collection(
+                    "buildings", "building", self.level.entities.buildings
+                ),
+                self.save_collection("doors", "door", self.level.entities.doors),
+                self.save_collection("players", "player", self.level.players),
+                self.save_collection(
+                    "escaped_players", "player", self.level.escaped_players
+                ),
+            ]
         )
         return entities
 
     @staticmethod
-    def save_collection(collection_name: str, element_name: str, collection: Sequence[Entity]) -> Element:
+    def save_collection(
+        collection_name: str, element_name: str, collection: Sequence[Entity]
+    ) -> Element:
         """
 
         :param collection_name:

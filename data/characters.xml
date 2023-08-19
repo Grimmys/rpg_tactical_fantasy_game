@@ -12,10 +12,12 @@
         <sprite> characs/jist.png </sprite>
         <interaction>
             <talk>
-                Hurry up ! Leave the village from the west, and enter the necropolis.
+                <en> Hurry up ! Leave the village from the west, and enter the necropolis. </en>
+                <zh_cn> 快呀！从西面离开村庄，进入墓地。</zh_cn>
             </talk>
             <talk>
-                The clock is ticking... The ogre's bones must be returned to their original place.
+                <en> The clock is ticking... The ogre's bones must be returned to their original place. </en>
+                <zh_cn> 时钟在滴答作响……食人魔的骨头必须放回原来的地方。 </zh_cn>
             </talk>
         </interaction>
         <gold> 100 </gold>
@@ -181,10 +183,12 @@
         <gold> 100 </gold>
         <interaction>
             <talk>
-                Thank you for rescuing me!
+                <en> Thank you for rescuing me! </en>
+                <zh_cn> 感谢你救了我！ </zh_cn>
             </talk>
             <talk>
-                As I promised, I'll help you now! As a spy, I could open locked doors and chests.
+                <en> As I promised, I'll help you now! As a spy, I could open locked doors and chests. </en>
+                <zh_cn> 正如我保证的那样，我现在讲帮助你！作为一个间谍，我可以打开上锁的门和箱子。 </zh_cn>
             </talk>
             <join_team />
         </interaction>

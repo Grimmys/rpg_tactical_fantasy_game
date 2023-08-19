@@ -9,7 +9,6 @@ import random
 from typing import Union, Sequence, Optional
 
 import pygame
-from lxml import etree
 from pygamepopup.components import BoxElement, TextElement
 
 from src.game_entities.alteration import Alteration
@@ -24,6 +23,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
 from src.gui.position import Position
+from src.services.language import *
 
 
 class Character(Movable):
@@ -301,7 +301,10 @@ class Character(Movable):
         """
         formatted_string: str = ""
         for cls in self.classes:
-            formatted_string += cls.capitalize() + ", "
+            try:
+                formatted_string += TRANSLATIONS["races_and_classes"][cls] + ", "
+            except KeyError:
+                formatted_string += cls.capitalize() + ", "
         if formatted_string == "":
             return "None"
         return formatted_string[:-2]
@@ -311,7 +314,10 @@ class Character(Movable):
         Return the race in a formatted
         way
         """
-        return self.race.capitalize()
+        try:
+            return TRANSLATIONS["races_and_classes"][self.race]
+        except KeyError:
+            return self.race.capitalize()
 
     def get_formatted_reach(self) -> str:
         """

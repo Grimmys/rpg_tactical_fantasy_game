@@ -5,6 +5,7 @@ Defines Skill class, the class describing the definition of the skills of player
 from enum import Enum, auto
 from typing import Optional, Sequence
 
+from src.services.language import TRANSLATIONS
 from src.game_entities.alteration import Alteration
 
 

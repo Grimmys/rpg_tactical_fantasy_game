@@ -1,5 +1,5 @@
 """
-Define FadeInOutAnimation class, a specific animation responsible of progressively displaying and hiding a frame
+Define FadeInOutAnimation class, a specific animation responsible for progressively displaying and hiding a frame
 """
 
 from src.gui.animation import Frame, Animation
@@ -11,7 +11,7 @@ DEFAULT_DELAY_BETWEEN_STEPS = 10
 class FadeInOutAnimation(Animation):
     """
     This animation requires only one frame, and consists on slowly displaying it until it is fully visible.
-    At this point, after a few ticks, the frame will slowly disappearing.
+    At this point, after a few ticks, the frame will slowly disappear.
 
     Keyword arguments:
     frame -- the frame that should be displayed

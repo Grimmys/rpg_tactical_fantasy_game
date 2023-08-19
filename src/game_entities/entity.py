@@ -6,10 +6,10 @@ import re
 from typing import Union
 
 import pygame
-from lxml import etree
 
 from src.constants import TILE_SIZE
 from src.gui.position import Position
+from src.services.language import *
 
 
 class Entity:
@@ -63,10 +63,13 @@ class Entity:
         Return the formatted text version of the entity based on its name,
         underscores are replaced by spaces and numbers are removed.
         """
-        string_entity: str = self.name.replace("_", " ").title()
-        string_entity = re.sub(
-            r"[0-9]+", "", string_entity
-        )  # Remove numbers like the id
+        try:
+            string_entity: str = TRANSLATIONS["entity_names"][
+                self.get_proper_entity_name(self.name).lower()
+            ]
+        except KeyError:
+            string_entity: str = self.name.replace("_", " ").title()
+            string_entity = self.get_proper_entity_name(string_entity)
         return string_entity.strip()
 
     def is_on_position(self, position: Position) -> bool:
@@ -102,3 +105,10 @@ class Entity:
         y_coordinate.text = str(int(self.position[1] // TILE_SIZE))
 
         return tree
+
+    @staticmethod
+    def get_proper_entity_name(string_entity: str) -> str:
+        """
+        Return string that removed numbers like the id
+        """
+        return re.sub(r"[0-9]+", "", string_entity)

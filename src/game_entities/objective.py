@@ -28,7 +28,11 @@ class Objective(Entity):
     """
 
     def __init__(
-        self, name: str, position: Position, sprite: Union[str, pygame.Surface], walkable: bool
+        self,
+        name: str,
+        position: Position,
+        sprite: Union[str, pygame.Surface],
+        walkable: bool,
     ):
         super().__init__(name, position, sprite)
         self.is_walkable = walkable

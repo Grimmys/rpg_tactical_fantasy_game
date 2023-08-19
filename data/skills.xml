@@ -1,34 +1,50 @@
 <skills>
     <lock_picking>
-        <name>Lock Picking</name>
+        <name>
+            <en> Lock Picking </en>
+            <zh_cn> 撬锁 </zh_cn>
+        </name>
         <type>ACTIVE</type>
         <info>
-            Ability to open some doors and chests. A door (or a chest) needs two turns of picking to be open
+            <en> Ability to open some doors and chests. A door (or a chest) needs two turns of picking to be open </en>
+            <zh_cn> 能够打开一些门和箱子。 一扇门（或一个箱子）需要两轮拾取才能打开 </zh_cn>
         </info>
     </lock_picking>
     <double_attack>
-        <name>Double Attack</name>
+        <name>
+            <en> Double Attack </en>
+            <zh_cn> 双重攻击 </zh_cn>
+        </name>
         <type>MULTIPLE_ATTACKS</type>
         <info>
-            When attacking, this character will deal damage twice
+            <en> When attacking, this character will deal damage twice </en>
+            <zh_cn> 攻击时造成双倍伤害 </zh_cn>
         </info>
     </double_attack>
     <covered>
-        <name>Ally Protection</name>
+        <name>
+            <en> Ally Protection </en>
+            <zh_cn> 友军保护 </zh_cn>
+        </name>
         <type>ALLY_BOOST</type>
         <stats>defense, resistance</stats>
         <power>1</power>
         <info>
-            If an ally is adjacent to the unit, during combat defense and resistance are increased by 1
+            <en> If an ally is adjacent to the unit, during combat defense and resistance are increased by 1 </en>
+            <zh_cn> 如果有盟友与该单位相邻，战斗时防御力和抵抗力增加 1 </zh_cn>
         </info>
     </covered>
     <brutal_hitter>
-        <name>Brutal Hitter</name>
+        <name>
+            <en> Brutal Hitter </en>
+            <zh_cn> 暴酷球手 </zh_cn>
+        </name>
         <type>ALTERATION_CHANCE_BOOST</type>
         <alteration>stun</alteration>
         <power>5</power>
         <info>
-            Probability to stun an enemy when using a weapon able to do it is increased by 5%
+            <en> Probability to stun an enemy when using a weapon able to do it is increased by 5% </en>
+            <zh_cn> 使用能够击晕敌人的武器时，击晕敌人的概率提高 5% </zh_cn>
         </info>
     </brutal_hitter>
 </skills>

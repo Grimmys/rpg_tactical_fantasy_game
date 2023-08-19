@@ -8,7 +8,6 @@ import os
 from typing import Optional
 
 import pygame
-from lxml import etree
 from pygamepopup.components import BoxElement, TextElement
 
 from src.constants import GREEN
@@ -16,6 +15,7 @@ from src.game_entities.character import Character
 from src.game_entities.entity import Entity
 from src.gui.fonts import fonts
 from src.gui.position import Position
+from src.services.language import *
 
 
 class Building(Entity):
@@ -89,11 +89,7 @@ class Building(Entity):
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
             entries.append(
-                [
-                    TextElement(
-                        "This house seems closed...", font=fonts["ITEM_DESC_FONT"]
-                    )
-                ]
+                [TextElement(STR_THIS_HOUSE_SEEMS_CLOSED, font=fonts["ITEM_DESC_FONT"])]
             )
         else:
             pygame.mixer.Sound.play(self.talk_sfx)
@@ -102,7 +98,7 @@ class Building(Entity):
             if "gold" in self.interaction and self.interaction["gold"] > 0:
                 pygame.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction["gold"]
-                earn_text: str = f'[You received {self.interaction["gold"]} gold]'
+                earn_text: str = f_YOU_RECEIVED_NUMBER_GOLD(self.interaction["gold"])
                 entries.append(
                     [
                         TextElement(
@@ -113,7 +109,7 @@ class Building(Entity):
             if "item" in self.interaction and self.interaction["item"]:
                 pygame.mixer.Sound.play(self.inventory_sfx)
                 actor.set_item(self.interaction["item"])
-                earn_text: str = f'[You received {self.interaction["item"]}]'
+                earn_text: str = f_YOU_RECEIVED_ITEM(self.interaction["item"])
                 entries.append(
                     [
                         TextElement(
@@ -121,7 +117,7 @@ class Building(Entity):
                         )
                     ]
                 )
-            # Interaction could not been repeated : should be remove after been used
+            # Interaction could not been repeated : should be removed after being used
             self.remove_interaction()
 
         return entries
