@@ -55,4 +55,4 @@ Then you can run `python main.py` or "./main.py" (only for Python 3) in linux op
   entity
 * Right click : Deselect a player or cancel last action if possible (secondary button)
 * Right click (on any entity) : Show the possible movements of the entity
-* Ecs key : Close a menu on the top layer
+* Esc key : Close a menu on the top layer
