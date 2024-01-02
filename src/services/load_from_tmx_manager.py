@@ -22,16 +22,9 @@ from src.game_entities.portal import Portal
 from src.game_entities.shop import Shop
 from src.gui.position import Position
 from src.services import load_from_xml_manager as xml_loader
+from src.services.global_foes import foes_by_mission, link_foe_to_mission
 
 objective_tile_by_mission: dict[str, list[Objective]] = {}
-foes_by_mission: dict[str, list[Foe]] = {}
-
-
-def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
-    if mission_id not in foes_by_mission:
-        foes_by_mission[mission_id] = []
-    foes_by_mission[mission_id].append(foe)
-
 
 def _get_object_position(
     tile_object: TiledObject, horizontal_gap: int, vertical_gap: int
@@ -191,7 +184,7 @@ def load_foes(
             foes.append(foe)
 
             if mission_target:
-                _link_foe_to_mission(foe, mission_target)
+                link_foe_to_mission(foe, mission_target)
 
     return foes
 
