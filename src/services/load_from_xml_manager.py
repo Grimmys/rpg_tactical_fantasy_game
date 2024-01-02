@@ -38,7 +38,8 @@ skills_data = {}
 RACES_DATA_PATH = "data/races.xml"
 CLASSES_DATA_PATH = "data/classes.xml"
 
-foes_by_mission: dict[str, list[Foe]] = {}
+from src.services.global_foes import foes_by_mission, link_foe_to_mission
+# foes_by_mission: dict[str, list[Foe]] = {}
 
 
 def load_races() -> dict[str, dict[str, any]]:
@@ -486,10 +487,10 @@ def load_ally(name: str, position: Position) -> Character:
     return loaded_ally
 
 
-def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
-    if mission_id not in foes_by_mission:
-        foes_by_mission[mission_id] = []
-    foes_by_mission[mission_id].append(foe)
+# def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
+#     if mission_id not in foes_by_mission:
+#         foes_by_mission[mission_id] = []
+#     foes_by_mission[mission_id].append(foe)
 
 
 def load_foe_from_save(foe_element, gap_x, gap_y):
@@ -597,7 +598,7 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
     loaded_foe.earn_xp(experience)
 
     if mission_target is not None:
-        _link_foe_to_mission(loaded_foe, mission_target)
+        link_foe_to_mission(loaded_foe, mission_target)
 
     return loaded_foe
 
