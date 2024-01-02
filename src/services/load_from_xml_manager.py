@@ -486,13 +486,6 @@ def load_ally(name: str, position: Position) -> Character:
 
     return loaded_ally
 
-
-# def _link_foe_to_mission(foe: Foe, mission_id: str) -> None:
-#     if mission_id not in foes_by_mission:
-#         foes_by_mission[mission_id] = []
-#     foes_by_mission[mission_id].append(foe)
-
-
 def load_foe_from_save(foe_element, gap_x, gap_y):
     """
 
