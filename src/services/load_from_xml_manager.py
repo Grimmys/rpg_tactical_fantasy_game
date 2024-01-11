@@ -39,7 +39,6 @@ RACES_DATA_PATH = "data/races.xml"
 CLASSES_DATA_PATH = "data/classes.xml"
 
 from src.services.global_foes import foes_by_mission, link_foe_to_mission
-# foes_by_mission: dict[str, list[Foe]] = {}
 
 
 def load_races() -> dict[str, dict[str, any]]:
