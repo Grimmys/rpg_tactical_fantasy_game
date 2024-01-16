@@ -3,7 +3,7 @@ import pygamepopup
 
 import src.gui.fonts as font
 import src.services.load_from_xml_manager as loader
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
 from src.game_entities.character import Character
 from src.gui.constant_sprites import init_constant_sprites
 

@@ -2,13 +2,9 @@ import unittest
 
 from src.game_entities.character import Character
 from src.game_entities.movable import DamageKind
-from tests.random_data_library import (
-    random_character_entity,
-    random_shield,
-    random_equipment,
-    random_foe_entity,
-    random_weapon,
-)
+from tests.random_data_library import (random_character_entity,
+                                       random_equipment, random_foe_entity,
+                                       random_shield, random_weapon)
 from tests.tools import minimal_setup_for_game
 
 

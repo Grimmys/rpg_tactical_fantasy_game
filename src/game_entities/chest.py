@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import os
 import random
-from typing import Sequence, Optional
+from collections.abc import Sequence
+from typing import Optional
 
 import pygame
 from lxml import etree

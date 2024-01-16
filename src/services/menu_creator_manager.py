@@ -4,45 +4,24 @@ Define functions creating a specific menu enveloping data from parameters.
 
 from __future__ import annotations
 
-from typing import Sequence, Union, Callable, Optional
+from collections.abc import Callable, Sequence
+from typing import Optional, Union
 
 import pygame
-from pygamepopup.components import (
-    Button,
-    DynamicButton,
-    TextElement,
-    BoxElement,
-    InfoBox,
-)
+from pygamepopup.components import (BoxElement, Button, DynamicButton, InfoBox,
+                                    TextElement)
 from pygamepopup.components.image_button import ImageButton
 
-from src.constants import (
-    TILE_SIZE,
-    ITEM_MENU_WIDTH,
-    ORANGE,
-    WHITE,
-    EQUIPMENT_MENU_WIDTH,
-    TRADE_MENU_WIDTH,
-    GREEN,
-    DARK_GREEN,
-    GOLD,
-    STATUS_MENU_WIDTH,
-    ACTION_MENU_WIDTH,
-    BATTLE_SUMMARY_WIDTH,
-    ITEM_BUTTON_SIZE,
-    ITEM_INFO_MENU_WIDTH,
-    STATUS_INFO_MENU_WIDTH,
-    FOE_STATUS_MENU_WIDTH,
-    DIALOG_WIDTH,
-    REWARD_MENU_WIDTH,
-    START_MENU_WIDTH,
-    ANIMATION_SPEED,
-    SCREEN_SIZE,
-    SAVE_SLOTS,
-    TURQUOISE,
-    BLACK,
-    TRADE_ITEM_BUTTON_SIZE,
-)
+from src.constants import (ACTION_MENU_WIDTH, ANIMATION_SPEED,
+                           BATTLE_SUMMARY_WIDTH, BLACK, DARK_GREEN,
+                           DIALOG_WIDTH, EQUIPMENT_MENU_WIDTH,
+                           FOE_STATUS_MENU_WIDTH, GOLD, GREEN,
+                           ITEM_BUTTON_SIZE, ITEM_INFO_MENU_WIDTH,
+                           ITEM_MENU_WIDTH, ORANGE, REWARD_MENU_WIDTH,
+                           SAVE_SLOTS, SCREEN_SIZE, START_MENU_WIDTH,
+                           STATUS_INFO_MENU_WIDTH, STATUS_MENU_WIDTH,
+                           TILE_SIZE, TRADE_ITEM_BUTTON_SIZE, TRADE_MENU_WIDTH,
+                           TURQUOISE, WHITE)
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
 from src.game_entities.character import Character
@@ -54,7 +33,7 @@ from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Foe
 from src.game_entities.fountain import Fountain
 from src.game_entities.item import Item
-from src.game_entities.mission import MissionType, Mission
+from src.game_entities.mission import Mission, MissionType
 from src.game_entities.player import Player
 from src.game_entities.portal import Portal
 from src.game_entities.shield import Shield

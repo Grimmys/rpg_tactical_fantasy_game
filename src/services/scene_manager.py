@@ -6,10 +6,10 @@ from __future__ import annotations
 
 import pygame
 
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
 from src.scenes.level_loading_scene import LevelLoadingScene
-from src.scenes.level_scene import LevelStatus, LevelScene
-from src.scenes.scene import Scene, QuitActionKind
+from src.scenes.level_scene import LevelScene, LevelStatus
+from src.scenes.scene import QuitActionKind, Scene
 from src.scenes.start_scene import StartScene
 
 

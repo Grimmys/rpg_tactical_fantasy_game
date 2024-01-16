@@ -6,19 +6,20 @@ different classes handling the management of entities that can move, only living
 from __future__ import annotations
 
 import os
-from enum import IntEnum, auto, Enum
-from typing import Union, Sequence, Optional
+from collections.abc import Sequence
+from enum import Enum, IntEnum, auto
+from typing import Optional, Union
 
 import pygame
 from lxml import etree
 
-from src.constants import TILE_SIZE, ANIMATION_SPEED, INITIAL_MAX
+from src.constants import ANIMATION_SPEED, INITIAL_MAX, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.consumable import Consumable
-from src.game_entities.destroyable import Destroyable, DamageKind
+from src.game_entities.destroyable import DamageKind, Destroyable
 from src.game_entities.entity import Entity
 from src.game_entities.item import Item
-from src.game_entities.skill import SkillNature, Skill
+from src.game_entities.skill import Skill, SkillNature
 from src.gui.position import Position
 from src.services.language import TRANSLATIONS
 

@@ -6,38 +6,27 @@ corresponding to an ongoing level.
 from __future__ import annotations
 
 import os
+from collections.abc import Sequence
 from enum import IntEnum, auto
-from typing import Sequence, Union, Optional, Set, Type, List
+from typing import Optional, Union
 
 import pygame
 import pytmx
-from pygamepopup.menu_manager import MenuManager
-from pygamepopup.components import BoxElement, Button, TextElement, InfoBox
+from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
 from pygamepopup.components.image_button import ImageButton
+from pygamepopup.menu_manager import MenuManager
 
-from src.scenes.scene import QuitActionKind
-
-from src.constants import (
-    MAX_MAP_HEIGHT,
-    MENU_WIDTH,
-    MENU_HEIGHT,
-    ITEM_MENU_WIDTH,
-    ORANGE,
-    ITEM_DELETE_MENU_WIDTH,
-    ITEM_INFO_MENU_WIDTH,
-    TILE_SIZE,
-    BLACK,
-    WIN_HEIGHT,
-    WIN_WIDTH,
-    GRID_WIDTH,
-    GRID_HEIGHT,
-)
+from src.constants import (BLACK, GRID_HEIGHT, GRID_WIDTH,
+                           ITEM_DELETE_MENU_WIDTH, ITEM_INFO_MENU_WIDTH,
+                           ITEM_MENU_WIDTH, MAX_MAP_HEIGHT, MENU_HEIGHT,
+                           MENU_WIDTH, ORANGE, TILE_SIZE, WIN_HEIGHT,
+                           WIN_WIDTH)
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
 from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.chest import Chest
-from src.game_entities.destroyable import Destroyable, DamageKind
+from src.game_entities.destroyable import DamageKind, Destroyable
 from src.game_entities.door import Door
 from src.game_entities.effect import Effect
 from src.game_entities.entity import Entity
@@ -47,7 +36,7 @@ from src.game_entities.fountain import Fountain
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
 from src.game_entities.key import Key
-from src.game_entities.mission import MissionType, Mission
+from src.game_entities.mission import Mission, MissionType
 from src.game_entities.movable import Movable
 from src.game_entities.objective import Objective
 from src.game_entities.obstacle import Obstacle
@@ -57,30 +46,21 @@ from src.game_entities.shop import Shop
 from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.animation import Animation, Frame
-from src.gui.constant_sprites import (
-    ATTACKABLE_OPACITY,
-    LANDING_OPACITY,
-    INTERACTION_OPACITY,
-    constant_sprites,
-)
+from src.gui.constant_sprites import (ATTACKABLE_OPACITY, INTERACTION_OPACITY,
+                                      LANDING_OPACITY, constant_sprites)
 from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.sidebar import Sidebar
 from src.gui.tools import blit_alpha
+from src.scenes.scene import QuitActionKind, Scene
+from src.services import load_from_tmx_manager as tmx_loader
+from src.services import load_from_xml_manager as loader
+from src.services import menu_creator_manager
 from src.services.language import *
-from src.scenes.scene import Scene
-from src.services import (
-    load_from_xml_manager as loader,
-    load_from_tmx_manager as tmx_loader,
-    menu_creator_manager,
-)
-from src.services.menu_creator_manager import (
-    create_save_dialog,
-    create_event_dialog,
-    INVENTORY_MENU_ID,
-    SHOP_MENU_ID,
-    CHARACTER_ACTION_MENU_ID,
-)
+from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
+                                               INVENTORY_MENU_ID, SHOP_MENU_ID,
+                                               create_event_dialog,
+                                               create_save_dialog)
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 
@@ -255,7 +235,7 @@ class LevelScene(Scene):
 
         self.entities: LevelEntityCollections = LevelEntityCollections()
 
-        self.missions: Optional[List[Mission]] = None
+        self.missions: Optional[list[Mission]] = None
         self.main_mission: Optional[Mission] = None
 
         # Booleans for end game
@@ -791,7 +771,7 @@ class LevelScene(Scene):
         possible_moves: Sequence[tuple[int, int]],
         reach: Sequence[int],
         from_ally_side: bool,
-    ) -> Set[tuple[float, float]]:
+    ) -> set[tuple[float, float]]:
         """
         Return all the tiles that could be targeted for an attack from a specific entity
 
@@ -1616,7 +1596,7 @@ class LevelScene(Scene):
         )
         pygame.mixer.Sound.play(self.inventory_sfx)
 
-    def select_interaction_with(self, entity_kind: Type[Entity]) -> None:
+    def select_interaction_with(self, entity_kind: type[Entity]) -> None:
         """
         Let the player select the entity to interact with for the active character
 

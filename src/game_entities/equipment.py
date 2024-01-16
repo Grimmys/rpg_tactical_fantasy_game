@@ -5,11 +5,11 @@ by specific entities at a specific body part.
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import pygame
 
-from src.constants import TILE_SIZE, LIGHT_GREY
+from src.constants import LIGHT_GREY, TILE_SIZE
 from src.game_entities.item import Item
 from src.services.language import TRANSLATIONS
 

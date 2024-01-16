@@ -3,8 +3,9 @@ Defines Destroyable class, an entity that could be destroyed.
 """
 
 import os
+from collections.abc import Sequence
 from enum import Enum
-from typing import Union, Sequence
+from typing import Union
 
 import pygame
 from lxml import etree

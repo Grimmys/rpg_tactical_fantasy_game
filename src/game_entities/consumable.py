@@ -3,8 +3,9 @@ Defines Consumable class, an item that can be consumed by an entity and that mig
 """
 
 from __future__ import annotations
+
 import os
-from typing import Sequence, List
+from collections.abc import Sequence
 
 import pygame
 
@@ -54,7 +55,7 @@ class Consumable(Item):
         entity -- the entity that is trying to use the consumable
         """
         success: bool = False
-        messages: List[str] = []
+        messages: list[str] = []
         for effect in self.effects:
             sub_success: bool
             message: str

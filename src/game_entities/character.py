@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import math
 import random
-from typing import Union, Sequence, Optional
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import pygame
 from pygamepopup.components import BoxElement, TextElement

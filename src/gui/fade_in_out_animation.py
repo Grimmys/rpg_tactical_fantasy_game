@@ -2,7 +2,7 @@
 Define FadeInOutAnimation class, a specific animation responsible for progressively displaying and hiding a frame
 """
 
-from src.gui.animation import Frame, Animation
+from src.gui.animation import Animation, Frame
 
 OPACITY_CHANGE_BY_STEP = 5
 DEFAULT_DELAY_BETWEEN_STEPS = 10

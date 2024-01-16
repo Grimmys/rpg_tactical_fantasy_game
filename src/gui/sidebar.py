@@ -2,17 +2,11 @@
 Defines Sidebar class, an element of the GUI that will be display permanently
 at the bottom of the screen.
 """
-from typing import Sequence, Tuple
+from collections.abc import Sequence
 
 import pygame
 
-from src.constants import (
-    BLACK,
-    RED,
-    DARK_GREEN,
-    BROWN_RED,
-    MIDNIGHT_BLUE,
-)
+from src.constants import BLACK, BROWN_RED, DARK_GREEN, MIDNIGHT_BLUE, RED
 from src.game_entities.breakable import Breakable
 from src.game_entities.character import Character
 from src.game_entities.destroyable import Destroyable
@@ -55,12 +49,12 @@ class Sidebar:
 
     def __init__(
         self,
-        size: Tuple[int, int],
+        size: tuple[int, int],
         position: Position,
         missions: Sequence[Mission],
         level_id: int,
     ) -> None:
-        self.size: Tuple[int, int] = size
+        self.size: tuple[int, int] = size
         self.position: Position = position
         self.sprite: pygame.Surface = pygame.transform.scale(
             pygame.image.load(SIDEBAR_SPRITE).convert_alpha(), size

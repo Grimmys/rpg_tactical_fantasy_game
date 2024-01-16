@@ -6,7 +6,7 @@ import pygame
 import pygame as pg
 from pygamepopup.components import Button
 
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
+from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.scenes.start_scene import StartScene
 from src.services import menu_creator_manager
 from src.services.load_from_xml_manager import parse_item_file

@@ -4,8 +4,9 @@ Defines Player class, the class defining characters controlled by the player
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from enum import IntEnum, auto
-from typing import Union, Sequence, Optional
+from typing import Optional, Union
 
 import pygame
 from lxml import etree

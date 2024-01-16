@@ -1,9 +1,9 @@
+import random as rd
 import unittest
 
-import random as rd
-
-from src.game_entities.destroyable import Destroyable, DamageKind
-from tests.random_data_library import random_destroyable_entity, random_movable_entity
+from src.game_entities.destroyable import DamageKind, Destroyable
+from tests.random_data_library import (random_destroyable_entity,
+                                       random_movable_entity)
 from tests.tools import minimal_setup_for_game
 
 

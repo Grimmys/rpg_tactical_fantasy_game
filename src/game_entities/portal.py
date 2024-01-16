@@ -3,6 +3,7 @@ Defines Portal class, an entity that is working by pair and that could teleport 
 """
 
 from __future__ import annotations
+
 from typing import Optional
 
 from src.game_entities.entity import Entity

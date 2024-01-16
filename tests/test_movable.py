@@ -1,14 +1,9 @@
+import random as rd
 import unittest
 
-import random as rd
-from src.game_entities.movable import Movable, DamageKind, EntityStrategy
-from tests.random_data_library import (
-    random_movable_entity,
-    random_alteration,
-    random_string,
-    STATS,
-    random_item,
-)
+from src.game_entities.movable import DamageKind, EntityStrategy, Movable
+from tests.random_data_library import (STATS, random_alteration, random_item,
+                                       random_movable_entity, random_string)
 from tests.tools import minimal_setup_for_game
 
 

@@ -2,21 +2,14 @@ import random
 import unittest
 
 from src.game_entities.foe import Keyword
-from src.services.load_from_xml_manager import (
-    load_ally_from_save,
-    load_alteration,
-    load_foe_from_save,
-    parse_item_file,
-    load_player,
-    load_item,
-)
-from tests.random_data_library import (
-    random_character_entity,
-    random_alteration,
-    random_foe_entity,
-    random_gold,
-    random_player_entity,
-)
+from src.services.load_from_xml_manager import (load_ally_from_save,
+                                                load_alteration,
+                                                load_foe_from_save, load_item,
+                                                load_player, parse_item_file)
+from tests.random_data_library import (random_alteration,
+                                       random_character_entity,
+                                       random_foe_entity, random_gold,
+                                       random_player_entity)
 from tests.tools import minimal_setup_for_game
 
 

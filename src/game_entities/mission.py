@@ -5,11 +5,9 @@ accomplished by the player during a level.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from enum import Enum, auto
-from typing import Sequence, Optional, TYPE_CHECKING
-
-from typing import TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 
