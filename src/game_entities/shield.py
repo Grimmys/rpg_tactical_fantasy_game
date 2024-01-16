@@ -4,7 +4,7 @@ Defines Shield class, an Equipment permitting to eventually parry opponent attac
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from lxml import etree
 

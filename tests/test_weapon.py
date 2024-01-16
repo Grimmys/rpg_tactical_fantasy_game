@@ -4,11 +4,8 @@ from src.constants import TILE_SIZE
 from src.game_entities.destroyable import DamageKind
 from src.game_entities.foe import Keyword
 from src.game_entities.weapon import Weapon
-from tests.random_data_library import (
-    random_weapon,
-    random_foe_entity,
-    random_player_entity,
-)
+from tests.random_data_library import (random_foe_entity, random_player_entity,
+                                       random_weapon)
 from tests.tools import minimal_setup_for_game
 
 

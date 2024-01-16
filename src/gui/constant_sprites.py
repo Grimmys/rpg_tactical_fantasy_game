@@ -6,9 +6,10 @@ after pygame initialization and after the initialization of at least one pygame 
 
 import pygame
 
+from src.constants import (BLACK, MAX_MAP_HEIGHT, MAX_MAP_WIDTH, TILE_SIZE,
+                           WHITE)
 from src.gui.fonts import fonts
 from src.services.language import *
-from src.constants import TILE_SIZE, MAX_MAP_WIDTH, MAX_MAP_HEIGHT, WHITE, BLACK
 
 LANDING_OPACITY = 80
 LANDING_SPRITE = "imgs/dungeon_crawl/misc/move.png"

@@ -2,12 +2,9 @@ import random as rd
 import unittest
 
 from src.game_entities.building import Building
-from tests.random_data_library import (
-    random_item,
-    random_string,
-    random_building,
-    random_character_entity,
-)
+from tests.random_data_library import (random_building,
+                                       random_character_entity, random_item,
+                                       random_string)
 from tests.tools import minimal_setup_for_game
 
 

@@ -10,9 +10,9 @@ from src.constants import WHITE
 from src.gui.animation import Frame
 from src.gui.fade_in_out_animation import FadeInOutAnimation
 from src.gui.fonts import fonts
-from src.services.language import *
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import Scene
+from src.services.language import *
 
 DELAY_BETWEEN_FRAMES = 2
 TITLE_VISIBILITY_DURATION = 120

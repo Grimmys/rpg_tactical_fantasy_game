@@ -1,8 +1,8 @@
-from typing import Union, Dict
+from typing import Union
 
 scale = 1
 
-fonts_description: Dict[str, Dict[str, Union[str, int]]] = {
+fonts_description: dict[str, dict[str, Union[str, int]]] = {
     "BUTTON_FONT": {
         "name": "fonts/fusion-pixel-12px-proportional-zh_hans.ttf",
         "size": int(20 * scale),

@@ -4,20 +4,21 @@ corresponding to the main menu.
 """
 from __future__ import annotations
 
-from typing import Sequence, Callable, Optional
+from collections.abc import Callable, Sequence
+from typing import Optional
 
 import pygame
 from lxml.etree import XMLSyntaxError
-from pygamepopup.components import TextElement, InfoBox
+from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import SCREEN_SIZE, WIN_WIDTH, WIN_HEIGHT
+from src.constants import SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.scenes.level_scene import LevelScene, LevelStatus
-from src.scenes.scene import Scene, QuitActionKind
+from src.scenes.scene import QuitActionKind, Scene
 from src.services import menu_creator_manager
 from src.services.language import *
 

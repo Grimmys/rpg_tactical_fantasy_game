@@ -7,14 +7,9 @@ from src.constants import TILE_SIZE
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
 from src.scenes.level_scene import LevelEntityCollections
-from tests.random_data_library import (
-    random_item,
-    random_position,
-    random_player_entity,
-    random_entities,
-    random_foe_entity,
-    random_objective,
-)
+from tests.random_data_library import (random_entities, random_foe_entity,
+                                       random_item, random_objective,
+                                       random_player_entity, random_position)
 from tests.tools import minimal_setup_for_game
 
 

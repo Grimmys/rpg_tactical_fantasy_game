@@ -5,11 +5,11 @@ language: str = etree.parse("saves/options.xml").find("language").text
 DATA_PATH = "data/" + language + "/"
 
 if language == "en":
-    from data.en.text import *
     from data.en.fonts_description import fonts_description
+    from data.en.text import *
 elif language == "zh_cn":
-    from data.zh_cn.text import *
     from data.zh_cn.fonts_description import fonts_description
+    from data.zh_cn.text import *
 
 
 def get_localized_string(tree: etree.Element):

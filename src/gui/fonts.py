@@ -3,11 +3,11 @@ Defines fonts that will be used all over the application.
 The init_fonts function should be called at the beginning of the application
 after pygame initialization.
 """
-from typing import Dict
-from src.services.language import *
 import pygame
 
-fonts: Dict[str, pygame.font.Font] = {}
+from src.services.language import *
+
+fonts: dict[str, pygame.font.Font] = {}
 
 
 def init_fonts() -> None:

@@ -6,9 +6,9 @@ from random import randrange
 import pygame
 from pygame.rect import Rect
 
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, BUTTON_SIZE
-from src.scenes.scene import QuitActionKind
+from src.constants import BUTTON_SIZE, MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
 from src.scenes.level_scene import LevelScene
+from src.scenes.scene import QuitActionKind
 from src.scenes.start_scene import StartScene
 from tests.tools import minimal_setup_for_game
 

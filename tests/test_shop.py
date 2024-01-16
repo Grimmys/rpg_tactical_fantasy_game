@@ -2,7 +2,7 @@ import random as rd
 import unittest
 
 from src.game_entities.shop import Shop
-from tests.random_data_library import random_item, random_character_entity
+from tests.random_data_library import random_character_entity, random_item
 from tests.tools import minimal_setup_for_game
 
 

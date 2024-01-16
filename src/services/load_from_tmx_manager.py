@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Sequence, Optional
+from collections.abc import Sequence
+from typing import Optional
 
 import pygame
 import pytmx

@@ -5,8 +5,9 @@ Defines Foe class, a hostile entity which targets players and allies.
 from __future__ import annotations
 
 import random as rd
+from collections.abc import Sequence
 from enum import Enum, auto
-from typing import Union, Sequence, Optional
+from typing import Optional, Union
 
 import pygame
 

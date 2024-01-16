@@ -8,7 +8,8 @@ from math import sqrt
 
 import pygame
 
-from src.constants import TILE_SIZE, DARK_GREEN, YELLOW, ORANGE, RED, LIGHT_YELLOW
+from src.constants import (DARK_GREEN, LIGHT_YELLOW, ORANGE, RED, TILE_SIZE,
+                           YELLOW)
 from src.gui.position import Position
 
 

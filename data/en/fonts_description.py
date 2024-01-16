@@ -1,6 +1,6 @@
-from typing import Union, Dict
+from typing import Union
 
-fonts_description: Dict[str, Dict[str, Union[str, int]]] = {
+fonts_description: dict[str, dict[str, Union[str, int]]] = {
     "BUTTON_FONT": {
         "name": "fonts/_bitmap_font____romulus_by_pix3m-d6aokem.ttf",
         "size": 20,

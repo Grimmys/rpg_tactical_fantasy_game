@@ -11,7 +11,7 @@ import pygame
 import pygamepopup
 
 from src.gui.tools import show_fps
-from src.services.scene_manager import SceneManager, QuitActionKind
+from src.services.scene_manager import QuitActionKind, SceneManager
 
 
 def main_loop(
@@ -42,22 +42,18 @@ def main_loop(
 
 if __name__ == "__main__":
     import os
-    import sys
     import platform
     import subprocess
+    import sys
 
-    from src.constants import (
-        MAIN_WIN_WIDTH,
-        MAIN_WIN_HEIGHT,
-        BLACK,
-        FRAME_RATE,
-    )
-    from src.gui import constant_sprites, fonts
-    from src.services.language import STR_GAME_TITLE
-    from src.game_entities.movable import Movable
+    from src.constants import (BLACK, FRAME_RATE, MAIN_WIN_HEIGHT,
+                               MAIN_WIN_WIDTH)
     from src.game_entities.character import Character
+    from src.game_entities.movable import Movable
+    from src.gui import constant_sprites, fonts
     from src.services import load_from_xml_manager as loader
     from src.services.language import *
+    from src.services.language import STR_GAME_TITLE
 
     pygame.init()
     pygamepopup.init()

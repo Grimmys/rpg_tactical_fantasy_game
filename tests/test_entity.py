@@ -3,7 +3,7 @@ import unittest
 
 import pygame
 
-from src.constants import MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT, TILE_SIZE
+from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.game_entities.entity import Entity
 from tests.random_data_library import random_position
 from tests.tools import minimal_setup_for_game

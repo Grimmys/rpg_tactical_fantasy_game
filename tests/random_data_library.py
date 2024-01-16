@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-from src.constants import TILE_SIZE, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
 from src.game_entities.character import Character

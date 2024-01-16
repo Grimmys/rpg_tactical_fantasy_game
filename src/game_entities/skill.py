@@ -2,11 +2,12 @@
 Defines Skill class, the class describing the definition of the skills of player characters.
 """
 
+from collections.abc import Sequence
 from enum import Enum, auto
-from typing import Optional, Sequence
+from typing import Optional
 
-from src.services.language import TRANSLATIONS
 from src.game_entities.alteration import Alteration
+from src.services.language import TRANSLATIONS
 
 
 class SkillNature(Enum):

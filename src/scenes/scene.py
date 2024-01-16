@@ -3,6 +3,7 @@ Define Scene class, the abstract base class for any other scene.
 """
 
 from __future__ import annotations
+
 from enum import IntEnum, auto
 
 import pygame
