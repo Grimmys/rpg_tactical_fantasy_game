@@ -57,14 +57,13 @@ def create_shop_menu(
     interaction_callback: Callable,
     stock: Sequence[dict[str, Union[Item, int]]],
     gold: int,
-    shop_balance: int) -> InfoBox:
+) -> InfoBox:
     """
     Return the interface of a shop menu with user as the buyer.
 
     Keyword arguments:
     stock -- the collection of items that are available in the shop, with the quantity of each one
     gold -- the amount of gold that should be displayed at the bottom
-    shop_balance -- the amount of gold that shopkeeper has
     """
     element_grid = []
     row = []
@@ -97,8 +96,6 @@ def create_shop_menu(
     # Gold at end
     player_gold_line = [TextElement(f_UR_GOLD(gold), font=fonts["ITEM_DESC_FONT"])]
     element_grid.append(player_gold_line)
-    shop_gold_line = [TextElement(f_SHOP_GOLD(shop_balance), font=fonts["ITEM_DESC_FONT"])]
-    element_grid.append(shop_gold_line)
 
     return InfoBox(
         STR_SHOP_BUYING,

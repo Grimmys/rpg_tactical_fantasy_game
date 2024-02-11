@@ -306,7 +306,7 @@ def load_events(
 
 
 def load_buildings(
-    tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int, shop_balance: int
+    tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
 ) -> list[Building]:
     buildings = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -364,7 +364,6 @@ def load_buildings(
                         tile_object.name,
                         position,
                         tile_object.properties["sprite_link"],
-                        shop_balance,
                         stock,
                         interaction,
                         image,
