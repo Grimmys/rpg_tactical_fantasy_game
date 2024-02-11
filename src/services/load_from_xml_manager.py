@@ -728,12 +728,13 @@ def load_door_from_save(door, gap_x, gap_y):
     return loaded_door
 
 
-def load_building_from_save(building, gap_x, gap_y):
+def load_building_from_save(building, gap_x, gap_y, shop_balance=None):
     """
 
     :param building:
     :param gap_x:
     :param gap_y:
+    :shop_balance:
     :return:
     """
     # Static data
@@ -774,7 +775,7 @@ def load_building_from_save(building, gap_x, gap_y):
                     "quantity": int(item.find("quantity").text.strip()),
                 }
                 stock.append(entry)
-            loaded_building = Shop(name, position, sprite, stock, interaction_element)
+            loaded_building = Shop(name, position, sprite, shop_balance, stock, interaction_element)
         else:
             print("Error : building type isn't recognized : ", type)
             raise SystemError
