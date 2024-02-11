@@ -133,7 +133,6 @@ class Shop(Building):
                 self.current_visitor.gold -= item.price
                 self.current_visitor.set_item(copy(item))
                 self.shop_balance += item.price
-
                 entry: Optional[dict[str, any]] = self.get_item_entry(item)
                 entry["quantity"] -= 1
                 if entry["quantity"] <= 0:
