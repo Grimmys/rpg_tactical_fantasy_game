@@ -341,7 +341,7 @@ class LevelScene(Scene):
             self.entities.chests = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
             self.entities.allies = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
             self.entities.buildings = tmx_loader.load_buildings(
-                self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y
+                self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y, self.active_shop.shop_balance
             )
             self.entities.breakables = tmx_loader.load_breakables(
                 self.tmx_data, gap_x, gap_y
