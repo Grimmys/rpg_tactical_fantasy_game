@@ -52,7 +52,6 @@ STR_DIARY = "Diary"
 STR_END_TURN = "End turn"
 STR_DEFAULT_DIARY_BODY_CONTENT = "No event has been recorded yet"
 
-
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "Congratulations! Objective has been completed!"
 
@@ -88,6 +87,10 @@ STR_SHOPPING_SELLING = "Shop - Selling"
 
 def f_UR_GOLD(gold):
     return f"Your gold: {gold}"
+
+
+def f_SHOP_GOLD(shop_balance):
+    return f"Shopkeeper gold: {shop_balance}"
 
 
 # Trade menu
@@ -256,7 +259,7 @@ STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = (
 )
 STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "Not enough gold to buy this item."
 STR_THE_ITEM_HAS_BEEN_SOLD = "The item has been sold."
-STR_THIS_ITEM_CANT_BE_SOLD = "This item can't be sold !"
+STR_THIS_ITEM_CANT_BE_SOLD = "The vendor lacks the funds to buy from you !"
 STR_THIS_HOUSE_SEEMS_CLOSED = "This house seems closed..."
 
 
