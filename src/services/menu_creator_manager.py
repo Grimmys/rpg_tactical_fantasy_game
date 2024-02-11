@@ -64,7 +64,7 @@ def create_shop_menu(
     Keyword arguments:
     stock -- the collection of items that are available in the shop, with the quantity of each one
     gold -- the amount of gold that should be displayed at the bottom
-    shop_balance -- the amount of gold that shopkeeper has
+    shop_balance -- the shopkeeper's gold, displayed at the bottom
     """
     element_grid = []
     row = []

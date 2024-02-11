@@ -776,6 +776,7 @@ def load_building_from_save(building, gap_x, gap_y, shop_balance=None):
                 }
                 stock.append(entry)
             loaded_building = Shop(name, position, sprite, shop_balance, stock, interaction_element)
+
         else:
             print("Error : building type isn't recognized : ", type)
             raise SystemError

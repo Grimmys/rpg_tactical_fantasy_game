@@ -93,6 +93,7 @@ def f_SHOP_GOLD(shop_balance):
     return f"Shopkeeper gold: {shop_balance}"
 
 
+
 # Trade menu
 STR_50G_TO_RIGHT = "50G ->"
 STR_200G_TO_RIGHT = "200G ->"

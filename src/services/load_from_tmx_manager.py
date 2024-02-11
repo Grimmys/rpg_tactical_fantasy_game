@@ -83,6 +83,7 @@ def _load_objectives(tmx_data, horizontal_gap, vertical_gap) -> None:
             )
 
 
+
 def _load_mission(
     tmx_data: pytmx.TiledMap, is_main: bool, mission_id: str, players: Sequence[Player]
 ) -> Mission:

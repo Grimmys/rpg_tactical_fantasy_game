@@ -351,6 +351,7 @@ class LevelScene(Scene):
             self.entities.fountains = tmx_loader.load_fountains(
                 self.tmx_data, gap_x, gap_y
             )
+
         else:
             # Game is loaded from a save (data)
             gap_x, gap_y = (0, 0)
