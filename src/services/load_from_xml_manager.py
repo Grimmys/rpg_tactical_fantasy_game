@@ -312,12 +312,12 @@ def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=
 
 
 def load_artificial_entity(
-    name: str,
-    data: etree.Element,
-    position: Position,
-    level: Optional[int] = None,
-    strategy: Optional[str] = None,
-    extension_path: str = "",
+        name: str,
+        data: etree.Element,
+        position: Position,
+        level: Optional[int] = None,
+        strategy: Optional[str] = None,
+        extension_path: str = "",
 ):
     # Static data
     sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
@@ -451,8 +451,8 @@ def load_ally(name: str, position: Position) -> Character:
         equipments.append(equipment_loaded)
 
     skills = (
-        Character.classes_data[classes[0]]["skills"]
-        + Character.races_data[race]["skills"]
+            Character.classes_data[classes[0]]["skills"]
+            + Character.races_data[race]["skills"]
     )
 
     loaded_ally = Character(
@@ -485,6 +485,7 @@ def load_ally(name: str, position: Position) -> Character:
     loaded_ally.healed()
 
     return loaded_ally
+
 
 def load_foe_from_save(foe_element, gap_x, gap_y):
     """
@@ -597,12 +598,12 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
 
 
 def load_foe(
-    name: str,
-    position: Position,
-    level: int,
-    strategy: Optional[str],
-    specific_loot: Sequence[Item],
-    mission_target: str,
+        name: str,
+        position: Position,
+        level: int,
+        strategy: Optional[str],
+        specific_loot: Sequence[Item],
+        mission_target: str,
 ) -> Foe:
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
@@ -623,12 +624,12 @@ def load_foe(
     )
     attack_kind = foes_data[name].find("attack_kind").text.strip()
     loot = [
-        (
-            parse_item_file(item.find("name").text.strip()),
-            float(item.find("probability").text),
-        )
-        for item in foes_data[name].findall("loot/item")
-    ] + [(item, 1.0) for item in specific_loot]
+               (
+                   parse_item_file(item.find("name").text.strip()),
+                   float(item.find("probability").text),
+               )
+               for item in foes_data[name].findall("loot/item")
+           ] + [(item, 1.0) for item in specific_loot]
     gold_looted = foes_data[name].find("loot/gold")
     if gold_looted is not None:
         loot.append(
@@ -728,7 +729,7 @@ def load_door_from_save(door, gap_x, gap_y):
     return loaded_door
 
 
-def load_building_from_save(building, gap_x, gap_y, shop_balance=None):
+def load_building_from_save(building, gap_x, gap_y, shop_balance=500):
     """
 
     :param building:
@@ -862,7 +863,7 @@ def load_fountain_from_save(fountain, gap_x, gap_y):
         fountains_data[name] = etree.parse("data/fountains.xml").find(name)
     sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
     sprite_empty = (
-        "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
+            "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
     )
     effect_name = fountains_data[name].find("effect").text.strip()
     power = int(fountains_data[name].find("power").text.strip())
@@ -885,7 +886,7 @@ def load_fountain(name: str, position: Position) -> Fountain:
 
     sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
     sprite_empty = (
-        "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
+            "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
     )
 
     effect_name = fountains_data[name].find("effect").text.strip()
@@ -1037,8 +1038,8 @@ def load_player(player_element, from_save):
         player_t = tree.xpath(name)[0]
     else:
         skills = (
-            Character.classes_data[player_class]["skills"]
-            + Character.races_data[race]["skills"]
+                Character.classes_data[player_class]["skills"]
+                + Character.races_data[race]["skills"]
         )
         player_t = player_element
 

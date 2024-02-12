@@ -93,7 +93,6 @@ def f_SHOP_GOLD(shop_balance):
     return f"Shopkeeper gold: {shop_balance}"
 
 
-
 # Trade menu
 STR_50G_TO_RIGHT = "50G ->"
 STR_200G_TO_RIGHT = "200G ->"
@@ -260,7 +259,7 @@ STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = (
 )
 STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "Not enough gold to buy this item."
 STR_THE_ITEM_HAS_BEEN_SOLD = "The item has been sold."
-STR_THIS_ITEM_CANT_BE_SOLD = "The vendor lacks the funds to buy from you !"
+STR_THIS_ITEM_CANT_BE_SOLD = "The vendor lacks the funds to buy from you!"
 STR_THIS_HOUSE_SEEMS_CLOSED = "This house seems closed..."
 
 

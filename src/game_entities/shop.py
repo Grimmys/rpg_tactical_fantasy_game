@@ -57,12 +57,12 @@ class Shop(Building):
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__(name, position, sprite_link, interaction, sprite)
-        self.shop_balance = 500
+        self.shop_balance = shop_balance
         self.current_visitor: Optional[Character] = None
         self.stock: list[dict[str, any]] = stock
         self.interaction: dict[str, any] = interaction
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
-            Shop.interaction_callback, self.stock, 0, shop_balance
+            Shop.interaction_callback, self.stock, 0, self.shop_balance
         )
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "trade.ogg")
