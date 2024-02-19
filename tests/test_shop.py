@@ -25,7 +25,7 @@ class TestShop(unittest.TestCase):
         self.assertEqual(name, shop.name)
         self.assertEqual(pos, shop.position)
         self.assertEqual("Tavern", str(shop))
-        self.assertEqual(shop_balance, 500)
+        self.assertEqual(shop_balance, shop.shop_balance)
         self.assertTrue(items[0] in shop.stock)
         self.assertTrue(items[1] in shop.stock)
 
