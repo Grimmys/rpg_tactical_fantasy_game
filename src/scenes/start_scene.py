@@ -71,19 +71,19 @@ class StartScene(Scene):
         self.level: Optional[LevelScene] = None
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
-        StartScene.load_options()
+        self.options_file = None
+        self.load_options()
 
-    @staticmethod
-    def load_options():
+    def load_options(self):
         """
         Load the saved game configuration from local file.
         """
         # Load current move speed
-        Movable.move_speed = int(StartScene.read_options_file("move_speed"))
-        StartScene.screen_size = int(StartScene.read_options_file("screen_size"))
+        self.options_file = etree.parse("saves/options.xml").getroot()
+        Movable.move_speed = int(self.read_option("move_speed"))
+        StartScene.screen_size = int(self.read_option("screen_size"))
 
-    @staticmethod
-    def read_options_file(element_to_read: str) -> str:
+    def read_option(self, element_to_read: str) -> str:
         """
         Read and parse a specific option saved in the local configuration file.
 
@@ -92,13 +92,10 @@ class StartScene(Scene):
         Keyword arguments:
         element_to_read -- a name corresponding to the option that should be read
         """
-        # TODO: Might be interesting to not re-load the file for each different option to parse
-        tree = etree.parse("saves/options.xml").getroot()
-        element = tree.find(".//" + element_to_read)
+        element = self.options_file.find(".//" + element_to_read)
         return element.text.strip()
 
-    @staticmethod
-    def modify_options_file(element_to_edit: str, new_value: str) -> None:
+    def modify_options_file(self, element_to_edit: str, new_value: str) -> None:
         """
         Edit the value of a specific option in the local configuration file.
 
@@ -106,10 +103,10 @@ class StartScene(Scene):
         element_to_edit -- a name corresponding to the option that should be edited
         new_value -- the new value of the option
         """
-        tree: etree.ElementTree = etree.parse("saves/options.xml")
-        element: etree.Element = tree.find(".//" + element_to_edit)
+        element: etree.Element = self.options_file.find(".//" + element_to_edit)
         element.text = new_value
-        tree.write("saves/options.xml")
+        et = etree.ElementTree(self.options_file)
+        et.write("saves/options.xml")
 
     def display(self) -> None:
         """
@@ -248,9 +245,9 @@ class StartScene(Scene):
         self.menu_manager.open_menu(
             menu_creator_manager.create_options_menu(
                 {
-                    "language": str(self.read_options_file("language")),
-                    "move_speed": int(self.read_options_file("move_speed")),
-                    "screen_size": int(self.read_options_file("screen_size")),
+                    "language": str(self.read_option("language")),
+                    "move_speed": int(self.read_option("move_speed")),
+                    "screen_size": int(self.read_option("screen_size")),
                 },
                 self.modify_option_value,
             )
@@ -261,8 +258,8 @@ class StartScene(Scene):
             menu_creator_manager.create_choose_language_menu(self.change_language)
         )
 
-    def change_language(self, language) -> None:
-        StartScene.modify_options_file("language", language)
+    def change_language(self, new_language) -> None:
+        self.modify_options_file("language", new_language)
         self.exit = QuitActionKind.RESTART
 
     def exit_game(self) -> None:
@@ -288,7 +285,7 @@ class StartScene(Scene):
         else:
             print(f"Unrecognized option name : {option_name} with value {option_value}")
             return
-        StartScene.modify_options_file(option_name, str(option_value))
+        self.modify_options_file(option_name, str(option_value))
 
     @staticmethod
     def execute_action(action: Callable) -> None:
