@@ -26,6 +26,7 @@ from src.game_entities.breakable import Breakable
 from src.game_entities.building import Building
 from src.game_entities.character import Character
 from src.game_entities.chest import Chest
+from src.game_entities.consumable import Consumable
 from src.game_entities.destroyable import DamageKind, Destroyable
 from src.game_entities.door import Door
 from src.game_entities.effect import Effect
@@ -252,7 +253,7 @@ class LevelScene(Scene):
 
         # Storage of current selected entity
         self.selected_player: Optional[Player] = None
-        self.selected_item: Optional[Item] = None
+        self.selected_item: Optional[Equipment | Consumable] = None
         self.active_shop: Optional[Shop] = None
 
         self.quit_request: bool = False
@@ -273,7 +274,6 @@ class LevelScene(Scene):
         self.armor_sfx: Optional[pygame.mixer.Sound] = None
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
-
 
     @property
     def diary_entries_text_element_set(self):
@@ -483,7 +483,7 @@ class LevelScene(Scene):
         Verify if victory or defeat conditions are met.
         Handle next AI action if it's not player's turn.
 
-        Return the whether the game should be ended or not.
+        Return whether the game should be ended or not.
         """
         if self.quit_request:
             return True
@@ -738,7 +738,7 @@ class LevelScene(Scene):
         return tiles_content
 
     def get_possible_moves(
-        self, position: Position, max_moves: int
+        self, position: tuple, max_moves: int
     ) -> dict[Position, int]:
         """
         Return all the possible moves with their distance from the starting position
@@ -769,7 +769,7 @@ class LevelScene(Scene):
 
     def get_possible_attacks(
         self,
-        possible_moves: Sequence[tuple[int, int]],
+        possible_moves: Sequence[Position],
         reach: Sequence[int],
         from_ally_side: bool,
     ) -> set[tuple[float, float]]:
@@ -781,7 +781,7 @@ class LevelScene(Scene):
         reach -- the reach of the attacking entity
         from_ally_side -- a boolean indicating whether this is a friendly attack or not
         """
-        tiles: list[tuple[float, float]] = []
+        tiles: list = []
 
         entities = list(self.entities.breakables)
         if from_ally_side:
@@ -828,7 +828,7 @@ class LevelScene(Scene):
 
         return entity_on_tile is None
 
-    def get_entity_on_tile(self, tile: Position) -> Optional[Entity]:
+    def get_entity_on_tile(self, tile: Position) -> Optional[Entity, Destroyable]:
         """
         Return the entity that is on the given tile if there is any
 
@@ -843,7 +843,7 @@ class LevelScene(Scene):
         return None
 
     def determine_path_to(
-        self, destination_tile: Position, distance_for_tile: dict[tuple[int, int], int]
+        self, destination_tile: Position, distance_for_tile: dict[tuple, int]
     ) -> list[Position]:
         """
         Return an ordered list of position that represent the path from one tile to another
@@ -853,11 +853,11 @@ class LevelScene(Scene):
         distance -- the distance between the starting tile and the destination
         """
         path: list[Position] = [destination_tile]
-        current_tile: tuple[int, int] = tuple(destination_tile)
+        current_tile: tuple = tuple(destination_tile)
         while distance_for_tile[current_tile] > 1:
             # Check for neighbour cases
-            available_tiles: dict[tuple[int, int], int] = self.get_possible_moves(
-                tuple(current_tile), 1
+            available_tiles: dict[tuple, int] = self.get_possible_moves(
+                current_tile, 1
             )
             for tile in available_tiles:
                 if tile in distance_for_tile:
@@ -877,7 +877,7 @@ class LevelScene(Scene):
         entity -- the entity for which the distance from all other entities should be computed
         all_other_entities -- all other entities for which the distance should be computed
         """
-        free_tiles_distance: dict[tuple[int, int], int] = self.get_possible_moves(
+        free_tiles_distance: dict[Position, int] = self.get_possible_moves(
             tuple(entity.position),
             (self.map["width"] * self.map["height"]) // (TILE_SIZE * TILE_SIZE),
         )
@@ -899,8 +899,8 @@ class LevelScene(Scene):
         Open a chest and send its content to the given character
 
         Keyword arguments:
-        actor -- the character opening the chest
-        chest -- the chest that is being open
+        actor -- the character performing the action
+        chest -- the object that is being opened
         """
         # Get object inside the chest
         item = chest.open()
@@ -1195,7 +1195,6 @@ class LevelScene(Scene):
         self,
         attacker: Movable,
         target: Destroyable,
-        attacker_allies: Sequence[Destroyable],
         target_allies: Sequence[Destroyable],
         kind: DamageKind,
     ) -> None:
@@ -1205,7 +1204,6 @@ class LevelScene(Scene):
         Keyword arguments:
         attacker -- the entity that is making the attack
         target -- the target of the attack
-        attacker_allies -- the allies of the attacker
         target_allies -- the allies of the target
         kind -- the nature of the damage that would be dealt
         """
@@ -1328,15 +1326,15 @@ class LevelScene(Scene):
         entity -- the entity for which the action should be computed
         is_ally -- a boolean indicating if the entity is an ally or not
         """
-        possible_moves: dict[tuple[int, int], int] = self.get_possible_moves(
+        possible_moves: dict[Position, int] = self.get_possible_moves(
             tuple(entity.position), entity.max_moves
         )
         targets: Sequence[Movable] = (
             self.entities.foes if is_ally else self.players + self.entities.allies
         )
-        allies: Sequence[Movable] = (
-            self.players + self.entities.allies if is_ally else self.entities.foes
-        )
+        # allies: Sequence[Movable] = (
+        #     self.players + self.entities.allies if is_ally else self.entities.foes
+        # )
         tile: Optional[Position] = entity.act(
             possible_moves, self.distance_between_all(entity, targets)
         )
@@ -1349,8 +1347,8 @@ class LevelScene(Scene):
                 entity.set_move(path)
             else:
                 # Entity choose to attack the entity on the tile
-                entity_attacked = self.get_entity_on_tile(tile)
-                self.duel(entity, entity_attacked, allies, targets, entity.attack_kind)
+                entity_attacked: Destroyable = self.get_entity_on_tile(tile)
+                self.duel(entity, entity_attacked, targets, entity.attack_kind)
                 entity.end_turn()
 
     def interact_item_shop(self, item: Item, item_button: Button) -> None:
@@ -2088,7 +2086,6 @@ class LevelScene(Scene):
                             self.duel(
                                 self.selected_player,
                                 entity,
-                                self.players + self.entities.allies,
                                 self.entities.foes,
                                 self.selected_player.attack_kind,
                             )

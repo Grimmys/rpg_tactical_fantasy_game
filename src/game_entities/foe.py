@@ -98,10 +98,10 @@ class Foe(Movable):
             strength,
             attack_kind,
             strategy,
+            reach,
             lvl,
             alterations=alterations,
         )
-        self.reach: Sequence[int] = reach
         self.xp_gain: int = int(xp_gain * (1.1 ** (lvl - 1)))
         self.potential_loot: Sequence[tuple[Item, float]] = loot
         self.keywords: Sequence[Keyword] = [] if keywords is None else keywords

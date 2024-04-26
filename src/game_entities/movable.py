@@ -92,6 +92,7 @@ class Movable(Destroyable):
     target -- the target of the current attack if there is any
     _attack_kind -- the kind of damage dealt by the entity
     strategy -- the strategy of the entity if it's controlled by the AI
+    reach -- the range of reach of the entity
     skills -- the list of skills of the entity
     walk_sfx -- the sound started when the entity is moving
     skeleton_sfx -- the sound started when a skeleton is moving
@@ -126,6 +127,7 @@ class Movable(Destroyable):
         strength: int,
         attack_kind: str,
         strategy: str,
+        reach: Sequence[int],
         lvl: int = 1,
         skills: Optional[Sequence[Skill]] = None,
         alterations: Optional[Sequence[Alteration]] = None,
@@ -159,6 +161,7 @@ class Movable(Destroyable):
             DamageKind[attack_kind] if attack_kind is not None else None
         )
         self.strategy: EntityStrategy = EntityStrategy[strategy]
+        self.reach: Sequence[int] = reach
         self.skills: Sequence[Skill] = skills
 
         self.walk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
@@ -427,7 +430,7 @@ class Movable(Destroyable):
         return False
 
     # TODO: should return None if there is no Item found instead of -1
-    def remove_item(self, item_to_remove: Item) -> Union[Item, int]:
+    def remove_item(self, item_to_remove: Optional[Item]) -> Union[Item, int]:
         """
         Remove the given item from the entity's inventory and return it.
 

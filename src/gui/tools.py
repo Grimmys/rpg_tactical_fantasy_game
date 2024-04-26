@@ -31,7 +31,7 @@ def show_fps(
 def blit_alpha(
     target: pygame.Surface,
     source: pygame.Surface,
-    location: tuple[int, int],
+    location: Position,
     opacity: int,
 ):
     """

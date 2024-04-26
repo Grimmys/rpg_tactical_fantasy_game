@@ -114,6 +114,7 @@ class Character(Movable):
             strength,
             "PHYSICAL",
             strategy,
+            [1],
             lvl,
             skills,
             alterations,
@@ -125,11 +126,11 @@ class Character(Movable):
         self.gold: int = gold
         self.interaction: dict[str, any] = interaction
         self.join_team: bool = False
-        self.reach_: Sequence[int] = [1]
         self.constitution: int = (
             Character.races_data[race]["constitution"]
             + Character.classes_data[classes[0]]["constitution"]
         )
+        self._reach: Sequence[int] = [1]
 
     def talk(self, actor: Entity) -> list[list[BoxElement]]:
         """
@@ -257,11 +258,15 @@ class Character(Movable):
         """
         Return the range of reach of the character.
         """
-        reach: Sequence[int] = self.reach_
+        reach: Sequence[int] = self._reach
         weapon: Weapon = self.get_weapon()
         if weapon is not None:
             reach = weapon.reach
         return reach
+
+    @reach.setter
+    def reach(self, value: Sequence[int]):
+        self._reach = value
 
     @property
     def attack_kind(self) -> DamageKind:
