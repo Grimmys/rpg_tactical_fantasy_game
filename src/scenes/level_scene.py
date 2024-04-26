@@ -1142,7 +1142,7 @@ class LevelScene(Scene):
         elif isinstance(target, Character):
             pygame.mixer.Sound.play(self.talk_sfx)
 
-            element_grid = target.talk(actor)
+            element_grid = target.talk()
             self.menu_manager.open_menu(
                 InfoBox(
                     str(target),

@@ -132,7 +132,7 @@ class Character(Movable):
         )
         self._reach: Sequence[int] = [1]
 
-    def talk(self, actor: Entity) -> list[list[BoxElement]]:
+    def talk(self) -> list[list[BoxElement]]:
         """
         Compute the dialog that should be displayed to the player when trying to interact with the entity.
 
@@ -249,7 +249,7 @@ class Character(Movable):
         Return the weapon born by the character.
         """
         for equipment in self.equipments:
-            if equipment.body_part == "right_hand":
+            if equipment.body_part == "right_hand" and isinstance(equipment, Weapon):
                 return equipment
         return None
 
@@ -375,7 +375,7 @@ class Character(Movable):
 
     def unequip(self, equipment: Equipment) -> bool:
         """
-        Handle the unequipment of the given equipment.
+        Handle the unequipping of the given equipment.
         Return whether the equipment has been successfully unequipped or not.
 
         Keyword argument:
