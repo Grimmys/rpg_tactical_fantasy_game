@@ -9,7 +9,6 @@ from copy import copy
 from typing import Optional
 
 import pygame.mixer
-from lxml import etree
 from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
 
 from src.game_entities.building import Building
@@ -124,7 +123,7 @@ class Shop(Building):
         Return the message that should be displayed to the player after the purchase tentative.
 
         Keyword arguments:
-        actor -- the actor buying the item
+        actor -- the actor making the purchase
         item -- the item that is being bought
         """
         if self.current_visitor.gold >= item.price:
@@ -152,7 +151,7 @@ class Shop(Building):
         Return whether the item has been sold or not and the message that should be displayed to the player.
 
         Keyword arguments:
-        actor -- the actor selling the item
+        actor -- the actor making the sale
         item -- the item that is being sold
         """
         if 0 < item.resell_price < self.shop_balance:

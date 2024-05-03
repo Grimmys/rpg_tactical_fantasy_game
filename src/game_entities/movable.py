@@ -445,13 +445,25 @@ class Movable(Destroyable):
     def use_item(self, item: Consumable) -> tuple[bool, Sequence[str]]:
         """
         Consume the given item.
-        Return whether the item has been used or not and
-        the sequence of messages that should be displayed to the player.
+        Return whether the consumable has been used (it can fail if conditions are not met) and the
+        messages that should be displayed on the interface.
 
         Keyword arguments:
         item -- the item that should be consumed
         """
-        return item.use(self)
+        success: bool = False
+        messages: list[str] = []
+        for effect in item.effects:
+            sub_success: bool
+            message: str
+            sub_success, message = effect.apply_on_ent(self)
+            messages.append(message)
+            if sub_success:
+                success = True
+        if success:
+            pygame.mixer.Sound.play(item.drink_sfx)
+            self.remove_item(item)
+        return success, messages
 
     def move(self) -> None:
         """

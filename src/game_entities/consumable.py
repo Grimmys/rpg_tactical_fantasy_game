@@ -43,27 +43,3 @@ class Consumable(Item):
         self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "potion.ogg")
         )
-
-    def use(self, entity: Movable) -> tuple[bool, Sequence[str]]:  # NOQA
-        """
-        Apply the effects of the consumable to the entity that used it.
-
-        Return whether the consumable has been used (it can fail if conditions are not met) and the
-        messages that should be displayed on the interface.
-
-        Keyword arguments:
-        entity -- the entity that is trying to use the consumable
-        """
-        success: bool = False
-        messages: list[str] = []
-        for effect in self.effects:
-            sub_success: bool
-            message: str
-            sub_success, message = effect.apply_on_ent(entity)
-            messages.append(message)
-            if sub_success:
-                success = True
-        if success:
-            pygame.mixer.Sound.play(self.drink_sfx)
-            entity.remove_item(self)
-        return success, messages
