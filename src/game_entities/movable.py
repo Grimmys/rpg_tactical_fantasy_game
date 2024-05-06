@@ -316,7 +316,7 @@ class Movable(Destroyable):
 
     def get_abbreviated_alterations(self) -> str:
         """
-        Return the list of alterations in a abbreviated
+        Return the list of alterations in an abbreviated
         way
         """
         formatted_string: str = ""
