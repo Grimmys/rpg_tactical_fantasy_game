@@ -274,7 +274,6 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
-
     @property
     def diary_entries_text_element_set(self):
         """
@@ -483,7 +482,7 @@ class LevelScene(Scene):
         Verify if victory or defeat conditions are met.
         Handle next AI action if it's not player's turn.
 
-        Return the whether the game should be ended or not.
+        Return whether the game should be ended or not.
         """
         if self.quit_request:
             return True
@@ -899,8 +898,8 @@ class LevelScene(Scene):
         Open a chest and send its content to the given character
 
         Keyword arguments:
-        actor -- the character opening the chest
-        chest -- the chest that is being open
+        actor -- the character performing the action
+        chest -- the object that is being opened
         """
         # Get object inside the chest
         item = chest.open()
@@ -1195,7 +1194,6 @@ class LevelScene(Scene):
         self,
         attacker: Movable,
         target: Destroyable,
-        attacker_allies: Sequence[Destroyable],
         target_allies: Sequence[Destroyable],
         kind: DamageKind,
     ) -> None:
@@ -1334,9 +1332,6 @@ class LevelScene(Scene):
         targets: Sequence[Movable] = (
             self.entities.foes if is_ally else self.players + self.entities.allies
         )
-        allies: Sequence[Movable] = (
-            self.players + self.entities.allies if is_ally else self.entities.foes
-        )
         tile: Optional[Position] = entity.act(
             possible_moves, self.distance_between_all(entity, targets)
         )
@@ -1350,7 +1345,7 @@ class LevelScene(Scene):
             else:
                 # Entity choose to attack the entity on the tile
                 entity_attacked = self.get_entity_on_tile(tile)
-                self.duel(entity, entity_attacked, allies, targets, entity.attack_kind)
+                self.duel(entity, entity_attacked, targets, entity.attack_kind)
                 entity.end_turn()
 
     def interact_item_shop(self, item: Item, item_button: Button) -> None:
@@ -2088,7 +2083,6 @@ class LevelScene(Scene):
                             self.duel(
                                 self.selected_player,
                                 entity,
-                                self.players + self.entities.allies,
                                 self.entities.foes,
                                 self.selected_player.attack_kind,
                             )
