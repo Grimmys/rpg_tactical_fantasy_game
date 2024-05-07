@@ -1,11 +1,10 @@
 import random as rd
 import unittest
 
-import pygame
-
 from src.constants import TILE_SIZE
 from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
+from src.gui.position import Position
 from src.scenes.level_scene import LevelEntityCollections
 from tests.random_data_library import (random_entities, random_foe_entity,
                                        random_item, random_objective,
@@ -18,7 +17,7 @@ class TestMission(unittest.TestCase):
     def setUpClass(cls):
         minimal_setup_for_game()
 
-    def test_init_mision(self):
+    def test_init_mission(self):
         is_main = True
         nature = MissionType.POSITION
         objectives = [random_objective(), random_objective()]
@@ -51,8 +50,8 @@ class TestMission(unittest.TestCase):
     def test_position_is_valid_to_go(self):
         nature = MissionType.POSITION
         objectives = [
-            random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
-            random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE)),
+            random_objective(position=Position(1 * TILE_SIZE, 0 * TILE_SIZE)),
+            random_objective(position=Position(3 * TILE_SIZE, 2 * TILE_SIZE)),
         ]
         mission = Mission(True, nature, objectives, "Test mission", 0)
         self.assertTrue(mission.is_position_valid(objectives[0].position))
@@ -65,8 +64,8 @@ class TestMission(unittest.TestCase):
     def test_position_is_valid_to_touch(self):
         nature = MissionType.TOUCH_POSITION
         objectives = [
-            random_objective(position=pygame.Vector2(1 * TILE_SIZE, 0 * TILE_SIZE)),
-            random_objective(position=pygame.Vector2(3 * TILE_SIZE, 2 * TILE_SIZE)),
+            random_objective(position=Position(1 * TILE_SIZE, 0 * TILE_SIZE)),
+            random_objective(position=Position(3 * TILE_SIZE, 2 * TILE_SIZE)),
         ]
         mission = Mission(True, nature, objectives, "Test mission", 0)
         self.assertFalse(mission.is_position_valid(objectives[0].position))
@@ -75,29 +74,29 @@ class TestMission(unittest.TestCase):
         first_position = objectives[0].position
         self.assertTrue(
             mission.is_position_valid(
-                (first_position[0] + TILE_SIZE, first_position[1])
+                Position(first_position[0] + TILE_SIZE, first_position[1])
             )
         )
         self.assertTrue(
             mission.is_position_valid(
-                (first_position[0], first_position[1] + TILE_SIZE)
+                Position(first_position[0], first_position[1] + TILE_SIZE)
             )
         )
         self.assertTrue(
             mission.is_position_valid(
-                (first_position[0] - TILE_SIZE, first_position[1])
+                Position(first_position[0] - TILE_SIZE, first_position[1])
             )
         )
         self.assertTrue(
             mission.is_position_valid(
-                (first_position[0], first_position[1] - TILE_SIZE)
+                Position(first_position[0], first_position[1] - TILE_SIZE)
             )
         )
 
         second_position = objectives[1].position
         self.assertTrue(
             mission.is_position_valid(
-                (second_position[0] + TILE_SIZE, second_position[1])
+                Position(second_position[0] + TILE_SIZE, second_position[1])
             )
         )
 

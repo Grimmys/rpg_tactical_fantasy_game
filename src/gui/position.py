@@ -3,8 +3,15 @@ Define Position data structure, corresponding to a 2D coordinate on a pygame Sur
 """
 from __future__ import annotations
 
-from typing import Union
-
 import pygame
 
-Position = Union[pygame.Vector2, tuple[int, int]]
+
+class Position(pygame.Vector2):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __str__(self):
+        return f'({self.x}, {self.y})'

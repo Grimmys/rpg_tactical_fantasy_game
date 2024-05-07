@@ -246,9 +246,9 @@ class LevelScene(Scene):
         self.defeat: bool = False
 
         # Data structures for possible actions
-        self.possible_moves: dict[tuple[int, int], int] = {}
-        self.possible_attacks: list[tuple[int, int]] = []
-        self.possible_interactions: list[tuple[int, int]] = []
+        self.possible_moves: dict[Position, int] = {}
+        self.possible_attacks: list[Position] = []
+        self.possible_interactions: list[Position] = []
 
         # Storage of current selected entity
         self.selected_player: Optional[Player] = None
@@ -381,7 +381,7 @@ class LevelScene(Scene):
 
         self.sidebar = Sidebar(
             (MENU_WIDTH, MENU_HEIGHT),
-            pygame.Vector2(0, MAX_MAP_HEIGHT),
+            Position(0, MAX_MAP_HEIGHT),
             self.missions,
             self.number,
         )
@@ -731,7 +731,7 @@ class LevelScene(Scene):
             for y_coordinate in (1 - abs(x_coordinate), -1 + abs(x_coordinate)):
                 tile_x: int = position[0] + (x_coordinate * TILE_SIZE)
                 tile_y: int = position[1] + (y_coordinate * TILE_SIZE)
-                tile_position = tile_x, tile_y
+                tile_position: Position = Position(tile_x, tile_y)
                 tile_content: Optional[Entity] = self.get_entity_on_tile(tile_position)
                 tiles_content.append(tile_content)
         return tiles_content
@@ -746,7 +746,8 @@ class LevelScene(Scene):
         position -- the starting position
         max_moves -- the maximum number of tiles that could be traveled
         """
-        tiles: dict[Position, int] = {position: 0}
+        new_position = Position(position.x, position.y)
+        tiles: dict[Position, int] = {new_position: 0}
         previously_computed_tiles: dict[Position, int] = tiles
         for i in range(1, max_moves + 1):
             tiles_current_level: dict[Position, int] = {}
@@ -755,7 +756,7 @@ class LevelScene(Scene):
                     for y_coordinate in (1 - abs(x_coordinate), -1 + abs(x_coordinate)):
                         tile_x: int = tile[0] + (x_coordinate * TILE_SIZE)
                         tile_y: int = tile[1] + (y_coordinate * TILE_SIZE)
-                        tile_position = (tile_x, tile_y)
+                        tile_position = Position(tile_x, tile_y)
                         if (
                             self.is_tile_available(tile_position)
                             and tile_position not in tiles
@@ -768,10 +769,10 @@ class LevelScene(Scene):
 
     def get_possible_attacks(
         self,
-        possible_moves: Sequence[tuple[int, int]],
+        possible_moves: Sequence[Position],
         reach: Sequence[int],
         from_ally_side: bool,
-    ) -> set[tuple[float, float]]:
+    ) -> set[Position]:
         """
         Return all the tiles that could be targeted for an attack from a specific entity
 
@@ -780,7 +781,7 @@ class LevelScene(Scene):
         reach -- the reach of the attacking entity
         from_ally_side -- a boolean indicating whether this is a friendly attack or not
         """
-        tiles: list[tuple[float, float]] = []
+        tiles: list[Position] = []
 
         entities = list(self.entities.breakables)
         if from_ally_side:
@@ -794,11 +795,11 @@ class LevelScene(Scene):
                     for y_coordinate in (i - abs(x_coordinate), -i + abs(x_coordinate)):
                         tile_x: int = entity.position[0] + (x_coordinate * TILE_SIZE)
                         tile_y: int = entity.position[1] + (y_coordinate * TILE_SIZE)
-                        tile_position = (tile_x, tile_y)
+                        tile_position = Position(tile_x, tile_y)
                         if tile_position in possible_moves:
-                            tiles.append(tuple(entity.position))
+                            tiles.append(entity.position)
 
-        return set(tiles)
+        return set([Position(i.x, i.y) for i in tiles])
 
     def is_tile_available(self, tile: Position) -> bool:
         """
@@ -807,8 +808,8 @@ class LevelScene(Scene):
         Keyword arguments:
         tile -- the position of the tile
         """
-        min_case: Position = pygame.Vector2(self.map["x"], self.map["y"])
-        max_case: Position = pygame.Vector2(
+        min_case: Position = Position(self.map["x"], self.map["y"])
+        max_case: Position = Position(
             self.map["x"] + self.map["width"],
             self.map["y"] + self.map["height"],
         )
@@ -842,7 +843,7 @@ class LevelScene(Scene):
         return None
 
     def determine_path_to(
-        self, destination_tile: Position, distance_for_tile: dict[tuple[int, int], int]
+        self, destination_tile: Position, distance_for_tile: dict[Position, int]
     ) -> list[Position]:
         """
         Return an ordered list of position that represent the path from one tile to another
@@ -852,18 +853,16 @@ class LevelScene(Scene):
         distance -- the distance between the starting tile and the destination
         """
         path: list[Position] = [destination_tile]
-        current_tile: tuple[int, int] = tuple(destination_tile)
+        current_tile: Position = destination_tile
         while distance_for_tile[current_tile] > 1:
             # Check for neighbour cases
-            available_tiles: dict[tuple[int, int], int] = self.get_possible_moves(
-                tuple(current_tile), 1
-            )
+            available_tiles: dict[Position, int] = self.get_possible_moves(current_tile, 1)
             for tile in available_tiles:
                 if tile in distance_for_tile:
                     distance = distance_for_tile[tile]
                     if distance < distance_for_tile[current_tile]:
                         current_tile = tile
-                        path.insert(0, pygame.Vector2(current_tile))
+                        path.insert(0, current_tile)
         return path
 
     def distance_between_all(
@@ -876,8 +875,8 @@ class LevelScene(Scene):
         entity -- the entity for which the distance from all other entities should be computed
         all_other_entities -- all other entities for which the distance should be computed
         """
-        free_tiles_distance: dict[tuple[int, int], int] = self.get_possible_moves(
-            tuple(entity.position),
+        free_tiles_distance: dict[Position, int] = self.get_possible_moves(
+            entity.position,
             (self.map["width"] * self.map["height"]) // (TILE_SIZE * TILE_SIZE),
         )
         entities_distance: dict[Entity, int] = {
@@ -1099,7 +1098,7 @@ class LevelScene(Scene):
             new_based_position: Position = target.linked_to.position
             possible_positions_with_distance: dict[
                 Position, int
-            ] = self.get_possible_moves(tuple(new_based_position), 1)
+            ] = self.get_possible_moves(new_based_position, 1)
             # Remove portal pos since player cannot be on the portal
             del possible_positions_with_distance[new_based_position]
             if possible_positions_with_distance:
@@ -1326,8 +1325,8 @@ class LevelScene(Scene):
         entity -- the entity for which the action should be computed
         is_ally -- a boolean indicating if the entity is an ally or not
         """
-        possible_moves: dict[tuple[int, int], int] = self.get_possible_moves(
-            tuple(entity.position), entity.max_moves
+        possible_moves: dict[Position, int] = self.get_possible_moves(
+            entity.position, entity.max_moves
         )
         targets: Sequence[Movable] = (
             self.entities.foes if is_ally else self.players + self.entities.allies
@@ -2128,7 +2127,7 @@ class LevelScene(Scene):
                     player.selected = True
                     self.selected_player = player
                     self.possible_moves = self.get_possible_moves(
-                        tuple(player.position),
+                        player.position,
                         player.max_moves + player.get_stat_change("speed"),
                     )
                     self.possible_attacks = (
@@ -2272,7 +2271,7 @@ class LevelScene(Scene):
                         ) and entity.get_rect().collidepoint(position_inside_level):
                             self.watched_entity = entity
                             self.possible_moves = self.get_possible_moves(
-                                tuple(entity.position), entity.max_moves
+                                entity.position, entity.max_moves
                             )
                             reach: Sequence[int] = self.watched_entity.reach
                             self.possible_attacks = {}
@@ -2340,7 +2339,7 @@ class LevelScene(Scene):
         Keyword arguments:
         position -- the absolute position to be converted
         """
-        return position - pygame.Vector2(
+        return position - Position(
             self.screen.get_width() // 2 - self.active_screen_part.get_width() // 2,
             self.screen.get_height() // 2 - self.active_screen_part.get_height() // 2,
         )
