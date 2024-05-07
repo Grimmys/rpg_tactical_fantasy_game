@@ -31,7 +31,7 @@ def show_fps(
 def blit_alpha(
     target: pygame.Surface,
     source: pygame.Surface,
-    location: tuple[int, int],
+    location: Position,
     opacity: int,
 ):
     """
@@ -44,7 +44,7 @@ def blit_alpha(
     opacity -- the opacity of the blitted surface
     """
     source.set_alpha(opacity)
-    target.blit(source, location)
+    target.blit(source, (location.x, location.y))
 
 
 def distance(position: Position, other_position: Position) -> int:

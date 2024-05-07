@@ -1,3 +1,6 @@
+import os
+import pathlib
+
 from lxml import etree
 
 # Get language from options.xml

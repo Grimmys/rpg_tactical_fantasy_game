@@ -7,16 +7,17 @@ import pygame
 from pygame.rect import Rect
 
 from src.constants import BUTTON_SIZE, MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
+from src.gui.position import Position
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import QuitActionKind
 from src.scenes.start_scene import StartScene
 from tests.tools import minimal_setup_for_game
 
-NEW_GAME_BUTTON_POS = pygame.Vector2(200, 230)
-LOAD_GAME_BUTTON_POS = pygame.Vector2(200, 300)
-LOAD_FIRST_SLOT_BUTTON_POS = pygame.Vector2(200, 203)
-OPTIONS_BUTTON_POS = pygame.Vector2(200, 370)
-EXIT_GAME_BUTTON_POS = pygame.Vector2(200, 440)
+NEW_GAME_BUTTON_POS = Position(200, 230)
+LOAD_GAME_BUTTON_POS = Position(200, 300)
+LOAD_FIRST_SLOT_BUTTON_POS = Position(200, 203)
+OPTIONS_BUTTON_POS = Position(200, 370)
+EXIT_GAME_BUTTON_POS = Position(200, 440)
 
 LEFT_BUTTON = 1
 MIDDLE_BUTTON = 2
@@ -69,9 +70,9 @@ class TestStartScreen(unittest.TestCase):
     def generate_position(start_position, end_position):
         # Generate random pos in a rect having start_pos as top left corner
         # and end_pos as bottom right corner
-        position = (
-            randrange(start_position.x, end_position.x),
-            randrange(start_position.y, end_position.y),
+        position = Position(
+            randrange(int(start_position.x), int(end_position.x)),
+            randrange(int(start_position.y), int(end_position.y)),
         )
         # Print pos in case of test failure
         print(f"Generated position: {position}")
@@ -93,7 +94,7 @@ class TestStartScreen(unittest.TestCase):
 
         # Generate random pos on new game button
         position = self.generate_position(
-            NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + pygame.Vector2(BUTTON_SIZE)
+            NEW_GAME_BUTTON_POS, NEW_GAME_BUTTON_POS + BUTTON_SIZE
         )
         self.start_screen.click(LEFT_BUTTON, position)
 
@@ -182,7 +183,7 @@ class TestStartScreen(unittest.TestCase):
         valid_pos = False
         position = (0, 0)
         while not valid_pos:
-            position = (
+            position = Position(
                 randrange(0, self.start_screen.screen.get_size()[0]),
                 randrange(0, self.start_screen.screen.get_size()[1]),
             )
@@ -191,7 +192,7 @@ class TestStartScreen(unittest.TestCase):
                 if button.collidepoint(position):
                     valid_pos = False
         # Print pos in case of a test failure
-        print(position)
+        print(f'test_click_on_nothing: {position}')
 
         self.start_screen.click(LEFT_BUTTON, position)
 
