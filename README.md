@@ -14,8 +14,10 @@ Programming language: Python
 
 ### Existing tool
 
-<Inform the name of the existing tool that was executed and how it was executed>
-We used Coverage.py (https://github.com/nedbat/coveragepy/blob/7.5.3/doc/index.rst), it was executed by.. 
+We used Coverage.py (https://github.com/nedbat/coveragepy/blob/7.5.3/doc/index.rst), it was executed by Marcis
+The tool was used to run the included tests from the _/tests_ ditectory with _coverage run --source=tests/ -m unittest discover -s tests/_, after which a report was generated with _coverage report -m_ which produced a 98% coverage:
+""will insert screenshot later""
+
 
 <Show the coverage results provided by the existing tool with a screenshot>
 
