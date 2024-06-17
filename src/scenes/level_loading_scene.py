@@ -10,6 +10,7 @@ from src.constants import WHITE
 from src.gui.animation import Frame
 from src.gui.fade_in_out_animation import FadeInOutAnimation
 from src.gui.fonts import fonts
+from src.gui.position import Position
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import Scene
 from src.services.language import *
@@ -61,7 +62,7 @@ class LevelLoadingScene(Scene):
             ),
         )
 
-        return Frame(level_title_screen, pygame.Vector2(0, 0), DELAY_BETWEEN_FRAMES)
+        return Frame(level_title_screen, Position(0, 0), DELAY_BETWEEN_FRAMES)
 
     def _generate_level_title_rendering(self) -> pygame.Surface:
         """

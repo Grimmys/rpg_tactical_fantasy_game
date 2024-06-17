@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Optional
 
-import pygame
-
 from src.constants import TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.breakable import Breakable
@@ -31,6 +29,7 @@ from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
 from src.gui.position import Position
 from src.services.language import *
+from src.services.global_foes import link_foe_to_mission
 
 foes_data = {}
 fountains_data = {}
@@ -38,8 +37,6 @@ skills_data = {}
 
 RACES_DATA_PATH = "data/races.xml"
 CLASSES_DATA_PATH = "data/classes.xml"
-
-from src.services.global_foes import foes_by_mission, link_foe_to_mission
 
 
 def load_races() -> dict[str, dict[str, any]]:
@@ -184,7 +181,7 @@ def load_placements(positions, gap_x, gap_y) -> Sequence[Position]:
     for coordinates in positions:
         x_coordinate = int(coordinates.find("x").text) * TILE_SIZE + gap_x
         y_coordinate = int(coordinates.find("y").text) * TILE_SIZE + gap_y
-        placements.append(pygame.Vector2(x_coordinate, y_coordinate))
+        placements.append(Position(x_coordinate, y_coordinate))
     return placements
 
 
@@ -278,7 +275,7 @@ def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=
     # Dynamic data
     x_coordinate = int(entity.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(entity.find("position/y").text) * TILE_SIZE + gap_y
-    position = pygame.Vector2(x_coordinate, y_coordinate)
+    position = Position(x_coordinate, y_coordinate)
 
     level_element = (
         entity.find("level") if entity.find("level") is not None else data.find("level")
@@ -312,12 +309,12 @@ def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=
 
 
 def load_artificial_entity(
-    name: str,
-    data: etree.Element,
-    position: Position,
-    level: Optional[int] = None,
-    strategy: Optional[str] = None,
-    extension_path: str = "",
+        name: str,
+        data: etree.Element,
+        position: Position,
+        level: Optional[int] = None,
+        strategy: Optional[str] = None,
+        extension_path: str = "",
 ):
     # Static data
     sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
@@ -451,8 +448,8 @@ def load_ally(name: str, position: Position) -> Character:
         equipments.append(equipment_loaded)
 
     skills = (
-        Character.classes_data[classes[0]]["skills"]
-        + Character.races_data[race]["skills"]
+            Character.classes_data[classes[0]]["skills"]
+            + Character.races_data[race]["skills"]
     )
 
     loaded_ally = Character(
@@ -485,6 +482,7 @@ def load_ally(name: str, position: Position) -> Character:
     loaded_ally.healed()
 
     return loaded_ally
+
 
 def load_foe_from_save(foe_element, gap_x, gap_y):
     """
@@ -597,12 +595,12 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
 
 
 def load_foe(
-    name: str,
-    position: Position,
-    level: int,
-    strategy: Optional[str],
-    specific_loot: Sequence[Item],
-    mission_target: str,
+        name: str,
+        position: Position,
+        level: int,
+        strategy: Optional[str],
+        specific_loot: Sequence[Item],
+        mission_target: str,
 ) -> Foe:
     if name not in foes_data:
         foes_data[name] = etree.parse("data/foes.xml").find(name)
@@ -623,12 +621,12 @@ def load_foe(
     )
     attack_kind = foes_data[name].find("attack_kind").text.strip()
     loot = [
-        (
-            parse_item_file(item.find("name").text.strip()),
-            float(item.find("probability").text),
-        )
-        for item in foes_data[name].findall("loot/item")
-    ] + [(item, 1.0) for item in specific_loot]
+               (
+                   parse_item_file(item.find("name").text.strip()),
+                   float(item.find("probability").text),
+               )
+               for item in foes_data[name].findall("loot/item")
+           ] + [(item, 1.0) for item in specific_loot]
     gold_looted = foes_data[name].find("loot/gold")
     if gold_looted is not None:
         loot.append(
@@ -687,7 +685,7 @@ def load_chest_from_save(chest, gap_x, gap_y):
     # Static data
     x_coordinate = int(chest.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(chest.find("position/y").text) * TILE_SIZE + gap_y
-    position = pygame.Vector2(x_coordinate, y_coordinate)
+    position = Position(x_coordinate, y_coordinate)
     sprite_closed = chest.find("closed/sprite").text.strip()
     sprite_opened = chest.find("opened/sprite").text.strip()
 
@@ -718,7 +716,7 @@ def load_door_from_save(door, gap_x, gap_y):
     # Static data
     x_coordinate = int(door.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(door.find("position/y").text) * TILE_SIZE + gap_y
-    position = pygame.Vector2(x_coordinate, y_coordinate)
+    position = Position(x_coordinate, y_coordinate)
     sprite = door.find("sprite").text.strip()
 
     # Dynamic data
@@ -728,19 +726,20 @@ def load_door_from_save(door, gap_x, gap_y):
     return loaded_door
 
 
-def load_building_from_save(building, gap_x, gap_y):
+def load_building_from_save(building, gap_x, gap_y, shop_balance=500):
     """
 
     :param building:
     :param gap_x:
     :param gap_y:
+    :param shop_balance:
     :return:
     """
     # Static data
     name = building.find("name").text.strip()
     x_coordinate = int(building.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(building.find("position/y").text) * TILE_SIZE + gap_y
-    position = pygame.Vector2(x_coordinate, y_coordinate)
+    position = Position(x_coordinate, y_coordinate)
     sprite = building.find("sprite").text.strip()
     interaction = building.find("interaction")
     interaction_element = {}
@@ -774,7 +773,8 @@ def load_building_from_save(building, gap_x, gap_y):
                     "quantity": int(item.find("quantity").text.strip()),
                 }
                 stock.append(entry)
-            loaded_building = Shop(name, position, sprite, stock, interaction_element)
+            loaded_building = Shop(name, position, sprite, shop_balance, stock, interaction_element)
+
         else:
             print("Error : building type isn't recognized : ", type)
             raise SystemError
@@ -833,10 +833,10 @@ def load_portal_from_save(portal_couple, gap_x, gap_y):
     """
     first_x = int(portal_couple.find("first/position/x").text) * TILE_SIZE + gap_x
     first_y = int(portal_couple.find("first/position/y").text) * TILE_SIZE + gap_y
-    first_position = pygame.Vector2(first_x, first_y)
+    first_position = Position(first_x, first_y)
     second_x = int(portal_couple.find("second/position/x").text) * TILE_SIZE + gap_x
     second_y = int(portal_couple.find("second/position/y").text) * TILE_SIZE + gap_y
-    second_position = pygame.Vector2(second_x, second_y)
+    second_position = Position(second_x, second_y)
     sprite = "imgs/dungeon_crawl/" + portal_couple.find("sprite").text.strip()
     first_portal = Portal(first_position, sprite)
     second_portal = Portal(second_position, sprite)
@@ -855,12 +855,12 @@ def load_fountain_from_save(fountain, gap_x, gap_y):
     name = fountain.find("type").text.strip()
     x_coordinate = int(fountain.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(fountain.find("position/y").text) * TILE_SIZE + gap_y
-    position = pygame.Vector2(x_coordinate, y_coordinate)
+    position = Position(x_coordinate, y_coordinate)
     if name not in fountains_data:
         fountains_data[name] = etree.parse("data/fountains.xml").find(name)
     sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
     sprite_empty = (
-        "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
+            "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
     )
     effect_name = fountains_data[name].find("effect").text.strip()
     power = int(fountains_data[name].find("power").text.strip())
@@ -883,7 +883,7 @@ def load_fountain(name: str, position: Position) -> Fountain:
 
     sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
     sprite_empty = (
-        "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
+            "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
     )
 
     effect_name = fountains_data[name].find("effect").text.strip()
@@ -1035,8 +1035,8 @@ def load_player(player_element, from_save):
         player_t = tree.xpath(name)[0]
     else:
         skills = (
-            Character.classes_data[player_class]["skills"]
-            + Character.races_data[race]["skills"]
+                Character.classes_data[player_class]["skills"]
+                + Character.races_data[race]["skills"]
         )
         player_t = player_element
 

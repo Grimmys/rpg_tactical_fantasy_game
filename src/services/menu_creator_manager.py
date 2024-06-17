@@ -54,16 +54,17 @@ close_function: Optional[Callable] = None
 
 
 def create_shop_menu(
-    interaction_callback: Callable,
-    stock: Sequence[dict[str, Union[Item, int]]],
-    gold: int,
-) -> InfoBox:
+        interaction_callback: Callable,
+        stock: Sequence[dict[str, Union[Item, int]]],
+        gold: int,
+        shop_balance: int) -> InfoBox:
     """
     Return the interface of a shop menu with user as the buyer.
 
     Keyword arguments:
     stock -- the collection of items that are available in the shop, with the quantity of each one
     gold -- the amount of gold that should be displayed at the bottom
+    shop_balance -- the shopkeeper's gold, displayed at the bottom
     """
     element_grid = []
     row = []
@@ -96,6 +97,8 @@ def create_shop_menu(
     # Gold at end
     player_gold_line = [TextElement(f_UR_GOLD(gold), font=fonts["ITEM_DESC_FONT"])]
     element_grid.append(player_gold_line)
+    shop_gold_line = [TextElement(f_SHOP_GOLD(shop_balance), font=fonts["ITEM_DESC_FONT"])]
+    element_grid.append(shop_gold_line)
 
     return InfoBox(
         STR_SHOP_BUYING,
@@ -107,10 +110,10 @@ def create_shop_menu(
 
 
 def create_inventory_menu(
-    interaction_callback: Callable,
-    items: Sequence[Item],
-    gold: int,
-    is_to_sell: bool = False,
+        interaction_callback: Callable,
+        items: Sequence[Item],
+        gold: int,
+        is_to_sell: bool = False,
 ) -> InfoBox:
     """
     Return the interface of a player inventory.
@@ -181,7 +184,7 @@ def create_inventory_menu(
 
 
 def create_equipment_menu(
-    interaction_callback: Callable, equipments: Sequence[Equipment]
+        interaction_callback: Callable, equipments: Sequence[Equipment]
 ) -> InfoBox:
     """
     Return the interface of a player equipment.
@@ -222,7 +225,7 @@ def create_equipment_menu(
 
 
 def create_trade_menu(
-    buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
+        buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
 ) -> InfoBox:
     """
     Return the interface for a trade between two players
@@ -262,7 +265,7 @@ def create_trade_menu(
                 )
                 item_button.callback = lambda button=item_button, item_reference=items[
                     i * 2 + j
-                ], owner=owner_i: buttons_callback["interact_item"](
+                    ], owner=owner_i: buttons_callback["interact_item"](
                     item_reference,
                     button,
                     [first_player, second_player],
@@ -354,7 +357,7 @@ def create_trade_menu(
 
 
 def create_status_menu(
-    buttons_callback: dict[str, Callable], player: Player
+        buttons_callback: dict[str, Callable], player: Player
 ) -> InfoBox:
     """
     Return the interface resuming the status of a player.
@@ -364,14 +367,14 @@ def create_status_menu(
     """
     grid_elements = [
         [
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             TextElement(STR_NAME_, text_color=GREEN, font=fonts["ITALIC_ITEM_FONT"]),
             TextElement(str(player)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             TextElement(
                 STR_SKILLS,
                 text_color=DARK_GREEN,
@@ -482,7 +485,7 @@ def create_status_menu(
         line_index += 1
     for j in range(line_index, len(grid_elements)):
         grid_elements[j].append(
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0))
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0))
         )
 
     return InfoBox(
@@ -493,12 +496,12 @@ def create_status_menu(
 
 
 def create_player_menu(
-    buttons_callback: dict[str, Callable],
-    player: Player,
-    buildings: Sequence[Building],
-    interactable_entities: Sequence[Entity],
-    missions: Sequence[Mission],
-    foes: Sequence[Foe],
+        buttons_callback: dict[str, Callable],
+        player: Player,
+        buildings: Sequence[Building],
+        interactable_entities: Sequence[Entity],
+        missions: Sequence[Mission],
+        foes: Sequence[Foe],
 ) -> InfoBox:
     """
     Return the interface of a player menu.
@@ -538,9 +541,9 @@ def create_player_menu(
 
     for entity in interactable_entities:
         if (
-            abs(entity.position[0] - player.position[0])
-            + abs(entity.position[1] - player.position[1])
-            == TILE_SIZE
+                abs(entity.position[0] - player.position[0])
+                + abs(entity.position[1] - player.position[1])
+                == TILE_SIZE
         ):
             if isinstance(entity, Player):
                 if not trade_option:
@@ -622,8 +625,8 @@ def create_player_menu(
     # Check if player is on mission position
     for mission in missions:
         if (
-            mission.type is MissionType.POSITION
-            or mission.type is MissionType.TOUCH_POSITION
+                mission.type is MissionType.POSITION
+                or mission.type is MissionType.TOUCH_POSITION
         ):
             if mission.is_position_valid(player.position):
                 grid_elements.insert(
@@ -637,9 +640,9 @@ def create_player_menu(
         for foe in foes:
             for reach in w_range:
                 if (
-                    abs(foe.position[0] - player.position[0])
-                    + abs(foe.position[1] - player.position[1])
-                    == TILE_SIZE * reach
+                        abs(foe.position[0] - player.position[0])
+                        + abs(foe.position[1] - player.position[1])
+                        == TILE_SIZE * reach
                 ):
                     grid_elements.insert(
                         0,
@@ -675,9 +678,9 @@ def create_diary_menu(grid_elements: list[list[BoxElement]]) -> InfoBox:
 
 
 def create_main_menu(
-    buttons_callback: dict[str, Callable],
-    is_initialization_phase: bool,
-    position: Position,
+        buttons_callback: dict[str, Callable],
+        is_initialization_phase: bool,
+        position: Position,
 ) -> InfoBox:
     """
     Return the interface of the main level menu.
@@ -712,7 +715,7 @@ def create_main_menu(
 
 
 def create_item_shop_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is on sale in a shop.
@@ -742,7 +745,7 @@ def create_item_shop_menu(
 
 
 def create_item_sell_menu(
-    buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
+        buttons_callback: dict[str, Callable], item_button_position: Position, item: Item
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory and can be sold in a shop.
@@ -772,11 +775,11 @@ def create_item_sell_menu(
 
 
 def create_trade_item_menu(
-    buttons_callback: dict[str, Callable],
-    item_button_position: Position,
-    item: Item,
-    players: Sequence[Player],
-    is_first_player_owner: bool,
+        buttons_callback: dict[str, Callable],
+        item_button_position: Position,
+        item: Item,
+        players: Sequence[Player],
+        is_first_player_owner: bool,
 ) -> InfoBox:
     """
     Return the interface of an item that is in a player inventory
@@ -816,10 +819,10 @@ def create_trade_item_menu(
 
 
 def create_item_menu(
-    buttons_callback: dict[str, Callable],
-    item_button_rect: pygame.Rect,
-    item: Item,
-    is_equipped: bool = False,
+        buttons_callback: dict[str, Callable],
+        item_button_rect: pygame.Rect,
+        item: Item,
+        is_equipped: bool = False,
 ) -> InfoBox:
     """
     Return the interface of an item of a player.
@@ -859,7 +862,7 @@ def create_item_menu(
 
 
 def create_item_description_stat(
-    stat_name: str, stat_value: str
+        stat_name: str, stat_value: str
 ) -> Sequence[BoxElement]:
     """
     Return the entry line for the formatted display of an item stat description.
@@ -1015,7 +1018,7 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
         ],
         [
             BoxElement(
-                pygame.Vector2(0, 0), pygame.Surface((0, 0)), margin=(0, 0, 10, 0)
+                Position(0, 0), pygame.Surface((0, 0)), margin=(0, 0, 10, 0)
             )
         ],
     ]
@@ -1028,7 +1031,7 @@ def create_skill_info_menu(skill: Skill) -> InfoBox:
 
 
 def create_status_entity_menu(
-    buttons_callback: dict[str, Callable], entity: Entity
+        buttons_callback: dict[str, Callable], entity: Entity
 ) -> InfoBox:
     """
     Return the interface for the status screen of an entity.
@@ -1049,8 +1052,8 @@ def create_status_entity_menu(
                 text_color=DARK_GREEN,
                 margin=(20, 0, 20, 0),
             ),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             TextElement(
                 STR_LOOT,
                 font=fonts["MENU_SUB_TITLE_FONT"],
@@ -1058,38 +1061,38 @@ def create_status_entity_menu(
                 margin=(20, 0, 20, 0),
             )
             if isinstance(entity, Foe)
-            else BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            else BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_TYPE_),
             TextElement(
                 TRANSLATIONS["attack_kinds"][str(entity.attack_kind.value).lower()]
             ),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_REACH_),
             TextElement(entity.get_formatted_reach()),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(
@@ -1098,15 +1101,15 @@ def create_status_entity_menu(
                 text_color=DARK_GREEN,
                 margin=(10, 0, 10, 0),
             ),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
             TextElement(
                 STR_SKILLS,
                 font=fonts["MENU_SUB_TITLE_FONT"],
                 text_color=DARK_GREEN,
                 margin=(10, 0, 10, 0),
             ),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_HP_),
@@ -1116,37 +1119,37 @@ def create_status_entity_menu(
                     entity.hit_points, entity.hit_points_max, WHITE
                 ),
             ),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_MOVE_),
             TextElement(str(entity.max_moves)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_ATTACK_),
             TextElement(str(entity.strength)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_DEFENSE_),
             TextElement(str(entity.defense)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(STR_MAGICAL_RES_),
             TextElement(str(entity.resistance)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
-            BoxElement(pygame.Vector2(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
+            BoxElement(Position(0, 0), pygame.Surface((0, 0)), (0, 0, 0, 0)),
         ],
         [
             TextElement(
@@ -1277,10 +1280,10 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
 
 
 def load_parameter_button(
-    formatted_name: str,
-    values: Sequence[dict[str, int]],
-    current_value: int,
-    edit_parameter_callback: Callable,
+        formatted_name: str,
+        values: Sequence[dict[str, int]],
+        current_value: int,
+        edit_parameter_callback: Callable,
 ) -> DynamicButton:
     """
     Return a DynamicButton permitting to handle the tweaking of a specific game parameter.
@@ -1306,8 +1309,8 @@ def load_parameter_button(
 
 
 def create_options_menu(
-    parameters: dict[str, int],
-    modify_option_function: Callable,
+        parameters: dict[str, int],
+        modify_option_function: Callable,
 ) -> InfoBox:
     """
     Return the interface of the game options' menu.

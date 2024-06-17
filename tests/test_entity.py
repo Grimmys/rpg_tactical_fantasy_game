@@ -1,10 +1,9 @@
 import random
 import unittest
 
-import pygame
-
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.game_entities.entity import Entity
+from src.gui.position import Position
 from tests.random_data_library import random_position
 from tests.tools import minimal_setup_for_game
 
@@ -16,7 +15,7 @@ class TestEntity(unittest.TestCase):
 
     def test_init_entity(self):
         name = "entity"
-        position = pygame.Vector2(3, 2)
+        position = Position(3, 2)
         sprite = "imgs/dungeon_crawl/monster/angel.png"
         entity = Entity(name, position, sprite)
         self.assertEqual(name, entity.name)
@@ -53,7 +52,7 @@ class TestEntity(unittest.TestCase):
         self.assertTrue(entity.is_on_position(position))
         self.assertTrue(
             entity.is_on_position(
-                (
+                Position(
                     position[0] + random.randrange(0, TILE_SIZE),
                     position[1] + random.randrange(0, TILE_SIZE),
                 )
@@ -61,12 +60,12 @@ class TestEntity(unittest.TestCase):
         )
         self.assertFalse(
             entity.is_on_position(
-                (position[0] - random.randrange(0, MAIN_WIN_WIDTH), position[1])
+                Position(position[0] - random.randrange(0, MAIN_WIN_WIDTH), position[1])
             )
         )
         self.assertFalse(
             entity.is_on_position(
-                (position[0], position[1] - random.randrange(0, MAIN_WIN_HEIGHT))
+                Position(position[0], position[1] - random.randrange(0, MAIN_WIN_HEIGHT))
             )
         )
 

@@ -1,7 +1,5 @@
 import random
 
-import pygame
-
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
@@ -17,6 +15,7 @@ from src.game_entities.objective import Objective
 from src.game_entities.player import Player
 from src.game_entities.shield import Shield
 from src.game_entities.weapon import Weapon
+from src.gui.position import Position
 
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 STATS = ("strength", "defense", "resistance", "speed")
@@ -45,12 +44,12 @@ def random_string(min_len=4, max_len=10):
     return "".join([random.choice(ALPHABET) for _ in range(size)])
 
 
-def random_position() -> pygame.Vector2:
+def random_position() -> Position:
     """
 
     :return:
     """
-    return pygame.Vector2(
+    return Position(
         random.randrange(0, MAIN_WIN_WIDTH // TILE_SIZE) * TILE_SIZE,
         random.randrange(0, MAIN_WIN_HEIGHT // TILE_SIZE) * TILE_SIZE,
     )
@@ -661,7 +660,6 @@ def random_building(
     :param is_interactive:
     :param min_talks:
     :param max_talks:
-    :param talks:
     :param min_gold:
     :param gold:
     :param item:

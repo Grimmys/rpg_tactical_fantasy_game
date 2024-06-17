@@ -2,11 +2,11 @@ import random as rd
 import shutil
 import unittest
 
-import pygame
 import pygame as pg
 from pygamepopup.components import Button
 
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
+from src.gui.position import Position
 from src.scenes.start_scene import StartScene
 from src.services import menu_creator_manager
 from src.services.load_from_xml_manager import parse_item_file
@@ -37,7 +37,7 @@ class TestLevel(unittest.TestCase):
     ):
         # Store the current menu before making trade
         self.level.menu_manager.reduce_active_menu()
-        self.level.interact(active_player, other_player, pygame.Vector2())
+        self.level.interact(active_player, other_player, Position(0, 0))
         self.level.interact_trade_item(
             item, Button(), (active_player, other_player), is_active_the_sender
         )

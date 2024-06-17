@@ -27,10 +27,11 @@ from src.services.global_foes import foes_by_mission, link_foe_to_mission
 
 objective_tile_by_mission: dict[str, list[Objective]] = {}
 
+
 def _get_object_position(
-    tile_object: TiledObject, horizontal_gap: int, vertical_gap: int
+        tile_object: TiledObject, horizontal_gap: int, vertical_gap: int
 ) -> Position:
-    return pygame.Vector2(
+    return Position(
         tile_object.x * 1.5 + horizontal_gap, tile_object.y * 1.5 + vertical_gap
     )
 
@@ -47,7 +48,7 @@ def load_ground(tmx_data: pytmx.TiledMap, size: tuple[int, int]) -> pygame.Surfa
 
 
 def load_obstacles(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Obstacle]:
     obstacles = list()
     for x, y, gid in tmx_data.get_layer_by_name("obstacles"):
@@ -57,7 +58,7 @@ def load_obstacles(
         obstacle_image = pygame.transform.scale(
             tmx_data.get_tile_image_by_gid(gid), (TILE_SIZE, TILE_SIZE)
         )
-        position = (x * TILE_SIZE + horizontal_gap, y * TILE_SIZE + vertical_gap)
+        position = Position(x * TILE_SIZE + horizontal_gap, y * TILE_SIZE + vertical_gap)
         obstacles.append(Obstacle(position, obstacle_image))
     return obstacles
 
@@ -84,7 +85,7 @@ def _load_objectives(tmx_data, horizontal_gap, vertical_gap) -> None:
 
 
 def _load_mission(
-    tmx_data: pytmx.TiledMap, is_main: bool, mission_id: str, players: Sequence[Player]
+        tmx_data: pytmx.TiledMap, is_main: bool, mission_id: str, players: Sequence[Player]
 ) -> Mission:
     nature = MissionType[tmx_data.properties[f"{mission_id}_mission_type"]]
     description = tmx_data.properties[f"{mission_id}_mission_description"]
@@ -126,11 +127,11 @@ def _load_mission(
 
 
 def load_missions(
-    tmx_data: pytmx.TiledMap,
-    tmx_map_properties_data: pytmx.TiledMap,
-    players: Sequence[Player],
-    horizontal_gap: int,
-    vertical_gap: int,
+        tmx_data: pytmx.TiledMap,
+        tmx_map_properties_data: pytmx.TiledMap,
+        players: Sequence[Player],
+        horizontal_gap: int,
+        vertical_gap: int,
 ) -> tuple[Sequence[Mission], Mission]:
     _load_objectives(tmx_data, horizontal_gap, vertical_gap)
     main_mission = _load_mission(tmx_map_properties_data, True, "main", players)
@@ -148,7 +149,7 @@ def load_missions(
 
 
 def load_foes(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Foe]:
     foes = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -191,7 +192,7 @@ def load_foes(
 
 
 def load_allies(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Character]:
     allies = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -202,7 +203,7 @@ def load_allies(
 
 
 def load_player_placements(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> Sequence[Position]:
     placements = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -214,7 +215,7 @@ def load_player_placements(
 
 
 def load_chests(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Chest]:
     chests = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -251,7 +252,7 @@ def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
             dialog["talks"] = dialog_file.read().splitlines()
     except UnicodeDecodeError:
         with open(
-            f"{directory}dialog_{dialog_file_index}.txt", encoding="utf-8"
+                f"{directory}dialog_{dialog_file_index}.txt", encoding="utf-8"
         ) as dialog_file:
             dialog["title"] = dialog_file.readline().rstrip("\n")
             dialog_file.readline()  # Skip splitting line between title and body
@@ -265,13 +266,13 @@ def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
             return dialog_file.read().splitlines()
     except UnicodeDecodeError:
         with open(
-            f"{directory}house_dialog_{dialog_file_index}.txt", encoding="utf-8"
+                f"{directory}house_dialog_{dialog_file_index}.txt", encoding="utf-8"
         ) as dialog_file:
             return dialog_file.read().splitlines()
 
 
 def load_events(
-    tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
 ) -> dict[str, any]:
     events = {}
     for tile_object in tmx_data.get_layer_by_name("events"):
@@ -306,7 +307,7 @@ def load_events(
 
 
 def load_buildings(
-    tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int, shop_balance: int
 ) -> list[Building]:
     buildings = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -364,6 +365,7 @@ def load_buildings(
                         tile_object.name,
                         position,
                         tile_object.properties["sprite_link"],
+                        shop_balance,
                         stock,
                         interaction,
                         image,
@@ -377,21 +379,21 @@ def load_buildings(
 
 
 def load_breakables(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Breakable]:
     # TODO: implementation
     return []
 
 
 def load_portals(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Portal]:
     # TODO: implementation
     return []
 
 
 def load_doors(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Door]:
     doors = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -405,7 +407,7 @@ def load_doors(
 
 
 def load_fountains(
-    tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
 ) -> list[Fountain]:
     fountains = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):

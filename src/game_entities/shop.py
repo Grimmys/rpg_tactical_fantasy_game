@@ -39,6 +39,7 @@ class Shop(Building):
     stock -- the data structure containing all the available items to be bought with their associated quantity
     menu -- the shop menu displaying all the items that could be bought
     gold_sfx -- the sound that should be started when an item is sold or bought
+    shop_balance -- the amount of gold the shop has
     """
 
     interaction_callback = None
@@ -50,16 +51,18 @@ class Shop(Building):
         name: str,
         position: Position,
         sprite_link: str,
+        shop_balance: int,
         stock: list[dict[str, any]],
         interaction: Optional[dict[str, any]] = None,
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__(name, position, sprite_link, interaction, sprite)
+        self.shop_balance = shop_balance
         self.current_visitor: Optional[Character] = None
         self.stock: list[dict[str, any]] = stock
         self.interaction: dict[str, any] = interaction
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
-            Shop.interaction_callback, self.stock, 0
+            Shop.interaction_callback, self.stock, 0, self.shop_balance
         )
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             os.path.join("sound_fx", "trade.ogg")
@@ -85,7 +88,7 @@ class Shop(Building):
         gold -- the new gold amount for the player that should be displayed
         """
         self.menu = menu_creator_manager.create_shop_menu(
-            Shop.interaction_callback, self.stock, gold
+            Shop.interaction_callback, self.stock, gold, self.shop_balance
         )
 
     def interact(self, actor: Character) -> list[list[BoxElement]]:
@@ -127,10 +130,9 @@ class Shop(Building):
         if self.current_visitor.gold >= item.price:
             if len(self.current_visitor.items) < self.current_visitor.nb_items_max:
                 pygame.mixer.Sound.play(self.gold_sfx)
-
                 self.current_visitor.gold -= item.price
                 self.current_visitor.set_item(copy(item))
-
+                self.shop_balance += item.price
                 entry: Optional[dict[str, any]] = self.get_item_entry(item)
                 entry["quantity"] -= 1
                 if entry["quantity"] <= 0:
@@ -153,9 +155,10 @@ class Shop(Building):
         actor -- the actor selling the item
         item -- the item that is being sold
         """
-        if item.resell_price > 0:
+        if 0 < item.resell_price < self.shop_balance:
             self.current_visitor.remove_item(item)
             self.current_visitor.gold += item.resell_price
+            self.shop_balance -= item.resell_price
 
             # Update shop screen content (gold total amount has been augmented)
             self.update_shop_menu(self.current_visitor.gold)
