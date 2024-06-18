@@ -61,6 +61,11 @@ branch_coverage_act = {
     "Branch_4": False,
 }
 
+def print_coverage_act():
+        for branch, hit in branch_coverage_act.items():
+            print(f"{branch} was {'hit' if hit else 'not hit'}")
+        print("\n")
+
 class Movable(Destroyable):
     """
     A Movable is simply a Destroyable entity that can move.
@@ -506,11 +511,6 @@ class Movable(Destroyable):
                     return attack 
                 self.end_turn() 
             return None 
-
-    def print_coverage_act(self):
-        for branch, hit in branch_coverage_act.items():
-            print(f"{branch} was {'hit' if hit else 'not hit'}")
-        print("\n")
 
     def determine_attack(self, targets: Sequence[Entity]) -> Optional[Position]:
         """

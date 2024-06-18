@@ -397,7 +397,7 @@ def load_buildings(
                 raise SystemError 
     return buildings 
 
-def print_coverage_load_buildings(self):
+def print_coverage_load_buildings():
     for branch, hit in branch_coverage_load_buildings.items():
         print(f"{branch} was {'hit' if hit else 'not hit'}")
     print("\n")
