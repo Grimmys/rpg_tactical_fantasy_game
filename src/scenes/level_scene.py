@@ -1340,6 +1340,7 @@ class LevelScene(Scene):
         tile: Optional[Position] = entity.act(
             possible_moves, self.distance_between_all(entity, targets)
         )
+        entity.print_coverage_act()
 
         if tile:
             if tuple(tile) in possible_moves:
