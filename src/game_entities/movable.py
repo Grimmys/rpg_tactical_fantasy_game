@@ -54,7 +54,7 @@ class EntityStrategy(Enum):
     # Entity is controlled by a human player
     MANUAL = auto()
 
-branch_coverage = {
+branch_coverage_act = {
     "Branch_1": False,
     "Branch_2": False,
     "Branch_3": False,
