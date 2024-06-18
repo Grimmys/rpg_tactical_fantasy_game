@@ -305,77 +305,102 @@ def load_events(
 
     return events
 
+branch_coverage_load_buildings = {
+    "Branch_0L": False,
+    "Branch_1": False,
+    "Branch_2": False,
+    "Branch_2L": False,
+    "Branch_3": False,
+    "Branch_4": False,
+    "Branch_5": False,
+    "Branch_6": False,
+    "Branch_7": False,
+    "Branch_7L": False,
+    "Branch_8": False,
+}
 
-def load_buildings(
-    tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int, shop_balance: int
-) -> list[Building]:
-    buildings = []
-    for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
-        if tile_object.type == "building":
-            position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
-            image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
-            interaction: Optional[dict[str, any]] = {}
-            dialog_ids: Optional[Sequence[str]] = (
-                tile_object.properties["house_dialogs"].split(",")
-                if "house_dialogs" in tile_object.properties
-                else None
-            )
-            if dialog_ids:
-                for dialog_id in dialog_ids:
-                    interaction["talks"] = load_house_dialog(directory, dialog_id)
-            if "gold" in tile_object.properties:
-                interaction["gold"] = tile_object.properties["gold"]
-            if "items" in tile_object.properties:
-                interaction["item"] = xml_loader.parse_item_file(
-                    tile_object.properties["items"]
-                )
-
-            if not interaction:
-                interaction = None
-
-            nature = (
-                tile_object.properties["kind"]
-                if "kind" in tile_object.properties
-                else None
-            )
-            if not nature:
-                buildings.append(
-                    Building(
-                        tile_object.name,
-                        position,
-                        tile_object.properties["sprite_link"],
-                        interaction,
-                        image,
-                    )
-                )
-                continue
-
-            if nature == "shop":
-                stock = []
+def load_buildings( 
+    tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int, shop_balance: int 
+) -> list[Building]: 
+    buildings = [] 
+    for tile_object in tmx_data.get_layer_by_name("dynamic_data"): 
+        branch_coverage_load_buildings["Branch_0L"] = True
+        if tile_object.type == "building": 
+            branch_coverage_load_buildings["Branch_1"] = True
+            position = _get_object_position(tile_object, horizontal_gap, vertical_gap) 
+            image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE)) 
+            interaction: Optional[dict[str, any]] = {} 
+            dialog_ids: Optional[Sequence[str]] = ( 
+                tile_object.properties["house_dialogs"].split(",") 
+                if "house_dialogs" in tile_object.properties 
+                else None 
+            ) 
+            if dialog_ids: 
+                branch_coverage_load_buildings["Branch_2"] = True
+                for dialog_id in dialog_ids: 
+                    branch_coverage_load_buildings["Branch_2L"] = True
+                    interaction["talks"] = load_house_dialog(directory, dialog_id) 
+            if "gold" in tile_object.properties: 
+                branch_coverage_load_buildings["Branch_3"] = True
+                interaction["gold"] = tile_object.properties["gold"] 
+            if "items" in tile_object.properties: 
+                branch_coverage_load_buildings["Branch_4"] = True
+                interaction["item"] = xml_loader.parse_item_file( 
+                    tile_object.properties["items"] 
+                ) 
+            if not interaction: 
+                branch_coverage_load_buildings["Branch_5"] = True
+                interaction = None 
+            nature = ( 
+                tile_object.properties["kind"] 
+                if "kind" in tile_object.properties 
+                else None 
+            ) 
+            if not nature: 
+                branch_coverage_load_buildings["Branch_6"] = True
+                buildings.append( 
+                    Building( 
+                        tile_object.name, 
+                        position, 
+                        tile_object.properties["sprite_link"], 
+                        interaction, 
+                        image, 
+                    ) 
+                ) 
+                continue 
+            if nature == "shop": 
+                branch_coverage_load_buildings["Branch_7"] = True
+                stock = [] 
                 for item_id in range(tile_object.properties["number_items"]):
-                    item_entry = {
-                        "item": xml_loader.parse_item_file(
-                            tile_object.properties[f"item_{item_id}_name"]
-                        ),
-                        "quantity": tile_object.properties[f"item_{item_id}_quantity"],
-                    }
-                    stock.append(item_entry)
-                buildings.append(
-                    Shop(
-                        tile_object.name,
-                        position,
-                        tile_object.properties["sprite_link"],
-                        shop_balance,
-                        stock,
-                        interaction,
-                        image,
-                    )
-                )
-            else:
-                print("Error: building type isn't recognized: ", nature)
-                raise SystemError
+                    branch_coverage_load_buildings["Branch_7L"] = True
+                    item_entry = { 
+                        "item": xml_loader.parse_item_file( 
+                            tile_object.properties[f"item_{item_id}_name"] 
+                        ), 
+                        "quantity": tile_object.properties[f"item_{item_id}_quantity"], 
+                    } 
+                    stock.append(item_entry) 
+                buildings.append( 
+                    Shop( 
+                        tile_object.name, 
+                        position, 
+                        tile_object.properties["sprite_link"], 
+                        shop_balance, 
+                        stock, 
+                        interaction, 
+                        image, 
+                    ) 
+                ) 
+            else: 
+                branch_coverage_load_buildings["Branch_8"] = True
+                print("Error: building type isn't recognized: ", nature) 
+                raise SystemError 
+    return buildings 
 
-    return buildings
+def print_coverage_load_buildings(self):
+    for branch, hit in branch_coverage_load_buildings.items():
+        print(f"{branch} was {'hit' if hit else 'not hit'}")
+    print("\n")
 
 
 def load_breakables(

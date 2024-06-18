@@ -343,6 +343,8 @@ class LevelScene(Scene):
             self.entities.buildings = tmx_loader.load_buildings(
                 self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y, 500
             )
+            tmx_loader.print_coverage_load_buildings()
+            
             self.entities.breakables = tmx_loader.load_breakables(
                 self.tmx_data, gap_x, gap_y
             )
