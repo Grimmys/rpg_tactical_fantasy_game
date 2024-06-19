@@ -13,6 +13,7 @@ import pygamepopup
 from src.gui.tools import show_fps
 from src.services.scene_manager import QuitActionKind, SceneManager
 from src.gui.fade_in_out_animation import print_coverage_fade_in_out_animation
+from src.scenes.level_scene import print_coverage_level_scene
 
 
 def main_loop(
@@ -99,6 +100,7 @@ if __name__ == "__main__":
     # Lets the game start!
     quit_action = main_loop(scene_manager, main_screen, pygame.time.Clock())
     print_coverage_fade_in_out_animation()
+    print_coverage_level_scene()
 
     pygame.quit()
 
