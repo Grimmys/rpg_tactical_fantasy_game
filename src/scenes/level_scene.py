@@ -119,7 +119,7 @@ branch_level_scene = {
 
 def print_coverage_level_scene():
         for branch, hit in branch_level_scene.items():
-            print(f"{branch_level_scene} was {'hit' if hit else 'not hit'}") 
+            print(f"{branch} was {'hit' if hit else 'not hit'}") 
         print("\n")    
 
 class LevelScene(Scene):

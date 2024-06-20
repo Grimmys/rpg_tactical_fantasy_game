@@ -17,7 +17,7 @@ branch_fade_in_out_animation = {
 
 def print_coverage_fade_in_out_animation():
         for branch, hit in branch_fade_in_out_animation.items():
-            print(f"{branch_fade_in_out_animation} was {'hit' if hit else 'not hit'}") 
+            print(f"{branch} was {'hit' if hit else 'not hit'}") 
         print("\n")  
 
 class FadeInOutAnimation(Animation):
