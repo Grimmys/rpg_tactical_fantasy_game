@@ -8,10 +8,10 @@ OPACITY_CHANGE_BY_STEP = 5
 DEFAULT_DELAY_BETWEEN_STEPS = 10
 
 branch_fade_in_out_animation = {
-    "branch_10": False,  
-    "branch_11": False,  
-    "branch_12": False,  
-    "branch_13": False  
+    "branch_20": False,  
+    "branch_21": False,  
+    "branch_22": False,  
+    "branch_23": False  
 
 }
 
@@ -57,16 +57,16 @@ class FadeInOutAnimation(Animation):
 
     def _process_next_animation_step(self):
         if self.is_fade_in_finished:
-            branch_fade_in_out_animation["branch_10"] = True
+            branch_fade_in_out_animation["branch_20"] = True
             if self.current_opacity <= 0:
-                branch_fade_in_out_animation["branch_11"] = True
+                branch_fade_in_out_animation["branch_21"] = True
                 return True
             self.current_opacity -= OPACITY_CHANGE_BY_STEP
         else:
-            branch_fade_in_out_animation["branch_12"] = True
+            branch_fade_in_out_animation["branch_22"] = True
             self.current_opacity += OPACITY_CHANGE_BY_STEP
             if self.current_opacity >= 255:
-                branch_fade_in_out_animation["branch_13"] = True
+                branch_fade_in_out_animation["branch_23"] = True
                 self.current_opacity = 255
                 self.is_fade_in_finished = True
 
