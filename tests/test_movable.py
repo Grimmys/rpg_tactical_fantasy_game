@@ -1,7 +1,7 @@
 import random as rd
 import unittest
 
-from src.game_entities.movable import DamageKind, EntityStrategy, Movable
+from src.game_entities.movable import DamageKind, EntityStrategy, Movable, EntityState
 from tests.random_data_library import (STATS, random_alteration, random_item,
                                        random_movable_entity, random_string)
 from tests.tools import minimal_setup_for_game
@@ -11,6 +11,35 @@ class TestMovable(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         minimal_setup_for_game()
+
+    def test_act(self):
+        movable_entity = random_movable_entity()
+        enemies = {
+            "Foe_1": random_movable_entity(),
+            "Foe_2": random_movable_entity(),
+        }
+        targets = [[enemies["Foe_1"], 1], [enemies["Foe_2"], 2]]
+        possible_moves = [[enemies["Foe_1"].position, 1], [enemies["Foe_1"].position, 2]]
+
+        movable_entity.state = EntityState.HAVE_TO_ACT
+        next_move = movable_entity.determine_move(possible_moves, targets)
+        self.assertEqual(next_move, movable_entity.act(possible_moves, targets))
+
+        movable_entity.state = EntityState.ON_MOVE
+        og_position = movable_entity.position
+        movable_entity._timer = 0
+        movable_entity.on_move = [[1,1], [2,1]]
+        movable_entity.act(possible_moves, targets)
+        self.assertNotEqual(og_position, movable_entity.position)
+
+        print("works3")
+        movable_entity.state = EntityState.HAVE_TO_ATTACK
+        attack = movable_entity.determine_attack(targets)
+        self.assertTrue(movable_entity.can_attack())
+        self.assertEqual(attack, movable_entity.act())
+
+        movable_entity.state = EntityState.FINISHED
+        self.assertEqual(None, movable_entity.act(possible_moves, targets))
 
     def test_init_movable(self):
         name = "movable0"

@@ -59,6 +59,7 @@ branch_coverage_act = {
     "Branch_2": False,
     "Branch_3": False,
     "Branch_4": False,
+    "Branch_5": False
 }
 
 def print_coverage_act():
@@ -509,7 +510,8 @@ class Movable(Destroyable):
                 if self.can_attack() and attack: 
                     branch_coverage_act["Branch_4"] = True
                     return attack 
-                self.end_turn() 
+                self.end_turn()
+            branch_coverage_act["Branch_5"] = True 
             return None 
 
     def determine_attack(self, targets: Sequence[Entity]) -> Optional[Position]:
