@@ -13,18 +13,41 @@ class TestMovable(unittest.TestCase):
         minimal_setup_for_game()
 
     def test_act(self):
-        movable_entity = random_movable_entity()
+        name = "movable0"
+        pos = (3, 2)
+        sprite = "imgs/dungeon_crawl/monster/angel.png"
+        hp = 10
+        defense = 4
+        res = 3
+        max_moves = 5
+        strength = 2
+        attack_kind = "PHYSICAL"
+        strategy = "STATIC"
+        movable_entity = Movable(
+            name,
+            pos,
+            sprite,
+            hp,
+            defense,
+            res,
+            max_moves,
+            strength,
+            attack_kind,
+            strategy,
+        )
         enemies = {
             "Foe_1": random_movable_entity(),
             "Foe_2": random_movable_entity(),
         }
-        targets = [[enemies["Foe_1"], 1], [enemies["Foe_2"], 2]]
-        possible_moves = [[enemies["Foe_1"].position, 1], [enemies["Foe_1"].position, 2]]
+        enemies["Foe_1"].position = (4, 2)
+        enemies["Foe_2"].position = (3, 3)
+        targets = [enemies["Foe_1"], enemies["Foe_2"]]
+        possible_moves = [[enemies["Foe_1"].position, 1], [enemies["Foe_1"].position, 1]]
+        movable_entity.reach = [1, 2]
 
         movable_entity.state = EntityState.HAVE_TO_ACT
         next_move = movable_entity.determine_move(possible_moves, targets)
         self.assertEqual(next_move, movable_entity.act(possible_moves, targets))
-
         movable_entity.state = EntityState.ON_MOVE
         og_position = movable_entity.position
         movable_entity._timer = 0
@@ -32,11 +55,10 @@ class TestMovable(unittest.TestCase):
         movable_entity.act(possible_moves, targets)
         self.assertNotEqual(og_position, movable_entity.position)
 
-        print("works3")
         movable_entity.state = EntityState.HAVE_TO_ATTACK
         attack = movable_entity.determine_attack(targets)
         self.assertTrue(movable_entity.can_attack())
-        self.assertEqual(attack, movable_entity.act())
+        self.assertEqual(attack, movable_entity.act(possible_moves, targets))
 
         movable_entity.state = EntityState.FINISHED
         self.assertEqual(None, movable_entity.act(possible_moves, targets))
