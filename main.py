@@ -11,10 +11,13 @@ import pygame
 import pygamepopup
 
 from src.gui.tools import show_fps
+from src.gui.animation import print_coverage_animation
+from src.game_entities.shop import print_coverage_shop
 from src.services.scene_manager import QuitActionKind, SceneManager
 from src.gui.fade_in_out_animation import print_coverage_fade_in_out_animation
 from src.scenes.level_scene import print_coverage_level_scene
-
+from src.game_entities.movable import print_coverage_act
+from src.services.load_from_tmx_manager import print_coverage_load_buildings
 
 def main_loop(
     game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock
@@ -101,7 +104,10 @@ if __name__ == "__main__":
     quit_action = main_loop(scene_manager, main_screen, pygame.time.Clock())
     print_coverage_fade_in_out_animation()
     print_coverage_level_scene()
-
+    print_coverage_shop()
+    print_coverage_animation()
+    print_coverage_act()
+    print_coverage_load_buildings()
     pygame.quit()
 
     if quit_action == QuitActionKind.RESTART:
