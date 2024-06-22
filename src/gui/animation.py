@@ -12,6 +12,18 @@ from src.gui.position import Position
 
 FrameDescription = dict[str, Union[pygame.Surface, Position]]
 
+branch_coverage = {
+    "branch_10": False,
+    "branch_11": False,
+    "branch_12": False,
+    "branch_13": False
+}
+
+def print_coverage_animation():
+    for branch, hit in branch_coverage.items():
+        print(f"{branch} was {'hit' if hit else 'not hit'}")
+    print("\n")
+
 
 class Frame:
     """
@@ -67,11 +79,16 @@ class Animation:
         """
         self.timer -= 1
         if self.timer == 0:
+            branch_coverage["branch_10"] = True
             if self.frames:
+                branch_coverage["branch_11"] = True
                 self.current_frame = self.frames.pop(0)
                 self.timer = self.current_frame.duration
             else:
+                branch_coverage["branch_12"] = True
                 return True
+        else:
+            branch_coverage["branch_13"] = True
         return False
 
     def display(self, screen: pygame.Surface) -> None:

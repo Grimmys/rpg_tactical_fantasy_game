@@ -11,6 +11,8 @@ import pygame
 import pygamepopup
 
 from src.gui.tools import show_fps
+from src.gui.animation import print_coverage_animation
+from src.game_entities.shop import print_coverage_shop
 from src.services.scene_manager import QuitActionKind, SceneManager
 
 
@@ -97,7 +99,8 @@ if __name__ == "__main__":
 
     # Lets the game start!
     quit_action = main_loop(scene_manager, main_screen, pygame.time.Clock())
-
+    print_coverage_shop()
+    print_coverage_animation()
     pygame.quit()
 
     if quit_action == QuitActionKind.RESTART:
