@@ -11,6 +11,7 @@ from src.scenes.start_scene import StartScene
 from src.services import menu_creator_manager
 from src.services.load_from_xml_manager import parse_item_file
 from tests.tools import minimal_setup_for_game
+from src.scenes.level_scene import *
 
 
 class TestLevel(unittest.TestCase):
@@ -351,6 +352,18 @@ class TestLevel(unittest.TestCase):
         self.assertEqual(equipment_before, raimund_player.equipments)
         self.assertIsNone(self.level.selected_item)
 
+    def test_init_position(self):
+
+        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+        players = self.level.players
+
+        first_player = [player for player in players if player.name == "raimund"][0]
+        second_player = [player for player in players if player.name == "braern"][0]
+
+        self.level._determine_players_initial_position()
+        
+        self.assertIsNotNone(first_player.set_initial_pos)
+        self.assertIsNotNone(second_player.set_initial_pos)
 
 if __name__ == "__main__":
     unittest.main()
