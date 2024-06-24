@@ -965,7 +965,7 @@ def load_events(events_el, gap_x, gap_y):
             events[event.tag]["new_players"] = [
                 {
                     "name": player_element.find("name").text.strip(),
-                    "position": (
+                    "position": Position(
                         int(player_element.find("position/x").text.strip()) * TILE_SIZE
                         + gap_x,
                         int(player_element.find("position/y").text.strip()) * TILE_SIZE
@@ -1066,7 +1066,7 @@ def load_player(player_element, from_save):
     player.items = inventory
     player.hit_points = current_hp
     if from_save:
-        position = (
+        position = Position(
             int(player_element.find("position/x").text.strip()) * TILE_SIZE,
             int(player_element.find("position/y").text.strip()) * TILE_SIZE,
         )
