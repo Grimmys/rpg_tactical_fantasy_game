@@ -20,6 +20,16 @@ from src.gui.position import Position
 from src.services import menu_creator_manager
 from src.services.language import *
 
+branch_coverage = {
+    "branch_15": False,
+    "branch_16": False,
+    "branch_17": False
+}
+
+def print_coverage_shop():
+    for branch, hit in branch_coverage.items():
+        print(f"{branch} was {'hit' if hit else 'not hit'}")
+    print("\n")
 
 class Shop(Building):
     """
@@ -128,7 +138,9 @@ class Shop(Building):
         item -- the item that is being bought
         """
         if self.current_visitor.gold >= item.price:
+            branch_coverage["branch_15"] = True
             if len(self.current_visitor.items) < self.current_visitor.nb_items_max:
+                branch_coverage["branch_16"] = True
                 pygame.mixer.Sound.play(self.gold_sfx)
                 self.current_visitor.gold -= item.price
                 self.current_visitor.set_item(copy(item))
@@ -136,6 +148,7 @@ class Shop(Building):
                 entry: Optional[dict[str, any]] = self.get_item_entry(item)
                 entry["quantity"] -= 1
                 if entry["quantity"] <= 0:
+                    branch_coverage["branch_17"] = True
                     self.stock.remove(entry)
 
                 # Gold total amount and stock have been decreased: the screen should be updated

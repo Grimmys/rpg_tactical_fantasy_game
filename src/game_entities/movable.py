@@ -54,6 +54,18 @@ class EntityStrategy(Enum):
     # Entity is controlled by a human player
     MANUAL = auto()
 
+branch_coverage_act = {
+    "Branch_1": False,
+    "Branch_2": False,
+    "Branch_3": False,
+    "Branch_4": False,
+    "Branch_5": False
+}
+
+def print_coverage_act():
+        for branch, hit in branch_coverage_act.items():
+            print(f"{branch} was {'hit' if hit else 'not hit'}")
+        print("\n")
 
 class Movable(Destroyable):
     """
@@ -472,30 +484,35 @@ class Movable(Destroyable):
                 return False
         return True
 
-    def act(
-        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
-    ) -> Optional[Position]:
-        """
-        Determine what action should be done by the entity controlled by AI.
-        The action is determined according to the current state of the entity.
+    def act( 
+            self, possible_moves: dict[Position, int], targets: dict[Entity, int] 
+        ) -> Optional[Position]: 
+            """ 
+            Determine what action should be done by the entity controlled by AI. 
+            The action is determined according to the current state of the entity. 
 
-        Return the selected tile for the move / attack if any should be selected.
+            Return the selected tile for the move / attack if any should be selected. 
 
-        Keyword arguments:
-        possible_moves -- the collection of tiles that could be reached by the entity
-        with their associated distance from the entity
-        targets -- the collection of entities that could be attacked with their associated distance from the entity
-        """
-        if self.state is EntityState.HAVE_TO_ACT:
-            return self.determine_move(possible_moves, targets)
-        if self.state is EntityState.ON_MOVE:
-            self.move()
-        elif self.state is EntityState.HAVE_TO_ATTACK:
-            attack = self.determine_attack(targets)
-            if self.can_attack() and attack:
-                return attack
-            self.end_turn()
-        return None
+            Keyword arguments: 
+            possible_moves -- the collection of tiles that could be reached by the entity 
+            with their associated distance from the entity 
+            targets -- the collection of entities that could be attacked with their associated distance from the entity 
+            """ 
+            if self.state is EntityState.HAVE_TO_ACT: 
+                branch_coverage_act["Branch_1"] = True
+                return self.determine_move(possible_moves, targets) 
+            if self.state is EntityState.ON_MOVE: 
+                branch_coverage_act["Branch_2"] = True
+                self.move() 
+            elif self.state is EntityState.HAVE_TO_ATTACK: 
+                branch_coverage_act["Branch_3"] = True
+                attack = self.determine_attack(targets) 
+                if self.can_attack() and attack: 
+                    branch_coverage_act["Branch_4"] = True
+                    return attack 
+                self.end_turn()
+            branch_coverage_act["Branch_5"] = True 
+            return None 
 
     def determine_attack(self, targets: Sequence[Entity]) -> Optional[Position]:
         """
