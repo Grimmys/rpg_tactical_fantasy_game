@@ -110,10 +110,10 @@ class EntityTurn(IntEnum):
         return EntityTurn(next_value)
     
 branch_level_scene = {
-    "branch_24": False,  
     "branch_25": False,  
     "branch_26": False,  
-    "branch_27": False  
+    "branch_27": False,  
+    "branch_28": False  
 
 }
 
@@ -412,15 +412,15 @@ class LevelScene(Scene):
 
     def _determine_players_initial_position(self):
         for player in self.players:
-            branch_level_scene["branch_24"] = True
+            branch_level_scene["branch_25"] = True
             for tile in self.player_possible_placements:
-                branch_level_scene["branch_25"] = True
+                branch_level_scene["branch_26"] = True
                 if self.get_entity_on_tile(tile) is None:
-                    branch_level_scene["branch_26"] = True
+                    branch_level_scene["branch_27"] = True
                     player.set_initial_pos(tile)
                     break
             else:
-                branch_level_scene["branch_27"] = True
+                branch_level_scene["branch_28"] = True
                 print(STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS)
 
     def open_save_menu(self) -> None:

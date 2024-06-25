@@ -11,7 +11,8 @@ branch_fade_in_out_animation = {
     "branch_20": False,  
     "branch_21": False,  
     "branch_22": False,  
-    "branch_23": False  
+    "branch_23": False,  
+    "branch_24": False
 
 }
 
@@ -76,6 +77,7 @@ class FadeInOutAnimation(Animation):
             if self.current_opacity != 255
             else self.visibility_duration
         )
+        branch_fade_in_out_animation["branch_24"] = True
 
         return False
 
