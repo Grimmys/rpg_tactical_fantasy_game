@@ -240,28 +240,25 @@ class StartScene(Scene):
     # def load_select_level() -> None:
     def load_select_level(self, game_id: int) -> None:
         """
-        Load a saved game from local directory.
-
-        Keyword arguments:
-        game_id -- the id of the saved file that should be load
+        레벨 선택 함수
         """
         try:
             with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
                 print("레벨:",game_id)
-                # tree_root: etree.Element = etree.parse(save).getroot()
-                # level_id = int(tree_root.find("level/index").text.strip())
-                # level_path = f"maps/level_{level_id}/"
-                # game_status = tree_root.find("level/phase").text.strip()
-                # turn_nb = int(tree_root.find("level/turn").text.strip())
-                #
-                # self.level = LevelScene(
-                #     StartScene.generate_level_window(),
-                #     level_path,
-                #     level_id,
-                #     LevelStatus[game_status],
-                #     turn_nb,
-                #     tree_root.find("level/entities"),
-                # )
+                tree_root: etree.Element = etree.parse(save).getroot()
+                level_id = int(tree_root.find("level/index").text.strip())
+                level_path = f"maps/level_{level_id}/"
+                game_status = tree_root.find("level/phase").text.strip()
+                turn_nb = int(tree_root.find("level/turn").text.strip())
+
+                self.level = LevelScene(
+                    StartScene.generate_level_window(),
+                    f"maps/level_{game_id}/", #level_path
+                    game_id, #level/index
+                    LevelStatus[game_status],
+                    0, # level/turn 
+                    tree_root.find("level/entities"),
+                )
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt
