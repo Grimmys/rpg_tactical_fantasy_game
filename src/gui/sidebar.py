@@ -202,13 +202,13 @@ class Sidebar:
                 )
                 screen.blit(hit_points_pre_text, text_position)
                 hit_points_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                    f"      {hit_points}",
+                    f"         {hit_points}",
                     True,
                     determine_gauge_color(hit_points, hit_points_max, BLACK),
                 )
                 screen.blit(hit_points_text, text_position)
                 hp_post_text = fonts["ITEM_FONT_STRONG"].render(
-                    f'      {" " * len(str(hit_points))} / {hit_points_max}',
+                    f'         {" " * len(str(hit_points))} / {hit_points_max}',
                     True,
                     BLACK,
                 )

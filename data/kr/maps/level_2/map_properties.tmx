@@ -1,0 +1,9 @@
+<map>
+    <properties>
+        <property name="chapter_id" type="int" value="1"/>
+        <property name="level_name" value="Reclaim and Steal"/>
+        <property name="main_mission_description" value="남겨진것을 제단에 돌려놔라"/>
+        <property name="main_mission_number_players" type="int" value="1"/>
+        <property name="main_mission_type" value="TOUCH_POSITION"/>
+    </properties>
+</map>

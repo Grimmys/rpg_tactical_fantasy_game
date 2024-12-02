@@ -5,7 +5,7 @@ Can be imported from anywhere.
 """
 import pygame
 
-FRAME_RATE = 60
+FRAME_RATE = 144
 
 INITIAL_MAX = 10000
 
@@ -76,4 +76,4 @@ UNFINAL_ACTION = 1
 FINAL_ACTION = 2
 
 # Number of save slots
-SAVE_SLOTS = 3
+SAVE_SLOTS = 5
