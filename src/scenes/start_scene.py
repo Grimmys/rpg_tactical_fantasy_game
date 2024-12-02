@@ -243,7 +243,7 @@ class StartScene(Scene):
         레벨 선택 함수
         """
         try:
-            with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
+            with open(f"saves/save_{9}.xml", "r", encoding="utf-8") as save:
                 print("레벨:",game_id)
                 tree_root: etree.Element = etree.parse(save).getroot()
                 level_id = int(tree_root.find("level/index").text.strip())
