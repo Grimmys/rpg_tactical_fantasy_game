@@ -64,6 +64,7 @@ class StartScene(Scene):
                     "load_menu": self.load_menu,
                     "options_menu": self.options_menu,
                     "exit_game": self.exit_game,
+                    "select_level": self.select_level,
                 }
             )
         )
@@ -266,12 +267,15 @@ class StartScene(Scene):
         """
         Handle an exit game request.
         """
+        print("게임 종료")
         self.exit = QuitActionKind.QUIT
 
-    def select_leve(self) -> None:
+    def select_level(self) -> None:
         """
         Select level without clearing specific level
         """
+        print("레벨 선택 버튼 ")
+        # self.select_level = Optional
         #TODO: 구현
 
     def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
