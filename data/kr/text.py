@@ -14,6 +14,9 @@ STR_CLOSE = "닫기"
 # Load game menu
 STR_LOAD_GAME_MENU = "불러오기"
 
+# 게임 레벨 선택
+STR_SELECT_LEVEL = "레벨 선택하기"
+
 
 def f_SAVE_NUMBER(number: int):
     return f"세이브 {number}"

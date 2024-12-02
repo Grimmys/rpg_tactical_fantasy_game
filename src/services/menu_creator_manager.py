@@ -17,7 +17,7 @@ from src.constants import (ACTION_MENU_WIDTH, ANIMATION_SPEED,
                            DIALOG_WIDTH, EQUIPMENT_MENU_WIDTH,
                            FOE_STATUS_MENU_WIDTH, GOLD, GREEN,
                            ITEM_BUTTON_SIZE, ITEM_INFO_MENU_WIDTH,
-                           ITEM_MENU_WIDTH, ORANGE, REWARD_MENU_WIDTH,
+                           ITEM_MENU_WIDTH, LEVEL_OPTIONS, ORANGE, REWARD_MENU_WIDTH,
                            SAVE_SLOTS, SCREEN_SIZE, START_MENU_WIDTH,
                            STATUS_INFO_MENU_WIDTH, STATUS_MENU_WIDTH,
                            TILE_SIZE, TRADE_ITEM_BUTTON_SIZE, TRADE_MENU_WIDTH,
@@ -1377,6 +1377,29 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
 
     return InfoBox(
         STR_LOAD_GAME_MENU,
+        element_grid,
+        width=START_MENU_WIDTH,
+    )
+
+
+def select_level(load_game_function: Callable) -> InfoBox:
+    """
+    게임 레벨 선택창 리턴
+    """
+    element_grid = []
+
+    for i in range(LEVEL_OPTIONS):
+        element_grid.append(
+            [
+                Button(
+                    title=f_LEVEL_NUMBER_ENTITY(i + 1),
+                    callback=lambda slot_id=i: load_game_function(slot_id),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_SELECT_LEVEL,
         element_grid,
         width=START_MENU_WIDTH,
     )
