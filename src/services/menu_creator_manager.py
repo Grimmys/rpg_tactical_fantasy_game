@@ -1392,7 +1392,7 @@ def select_level(load_game_function: Callable) -> InfoBox:
         element_grid.append(
             [
                 Button(
-                    title=f_LEVEL_NUMBER_ENTITY(i + 1),
+                    title=f_LEVEL_NUMBER_ENTITY(i  ),
                     callback=lambda slot_id=i: load_game_function(slot_id),
                 )
             ]

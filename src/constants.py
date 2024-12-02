@@ -80,4 +80,4 @@ SAVE_SLOTS = 5
 
 
 #Level Options
-LEVEL_OPTIONS = 6
+LEVEL_OPTIONS = 4

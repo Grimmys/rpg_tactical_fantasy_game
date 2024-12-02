@@ -247,20 +247,21 @@ class StartScene(Scene):
         """
         try:
             with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
-                tree_root: etree.Element = etree.parse(save).getroot()
-                level_id = int(tree_root.find("level/index").text.strip())
-                level_path = f"maps/level_{level_id}/"
-                game_status = tree_root.find("level/phase").text.strip()
-                turn_nb = int(tree_root.find("level/turn").text.strip())
-
-                self.level = LevelScene(
-                    StartScene.generate_level_window(),
-                    level_path,
-                    level_id,
-                    LevelStatus[game_status],
-                    turn_nb,
-                    tree_root.find("level/entities"),
-                )
+                print("레벨:",game_id)
+                # tree_root: etree.Element = etree.parse(save).getroot()
+                # level_id = int(tree_root.find("level/index").text.strip())
+                # level_path = f"maps/level_{level_id}/"
+                # game_status = tree_root.find("level/phase").text.strip()
+                # turn_nb = int(tree_root.find("level/turn").text.strip())
+                #
+                # self.level = LevelScene(
+                #     StartScene.generate_level_window(),
+                #     level_path,
+                #     level_id,
+                #     LevelStatus[game_status],
+                #     turn_nb,
+                #     tree_root.find("level/entities"),
+                # )
 
         except XMLSyntaxError:
             # File does not contain expected values and may be corrupt
@@ -284,22 +285,23 @@ class StartScene(Scene):
 
         except FileNotFoundError:
             # No saved game
+            print("레벨:",game_id)
             name: str = "Load Game"
             width: int = self.screen.get_width() // 2
-            self.menu_manager.open_menu(
-                InfoBox(
-                    name,
-                    [
-                        [
-                            TextElement(
-                                "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
-                            )
-                        ]
-                    ],
-                    width=width,
-                    background_path="imgs/interface/PopUpMenu.png",
-                )
-            )
+            # self.menu_manager.open_menu(
+            #     InfoBox(
+            #         name,
+            #         [
+            #             [
+            #                 TextElement(
+            #                     "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
+            #                 )
+            #             ]
+            #         ],
+            #         width=width,
+            #         background_path="imgs/interface/PopUpMenu.png",
+            #     )
+            # )
 
     def select_level(self) -> None:
         """
