@@ -268,6 +268,12 @@ class StartScene(Scene):
         """
         self.exit = QuitActionKind.QUIT
 
+    def select_leve(self) -> None:
+        """
+        Select level without clearing specific level
+        """
+        #TODO: 구현
+
     def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
         """
 

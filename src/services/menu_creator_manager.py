@@ -1273,6 +1273,9 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
             [
                 Button(title=STR_EXIT_GAME, callback=buttons_callback["exit_game"]),
             ],
+            [
+                Button(title=STR_SELECT_LEVEL, callback=buttons_callback["exit_game"]),
+            ],
         ],
         width=START_MENU_WIDTH,
         has_close_button=False,

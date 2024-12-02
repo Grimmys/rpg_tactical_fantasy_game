@@ -6,6 +6,7 @@ STR_NEW_GAME = "새 게임"
 STR_LOAD_GAME = "불러오기"
 STR_OPTIONS = "설정"
 STR_EXIT_GAME = "게임 종료"
+STR_SELECT_LEVEL = "레벨 선택"
 
 # Close button
 STR_CLOSE = "닫기"
