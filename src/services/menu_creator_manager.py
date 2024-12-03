@@ -1428,6 +1428,28 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         width=START_MENU_WIDTH,
     )
 
+def restart_game_button(save_game_function: Callable) -> InfoBox:
+    """
+    Return the interface of the save game menu
+    """
+    element_grid = []
+
+    for i in range(1):
+        element_grid.append(
+            [
+                Button(
+                    title=f_RESTART_NUMBER(i + 1),
+                    callback=lambda slot_id=i: print(slot_id),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_RESTART_TITLE,
+        element_grid,
+        width=START_MENU_WIDTH,
+    )
+
 
 def create_save_dialog(buttons_callback: dict[str, Callable]) -> InfoBox:
     """

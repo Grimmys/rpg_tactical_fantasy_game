@@ -21,6 +21,9 @@ STR_SELECT_LEVEL = "레벨 선택하기"
 def f_SAVE_NUMBER(number: int):
     return f"세이브 {number}"
 
+def f_RESTART_NUMBER(number: int):
+    return f"restart {number}"
+
 
 # Options menu
 STR_OPTIONS_MENU = "설정"
@@ -37,6 +40,8 @@ STR_FULL = "전체화면"
 
 # Save game menu
 STR_SAVE_GAME_MENU = "저장하기"
+
+STR_RESTART_TITLE = "다시 시도하겠습니까?"
 
 
 # Level loading scene
