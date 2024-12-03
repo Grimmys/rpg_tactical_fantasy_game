@@ -695,6 +695,7 @@ def create_main_menu(
     elements = [
         [Button(title=STR_SAVE, callback=buttons_callback["save"])],
         [Button(title=STR_RESTART, callback=buttons_callback["restart"])],
+        [Button(title=STR_CHOICE_MODE, callback=buttons_callback["choice_mode"])],
         [Button(title=STR_SUSPEND, callback=buttons_callback["suspend"])],
     ]
 
@@ -1450,6 +1451,28 @@ def restart_game_button(save_game_function: Callable) -> InfoBox:
         width=START_MENU_WIDTH,
     )
 
+def choice_mode_button(save_game_function: Callable) -> InfoBox:
+    """
+    Return the interface of the save game menu
+    """
+    element_grid = []
+    mode =['쉬움','보통','어려움']
+
+    for i in range(3):
+        element_grid.append(
+            [
+                Button(
+                    title=mode[i],
+                    callback=lambda slot_id=i: print(slot_id),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_CHOICE_MODE,
+        element_grid,
+        width=START_MENU_WIDTH,
+    )
 
 def create_save_dialog(buttons_callback: dict[str, Callable]) -> InfoBox:
     """

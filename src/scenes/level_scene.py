@@ -424,6 +424,16 @@ class LevelScene(Scene):
     def restart_game(self, shot_id: int) -> None:
         pass
 
+    def open_choice_mode(self) -> None:
+        """
+        Replace the current active menu by a freshly created save game interface
+        """
+        self.menu_manager.open_menu(
+            menu_creator_manager.choice_mode_button(self.choice_mode)
+        )
+
+    def choice_mode(self, shot_id: int) -> None:
+        pass
 
     def save_game(self, slot_id: int) -> None:
         """
@@ -2169,6 +2179,7 @@ class LevelScene(Scene):
                 {
                     "save": self.open_save_menu,
                     "restart": self.open_restart_game,
+                    "choice_mode": self.open_choice_mode,
                     "suspend": self.exit_game,
                     "start": self.start_game,
                     "diary": lambda: self.menu_manager.open_menu(
