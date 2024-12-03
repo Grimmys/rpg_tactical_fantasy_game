@@ -120,16 +120,16 @@
             <x>4</x>
             <y>3</y>
           </position>
-          <current_hp>16</current_hp>
+          <current_hp>14</current_hp>
           <level>3</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>16</hp>
-          <strength>8</strength>
+          <hp>14</hp>
+          <strength>10</strength>
           <defense>2</defense>
-          <resistance>1</resistance>
+          <resistance>2</resistance>
           <move>3</move>
           <loot>
             <item>

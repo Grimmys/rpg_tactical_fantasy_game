@@ -1,17 +1,17 @@
 <save>
   <level>
     <index>2</index>
-    <phase>INITIALIZATION</phase>
+    <phase>VERY_BEGINNING</phase>
     <turn>0</turn>
     <entities>
       <allies>
         <ally>
           <name>doran</name>
           <position>
-            <x>3</x>
+            <x>5</x>
             <y>10</y>
           </position>
-          <current_hp>18</current_hp>
+          <current_hp>17</current_hp>
           <level>3</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
@@ -24,10 +24,10 @@
             </skill>
           </skills>
           <alterations/>
-          <hp>18</hp>
-          <strength>3</strength>
-          <defense>7</defense>
-          <resistance>4</resistance>
+          <hp>17</hp>
+          <strength>4</strength>
+          <defense>4</defense>
+          <resistance>3</resistance>
           <move>6</move>
           <class>spy</class>
           <race>gnome</race>
@@ -53,8 +53,8 @@
             </body>
             <right_hand>
               <name>dagger</name>
-              <value>52</value>
-              <durability>14</durability>
+              <value>150</value>
+              <durability>40</durability>
             </right_hand>
             <feet>
               <name>black_boots</name>
@@ -67,8 +67,64 @@
         <foe>
           <name>skeleton</name>
           <position>
-            <x>4</x>
-            <y>10</y>
+            <x>3</x>
+            <y>9</y>
+          </position>
+          <current_hp>18</current_hp>
+          <level>4</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>18</hp>
+          <strength>9</strength>
+          <defense>2</defense>
+          <resistance>1</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>bones</name>
+              <probability>0.1</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.05</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>skeleton</name>
+          <position>
+            <x>3</x>
+            <y>9</y>
+          </position>
+          <current_hp>17</current_hp>
+          <level>4</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>17</hp>
+          <strength>12</strength>
+          <defense>4</defense>
+          <resistance>0</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>bones</name>
+              <probability>0.1</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.05</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>skeleton</name>
+          <position>
+            <x>3</x>
+            <y>11</y>
           </position>
           <current_hp>14</current_hp>
           <level>3</level>
@@ -77,9 +133,9 @@
           <skills/>
           <alterations/>
           <hp>14</hp>
-          <strength>10</strength>
+          <strength>9</strength>
           <defense>3</defense>
-          <resistance>1</resistance>
+          <resistance>0</resistance>
           <move>3</move>
           <loot>
             <item>
@@ -95,17 +151,17 @@
         <foe>
           <name>necrophage</name>
           <position>
-            <x>3</x>
-            <y>9</y>
+            <x>5</x>
+            <y>8</y>
           </position>
-          <current_hp>20</current_hp>
+          <current_hp>21</current_hp>
           <level>3</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>20</hp>
-          <strength>9</strength>
+          <hp>21</hp>
+          <strength>12</strength>
           <defense>1</defense>
           <resistance>0</resistance>
           <move>2</move>
@@ -124,17 +180,17 @@
           <name>skeleton_cobra</name>
           <position>
             <x>2</x>
-            <y>9</y>
+            <y>10</y>
           </position>
-          <current_hp>15</current_hp>
+          <current_hp>17</current_hp>
           <level>4</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>15</hp>
-          <strength>8</strength>
-          <defense>2</defense>
+          <hp>17</hp>
+          <strength>7</strength>
+          <defense>5</defense>
           <resistance>3</resistance>
           <move>4</move>
           <loot>
@@ -150,16 +206,16 @@
             <x>1</x>
             <y>3</y>
           </position>
-          <current_hp>28</current_hp>
+          <current_hp>25</current_hp>
           <level>5</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>28</hp>
-          <strength>13</strength>
-          <defense>1</defense>
-          <resistance>2</resistance>
+          <hp>25</hp>
+          <strength>15</strength>
+          <defense>3</defense>
+          <resistance>0</resistance>
           <move>2</move>
           <loot>
             <item>
@@ -178,15 +234,15 @@
             <x>4</x>
             <y>1</y>
           </position>
-          <current_hp>23</current_hp>
+          <current_hp>27</current_hp>
           <level>4</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>23</hp>
+          <hp>27</hp>
           <strength>12</strength>
-          <defense>0</defense>
+          <defense>1</defense>
           <resistance>2</resistance>
           <move>2</move>
           <loot>
@@ -201,9 +257,121 @@
           </loot>
         </foe>
         <foe>
+          <name>skeleton</name>
+          <position>
+            <x>8</x>
+            <y>6</y>
+          </position>
+          <current_hp>23</current_hp>
+          <level>5</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>23</hp>
+          <strength>10</strength>
+          <defense>4</defense>
+          <resistance>3</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>bones</name>
+              <probability>0.1</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.05</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>skeleton</name>
+          <position>
+            <x>11</x>
+            <y>7</y>
+          </position>
+          <current_hp>16</current_hp>
+          <level>4</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>16</hp>
+          <strength>11</strength>
+          <defense>3</defense>
+          <resistance>1</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>bones</name>
+              <probability>0.1</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.05</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>necrophage</name>
+          <position>
+            <x>10</x>
+            <y>5</y>
+          </position>
+          <current_hp>28</current_hp>
+          <level>4</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>28</hp>
+          <strength>12</strength>
+          <defense>2</defense>
+          <resistance>2</resistance>
+          <move>2</move>
+          <loot>
+            <item>
+              <name>monster_meat</name>
+              <probability>0.2</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.15</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>skeleton</name>
+          <position>
+            <x>13</x>
+            <y>2</y>
+          </position>
+          <current_hp>14</current_hp>
+          <level>4</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>14</hp>
+          <strength>12</strength>
+          <defense>3</defense>
+          <resistance>2</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>bones</name>
+              <probability>0.1</probability>
+            </item>
+            <item>
+              <name>iron_ring</name>
+              <probability>0.05</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
           <name>skeleton_cobra</name>
           <position>
-            <x>12</x>
+            <x>15</x>
             <y>2</y>
           </position>
           <current_hp>19</current_hp>
@@ -213,9 +381,9 @@
           <skills/>
           <alterations/>
           <hp>19</hp>
-          <strength>9</strength>
-          <defense>5</defense>
-          <resistance>6</resistance>
+          <strength>11</strength>
+          <defense>2</defense>
+          <resistance>5</resistance>
           <move>4</move>
           <loot>
             <item>
@@ -227,18 +395,18 @@
         <foe>
           <name>necrophage</name>
           <position>
-            <x>12</x>
+            <x>14</x>
             <y>1</y>
           </position>
-          <current_hp>28</current_hp>
+          <current_hp>23</current_hp>
           <level>4</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>28</hp>
-          <strength>11</strength>
-          <defense>3</defense>
+          <hp>23</hp>
+          <strength>12</strength>
+          <defense>2</defense>
           <resistance>2</resistance>
           <move>2</move>
           <loot>
@@ -258,15 +426,15 @@
             <x>14</x>
             <y>11</y>
           </position>
-          <current_hp>16</current_hp>
+          <current_hp>17</current_hp>
           <level>4</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>16</hp>
-          <strength>12</strength>
-          <defense>4</defense>
+          <hp>17</hp>
+          <strength>10</strength>
+          <defense>2</defense>
           <resistance>2</resistance>
           <move>3</move>
           <loot>
@@ -286,16 +454,16 @@
             <x>15</x>
             <y>10</y>
           </position>
-          <current_hp>15</current_hp>
+          <current_hp>16</current_hp>
           <level>4</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>15</hp>
-          <strength>12</strength>
-          <defense>3</defense>
-          <resistance>2</resistance>
+          <hp>16</hp>
+          <strength>11</strength>
+          <defense>2</defense>
+          <resistance>1</resistance>
           <move>3</move>
           <loot>
             <item>
@@ -321,9 +489,9 @@
           <skills/>
           <alterations/>
           <hp>24</hp>
-          <strength>11</strength>
-          <defense>5</defense>
-          <resistance>4</resistance>
+          <strength>10</strength>
+          <defense>8</defense>
+          <resistance>5</resistance>
           <move>4</move>
           <loot>
             <item>
@@ -338,16 +506,16 @@
             <x>20</x>
             <y>7</y>
           </position>
-          <current_hp>30</current_hp>
+          <current_hp>27</current_hp>
           <level>6</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>30</hp>
-          <strength>13</strength>
-          <defense>4</defense>
-          <resistance>2</resistance>
+          <hp>27</hp>
+          <strength>15</strength>
+          <defense>2</defense>
+          <resistance>0</resistance>
           <move>2</move>
           <loot>
             <item>
@@ -366,16 +534,16 @@
             <x>19</x>
             <y>6</y>
           </position>
-          <current_hp>30</current_hp>
+          <current_hp>31</current_hp>
           <level>6</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>30</hp>
+          <hp>31</hp>
           <strength>14</strength>
           <defense>3</defense>
-          <resistance>4</resistance>
+          <resistance>3</resistance>
           <move>2</move>
           <loot>
             <item>
@@ -394,16 +562,16 @@
             <x>18</x>
             <y>4</y>
           </position>
-          <current_hp>21</current_hp>
+          <current_hp>26</current_hp>
           <level>7</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>21</hp>
-          <strength>11</strength>
-          <defense>5</defense>
-          <resistance>3</resistance>
+          <hp>26</hp>
+          <strength>13</strength>
+          <defense>6</defense>
+          <resistance>4</resistance>
           <move>3</move>
           <loot>
             <item>
@@ -422,15 +590,15 @@
             <x>19</x>
             <y>2</y>
           </position>
-          <current_hp>36</current_hp>
+          <current_hp>40</current_hp>
           <level>7</level>
           <exp>0</exp>
           <strategy>SEMI_ACTIVE</strategy>
           <skills/>
           <alterations/>
-          <hp>36</hp>
-          <strength>19</strength>
-          <defense>7</defense>
+          <hp>40</hp>
+          <strength>17</strength>
+          <defense>11</defense>
           <resistance>14</resistance>
           <move>2</move>
           <loot>
@@ -659,50 +827,6 @@
               <name>brown_boots</name>
               <value>125</value>
             </feet>
-          </equipment>
-          <turnFinished>False</turnFinished>
-        </player>
-        <player>
-          <name>chrisemon</name>
-          <position>
-            <x>13</x>
-            <y>9</y>
-          </position>
-          <current_hp>34</current_hp>
-          <level>6</level>
-          <exp>101</exp>
-          <strategy>MANUAL</strategy>
-          <skills/>
-          <alterations/>
-          <hp>34</hp>
-          <strength>8</strength>
-          <defense>11</defense>
-          <resistance>1</resistance>
-          <move>8</move>
-          <class>warrior</class>
-          <race>centaur</race>
-          <gold>400</gold>
-          <inventory>
-            <item>
-              <name>dagger</name>
-              <value>150</value>
-              <durability>40</durability>
-            </item>
-            <item>
-              <name>key</name>
-              <value>200</value>
-            </item>
-          </inventory>
-          <equipment>
-            <body>
-              <name>barding_magenta</name>
-              <value>0</value>
-            </body>
-            <right_hand>
-              <name>short_sword</name>
-              <value>93</value>
-              <durability>15</durability>
-            </right_hand>
           </equipment>
           <turnFinished>False</turnFinished>
         </player>
