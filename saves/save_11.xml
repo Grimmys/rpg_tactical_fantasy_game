@@ -1,8 +1,8 @@
 <save>
   <level>
-    <index>1</index>
-    <phase>IN_PROGRESS</phase>
-    <turn>15</turn>
+    <index>2</index>
+    <phase>INITIALIZATION</phase>
+    <turn>0</turn>
     <entities>
       <allies>
         <ally>

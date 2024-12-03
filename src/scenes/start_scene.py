@@ -243,17 +243,17 @@ class StartScene(Scene):
         레벨 선택 함수
         """
         try:
-            with open(f"saves/save_{9}.xml", "r", encoding="utf-8") as save:
-                print("레벨:",game_id)
+            with open(f"saves/save_{game_id + 9}.xml", "r", encoding="utf-8") as save:
+                print("레벨불러오기:",game_id +  9)
                 tree_root: etree.Element = etree.parse(save).getroot()
-                level_id = int(tree_root.find("level/index").text.strip())
-                level_path = f"maps/level_{level_id}/"
+                # level_id = int(tree_root.find("level/index").text.strip())
+                # level_path = f"maps/level_{level_id}/"
                 game_status = tree_root.find("level/phase").text.strip()
-                turn_nb = int(tree_root.find("level/turn").text.strip())
+                # turn_nb = int(tree_root.find("level/turn").text.strip())
 
                 self.level = LevelScene(
                     StartScene.generate_level_window(),
-                    f"maps/level_{game_id}/", #level_path
+                    f"maps/level_{game_id}/", #level_id
                     game_id, #level/index
                     LevelStatus[game_status],
                     0, # level/turn 
