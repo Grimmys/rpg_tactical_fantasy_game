@@ -413,6 +413,14 @@ class LevelScene(Scene):
             menu_creator_manager.create_save_menu(self.save_game)
         )
 
+    def restart_game(self) -> None:
+        """
+        Replace the current active menu by a freshly created save game interface
+        """
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_save_menu(self.save_game)
+        )
+
     def save_game(self, slot_id: int) -> None:
         """
         Save the current state of the game in a file on local disk
@@ -2156,6 +2164,7 @@ class LevelScene(Scene):
             menu_creator_manager.create_main_menu(
                 {
                     "save": self.open_save_menu,
+                    "restart": self.restart_game,
                     "suspend": self.exit_game,
                     "start": self.start_game,
                     "diary": lambda: self.menu_manager.open_menu(

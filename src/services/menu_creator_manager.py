@@ -694,6 +694,7 @@ def create_main_menu(
     tile = pygame.Rect(position[0], position[1], 1, 1)
     elements = [
         [Button(title=STR_SAVE, callback=buttons_callback["save"])],
+        [Button(title=STR_RESTART, callback=buttons_callback["restart"])],
         [Button(title=STR_SUSPEND, callback=buttons_callback["suspend"])],
     ]
 

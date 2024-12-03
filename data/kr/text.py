@@ -51,6 +51,7 @@ def f_LEVEL_NUMBER_AND_NAME(number: int, name: str):
 # Main menu
 STR_MAIN_MENU = "메인메뉴"
 STR_SAVE = "저장"
+STR_RESTART = "다시 시도"
 STR_SUSPEND = "메인으로"
 STR_START = "시작"
 STR_DIARY = "일기장"
