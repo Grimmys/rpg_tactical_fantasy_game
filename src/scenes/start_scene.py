@@ -123,6 +123,7 @@ class StartScene(Scene):
         """
         # Modify screen
         flags: int = 0
+        print("로드 중")
         size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
         if StartScene.screen_size == 2:
             flags = pygame.FULLSCREEN
@@ -184,6 +185,17 @@ class StartScene(Scene):
                 game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = int(tree_root.find("level/turn").text.strip())
 
+                print("------------------------------------")
+                print("load game - shot_id:",game_id)
+                print()
+                print("load game - tree_root:",tree_root)
+                print("load game - level_id:",level_id)
+                print("load game - level_path:",level_path)
+                print("load game - game_status:",game_status)
+                print("load game - turn_nb:",turn_nb)
+                print()
+                print("load game - game_status:",type(self.level))
+                print("------------------------------------")
                 self.level = LevelScene(
                     StartScene.generate_level_window(),
                     level_path,

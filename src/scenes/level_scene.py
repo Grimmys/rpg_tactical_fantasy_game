@@ -61,7 +61,7 @@ from src.services.language import *
 from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
                                                INVENTORY_MENU_ID, SHOP_MENU_ID,
                                                create_event_dialog,
-                                               create_save_dialog)
+                                               create_save_dialog, restart_game_button)
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 
@@ -275,6 +275,9 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
+        self.level: Optional[LevelScene] = None
+        self.exit: QuitActionKind = QuitActionKind.CONTINUE
+
     @property
     def diary_entries_text_element_set(self):
         """
@@ -454,36 +457,60 @@ class LevelScene(Scene):
         # if LevelScene.screen_size == 2:
         #     flags = pygame.FULLSCREEN
         #     size = (0, 0)
+        print("다시시도 로드중")
         return pygame.display.set_mode(size, flags)
 
-    def restart_game(self, shot_id: int) -> None:
-        # self.quit_request = True
+    def restart_game(self, slot_id: int) -> None:
         # if self.game_phase not in (LevelStatus.ENDED_VICTORY, LevelStatus.ENDED_DEFEAT):
         #     self.game_phase = LevelStatus.ENDED_DEFEAT
-        print("restart game id: ", shot_id)
+        print("restart game id: ", slot_id)
+
+        restart_manager = SaveStateManager(self)
+        restart_manager.save_game(slot_id)
+
 
         # try:
-        #     with open(f"saves/save_{shot_id}.xml", "r", encoding="utf-8") as save:
+        #     with open(f"saves/save_{slot_id}.xml", "r", encoding="utf-8") as save:
         #         tree_root: etree.Element = etree.parse(save).getroot()
         #         level_id = int(tree_root.find("level/index").text.strip())
         #         level_path = f"maps/level_{level_id}/"
         #         game_status = tree_root.find("level/phase").text.strip()
         #         turn_nb = int(tree_root.find("level/turn").text.strip())
         #
-        #         print("level_path:",level_path)
-        #         print("level_id:",level_id)
-        #         print("turn_nb:",turn_nb)
+        #         print("------------------------------------")
+        #         print("restart game - shot_id:",slot_id)
+        #         print()
+        #         print("restart game - tree_root:",tree_root)
+        #         print("restart game - level_id:",level_id)
+        #         print("restart game - level_path:",level_path)
+        #         print("restart game - game_status:",game_status)
+        #         print("restart game - turn_nb:",turn_nb)
+        #         print("restart game - Level_type:",type(self.level))
+        #         print("------------------------------------")
         #         self.level = LevelScene(
-        #             LevelScene.generate_level_window(),
+        #             self.generate_level_window(),
         #             level_path,
         #             level_id,
         #             LevelStatus[game_status],
         #             turn_nb,
         #             tree_root.find("level/entities"),
         #         )
+        #         self.directory = level_path
+        #         self.number = level_id
+        #         self.status = LevelStatus[game_status]
+        #         self.turn = turn_nb
+        #         self.data = tree_root.find("level/entities")
+        #         print("self.data: (tree_root)",self.data)
+        #         print("self.number: (level_id)",self.number)
+        #         print("self.directory: (level_path)", self.directory )
+        #         print("self.status: (game_status)",self.status)
+        #         print("self.turn: (turn_nb)",self.turn)
+        #         print("------------------------------------")
+        #
         #
         # except XMLSyntaxError:
         #     # File does not contain expected values and may be corrupt
+        #     print("XMLSyntaxError")
         #     name: str = "Load Game"
         #     width: int = self.screen.get_width() // 2
         #     self.menu_manager.open_menu(
@@ -504,6 +531,7 @@ class LevelScene(Scene):
         #
         # except FileNotFoundError:
         #     # No saved game
+        #     print("FiileNoFoundError")
         #     name: str = "Load Game"
         #     width: int = self.screen.get_width() // 2
         #     self.menu_manager.open_menu(
@@ -521,6 +549,7 @@ class LevelScene(Scene):
         #         )
         #     )
         #
+        # print("function end")
 
     def open_choice_mode(self) -> None:
         """
@@ -589,6 +618,7 @@ class LevelScene(Scene):
         Return whether the game should be ended or not.
         """
         if self.quit_request:
+            print("업데이트 state ")
             return True
 
         if self.animation:
