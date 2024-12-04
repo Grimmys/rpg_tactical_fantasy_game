@@ -14,66 +14,64 @@ class RestartStateManager:
         # Init XML tree
         self.tree = etree.Element("save")
 
-    def save_game(self, file_id):
-        """
-        Save the current state of the game to the given file in XML format
-
-        Keyword Arguments:
-        file_id -- the id of the save file to use
-        """
-        with open(f"saves/save_{file_id}.xml", "w+", encoding="utf-8") as save_file:
-            level = self._save_level()
-            self.tree.append(level)
-
-            # Store XML tree in file
-            save_file.write(
-                etree.tostring(self.tree, pretty_print=True, encoding="unicode")
-            )
-
     def restart_game(self, file_id):
         """
         Restart_game
         """
-        with open(f"saves/save_{file_id}.xml", "w+", encoding="utf-8") as save_file:
-            level = self._save_level()
+        with open(f"saves/save_{file_id}.xml", "r", encoding="utf-8") as save_file:
+            tree_root: etree.Element = etree.parse(save_file).getroot()
+            level_id = int(tree_root.find("level/index").text.strip())
+            level_path = f"maps/level_{level_id}/"
+            game_status = tree_root.find("level/phase").text.strip()
+            turn_nb = int(tree_root.find("level/turn").text.strip())
+
+            level = self._save_level(tree_root, level_id, game_status,turn_nb)
             self.tree.append(level)
 
-            # Store XML tree in file
-            save_file.write(
-                etree.tostring(self.tree, pretty_print=True, encoding="unicode")
-            )
+            # save_file.write(
+            #     etree.tostring(self.tree, pretty_print=True, encoding="unicode")
+            # )
 
-    def _save_level(self):
-        """
 
-        :return:
-        """
+    def _save_level(self,tree_root, level_id, game_status,turn_nb):
+
         level = etree.Element("level")
 
+        print("------------------------------------")
         # Save level identity
         index = etree.SubElement(level, "index")
         index.text = str(self.level.number)
+        print("self.level.number:",self.level.number)
+        self.level.number = level_id
+        # self.level.number = 0
 
         # Save game phase
         phase = etree.SubElement(level, "phase")
         phase.text = self.level.game_phase.name
+        # print("self.game_phase (before):",self.level.game_phase.name)
+        # self.level.game_phase.name = game_status
+        # print("self.game_phase (after):",self.level.game_phase.name)
+        print("type: game_status",type(game_status),game_status)
+        print("type: self.level.game_phase.name",type(self.level.game_phase.name), self.level.game_phase.name)
 
         # Save turn if game has started
         if self.level.is_game_started:
             turn = etree.SubElement(level, "turn")
             turn.text = str(self.level.turn)
+            print("self.level.turn (before):",self.level.turn)
+            self.level.turn = turn_nb
+            print("self.level.turn (after):",self.level.turn)
+            # self.level.turn = 5
 
         # Save current entities stats and position
-        entities = self._save_entities()
+        entities = self._save_entities(tree_root)
         level.append(entities)
 
+        print("------------------------------------")
         return level
 
-    def _save_entities(self):
-        """
+    def _save_entities(self,tree_root):
 
-        :return:
-        """
         entities = etree.Element("entities")
         entities.extend(
             [

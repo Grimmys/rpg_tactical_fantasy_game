@@ -1,8 +1,8 @@
 <save>
   <level>
-    <index>3</index>
-    <phase>IN_PROGRESS</phase>
-    <turn>1</turn>
+    <index>0</index>
+    <phase>VERY_BEGINNING</phase>
+    <turn>5</turn>
     <entities>
       <allies/>
       <foes>
@@ -281,8 +281,8 @@
         <player>
           <name>raimund</name>
           <position>
-            <x>14</x>
-            <y>6</y>
+            <x>15</x>
+            <y>9</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>
@@ -327,7 +327,7 @@
               <value>125</value>
             </feet>
           </equipment>
-          <turnFinished>True</turnFinished>
+          <turnFinished>False</turnFinished>
         </player>
         <player>
           <name>braern</name>

@@ -470,87 +470,87 @@ class LevelScene(Scene):
         restart_manager.restart_game(slot_id)
 
 
-        # try:
-        #     with open(f"saves/save_{slot_id}.xml", "r", encoding="utf-8") as save:
-        #         tree_root: etree.Element = etree.parse(save).getroot()
-        #         level_id = int(tree_root.find("level/index").text.strip())
-        #         level_path = f"maps/level_{level_id}/"
-        #         game_status = tree_root.find("level/phase").text.strip()
-        #         turn_nb = int(tree_root.find("level/turn").text.strip())
-        #
-        #         print("------------------------------------")
-        #         print("restart game - shot_id:",slot_id)
-        #         print()
-        #         print("restart game - tree_root:",tree_root)
-        #         print("restart game - level_id:",level_id)
-        #         print("restart game - level_path:",level_path)
-        #         print("restart game - game_status:",game_status)
-        #         print("restart game - turn_nb:",turn_nb)
-        #         print("restart game - Level_type:",type(self.level))
-        #         print("------------------------------------")
-        #         self.level = LevelScene(
-        #             self.generate_level_window(),
-        #             level_path,
-        #             level_id,
-        #             LevelStatus[game_status],
-        #             turn_nb,
-        #             tree_root.find("level/entities"),
-        #         )
-        #         self.directory = level_path
-        #         self.number = level_id
-        #         self.status = LevelStatus[game_status]
-        #         self.turn = turn_nb
-        #         self.data = tree_root.find("level/entities")
-        #         print("self.data: (tree_root)",self.data)
-        #         print("self.number: (level_id)",self.number)
-        #         print("self.directory: (level_path)", self.directory )
-        #         print("self.status: (game_status)",self.status)
-        #         print("self.turn: (turn_nb)",self.turn)
-        #         print("------------------------------------")
-        #
-        #
-        # except XMLSyntaxError:
-        #     # File does not contain expected values and may be corrupt
-        #     print("XMLSyntaxError")
-        #     name: str = "Load Game"
-        #     width: int = self.screen.get_width() // 2
-        #     self.menu_manager.open_menu(
-        #         InfoBox(
-        #             name,
-        #             [
-        #                 [
-        #                     TextElement(
-        #                         "Unable to load saved game. Save file appears corrupt.",
-        #                         font=fonts["MENU_SUB_TITLE_FONT"],
-        #                     )
-        #                 ]
-        #             ],
-        #             width=width,
-        #             background_path="imgs/interface/PopUpMenu.png",
-        #         )
-        #     )
-        #
-        # except FileNotFoundError:
-        #     # No saved game
-        #     print("FiileNoFoundError")
-        #     name: str = "Load Game"
-        #     width: int = self.screen.get_width() // 2
-        #     self.menu_manager.open_menu(
-        #         InfoBox(
-        #             name,
-        #             [
-        #                 [
-        #                     TextElement(
-        #                         "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
-        #                     )
-        #                 ]
-        #             ],
-        #             width=width,
-        #             background_path="imgs/interface/PopUpMenu.png",
-        #         )
-        #     )
-        #
-        # print("function end")
+        try:
+            with open(f"saves/save_{slot_id}.xml", "r", encoding="utf-8") as save:
+                tree_root: etree.Element = etree.parse(save).getroot()
+                level_id = int(tree_root.find("level/index").text.strip())
+                level_path = f"maps/level_{level_id}/"
+                game_status = tree_root.find("level/phase").text.strip()
+                turn_nb = int(tree_root.find("level/turn").text.strip())
+
+                print("------------------------------------")
+                print("restart game - shot_id:",slot_id)
+                print()
+                print("restart game - tree_root:",tree_root)
+                print("restart game - level_id:",level_id)
+                print("restart game - level_path:",level_path)
+                print("restart game - game_status:",game_status)
+                print("restart game - turn_nb:",turn_nb)
+                print("restart game - Level_type:",type(self.level))
+                print("------------------------------------")
+                self.level = LevelScene(
+                    self.generate_level_window(),
+                    level_path,
+                    level_id,
+                    LevelStatus[game_status],
+                    turn_nb,
+                    tree_root.find("level/entities"),
+                )
+                self.directory = level_path
+                self.number = level_id
+                self.status = LevelStatus[game_status]
+                self.turn = turn_nb
+                self.data = tree_root.find("level/entities")
+                print("self.data: (tree_root)",self.data)
+                print("self.number: (level_id)",self.number)
+                print("self.directory: (level_path)", self.directory )
+                print("self.status: (game_status)",self.status)
+                print("self.turn: (turn_nb)",self.turn)
+                print("------------------------------------")
+
+
+        except XMLSyntaxError:
+            # File does not contain expected values and may be corrupt
+            print("XMLSyntaxError")
+            name: str = "Load Game"
+            width: int = self.screen.get_width() // 2
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
+                    [
+                        [
+                            TextElement(
+                                "Unable to load saved game. Save file appears corrupt.",
+                                font=fonts["MENU_SUB_TITLE_FONT"],
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
+
+        except FileNotFoundError:
+            # No saved game
+            print("FiileNoFoundError")
+            name: str = "Load Game"
+            width: int = self.screen.get_width() // 2
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
+                    [
+                        [
+                            TextElement(
+                                "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
+
+        print("function end")
 
     def open_choice_mode(self) -> None:
         """
