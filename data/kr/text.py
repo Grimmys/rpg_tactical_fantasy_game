@@ -22,7 +22,7 @@ def f_SAVE_NUMBER(number: int):
     return f"세이브 {number}"
 
 def f_RESTART_NUMBER(number: int):
-    return f"restart {number}"
+    return f"다시 시도하기"
 
 
 # Options menu

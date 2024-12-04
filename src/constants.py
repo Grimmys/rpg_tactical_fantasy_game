@@ -78,6 +78,5 @@ FINAL_ACTION = 2
 # Number of save slots
 SAVE_SLOTS = 5
 
-
 #Level Options
 LEVEL_OPTIONS = 4

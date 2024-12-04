@@ -1429,7 +1429,9 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         width=START_MENU_WIDTH,
     )
 
-def restart_game_button(save_game_function: Callable) -> InfoBox:
+restart_session : int = 0
+
+def restart_game_button(restart_game_function: Callable) -> InfoBox:
     """
     Return the interface of the save game menu
     """
@@ -1439,8 +1441,8 @@ def restart_game_button(save_game_function: Callable) -> InfoBox:
         element_grid.append(
             [
                 Button(
-                    title=f_RESTART_NUMBER(i + 1),
-                    callback=lambda slot_id=i: print(slot_id),
+                    title="다시 시도하기",
+                    callback=lambda slot_id=restart_session: restart_game_function(slot_id),
                 )
             ]
         )

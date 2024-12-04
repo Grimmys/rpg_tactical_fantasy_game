@@ -12,11 +12,12 @@ from typing import Optional, Union
 
 import pygame
 import pytmx
+from lxml.etree import XMLSyntaxError
 from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
 from pygamepopup.components.image_button import ImageButton
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import (BLACK, GRID_HEIGHT, GRID_WIDTH,
+from src.constants import ( SCREEN_SIZE,BLACK, GRID_HEIGHT, GRID_WIDTH,
                            ITEM_DELETE_MENU_WIDTH, ITEM_INFO_MENU_WIDTH,
                            ITEM_MENU_WIDTH, MAX_MAP_HEIGHT, MENU_HEIGHT,
                            MENU_WIDTH, ORANGE, TILE_SIZE, WIN_HEIGHT,
@@ -413,28 +414,6 @@ class LevelScene(Scene):
             menu_creator_manager.create_save_menu(self.save_game)
         )
 
-    def open_restart_game(self) -> None:
-        """
-        Replace the current active menu by a freshly created save game interface
-        """
-        self.menu_manager.open_menu(
-            menu_creator_manager.restart_game_button(self.restart_game)
-        )
-
-    def restart_game(self, shot_id: int) -> None:
-        pass
-
-    def open_choice_mode(self) -> None:
-        """
-        Replace the current active menu by a freshly created save game interface
-        """
-        self.menu_manager.open_menu(
-            menu_creator_manager.choice_mode_button(self.choice_mode)
-        )
-
-    def choice_mode(self, shot_id: int) -> None:
-        pass
-
     def save_game(self, slot_id: int) -> None:
         """
         Save the current state of the game in a file on local disk
@@ -451,6 +430,109 @@ class LevelScene(Scene):
                 width=ITEM_MENU_WIDTH,
             )
         )
+
+
+    def open_restart_game(self) -> None:
+        """
+        Replace the current active menu by a freshly created save game interface
+        """
+        print("restart_game_button")
+        self.menu_manager.open_menu(
+            menu_creator_manager.restart_game_button(self.restart_game)
+        )
+
+    screen_size: int = SCREEN_SIZE
+
+    @staticmethod
+    def generate_level_window() -> pygame.Surface:
+        """
+        Handle the generation of the screen dedicated to the ongoing level according to set parameters
+        """
+        # Modify screen
+        flags: int = 0
+        size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
+        # if LevelScene.screen_size == 2:
+        #     flags = pygame.FULLSCREEN
+        #     size = (0, 0)
+        return pygame.display.set_mode(size, flags)
+
+    def restart_game(self, shot_id: int) -> None:
+        # self.quit_request = True
+        # if self.game_phase not in (LevelStatus.ENDED_VICTORY, LevelStatus.ENDED_DEFEAT):
+        #     self.game_phase = LevelStatus.ENDED_DEFEAT
+        print("restart game id: ", shot_id)
+
+        # try:
+        #     with open(f"saves/save_{shot_id}.xml", "r", encoding="utf-8") as save:
+        #         tree_root: etree.Element = etree.parse(save).getroot()
+        #         level_id = int(tree_root.find("level/index").text.strip())
+        #         level_path = f"maps/level_{level_id}/"
+        #         game_status = tree_root.find("level/phase").text.strip()
+        #         turn_nb = int(tree_root.find("level/turn").text.strip())
+        #
+        #         print("level_path:",level_path)
+        #         print("level_id:",level_id)
+        #         print("turn_nb:",turn_nb)
+        #         self.level = LevelScene(
+        #             LevelScene.generate_level_window(),
+        #             level_path,
+        #             level_id,
+        #             LevelStatus[game_status],
+        #             turn_nb,
+        #             tree_root.find("level/entities"),
+        #         )
+        #
+        # except XMLSyntaxError:
+        #     # File does not contain expected values and may be corrupt
+        #     name: str = "Load Game"
+        #     width: int = self.screen.get_width() // 2
+        #     self.menu_manager.open_menu(
+        #         InfoBox(
+        #             name,
+        #             [
+        #                 [
+        #                     TextElement(
+        #                         "Unable to load saved game. Save file appears corrupt.",
+        #                         font=fonts["MENU_SUB_TITLE_FONT"],
+        #                     )
+        #                 ]
+        #             ],
+        #             width=width,
+        #             background_path="imgs/interface/PopUpMenu.png",
+        #         )
+        #     )
+        #
+        # except FileNotFoundError:
+        #     # No saved game
+        #     name: str = "Load Game"
+        #     width: int = self.screen.get_width() // 2
+        #     self.menu_manager.open_menu(
+        #         InfoBox(
+        #             name,
+        #             [
+        #                 [
+        #                     TextElement(
+        #                         "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
+        #                     )
+        #                 ]
+        #             ],
+        #             width=width,
+        #             background_path="imgs/interface/PopUpMenu.png",
+        #         )
+        #     )
+        #
+
+    def open_choice_mode(self) -> None:
+        """
+        Replace the current active menu by a freshly created save game interface
+        """
+        self.menu_manager.open_menu(
+            menu_creator_manager.choice_mode_button(self.choice_mode)
+        )
+
+    def choice_mode(self, shot_id: int) -> None:
+        pass
+
 
     def exit_game(self) -> None:
         """

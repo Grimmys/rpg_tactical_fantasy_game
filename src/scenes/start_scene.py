@@ -12,7 +12,7 @@ from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH
+from src.constants import  SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
@@ -172,6 +172,10 @@ class StartScene(Scene):
         Keyword arguments:
         game_id -- the id of the saved file that should be load
         """
+        print("load game", game_id,"(game_id)")
+        menu_creator_manager.restart_session = game_id
+        print("menu_creator_manager.restart_session:",menu_creator_manager.restart_session)
+
         try:
             with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
                 tree_root: etree.Element = etree.parse(save).getroot()
@@ -233,6 +237,7 @@ class StartScene(Scene):
         Move current active menu to the background and set a freshly created load game menu
         as the new active menu.
         """
+        print("load_menu")
         self.menu_manager.open_menu(
             menu_creator_manager.create_load_menu(self.load_game)
         )
