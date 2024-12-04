@@ -2,7 +2,7 @@
   <level>
     <index>3</index>
     <phase>IN_PROGRESS</phase>
-    <turn>2</turn>
+    <turn>1</turn>
     <entities>
       <allies/>
       <foes>
@@ -47,7 +47,7 @@
         <foe>
           <name>mutant_lizard</name>
           <position>
-            <x>13</x>
+            <x>12</x>
             <y>6</y>
           </position>
           <current_hp>25</current_hp>
@@ -66,8 +66,8 @@
         <foe>
           <name>mutant_lizard</name>
           <position>
-            <x>16</x>
-            <y>7</y>
+            <x>18</x>
+            <y>10</y>
           </position>
           <current_hp>17</current_hp>
           <level>5</level>
@@ -86,7 +86,7 @@
           <name>mutant_ant</name>
           <position>
             <x>15</x>
-            <y>7</y>
+            <y>8</y>
           </position>
           <current_hp>16</current_hp>
           <level>4</level>
@@ -105,7 +105,7 @@
           <name>mutant_ant</name>
           <position>
             <x>17</x>
-            <y>6</y>
+            <y>7</y>
           </position>
           <current_hp>20</current_hp>
           <level>5</level>
@@ -123,7 +123,7 @@
         <foe>
           <name>mutant_ant</name>
           <position>
-            <x>15</x>
+            <x>16</x>
             <y>5</y>
           </position>
           <current_hp>19</current_hp>
@@ -281,10 +281,10 @@
         <player>
           <name>raimund</name>
           <position>
-            <x>15</x>
+            <x>14</x>
             <y>6</y>
           </position>
-          <current_hp>10</current_hp>
+          <current_hp>20</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>MANUAL</strategy>
@@ -327,15 +327,15 @@
               <value>125</value>
             </feet>
           </equipment>
-          <turnFinished>False</turnFinished>
+          <turnFinished>True</turnFinished>
         </player>
         <player>
           <name>braern</name>
           <position>
-            <x>14</x>
-            <y>6</y>
+            <x>15</x>
+            <y>10</y>
           </position>
-          <current_hp>8</current_hp>
+          <current_hp>15</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>MANUAL</strategy>
@@ -384,9 +384,9 @@
           <name>thokdrum</name>
           <position>
             <x>16</x>
-            <y>6</y>
+            <y>10</y>
           </position>
-          <current_hp>13</current_hp>
+          <current_hp>20</current_hp>
           <level>1</level>
           <exp>0</exp>
           <strategy>MANUAL</strategy>

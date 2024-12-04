@@ -64,6 +64,7 @@ from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
                                                create_save_dialog, restart_game_button)
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
+from src.services.restart_state_manager import RestartStateManager
 
 
 class LevelStatus(IntEnum):
@@ -465,8 +466,8 @@ class LevelScene(Scene):
         #     self.game_phase = LevelStatus.ENDED_DEFEAT
         print("restart game id: ", slot_id)
 
-        restart_manager = SaveStateManager(self)
-        restart_manager.save_game(slot_id)
+        restart_manager = RestartStateManager(self)
+        restart_manager.restart_game(slot_id)
 
 
         # try:
