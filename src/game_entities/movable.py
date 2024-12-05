@@ -102,6 +102,7 @@ class Movable(Destroyable):
     SELECTED_DISPLAY: pygame.Surface = None
     XP_NEXT_LVL_BASE: int = 15
     move_speed: int = ANIMATION_SPEED
+    #난이도 선택 변수 
     choice_level: int = GAME_LEVEL
 
     @staticmethod
