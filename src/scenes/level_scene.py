@@ -66,6 +66,7 @@ from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 from src.services.restart_state_manager import RestartStateManager
 
+from help_dialogs import HELP_DIALOGS
 
 class LevelStatus(IntEnum):
     VERY_BEGINNING = auto()
@@ -191,7 +192,7 @@ class LevelScene(Scene):
 
         super().__init__(screen)
         self.active_screen_part = self._compute_active_screen_part()
-
+        self.help_dialogs = HELP_DIALOGS
         Shop.interaction_callback = self.interact_item_shop
         Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(
             self.active_shop.menu
