@@ -261,8 +261,8 @@ class StartScene(Scene):
         레벨 선택 함수
         """
         try:
-            with open(f"saves/save_{game_id + 9}.xml", "r", encoding="utf-8") as save:
-                print("레벨불러오기:",game_id +  Movable.choice_level)
+            with open(f"saves/save_{game_id + Movable.choice_level}.xml", "r", encoding="utf-8") as save:
+                print("레벨 파일불러오기: save_",game_id +  Movable.choice_level)
                 tree_root: etree.Element = etree.parse(save).getroot()
                 # level_id = int(tree_root.find("level/index").text.strip())
                 # level_path = f"maps/level_{level_id}/"

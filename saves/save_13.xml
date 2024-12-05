@@ -33,62 +33,6 @@
         <foe>
           <name>skeleton</name>
           <position>
-            <x>16</x>
-            <y>6</y>
-          </position>
-          <current_hp>10</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>10</hp>
-          <strength>7</strength>
-          <defense>1</defense>
-          <resistance>0</resistance>
-          <move>3</move>
-          <loot>
-            <item>
-              <name>bones</name>
-              <probability>0.1</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.05</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>skeleton</name>
-          <position>
-            <x>13</x>
-            <y>8</y>
-          </position>
-          <current_hp>10</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>10</hp>
-          <strength>7</strength>
-          <defense>1</defense>
-          <resistance>0</resistance>
-          <move>3</move>
-          <loot>
-            <item>
-              <name>bones</name>
-              <probability>0.1</probability>
-            </item>
-            <item>
-              <name>iron_ring</name>
-              <probability>0.05</probability>
-            </item>
-          </loot>
-        </foe>
-        <foe>
-          <name>skeleton</name>
-          <position>
             <x>10</x>
             <y>5</y>
           </position>
