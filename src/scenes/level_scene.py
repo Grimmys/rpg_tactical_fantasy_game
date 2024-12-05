@@ -2436,6 +2436,15 @@ class LevelScene(Scene):
                                     reach,
                                     isinstance(entity, Character),
                                 )
+
+                             # --- 새 코드: 도움말 Dialog 표시 ---
+                            if not hasattr(entity, "help_shown") or not entity.help_shown:
+                                help_dialog = self.help_dialogs.get("movable_entity")
+                                if help_dialog:
+                                    self.menu_manager.open_menu(create_event_dialog(help_dialog))
+                                    entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
+                            # ---------------------------------
+
                             return
 
     def key_down(self, keyname):
