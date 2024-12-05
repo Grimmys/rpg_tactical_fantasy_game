@@ -464,7 +464,7 @@ TRANSLATIONS = {
         "door": "문",
         "altar": "제단",
         "armory": "무기점",
-        "apothecary": "제보바람AP",
+        "apothecary": "치료소",
     },
     "attack_kinds": {
         "physical": "물리",
