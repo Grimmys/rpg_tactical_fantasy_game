@@ -328,6 +328,21 @@ class LevelScene(Scene):
                 if "dialogs" in self.events["before_init"]:
                     for dialog in self.events["before_init"]["dialogs"]:
                         self.menu_manager.open_menu(create_event_dialog(dialog))
+                    #조작법 설명 창 추가
+                    self.menu_manager.open_menu(
+                        create_help_dialog(
+                            {
+                                "title": "조작법 안내",
+                                "content": (
+                                    "WASD: 이동\n"
+                                    "스페이스: 상호작용\n"
+                                    "I: 인벤토리 열기\n"
+                                    "M: 지도 보기\n"
+                            ),
+                            "ok": self.close_help_menu,
+                        }
+                    )
+                )
                 if "new_players" in self.events["before_init"]:
                     for player_el in self.events["before_init"]["new_players"]:
                         player = loader.init_player(player_el["name"])
