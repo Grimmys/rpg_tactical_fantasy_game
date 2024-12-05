@@ -695,7 +695,7 @@ def create_main_menu(
     elements = [
         [Button(title=STR_SAVE, callback=buttons_callback["save"])],
         [Button(title=STR_RESTART, callback=buttons_callback["restart"])],
-        [Button(title=STR_CHOICE_MODE, callback=buttons_callback["choice_mode"])],
+        # [Button(title=STR_CHOICE_MODE, callback=buttons_callback["choice_mode"])],
         [Button(title=STR_SUSPEND, callback=buttons_callback["suspend"])],
     ]
 

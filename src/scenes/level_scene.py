@@ -2297,7 +2297,7 @@ class LevelScene(Scene):
                 {
                     "save": self.open_save_menu,
                     "restart": self.open_restart_game,
-                    "choice_mode": self.open_choice_mode,
+                    # "choice_mode": self.open_choice_mode,
                     "suspend": self.exit_game,
                     "start": self.start_game,
                     "diary": lambda: self.menu_manager.open_menu(

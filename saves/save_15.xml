@@ -676,8 +676,8 @@
         <player>
           <name>raimund</name>
           <position>
-            <x>13</x>
-            <y>7</y>
+            <x>9</x>
+            <y>13</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>
@@ -727,8 +727,8 @@
         <player>
           <name>braern</name>
           <position>
-            <x>13</x>
-            <y>8</y>
+            <x>10</x>
+            <y>13</y>
           </position>
           <current_hp>15</current_hp>
           <level>1</level>
@@ -778,8 +778,8 @@
         <player>
           <name>thokdrum</name>
           <position>
-            <x>14</x>
-            <y>8</y>
+            <x>10</x>
+            <y>12</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>
