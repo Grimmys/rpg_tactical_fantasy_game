@@ -2436,6 +2436,7 @@ class LevelScene(Scene):
                                     reach,
                                     isinstance(entity, Character),
                                 )
+                            
                             return
 
     def key_down(self, keyname):
