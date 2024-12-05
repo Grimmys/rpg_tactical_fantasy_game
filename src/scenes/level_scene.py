@@ -331,16 +331,16 @@ class LevelScene(Scene):
                     #조작법 설명 창 추가
                     help_dialog = {
                         "title": "조작법 안내",
-                        "content": (
-                        "WASD: 이동\n"
-                        "스페이스: 상호작용\n"
-                        "I: 인벤토리 열기\n"
-                        "M: 지도 보기\n"
-                    ),
-                    "type": "help",
+                        "talks": [
+                            "WASD: 이동",
+                            "스페이스: 상호작용",
+                            "I: 인벤토리 열기",
+                            "M: 지도 보기",
+                        ],
+                        "type": "help",
                 }
                 self.menu_manager.open_menu(create_event_dialog(help_dialog))
-                
+
                 if "new_players" in self.events["before_init"]:
                     for player_el in self.events["before_init"]["new_players"]:
                         player = loader.init_player(player_el["name"])
