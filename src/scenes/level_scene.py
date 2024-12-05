@@ -66,6 +66,7 @@ from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
 from src.services.restart_state_manager import RestartStateManager
 
+from help_dialogs import HELP_DIALOGS
 
 class LevelStatus(IntEnum):
     VERY_BEGINNING = auto()
@@ -191,7 +192,7 @@ class LevelScene(Scene):
 
         super().__init__(screen)
         self.active_screen_part = self._compute_active_screen_part()
-
+        self.help_dialogs = HELP_DIALOGS
         Shop.interaction_callback = self.interact_item_shop
         Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(
             self.active_shop.menu
@@ -2436,7 +2437,22 @@ class LevelScene(Scene):
                                     reach,
                                     isinstance(entity, Character),
                                 )
-                            
+
+                             # --- 새 코드: 도움말 Dialog 표시 ---
+                            if not hasattr(entity, "help_shown") or not entity.help_shown:
+                                help_dialog = self.help_dialogs.get("movable_entity")
+                                if help_dialog:
+                                    self.menu_manager.open_menu(create_event_dialog(help_dialog))
+                                    entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
+                            # ---------------------------------
+                                else:
+                            # 새로운 비이동 개체 도움말 로직
+                                    if not hasattr(entity, "help_shown") or not entity.help_shown:
+                                        help_dialog = self.help_dialogs.get("non_movable_entity")
+                                        if help_dialog:
+                                            self.menu_manager.open_menu(create_event_dialog(help_dialog))
+                                            entity.help_shown = True
+
                             return
 
     def key_down(self, keyname):
