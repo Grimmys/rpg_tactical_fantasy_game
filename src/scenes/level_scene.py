@@ -330,16 +330,18 @@ class LevelScene(Scene):
                     for dialog in self.events["before_init"]["dialogs"]:
                         self.menu_manager.open_menu(create_event_dialog(dialog))
                     #조작법 설명 창 추가
-                    help_dialog = {
-                        "title": "조작법 안내",
-                        "talks": [
-                            "WASD: 이동",
-                            "스페이스: 상호작용",
-                            "I: 인벤토리 열기",
-                            "M: 지도 보기",
-                        ],
-                        "type": "help",
-                }
+                #     help_dialog = {
+                #         "title": "기본적인 조작법 안내",
+                #         "talks": [
+                #             "기본적인 조작은 다음과 같습니다.",
+                #             "아군 캐릭터를 좌클릭하면 해당 아군 캐릭터가 선택되고, 이동 가능한 타일이 파란색으로 표시됩니다."
+                #             "이때 아군 캐릭터를 다시 좌클릭하면 "
+                #             "I: 인벤토리 열기",
+                #             "M: 지도 보기",
+                #         ],
+                #         "type": "help",
+                # }
+                help_dialog = self.help_dialogs.get("first_help")
                 self.menu_manager.open_menu(create_event_dialog(help_dialog))
 
                 if "new_players" in self.events["before_init"]:
