@@ -339,6 +339,8 @@ class LevelScene(Scene):
                     ),
                     "type": "help",
                 }
+                self.menu_manager.open_menu(create_event_dialog(help_dialog))
+                
                 if "new_players" in self.events["before_init"]:
                     for player_el in self.events["before_init"]["new_players"]:
                         player = loader.init_player(player_el["name"])
