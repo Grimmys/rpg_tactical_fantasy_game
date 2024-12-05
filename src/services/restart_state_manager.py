@@ -4,6 +4,8 @@ from lxml import etree
 from lxml.etree import Element
 
 from src.game_entities.entity import Entity
+from src.services import load_from_xml_manager as xml_loader
+from typing import Optional 
 
 
 class RestartStateManager:
@@ -13,6 +15,7 @@ class RestartStateManager:
         self.level = data
         # Init XML tree
         self.tree = etree.Element("save")
+        self.entities_data: Optional[etree.Element] = None
 
     def restart_game(self, file_id):
         """

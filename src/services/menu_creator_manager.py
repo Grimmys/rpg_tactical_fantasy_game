@@ -15,7 +15,7 @@ from pygamepopup.components.image_button import ImageButton
 from src.constants import (ACTION_MENU_WIDTH, ANIMATION_SPEED,
                            BATTLE_SUMMARY_WIDTH, BLACK, DARK_GREEN,
                            DIALOG_WIDTH, EQUIPMENT_MENU_WIDTH,
-                           FOE_STATUS_MENU_WIDTH, GOLD, GREEN,
+                           FOE_STATUS_MENU_WIDTH, GAME_LEVEL, GOLD, GREEN,
                            ITEM_BUTTON_SIZE, ITEM_INFO_MENU_WIDTH,
                            ITEM_MENU_WIDTH, LEVEL_OPTIONS, ORANGE, REWARD_MENU_WIDTH,
                            SAVE_SLOTS, SCREEN_SIZE, START_MENU_WIDTH,
@@ -1343,6 +1343,18 @@ def create_options_menu(
                     ],
                     parameters["move_speed"],
                     lambda value: modify_option_function("move_speed", value),
+                ),
+            ],
+            [
+                load_parameter_button(
+                    STR_LEVEL_MODE_,
+                    [
+                        {"label": STR_EASY_, "value": GAME_LEVEL + 4},
+                        {"label": STR_NORMAL_, "value": GAME_LEVEL},
+                        {"label": STR_HARD_, "value": GAME_LEVEL + 8},
+                    ],
+                    parameters["choice_level"],
+                    lambda value: modify_option_function("choice_level", value),
                 ),
             ],
             [

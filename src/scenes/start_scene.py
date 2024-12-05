@@ -12,7 +12,7 @@ from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import  SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH
+from src.constants import  SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH 
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
@@ -82,6 +82,7 @@ class StartScene(Scene):
         # Load current move speed
         self.options_file = etree.parse("saves/options.xml").getroot()
         Movable.move_speed = int(self.read_option("move_speed"))
+        Movable.choice_level = int(self.read_option("choice_level"))
         StartScene.screen_size = int(self.read_option("screen_size"))
 
     def read_option(self, element_to_read: str) -> str:
@@ -261,7 +262,7 @@ class StartScene(Scene):
         """
         try:
             with open(f"saves/save_{game_id + 9}.xml", "r", encoding="utf-8") as save:
-                print("레벨불러오기:",game_id +  9)
+                print("레벨불러오기:",game_id +  Movable.choice_level)
                 tree_root: etree.Element = etree.parse(save).getroot()
                 # level_id = int(tree_root.find("level/index").text.strip())
                 # level_path = f"maps/level_{level_id}/"
@@ -339,6 +340,7 @@ class StartScene(Scene):
                 {
                     "language": str(self.read_option("language")),
                     "move_speed": int(self.read_option("move_speed")),
+                    "choice_level": int(self.read_option("choice_level")),
                     "screen_size": int(self.read_option("screen_size")),
                 },
                 self.modify_option_value,
@@ -374,6 +376,9 @@ class StartScene(Scene):
             return
         elif option_name == "move_speed":
             Movable.move_speed = option_value
+        elif option_name == "choice_level":
+            Movable.choice_level = option_value
+            print("난이도 value:",option_value)
         elif option_name == "screen_size":
             StartScene.screen_size = option_value
         else:

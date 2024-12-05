@@ -69,6 +69,7 @@ BUTTON_SIZE = (200, 60)
 
 # Options default values
 ANIMATION_SPEED = 4
+GAME_LEVEL = 9
 SCREEN_SIZE = 2
 
 # Value for kind of action on close button

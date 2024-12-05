@@ -500,6 +500,11 @@ class LevelScene(Scene):
                 self.number = level_id
                 self.status = LevelStatus[game_status]
                 self.turn = turn_nb
+                # data_entitis: Optional[etree.Element] = tree_root.find("level/entities")
+                # gap_x, gap_y = (0, 0)
+                # self.entities.update(
+                #     loader.load_all_entities_from_save(data_entitis, gap_x, gap_y)
+                # )
                 self.data = tree_root.find("level/entities")
                 print("self.data: (tree_root)",self.data)
                 print("self.number: (level_id)",self.number)
