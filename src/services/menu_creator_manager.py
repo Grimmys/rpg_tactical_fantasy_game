@@ -1283,13 +1283,13 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
         has_close_button=False,
     )
 
-def create_help_dialog(config):
-    return {
-        "type": "help_dialog",
-        "title": config.get("title", "도움말"),
-        "content": config.get("content", ""),
-        "buttons": [{"label": "확인", "action": config.get("ok")}],
-    }
+# def create_help_dialog(config):
+#     return {
+#         "type": "help_dialog",
+#         "title": config.get("title", "도움말"),
+#         "content": config.get("content", ""),
+#         "buttons": [{"label": "확인", "action": config.get("ok")}],
+#     }
 
 def load_parameter_button(
         formatted_name: str,
