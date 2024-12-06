@@ -4,7 +4,10 @@ from lxml import etree
 from lxml.etree import Element
 
 from src.game_entities.entity import Entity
-from src.services import load_from_xml_manager as xml_loader
+from src.game_entities.player import Player
+from src.services import load_from_xml_manager as loader
+# from src.scenes.level_scene import LevelStatus
+# from src.services.menu_creator_manager import create_event_dialog
 from typing import Optional 
 
 
@@ -28,7 +31,9 @@ class RestartStateManager:
             game_status = tree_root.find("level/phase").text.strip()
             turn_nb = int(tree_root.find("level/turn").text.strip())
 
-            level = self._save_level(tree_root, level_id, game_status,turn_nb)
+            self.entities_data = tree_root.find("level/entities")
+
+            level = self._save_level(self.entities_data, level_id, game_status,turn_nb)
             self.tree.append(level)
 
             # save_file.write(
@@ -36,7 +41,7 @@ class RestartStateManager:
             # )
 
 
-    def _save_level(self,tree_root, level_id, game_status,turn_nb):
+    def _save_level(self,entities_data, level_id, game_status,turn_nb):
 
         level = etree.Element("level")
 
@@ -67,14 +72,33 @@ class RestartStateManager:
             # self.level.turn = 5
 
         # Save current entities stats and position
-        entities = self._save_entities(tree_root)
+        entities = self._save_entities(entities_data)
         level.append(entities)
 
         print("------------------------------------")
         return level
 
-    def _save_entities(self,tree_root):
+    def _save_entities(self,entities_data):
 
+        gap_x, gap_y = (0, 0)
+        # if self.level.game_phase == LevelStatus.VERY_BEGINNING:
+        #     # If game is in very beginning, show dialogs
+        #     if "before_init" in self.level.events:
+        #         if "dialogs" in self.level.events["before_init"]:
+        #             for dialog in self.level.events["before_init"]["dialogs"]:
+        #                 self.level.menu_manager.open_menu(create_event_dialog(dialog))
+
+        # self.level.players = []
+        print("players(before):",self.level.players)
+        self.level.players.clear()
+        self.level.players.extend(loader.load_players(entities_data))
+        print("players(after):",self.level.players)
+        self.level.escaped_players = loader.load_escaped_players(entities_data)
+
+        # self.level.entities = None
+        self.level.entities.update(
+            loader.load_all_entities_from_save(entities_data, gap_x, gap_y)
+        )
         entities = etree.Element("entities")
         entities.extend(
             [
