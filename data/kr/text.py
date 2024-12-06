@@ -45,7 +45,7 @@ STR_FULL = "전체화면"
 # Save game menu
 STR_SAVE_GAME_MENU = "저장하기"
 
-STR_RESTART_TITLE = "다시 시도하겠습니까?"
+STR_RESTART_TITLE = "체크포인트로 되돌아가시겠습니까?"
 
 
 # Level loading scene
