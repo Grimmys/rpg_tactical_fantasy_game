@@ -2398,8 +2398,10 @@ class LevelScene(Scene):
                         if not hasattr(entity, "help_shown") or not entity.help_shown:
                             if isinstance(entity, Foe):
                                 help_dialog = self.help_dialogs.get("foe")
+                            elif isinstance(entity, Character):
+                                help_dialog = self.help_dialogs.get("ally")
                             else:
-                                help_dialog = self.help_dialogs.get("movable_entity")
+                                help_dialog = self.help_dialogs.get("non_movable_entity")
                             #help_dialog = self.help_dialogs.get("movable_entity")
                             if help_dialog:
                                 self.menu_manager.open_menu(create_event_dialog(help_dialog))
