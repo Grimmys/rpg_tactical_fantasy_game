@@ -2403,6 +2403,7 @@ class LevelScene(Scene):
                             else:
                                 help_dialog = self.help_dialogs.get("non_movable_entity")
                             #help_dialog = self.help_dialogs.get("movable_entity")
+                            #건물 도움말은 추가 실패
                             if help_dialog:
                                 self.menu_manager.open_menu(create_event_dialog(help_dialog))
                                 entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
@@ -2449,21 +2450,6 @@ class LevelScene(Scene):
                                     reach,
                                     isinstance(entity, Character),
                                 )
-
-                             # --- 새 코드: 도움말 Dialog 표시 ---
-                        #     if not hasattr(entity, "help_shown") or not entity.help_shown:
-                        #         help_dialog = self.help_dialogs.get("movable_entity")
-                        #         if help_dialog:
-                        #             self.menu_manager.open_menu(create_event_dialog(help_dialog))
-                        #             entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
-                        #     # ---------------------------------
-                        # # else:
-                        # #     # 새로운 비이동 개체 도움말 로직. 여기는 오류
-                        # #     if not hasattr(entity, "help_shown") or not entity.help_shown:
-                        # #         help_dialog = self.help_dialogs.get("non_movable_entity")
-                        # #         if help_dialog:
-                        # #             self.menu_manager.open_menu(create_event_dialog(help_dialog))
-                        # #             entity.help_shown = True
 
                             return
 
