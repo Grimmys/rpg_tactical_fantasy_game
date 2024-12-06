@@ -9,34 +9,6 @@
         <foe>
           <name>assassin</name>
           <position>
-            <x>2</x>
-            <y>4</y>
-          </position>
-          <current_hp>13</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>STATIC</strategy>
-          <skills/>
-          <alterations/>
-          <hp>13</hp>
-          <strength>8</strength>
-          <defense>1</defense>
-          <resistance>0</resistance>
-          <move>4</move>
-          <loot>
-            <item>
-              <name>dagger</name>
-              <probability>0.1</probability>
-            </item>
-            <gold>
-              <amount>50</amount>
-              <probability>0.1</probability>
-            </gold>
-          </loot>
-        </foe>
-        <foe>
-          <name>assassin</name>
-          <position>
             <x>5</x>
             <y>2</y>
           </position>
@@ -59,34 +31,6 @@
             <item>
               <name>key</name>
               <probability>1.0</probability>
-            </item>
-            <gold>
-              <amount>50</amount>
-              <probability>0.1</probability>
-            </gold>
-          </loot>
-        </foe>
-        <foe>
-          <name>assassin</name>
-          <position>
-            <x>6</x>
-            <y>7</y>
-          </position>
-          <current_hp>17</current_hp>
-          <level>3</level>
-          <exp>0</exp>
-          <strategy>ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>17</hp>
-          <strength>10</strength>
-          <defense>3</defense>
-          <resistance>2</resistance>
-          <move>4</move>
-          <loot>
-            <item>
-              <name>dagger</name>
-              <probability>0.1</probability>
             </item>
             <gold>
               <amount>50</amount>
@@ -138,34 +82,6 @@
           <strength>10</strength>
           <defense>2</defense>
           <resistance>1</resistance>
-          <move>4</move>
-          <loot>
-            <item>
-              <name>dagger</name>
-              <probability>0.1</probability>
-            </item>
-            <gold>
-              <amount>50</amount>
-              <probability>0.1</probability>
-            </gold>
-          </loot>
-        </foe>
-        <foe>
-          <name>assassin</name>
-          <position>
-            <x>19</x>
-            <y>10</y>
-          </position>
-          <current_hp>13</current_hp>
-          <level>1</level>
-          <exp>0</exp>
-          <strategy>ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>13</hp>
-          <strength>8</strength>
-          <defense>1</defense>
-          <resistance>0</resistance>
           <move>4</move>
           <loot>
             <item>

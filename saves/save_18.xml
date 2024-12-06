@@ -207,10 +207,90 @@
           </loot>
         </foe>
         <foe>
+          <name>assassin</name>
+          <position>
+            <x>9</x>
+            <y>9</y>
+          </position>
+          <current_hp>16</current_hp>
+          <level>2</level>
+          <exp>0</exp>
+          <strategy>ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>16</hp>
+          <strength>9</strength>
+          <defense>2</defense>
+          <resistance>1</resistance>
+          <move>4</move>
+          <loot>
+            <item>
+              <name>dagger</name>
+              <probability>0.1</probability>
+            </item>
+            <gold>
+              <amount>50</amount>
+              <probability>0.1</probability>
+            </gold>
+          </loot>
+        </foe>
+        <foe>
+          <name>assassin</name>
+          <position>
+            <x>2</x>
+            <y>10</y>
+          </position>
+          <current_hp>16</current_hp>
+          <level>2</level>
+          <exp>0</exp>
+          <strategy>ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>16</hp>
+          <strength>9</strength>
+          <defense>2</defense>
+          <resistance>1</resistance>
+          <move>4</move>
+          <loot>
+            <item>
+              <name>dagger</name>
+              <probability>0.1</probability>
+            </item>
+            <gold>
+              <amount>50</amount>
+              <probability>0.1</probability>
+            </gold>
+          </loot>
+        </foe>
+        <foe>
           <name>cultist</name>
           <position>
             <x>3</x>
             <y>8</y>
+          </position>
+          <current_hp>15</current_hp>
+          <level>2</level>
+          <exp>0</exp>
+          <strategy>ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>15</hp>
+          <strength>8</strength>
+          <defense>0</defense>
+          <resistance>4</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>wooden_staff</name>
+              <probability>0.05</probability>
+            </item>
+          </loot>
+        </foe>
+        <foe>
+          <name>cultist</name>
+          <position>
+            <x>18</x>
+            <y>3</y>
           </position>
           <current_hp>15</current_hp>
           <level>2</level>
@@ -282,8 +362,8 @@
         <player>
           <name>raimund</name>
           <position>
-            <x>15</x>
-            <y>9</y>
+            <x>11</x>
+            <y>6</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>
@@ -333,8 +413,8 @@
         <player>
           <name>braern</name>
           <position>
-            <x>15</x>
-            <y>10</y>
+            <x>11</x>
+            <y>7</y>
           </position>
           <current_hp>15</current_hp>
           <level>1</level>
@@ -384,8 +464,8 @@
         <player>
           <name>thokdrum</name>
           <position>
-            <x>16</x>
-            <y>10</y>
+            <x>12</x>
+            <y>7</y>
           </position>
           <current_hp>20</current_hp>
           <level>1</level>

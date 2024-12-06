@@ -120,16 +120,15 @@ class StartScene(Scene):
     @staticmethod
     def generate_level_window() -> pygame.Surface:
         """
-        Handle the generation of the screen dedicated to the ongoing level according to set parameters
+        Handle the generation of the screen dedicated to the ongoing level according to set parameters.
         """
-        # Modify screen
         flags: int = 0
-        print("로드 중")
         size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
         if StartScene.screen_size == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
         return pygame.display.set_mode(size, flags)
+
 
     def update_state(self) -> bool:
         """
@@ -365,26 +364,25 @@ class StartScene(Scene):
 
 
     def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
-        """
-
-        Keyword arguments:
-        option_name --
-        option_value --
-        """
-        if option_name == "language":
-            self.choose_language_menu()
-            return
+        if option_name == "screen_size":
+            StartScene.screen_size = option_value
+            self.screen = self.generate_level_window()
+            self.background = pygame.transform.scale(
+                pygame.image.load("imgs/interface/main_menu_background.jpg").convert_alpha(),
+                self.screen.get_size(),
+            )
+            self.initialize_menu()
         elif option_name == "move_speed":
             Movable.move_speed = option_value
         elif option_name == "choice_level":
             Movable.choice_level = option_value
-            print("난이도 value:",option_value)
-        elif option_name == "screen_size":
-            StartScene.screen_size = option_value
         else:
-            print(f"Unrecognized option name : {option_name} with value {option_value}")
+            print(f"Unrecognized option name: {option_name}")
             return
+
         self.modify_options_file(option_name, str(option_value))
+
+
 
     @staticmethod
     def execute_action(action: Callable) -> None:
@@ -421,3 +419,20 @@ class StartScene(Scene):
         """
         self.menu_manager.click(button, position)
         return self.exit
+
+    def initialize_menu(self) -> None:
+        """
+        Reinitialize the menu manager and open the start menu.
+        """
+        self.menu_manager = MenuManager(self.screen)
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_start_menu(
+                {
+                    "new_game": self.new_game,
+                    "load_menu": self.load_menu,
+                    "options_menu": self.options_menu,
+                    "exit_game": self.exit_game,
+                    "select_level": self.select_level,
+                }
+            )
+        )

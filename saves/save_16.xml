@@ -26,25 +26,6 @@
           <loot/>
         </foe>
         <foe>
-          <name>mutant_bee</name>
-          <position>
-            <x>8</x>
-            <y>3</y>
-          </position>
-          <current_hp>11</current_hp>
-          <level>3</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>11</hp>
-          <strength>8</strength>
-          <defense>5</defense>
-          <resistance>3</resistance>
-          <move>5</move>
-          <loot/>
-        </foe>
-        <foe>
           <name>mutant_lizard</name>
           <position>
             <x>12</x>
@@ -64,25 +45,6 @@
           <loot/>
         </foe>
         <foe>
-          <name>mutant_lizard</name>
-          <position>
-            <x>18</x>
-            <y>10</y>
-          </position>
-          <current_hp>17</current_hp>
-          <level>5</level>
-          <exp>0</exp>
-          <strategy>ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>17</hp>
-          <strength>11</strength>
-          <defense>8</defense>
-          <resistance>2</resistance>
-          <move>6</move>
-          <loot/>
-        </foe>
-        <foe>
           <name>mutant_ant</name>
           <position>
             <x>15</x>
@@ -97,25 +59,6 @@
           <hp>16</hp>
           <strength>10</strength>
           <defense>9</defense>
-          <resistance>2</resistance>
-          <move>4</move>
-          <loot/>
-        </foe>
-        <foe>
-          <name>mutant_ant</name>
-          <position>
-            <x>17</x>
-            <y>7</y>
-          </position>
-          <current_hp>20</current_hp>
-          <level>5</level>
-          <exp>0</exp>
-          <strategy>SEMI_ACTIVE</strategy>
-          <skills/>
-          <alterations/>
-          <hp>20</hp>
-          <strength>8</strength>
-          <defense>8</defense>
           <resistance>2</resistance>
           <move>4</move>
           <loot/>

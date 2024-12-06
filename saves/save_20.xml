@@ -45,10 +45,48 @@
           <loot/>
         </foe>
         <foe>
+          <name>mutant_bee</name>
+          <position>
+            <x>8</x>
+            <y>7</y>
+          </position>
+          <current_hp>11</current_hp>
+          <level>3</level>
+          <exp>0</exp>
+          <strategy>SEMI_ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>11</hp>
+          <strength>8</strength>
+          <defense>5</defense>
+          <resistance>3</resistance>
+          <move>5</move>
+          <loot/>
+        </foe>
+        <foe>
           <name>mutant_lizard</name>
           <position>
             <x>12</x>
             <y>6</y>
+          </position>
+          <current_hp>25</current_hp>
+          <level>6</level>
+          <exp>0</exp>
+          <strategy>ACTIVE</strategy>
+          <skills/>
+          <alterations/>
+          <hp>25</hp>
+          <strength>12</strength>
+          <defense>6</defense>
+          <resistance>4</resistance>
+          <move>6</move>
+          <loot/>
+        </foe>
+        <foe>
+          <name>mutant_lizard</name>
+          <position>
+            <x>12</x>
+            <y>9</y>
           </position>
           <current_hp>25</current_hp>
           <level>6</level>
@@ -144,6 +182,31 @@
           <position>
             <x>20</x>
             <y>4</y>
+          </position>
+          <current_hp>39</current_hp>
+          <level>6</level>
+          <exp>0</exp>
+          <strategy>STATIC</strategy>
+          <skills/>
+          <alterations/>
+          <hp>39</hp>
+          <strength>16</strength>
+          <defense>10</defense>
+          <resistance>14</resistance>
+          <move>3</move>
+          <loot>
+            <item>
+              <name>scroll_of_cerberus</name>
+              <probability>1.0</probability>
+            </item>
+          </loot>
+          <mission_target>main</mission_target>
+        </foe>
+        <foe>
+          <name>mutanter_cultist</name>
+          <position>
+            <x>19</x>
+            <y>7</y>
           </position>
           <current_hp>39</current_hp>
           <level>6</level>
