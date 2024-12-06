@@ -329,18 +329,7 @@ class LevelScene(Scene):
                 if "dialogs" in self.events["before_init"]:
                     for dialog in self.events["before_init"]["dialogs"]:
                         self.menu_manager.open_menu(create_event_dialog(dialog))
-                    #조작법 설명 창 추가
-                #     help_dialog = {
-                #         "title": "기본적인 조작법 안내",
-                #         "talks": [
-                #             "기본적인 조작은 다음과 같습니다.",
-                #             "아군 캐릭터를 좌클릭하면 해당 아군 캐릭터가 선택되고, 이동 가능한 타일이 파란색으로 표시됩니다."
-                #             "이때 아군 캐릭터를 다시 좌클릭하면 "
-                #             "I: 인벤토리 열기",
-                #             "M: 지도 보기",
-                #         ],
-                #         "type": "help",
-                # }
+                #조작법 설명 창 추가
                 help_dialog = self.help_dialogs.get("first_help")
                 self.menu_manager.open_menu(create_event_dialog(help_dialog))
 
@@ -2398,7 +2387,7 @@ class LevelScene(Scene):
             self.left_click(position)
         elif button == 3:
             self.right_click()
-            #--------------------
+            #각 이동가능한 엔티티마다 첫 우클릭 시 도움말 표시
             position_inside_level = self._compute_relative_position(position)
             for collection in self.entities.values():
                 for entity in collection:
@@ -2407,11 +2396,15 @@ class LevelScene(Scene):
                         and entity.get_rect().collidepoint(position_inside_level)
                     ):
                         if not hasattr(entity, "help_shown") or not entity.help_shown:
-                            help_dialog = self.help_dialogs.get("movable_entity")
+                            if isinstance(entity, Foe):
+                                help_dialog = self.help_dialogs.get("foe")
+                            elif isinstance(entity, Character):
+                                help_dialog = self.help_dialogs.get("ally")
+                            else:
+                                help_dialog = self.help_dialogs.get("non_movable_entity")
                             if help_dialog:
                                 self.menu_manager.open_menu(create_event_dialog(help_dialog))
                                 entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
-                            #return QuitActionKind.CONTINUE  # 도움말 표시 후 종료
                         #-----------------
 
         if self.game_phase == LevelStatus.VERY_BEGINNING:
@@ -2454,21 +2447,6 @@ class LevelScene(Scene):
                                     reach,
                                     isinstance(entity, Character),
                                 )
-
-                             # --- 새 코드: 도움말 Dialog 표시 ---
-                        #     if not hasattr(entity, "help_shown") or not entity.help_shown:
-                        #         help_dialog = self.help_dialogs.get("movable_entity")
-                        #         if help_dialog:
-                        #             self.menu_manager.open_menu(create_event_dialog(help_dialog))
-                        #             entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
-                        #     # ---------------------------------
-                        # # else:
-                        # #     # 새로운 비이동 개체 도움말 로직. 여기는 오류
-                        # #     if not hasattr(entity, "help_shown") or not entity.help_shown:
-                        # #         help_dialog = self.help_dialogs.get("non_movable_entity")
-                        # #         if help_dialog:
-                        # #             self.menu_manager.open_menu(create_event_dialog(help_dialog))
-                        # #             entity.help_shown = True
 
                             return
 
