@@ -372,6 +372,9 @@ class StartScene(Scene):
                 self.screen.get_size(),
             )
             self.initialize_menu()
+        elif option_name == "language":
+            self.choose_language_menu()
+            return
         elif option_name == "move_speed":
             Movable.move_speed = option_value
         elif option_name == "choice_level":
