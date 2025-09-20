@@ -18,6 +18,8 @@ STR_LOAD_GAME_MENU = "载入存档"
 def f_SAVE_NUMBER(serial_number: int):
     return f"存档 {serial_number}"
 
+def f_SHOP_GOLD(shop_balance):
+    return f"商人金币: {shop_balance}"
 
 # Options menu
 STR_OPTIONS_MENU = "选项"
