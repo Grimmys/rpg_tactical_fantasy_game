@@ -1,3 +1,5 @@
+from ..en.text import *
+
 STR_GAME_TITLE = "以五猫之名"
 
 # Start scene
