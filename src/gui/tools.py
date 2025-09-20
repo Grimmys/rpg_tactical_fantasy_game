@@ -44,7 +44,7 @@ def blit_alpha(
     opacity -- the opacity of the blitted surface
     """
     source.set_alpha(opacity)
-    target.blit(source, (location.x, location.y))
+    target.blit(source, location)
 
 
 def distance(position: Position, other_position: Position) -> int:
