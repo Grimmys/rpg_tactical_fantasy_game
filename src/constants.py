@@ -5,7 +5,7 @@ Can be imported from anywhere.
 """
 import pygame
 
-FRAME_RATE = 60
+FRAME_RATE = 144
 
 INITIAL_MAX = 10000
 
@@ -69,6 +69,7 @@ BUTTON_SIZE = (200, 60)
 
 # Options default values
 ANIMATION_SPEED = 4
+GAME_LEVEL = 9
 SCREEN_SIZE = 2
 
 # Value for kind of action on close button
@@ -76,4 +77,7 @@ UNFINAL_ACTION = 1
 FINAL_ACTION = 2
 
 # Number of save slots
-SAVE_SLOTS = 3
+SAVE_SLOTS = 5
+
+#Level Options
+LEVEL_OPTIONS = 4

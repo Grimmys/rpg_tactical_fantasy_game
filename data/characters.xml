@@ -14,10 +14,12 @@
             <talk>
                 <en> Hurry up ! Leave the village from the west, and enter the necropolis. </en>
                 <zh_cn> 快呀！从西面离开村庄，进入墓地。</zh_cn>
+                <kr> 서둘러! 서쪽으로 마을을 떠나고 네크로폴리스에 들어가. </kr>
             </talk>
             <talk>
                 <en> The clock is ticking... The ogre's bones must be returned to their original place. </en>
                 <zh_cn> 时钟在滴答作响……食人魔的骨头必须放回原来的地方。 </zh_cn>
+                <kr> 시간이 가고있다... 오우거의 뼈는 반드시 원래 장소로 돌려놔야 해. </kr>
             </talk>
         </interaction>
         <gold> 100 </gold>

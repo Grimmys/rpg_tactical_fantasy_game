@@ -5,6 +5,7 @@ STR_NEW_GAME = "New game"
 STR_LOAD_GAME = "Load game"
 STR_OPTIONS = "Options"
 STR_EXIT_GAME = "Exit game"
+STR_SELECT_LEVEL = "Select level"
 
 # Close button
 STR_CLOSE = "Close"

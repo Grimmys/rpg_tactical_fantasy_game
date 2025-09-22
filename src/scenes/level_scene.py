@@ -12,11 +12,12 @@ from typing import Optional, Union
 
 import pygame
 import pytmx
+from lxml.etree import XMLSyntaxError
 from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
 from pygamepopup.components.image_button import ImageButton
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import (BLACK, GRID_HEIGHT, GRID_WIDTH,
+from src.constants import ( SCREEN_SIZE,BLACK, GRID_HEIGHT, GRID_WIDTH,
                            ITEM_DELETE_MENU_WIDTH, ITEM_INFO_MENU_WIDTH,
                            ITEM_MENU_WIDTH, MAX_MAP_HEIGHT, MENU_HEIGHT,
                            MENU_WIDTH, ORANGE, TILE_SIZE, WIN_HEIGHT,
@@ -60,10 +61,12 @@ from src.services.language import *
 from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
                                                INVENTORY_MENU_ID, SHOP_MENU_ID,
                                                create_event_dialog,
-                                               create_save_dialog)
+                                               create_save_dialog, restart_game_button)
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
+from src.services.restart_state_manager import RestartStateManager
 
+from help_dialogs import HELP_DIALOGS
 
 class LevelStatus(IntEnum):
     VERY_BEGINNING = auto()
@@ -189,7 +192,7 @@ class LevelScene(Scene):
 
         super().__init__(screen)
         self.active_screen_part = self._compute_active_screen_part()
-
+        self.help_dialogs = HELP_DIALOGS
         Shop.interaction_callback = self.interact_item_shop
         Shop.buy_interface_callback = lambda: self.menu_manager.open_menu(
             self.active_shop.menu
@@ -274,6 +277,9 @@ class LevelScene(Scene):
         self.talk_sfx: Optional[pygame.mixer.Sound] = None
         self.gold_sfx: Optional[pygame.mixer.Sound] = None
 
+        self.level: Optional[LevelScene] = None
+        self.exit: QuitActionKind = QuitActionKind.CONTINUE
+
     @property
     def diary_entries_text_element_set(self):
         """
@@ -323,6 +329,10 @@ class LevelScene(Scene):
                 if "dialogs" in self.events["before_init"]:
                     for dialog in self.events["before_init"]["dialogs"]:
                         self.menu_manager.open_menu(create_event_dialog(dialog))
+                #조작법 설명 창 추가
+                help_dialog = self.help_dialogs.get("first_help")
+                self.menu_manager.open_menu(create_event_dialog(help_dialog))
+
                 if "new_players" in self.events["before_init"]:
                     for player_el in self.events["before_init"]["new_players"]:
                         player = loader.init_player(player_el["name"])
@@ -430,6 +440,140 @@ class LevelScene(Scene):
             )
         )
 
+
+    def open_restart_game(self) -> None:
+        """
+        Replace the current active menu by a freshly created save game interface
+        """
+        print("restart_game_button")
+        self.menu_manager.open_menu(
+            menu_creator_manager.restart_game_button(self.restart_game)
+        )
+
+    screen_size: int = SCREEN_SIZE
+
+    @staticmethod
+    def generate_level_window() -> pygame.Surface:
+        """
+        Handle the generation of the screen dedicated to the ongoing level according to set parameters
+        """
+        # Modify screen
+        flags: int = 0
+        size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
+        # if LevelScene.screen_size == 2:
+        #     flags = pygame.FULLSCREEN
+        #     size = (0, 0)
+        print("다시시도 로드중")
+        return pygame.display.set_mode(size, flags)
+
+    def restart_game(self, slot_id: int) -> None:
+        # if self.game_phase not in (LevelStatus.ENDED_VICTORY, LevelStatus.ENDED_DEFEAT):
+        #     self.game_phase = LevelStatus.ENDED_DEFEAT
+        print("restart game id: ", slot_id)
+
+        restart_manager = RestartStateManager(self)
+        restart_manager.restart_game(slot_id)
+
+
+        try:
+            with open(f"saves/save_{slot_id}.xml", "r", encoding="utf-8") as save:
+                tree_root: etree.Element = etree.parse(save).getroot()
+                level_id = int(tree_root.find("level/index").text.strip())
+                level_path = f"maps/level_{level_id}/"
+                game_status = tree_root.find("level/phase").text.strip()
+                turn_nb = int(tree_root.find("level/turn").text.strip())
+
+                print("------------------------------------")
+                print("restart game - shot_id:",slot_id)
+                print()
+                print("restart game - tree_root:",tree_root)
+                print("restart game - level_id:",level_id)
+                print("restart game - level_path:",level_path)
+                print("restart game - game_status:",game_status)
+                print("restart game - turn_nb:",turn_nb)
+                print("restart game - Level_type:",type(self.level))
+                print("------------------------------------")
+                self.level = LevelScene(
+                    self.generate_level_window(),
+                    level_path,
+                    level_id,
+                    LevelStatus[game_status],
+                    turn_nb,
+                    tree_root.find("level/entities"),
+                )
+                self.directory = level_path
+                self.number = level_id
+                self.status = LevelStatus[game_status]
+                self.turn = turn_nb
+                # data_entitis: Optional[etree.Element] = tree_root.find("level/entities")
+                # gap_x, gap_y = (0, 0)
+                # self.entities.update(
+                #     loader.load_all_entities_from_save(data_entitis, gap_x, gap_y)
+                # )
+                self.data = tree_root.find("level/entities")
+                print("self.data: (tree_root)",self.data)
+                print("self.number: (level_id)",self.number)
+                print("self.directory: (level_path)", self.directory )
+                print("self.status: (game_status)",self.status)
+                print("self.turn: (turn_nb)",self.turn)
+                print("------------------------------------")
+
+
+        except XMLSyntaxError:
+            # File does not contain expected values and may be corrupt
+            print("XMLSyntaxError")
+            name: str = "Load Game"
+            width: int = self.screen.get_width() // 2
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
+                    [
+                        [
+                            TextElement(
+                                "Unable to load saved game. Save file appears corrupt.",
+                                font=fonts["MENU_SUB_TITLE_FONT"],
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
+
+        except FileNotFoundError:
+            # No saved game
+            print("FiileNoFoundError")
+            name: str = "Load Game"
+            width: int = self.screen.get_width() // 2
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
+                    [
+                        [
+                            TextElement(
+                                "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
+
+        print("function end")
+
+    def open_choice_mode(self) -> None:
+        """
+        Replace the current active menu by a freshly created save game interface
+        """
+        self.menu_manager.open_menu(
+            menu_creator_manager.choice_mode_button(self.choice_mode)
+        )
+
+    def choice_mode(self, shot_id: int) -> None:
+        pass
+
+
     def exit_game(self) -> None:
         """
         Handle the end of the level
@@ -485,6 +629,7 @@ class LevelScene(Scene):
         Return whether the game should be ended or not.
         """
         if self.quit_request:
+            print("업데이트 state ")
             return True
 
         if self.animation:
@@ -2156,6 +2301,8 @@ class LevelScene(Scene):
             menu_creator_manager.create_main_menu(
                 {
                     "save": self.open_save_menu,
+                    "restart": self.open_restart_game,
+                    # "choice_mode": self.open_choice_mode,
                     "suspend": self.exit_game,
                     "start": self.start_game,
                     "diary": lambda: self.menu_manager.open_menu(
@@ -2240,6 +2387,25 @@ class LevelScene(Scene):
             self.left_click(position)
         elif button == 3:
             self.right_click()
+            #각 이동가능한 엔티티마다 첫 우클릭 시 도움말 표시
+            position_inside_level = self._compute_relative_position(position)
+            for collection in self.entities.values():
+                for entity in collection:
+                    if (
+                        isinstance(entity, Movable)
+                        and entity.get_rect().collidepoint(position_inside_level)
+                    ):
+                        if not hasattr(entity, "help_shown") or not entity.help_shown:
+                            if isinstance(entity, Foe):
+                                help_dialog = self.help_dialogs.get("foe")
+                            elif isinstance(entity, Character):
+                                help_dialog = self.help_dialogs.get("ally")
+                            else:
+                                help_dialog = self.help_dialogs.get("non_movable_entity")
+                            if help_dialog:
+                                self.menu_manager.open_menu(create_event_dialog(help_dialog))
+                                entity.help_shown = True  # 도움말이 이미 표시되었음을 기록
+                        #-----------------
 
         if self.game_phase == LevelStatus.VERY_BEGINNING:
             # Update game phase if dialogs at the very beginning are all closed
@@ -2281,6 +2447,7 @@ class LevelScene(Scene):
                                     reach,
                                     isinstance(entity, Character),
                                 )
+
                             return
 
     def key_down(self, keyname):

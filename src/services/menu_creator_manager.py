@@ -15,9 +15,9 @@ from pygamepopup.components.image_button import ImageButton
 from src.constants import (ACTION_MENU_WIDTH, ANIMATION_SPEED,
                            BATTLE_SUMMARY_WIDTH, BLACK, DARK_GREEN,
                            DIALOG_WIDTH, EQUIPMENT_MENU_WIDTH,
-                           FOE_STATUS_MENU_WIDTH, GOLD, GREEN,
+                           FOE_STATUS_MENU_WIDTH, GAME_LEVEL, GOLD, GREEN,
                            ITEM_BUTTON_SIZE, ITEM_INFO_MENU_WIDTH,
-                           ITEM_MENU_WIDTH, ORANGE, REWARD_MENU_WIDTH,
+                           ITEM_MENU_WIDTH, LEVEL_OPTIONS, ORANGE, REWARD_MENU_WIDTH,
                            SAVE_SLOTS, SCREEN_SIZE, START_MENU_WIDTH,
                            STATUS_INFO_MENU_WIDTH, STATUS_MENU_WIDTH,
                            TILE_SIZE, TRADE_ITEM_BUTTON_SIZE, TRADE_MENU_WIDTH,
@@ -694,6 +694,8 @@ def create_main_menu(
     tile = pygame.Rect(position[0], position[1], 1, 1)
     elements = [
         [Button(title=STR_SAVE, callback=buttons_callback["save"])],
+        [Button(title=STR_RESTART, callback=buttons_callback["restart"])],
+        # [Button(title=STR_CHOICE_MODE, callback=buttons_callback["choice_mode"])],
         [Button(title=STR_SUSPEND, callback=buttons_callback["suspend"])],
     ]
 
@@ -1271,6 +1273,9 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
                 Button(title=STR_OPTIONS, callback=buttons_callback["options_menu"]),
             ],
             [
+                Button(title=STR_SELECT_LEVEL, callback=buttons_callback["select_level"]),
+            ],
+            [
                 Button(title=STR_EXIT_GAME, callback=buttons_callback["exit_game"]),
             ],
         ],
@@ -1278,6 +1283,13 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
         has_close_button=False,
     )
 
+# def create_help_dialog(config):
+#     return {
+#         "type": "help_dialog",
+#         "title": config.get("title", "도움말"),
+#         "content": config.get("content", ""),
+#         "buttons": [{"label": "확인", "action": config.get("ok")}],
+#     }
 
 def load_parameter_button(
         formatted_name: str,
@@ -1342,6 +1354,18 @@ def create_options_menu(
             ],
             [
                 load_parameter_button(
+                    STR_LEVEL_MODE_,
+                    [
+                        {"label": STR_EASY_, "value": GAME_LEVEL + 4},
+                        {"label": STR_NORMAL_, "value": GAME_LEVEL},
+                        {"label": STR_HARD_, "value": GAME_LEVEL + 8},
+                    ],
+                    parameters["choice_level"],
+                    lambda value: modify_option_function("choice_level", value),
+                ),
+            ],
+            [
+                load_parameter_button(
                     STR_SCREEN_MODE_,
                     [
                         {"label": STR_WINDOW, "value": SCREEN_SIZE // 2},
@@ -1379,6 +1403,29 @@ def create_load_menu(load_game_function: Callable) -> InfoBox:
     )
 
 
+def select_level(load_game_function: Callable) -> InfoBox:
+    """
+    게임 레벨 선택창 리턴
+    """
+    element_grid = []
+
+    for i in range(LEVEL_OPTIONS):
+        element_grid.append(
+            [
+                Button(
+                    title=f_LEVEL_NUMBER_ENTITY(i  ),
+                    callback=lambda slot_id=i: load_game_function(slot_id),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_SELECT_LEVEL,
+        element_grid,
+        width=START_MENU_WIDTH,
+    )
+
+
 def create_save_menu(save_game_function: Callable) -> InfoBox:
     """
     Return the interface of the save game menu
@@ -1401,6 +1448,52 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
         width=START_MENU_WIDTH,
     )
 
+restart_session : int = 0
+
+def restart_game_button(restart_game_function: Callable) -> InfoBox:
+    """
+    Return the interface of the save game menu
+    """
+    element_grid = []
+
+    for i in range(1):
+        element_grid.append(
+            [
+                Button(
+                    title="다시 시도하기",
+                    callback=lambda slot_id=restart_session: restart_game_function(slot_id),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_RESTART_TITLE,
+        element_grid,
+        width=START_MENU_WIDTH,
+    )
+
+def choice_mode_button(save_game_function: Callable) -> InfoBox:
+    """
+    Return the interface of the save game menu
+    """
+    element_grid = []
+    mode =['쉬움','보통','어려움']
+
+    for i in range(3):
+        element_grid.append(
+            [
+                Button(
+                    title=mode[i],
+                    callback=lambda slot_id=i: print(slot_id),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_CHOICE_MODE,
+        element_grid,
+        width=START_MENU_WIDTH,
+    )
 
 def create_save_dialog(buttons_callback: dict[str, Callable]) -> InfoBox:
     """
@@ -1430,13 +1523,21 @@ def create_choose_language_menu(buttons_callback: Callable) -> InfoBox:
                 callback=lambda: buttons_callback("en"),
             )
         ],
-        [
+                [
             Button(
                 title="中文简体",
                 font=fonts["LANGUAGE_FONT"],
                 callback=lambda: buttons_callback("zh_cn"),
             )
         ],
+        [
+            Button(
+                title="한국어",
+                font=fonts["LANGUAGE_FONT"],
+                callback=lambda: buttons_callback("kr"),
+            )
+        ],
+        
     ]
     return InfoBox(
         STR_CHOOSE_LANGUAGE,

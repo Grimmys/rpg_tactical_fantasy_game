@@ -1,5 +1,6 @@
 <options>
-    <language>en</language>
-    <move_speed>4</move_speed>
+    <language>kr</language>
+    <move_speed>8</move_speed>
+    <choice_level>17</choice_level>
     <screen_size>1</screen_size>
 </options>

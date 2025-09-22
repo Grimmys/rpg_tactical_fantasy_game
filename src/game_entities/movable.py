@@ -13,7 +13,7 @@ from typing import Optional, Union
 import pygame
 from lxml import etree
 
-from src.constants import ANIMATION_SPEED, INITIAL_MAX, TILE_SIZE
+from src.constants import ANIMATION_SPEED, GAME_LEVEL, INITIAL_MAX, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.consumable import Consumable
 from src.game_entities.destroyable import DamageKind, Destroyable
@@ -102,6 +102,8 @@ class Movable(Destroyable):
     SELECTED_DISPLAY: pygame.Surface = None
     XP_NEXT_LVL_BASE: int = 15
     move_speed: int = ANIMATION_SPEED
+    #난이도 선택 변수 
+    choice_level: int = GAME_LEVEL
 
     @staticmethod
     def init_constant_sprites() -> None:

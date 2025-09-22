@@ -12,7 +12,7 @@ from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH
+from src.constants import  SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH 
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
@@ -64,6 +64,7 @@ class StartScene(Scene):
                     "load_menu": self.load_menu,
                     "options_menu": self.options_menu,
                     "exit_game": self.exit_game,
+                    "select_level": self.select_level,
                 }
             )
         )
@@ -81,6 +82,7 @@ class StartScene(Scene):
         # Load current move speed
         self.options_file = etree.parse("saves/options.xml").getroot()
         Movable.move_speed = int(self.read_option("move_speed"))
+        Movable.choice_level = int(self.read_option("choice_level"))
         StartScene.screen_size = int(self.read_option("screen_size"))
 
     def read_option(self, element_to_read: str) -> str:
@@ -118,15 +120,15 @@ class StartScene(Scene):
     @staticmethod
     def generate_level_window() -> pygame.Surface:
         """
-        Handle the generation of the screen dedicated to the ongoing level according to set parameters
+        Handle the generation of the screen dedicated to the ongoing level according to set parameters.
         """
-        # Modify screen
         flags: int = 0
         size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
         if StartScene.screen_size == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
         return pygame.display.set_mode(size, flags)
+
 
     def update_state(self) -> bool:
         """
@@ -171,6 +173,10 @@ class StartScene(Scene):
         Keyword arguments:
         game_id -- the id of the saved file that should be load
         """
+        print("load game", game_id,"(game_id)")
+        menu_creator_manager.restart_session = game_id
+        print("menu_creator_manager.restart_session:",menu_creator_manager.restart_session)
+
         try:
             with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
                 tree_root: etree.Element = etree.parse(save).getroot()
@@ -179,6 +185,17 @@ class StartScene(Scene):
                 game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = int(tree_root.find("level/turn").text.strip())
 
+                print("------------------------------------")
+                print("load game - shot_id:",game_id)
+                print()
+                print("load game - tree_root:",tree_root)
+                print("load game - level_id:",level_id)
+                print("load game - level_path:",level_path)
+                print("load game - game_status:",game_status)
+                print("load game - turn_nb:",turn_nb)
+                print()
+                print("load game - game_status:",type(self.level))
+                print("------------------------------------")
                 self.level = LevelScene(
                     StartScene.generate_level_window(),
                     level_path,
@@ -232,9 +249,84 @@ class StartScene(Scene):
         Move current active menu to the background and set a freshly created load game menu
         as the new active menu.
         """
+        print("load_menu")
         self.menu_manager.open_menu(
             menu_creator_manager.create_load_menu(self.load_game)
         )
+
+    # def load_select_level() -> None:
+    def load_select_level(self, game_id: int) -> None:
+        """
+        레벨 선택 함수
+        """
+        try:
+            with open(f"saves/save_{game_id + Movable.choice_level}.xml", "r", encoding="utf-8") as save:
+                print("레벨 파일불러오기: save_",game_id +  Movable.choice_level)
+                tree_root: etree.Element = etree.parse(save).getroot()
+                # level_id = int(tree_root.find("level/index").text.strip())
+                # level_path = f"maps/level_{level_id}/"
+                game_status = tree_root.find("level/phase").text.strip()
+                # turn_nb = int(tree_root.find("level/turn").text.strip())
+
+                self.level = LevelScene(
+                    StartScene.generate_level_window(),
+                    f"maps/level_{game_id}/", #level_id
+                    game_id, #level/index
+                    LevelStatus[game_status],
+                    0, # level/turn 
+                    tree_root.find("level/entities"),
+                )
+
+        except XMLSyntaxError:
+            # File does not contain expected values and may be corrupt
+            name: str = "Load Game"
+            width: int = self.screen.get_width() // 2
+            self.menu_manager.open_menu(
+                InfoBox(
+                    name,
+                    [
+                        [
+                            TextElement(
+                                "Unable to load saved game. Save file appears corrupt.",
+                                font=fonts["MENU_SUB_TITLE_FONT"],
+                            )
+                        ]
+                    ],
+                    width=width,
+                    background_path="imgs/interface/PopUpMenu.png",
+                )
+            )
+
+        except FileNotFoundError:
+            # No saved game
+            print("레벨:",game_id)
+            name: str = "Load Game"
+            width: int = self.screen.get_width() // 2
+            # self.menu_manager.open_menu(
+            #     InfoBox(
+            #         name,
+            #         [
+            #             [
+            #                 TextElement(
+            #                     "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
+            #                 )
+            #             ]
+            #         ],
+            #         width=width,
+            #         background_path="imgs/interface/PopUpMenu.png",
+            #     )
+            # )
+
+    def select_level(self) -> None:
+        """
+        Select level without clearing specific level
+       """
+        print("레벨 선택 버튼 ")
+        self.menu_manager.open_menu(
+            menu_creator_manager.select_level(self.load_select_level)
+        )
+        # self.select_level = Optional
+        #TODO: 구현
 
     def options_menu(self) -> None:
         """
@@ -247,6 +339,7 @@ class StartScene(Scene):
                 {
                     "language": str(self.read_option("language")),
                     "move_speed": int(self.read_option("move_speed")),
+                    "choice_level": int(self.read_option("choice_level")),
                     "screen_size": int(self.read_option("screen_size")),
                 },
                 self.modify_option_value,
@@ -266,26 +359,33 @@ class StartScene(Scene):
         """
         Handle an exit game request.
         """
+        print("게임 종료")
         self.exit = QuitActionKind.QUIT
 
-    def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
-        """
 
-        Keyword arguments:
-        option_name --
-        option_value --
-        """
-        if option_name == "language":
+    def modify_option_value(self, option_name: str, option_value: int = 0) -> None:
+        if option_name == "screen_size":
+            StartScene.screen_size = option_value
+            self.screen = self.generate_level_window()
+            self.background = pygame.transform.scale(
+                pygame.image.load("imgs/interface/main_menu_background.jpg").convert_alpha(),
+                self.screen.get_size(),
+            )
+            self.initialize_menu()
+        elif option_name == "language":
             self.choose_language_menu()
             return
         elif option_name == "move_speed":
             Movable.move_speed = option_value
-        elif option_name == "screen_size":
-            StartScene.screen_size = option_value
+        elif option_name == "choice_level":
+            Movable.choice_level = option_value
         else:
-            print(f"Unrecognized option name : {option_name} with value {option_value}")
+            print(f"Unrecognized option name: {option_name}")
             return
+
         self.modify_options_file(option_name, str(option_value))
+
+
 
     @staticmethod
     def execute_action(action: Callable) -> None:
@@ -322,3 +422,20 @@ class StartScene(Scene):
         """
         self.menu_manager.click(button, position)
         return self.exit
+
+    def initialize_menu(self) -> None:
+        """
+        Reinitialize the menu manager and open the start menu.
+        """
+        self.menu_manager = MenuManager(self.screen)
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_start_menu(
+                {
+                    "new_game": self.new_game,
+                    "load_menu": self.load_menu,
+                    "options_menu": self.options_menu,
+                    "exit_game": self.exit_game,
+                    "select_level": self.select_level,
+                }
+            )
+        )
