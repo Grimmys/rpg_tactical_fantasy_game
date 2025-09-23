@@ -1,0 +1,13 @@
+<map>
+    <properties>
+        <property name="chapter_id" type="int" value="1"/>
+        <property name="level_name" value="In the Shadows of the Trees"/>
+        <property name="limited_mission_description" value="Win in 10 turns"/>
+        <property name="limited_mission_gold_reward" type="int" value="200"/>
+        <property name="limited_mission_turns" type="int" value="10"/>
+        <property name="limited_mission_type" value="TURN_LIMIT"/>
+        <property name="main_mission_description" value="Defeat the thugs"/>
+        <property name="main_mission_type" value="KILL_EVERYBODY"/>
+        <property name="secondary_missions" value="limited"/>
+    </properties>
+</map>

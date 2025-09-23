@@ -1,0 +1,8 @@
+<map>
+    <properties>
+        <property name="chapter_id" type="int" value="1"/>
+        <property name="level_name" value="Vandalismo en la Cripta"/>
+        <property name="main_mission_description" value="Salir de la Aldea"/>
+        <property name="main_mission_type" value="POSITION"/>
+    </properties>
+</map>
