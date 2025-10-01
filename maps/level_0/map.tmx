@@ -146,7 +146,7 @@
  <objectgroup id="6" name="events">
   <object id="139" name="before_init" type="before_init" x="0" y="0" width="32" height="32">
    <properties>
-    <property name="dialogs" value="0,1"/>
+    <property name="dialogs" value="0,1,2"/>
     <property name="new_players" value="raimund,braern,thokdrum"/>
    </properties>
   </object>
