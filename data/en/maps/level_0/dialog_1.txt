@@ -1,7 +1,8 @@
-Jist
+HOW RPGs WORK
 
-Hello adventurers! The situation is critical, some thugs have stolen ogre bones that were buried in the crypt.
-Since then, the village is constantly being raided by the undead...
-Fortunately, I managed to recover the bones from the thugs.
-You must take them back to their place in the crypt. The necropolis is far to the west of here.
-Good luck, adventurers. All the inhabitants of Nervie are behind you.
+This is a turn-based tactical RPG.
+Move your units, then enemies move. Plan carefully!
+Each character has Health, Attack, and Defense. Click units to see their info.
+Surround enemies and use terrain to win battles.
+Usually defeat all enemies or reach a goal to win the mission.
+Ready? Let's learn the controls next!

@@ -1,8 +1,8 @@
 CONTROLS
 
-This is a turn-based tactical RPG.
-Move your units, then enemies move. Plan carefully!
-Each character has Health, Attack, and Defense. Click units to see their info.
-Surround enemies and use terrain to win battles.
-Usually defeat all enemies or reach a goal to win the mission.
-Ready? Let's learn the controls next!
+The game starts in the initialization phase.
+During this phase, you can switch the initial position of your characters by selecting them (left click) and clicking on the desired position.
+Don't forget to unselect the character (right click) when you're done.
+When you are ready to play, just click on any empty square to open the main menu.
+From the main menu, select "start" to begin turn 1.
+Enjoy the experience.
