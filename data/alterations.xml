@@ -3,6 +3,7 @@
         <info>
             <en> The move cap is increased by {val} </en>
             <zh_cn> 移动能力提升{val}点 </zh_cn>
+            <es> El límite de movimiento se incrementa en {val} </es>
         </info>
         <effects>
             speed_up
@@ -15,6 +16,7 @@
         <info>
             <en> The strength is increased by {val} </en>
             <zh_cn> 力量提升{val}点 </zh_cn>
+            <es> La fuerza se incrementa en {val} </es>
         </info>
         <effects>
             strength_up
@@ -27,6 +29,7 @@
         <info>
             <en> The defense is increased by {val} </en>
             <zh_cn> 防御力提升{val}点 </zh_cn>
+            <es> La defensa se incrementa en {val} </es>
         </info>
         <effects>
             defense_up
@@ -39,6 +42,7 @@
        <info>
            <en> Unit can't attack </en>
            <zh_cn> 单位不能攻击 </zh_cn>
+            <es> La unidad no puede atacar </es>
        </info>
         <effects>
             no_attack
