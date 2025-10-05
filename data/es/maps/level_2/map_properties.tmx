@@ -1,0 +1,9 @@
+<map>
+    <properties>
+        <property name="chapter_id" type="int" value="1"/>
+        <property name="level_name" value="Reclamar y Robar"/>
+        <property name="main_mission_description" value="Colocar los restos de vuelta en el altar"/>
+        <property name="main_mission_number_players" type="int" value="1"/>
+        <property name="main_mission_type" value="TOUCH_POSITION"/>
+    </properties>
+</map>
