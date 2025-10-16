@@ -31,8 +31,6 @@ Here are some suggestions of contributions:
   could be found in the XML files wrapped in the data folder.
 * Contributions for sound effects or new soundtracks would be really appreciated.
 
-__Version__ : 1.0.4
-
 #### Managing large assets with Git LFS
 
 If you plan to contribute new images, sounds, or fonts, please enable Git LFS (Large File Storage) before committing:
@@ -42,6 +40,9 @@ git lfs install
 git lfs track "*.png" "*.wav" "*.ttf"
 git add .gitattributes
 ```
+
+__Version__ : 1.0.4
+
 
 ![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
 ![Inventory menu](/screenshots/inventory_screen.png?raw=True)
