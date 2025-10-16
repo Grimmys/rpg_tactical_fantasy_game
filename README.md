@@ -33,6 +33,16 @@ Here are some suggestions of contributions:
 
 __Version__ : 1.0.4
 
+#### Managing large assets with Git LFS
+
+If you plan to contribute new images, sounds, or fonts, please enable Git LFS (Large File Storage) before committing:
+
+```bash
+git lfs install
+git lfs track "*.png" "*.wav" "*.ttf"
+git add .gitattributes
+```
+
 ![Main screen with possible moves and attack](/screenshots/player_moves_and_attacks.png?raw=True)
 ![Inventory menu](/screenshots/inventory_screen.png?raw=True)
 ![Status window](/screenshots/status_screen.png?raw=True)
