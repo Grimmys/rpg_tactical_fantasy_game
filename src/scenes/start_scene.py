@@ -5,7 +5,7 @@ corresponding to the main menu.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Optional
+from typing import Any, Optional
 
 import pygame
 from lxml.etree import XMLSyntaxError
@@ -71,29 +71,37 @@ class StartScene(Scene):
         self.level: Optional[LevelScene] = None
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
-        self.options_file = None
+        self.options: dict[str, Any] = {}
         self.load_options()
 
     def load_options(self):
         """
         Load the saved game configuration from local file.
         """
+
+
         # Load current move speed
-        self.options_file = etree.parse("saves/options.xml").getroot()
-        Movable.move_speed = int(self.read_option("move_speed"))
-        StartScene.screen_size = int(self.read_option("screen_size"))
+        self.options_file = pathlib.Path("saves/options.json")
+
+        with open(self.options_file, "r", encoding="utf-8") as options_file:
+            import json
+
+            self.options = json.load(options_file)
+
+        Movable.move_speed = int(self.options["move_speed"])
+        StartScene.screen_size = int(self.options["screen_size"])
+
 
     def read_option(self, element_to_read: str) -> str:
         """
-        Read and parse a specific option saved in the local configuration file.
-
-        Return the parsed value option value.
+        Read the value of a specific option in the local configuration file.
 
         Keyword arguments:
         element_to_read -- a name corresponding to the option that should be read
+
+        Return the value of the option as a string.
         """
-        element = self.options_file.find(".//" + element_to_read)
-        return element.text.strip()
+        return str(self.options[element_to_read])
 
     def modify_options_file(self, element_to_edit: str, new_value: str) -> None:
         """
@@ -103,10 +111,9 @@ class StartScene(Scene):
         element_to_edit -- a name corresponding to the option that should be edited
         new_value -- the new value of the option
         """
-        element: etree.Element = self.options_file.find(".//" + element_to_edit)
-        element.text = new_value
-        et = etree.ElementTree(self.options_file)
-        et.write("saves/options.xml")
+        self.options[element_to_edit] = new_value
+        with open(self.options_file, "w", encoding="utf-8") as options_file:
+            json.dump(self.options, options_file, ensure_ascii=False, indent=4)
 
     def display(self) -> None:
         """

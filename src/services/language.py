@@ -3,8 +3,19 @@ import pathlib
 
 from lxml import etree
 
-# Get language from options.xml
-language: str = etree.parse("saves/options.xml").find("language").text
+options_path = pathlib.Path("saves/options.json")
+
+# Get language from options.json if it exists, otherwise default to English.
+language: str = "en"
+if options_path.is_file():
+    import json
+
+    with open(options_path, "r", encoding="utf-8") as options_file:
+        options_data = json.load(options_file)
+        if "language" in options_data:
+            language = options_data["language"]
+
+            
 DATA_PATH = "data/" + language + "/"
 
 if language == "en":
