@@ -72,7 +72,7 @@ class StartScene(Scene):
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
 
-        self.options_file: Optional[pathlib.Path] = None
+        self.options_file: pathlib.Path = pathlib.Path("saves/options.json")
         self.options: dict[str, Any] = {}
         self.load_options()
 
@@ -80,10 +80,6 @@ class StartScene(Scene):
         """
         Load the saved game configuration from local file.
         """
-
-
-        # Load current move speed
-        self.options_file = pathlib.Path("saves/options.json")
 
         with open(self.options_file, "r", encoding="utf-8") as options_file:
             import json
