@@ -1,7 +1,5 @@
 {
-    "options": {
-        "language": "en",
-        "move_speed": 4,
-        "screen_size": 1
-    }
+    "language": "en",
+    "move_speed": "4",
+    "screen_size": "1"
 }
