@@ -71,6 +71,8 @@ class StartScene(Scene):
         self.level: Optional[LevelScene] = None
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
+
+        self.options_file: Optional[pathlib.Path] = None
         self.options: dict[str, Any] = {}
         self.load_options()
 
