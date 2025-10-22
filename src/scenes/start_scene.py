@@ -7,6 +7,8 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any, Optional
 
+import json
+
 import pygame
 from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
@@ -82,7 +84,6 @@ class StartScene(Scene):
         """
 
         with open(self.options_file, "r", encoding="utf-8") as options_file:
-            import json
 
             self.options = json.load(options_file)
 
