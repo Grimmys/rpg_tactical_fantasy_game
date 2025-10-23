@@ -1,19 +1,8 @@
-import os
-import pathlib
-
 from lxml import etree
 
-options_path = pathlib.Path("saves/options.json")
+import src.services.options_manager as options_manager
 
-# Get language from options.json if it exists, otherwise default to English.
-language: str = "en"
-if options_path.is_file():
-    import json
-
-    with open(options_path, "r", encoding="utf-8") as options_file:
-        options_data = json.load(options_file)
-        if "language" in options_data:
-            language = options_data["language"]
+language: str = options_manager.get_option('language')
 
             
 DATA_PATH = "data/" + language + "/"

@@ -6,8 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from typing import Any, Optional
-
-import json
+from functools import partial
 
 import pygame
 from lxml.etree import XMLSyntaxError
@@ -23,6 +22,7 @@ from src.scenes.level_scene import LevelScene, LevelStatus
 from src.scenes.scene import QuitActionKind, Scene
 from src.services import menu_creator_manager
 from src.services.language import *
+import src.services.options_manager as options_manager
 
 
 class StartScene(Scene):
@@ -73,46 +73,12 @@ class StartScene(Scene):
         self.level: Optional[LevelScene] = None
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
-
-        self.options_file: pathlib.Path = pathlib.Path("saves/options.json")
-        self.options: dict[str, Any] = {}
-        self.load_options()
-
     def load_options(self):
         """
         Load the saved game configuration from local file.
         """
-
-        with open(self.options_file, "r", encoding="utf-8") as options_file:
-
-            self.options = json.load(options_file)
-
-        Movable.move_speed = int(self.options["move_speed"])
-        StartScene.screen_size = int(self.options["screen_size"])
-
-
-    def read_option(self, element_to_read: str) -> str:
-        """
-        Read the value of a specific option in the local configuration file.
-
-        Keyword arguments:
-        element_to_read -- a name corresponding to the option that should be read
-
-        Return the value of the option as a string.
-        """
-        return str(self.options[element_to_read])
-
-    def modify_options_file(self, element_to_edit: str, new_value: str) -> None:
-        """
-        Edit the value of a specific option in the local configuration file.
-
-        Keyword arguments:
-        element_to_edit -- a name corresponding to the option that should be edited
-        new_value -- the new value of the option
-        """
-        self.options[element_to_edit] = new_value
-        with open(self.options_file, "w", encoding="utf-8") as options_file:
-            json.dump(self.options, options_file, ensure_ascii=False, indent=4)
+        Movable.move_speed = int(options_manager.get_option('move_speed'))
+        StartScene.screen_size = int(options_manager.get_option('screen_size'))
 
     def display(self) -> None:
         """
@@ -251,11 +217,11 @@ class StartScene(Scene):
         self.menu_manager.open_menu(
             menu_creator_manager.create_options_menu(
                 {
-                    "language": str(self.read_option("language")),
-                    "move_speed": int(self.read_option("move_speed")),
-                    "screen_size": int(self.read_option("screen_size")),
+                    "language": str(options_manager.get_option("language")),
+                    "move_speed": int(options_manager.get_option("move_speed")),
+                    "screen_size": int(options_manager.get_option("screen_size")),
                 },
-                self.modify_option_value,
+                partial(options_manager.set_option, save=True),
             )
         )
 
@@ -265,7 +231,7 @@ class StartScene(Scene):
         )
 
     def change_language(self, new_language) -> None:
-        self.modify_options_file("language", new_language)
+        options_manager.set_option("language", new_language)
         self.exit = QuitActionKind.RESTART
 
     def exit_game(self) -> None:
@@ -291,7 +257,7 @@ class StartScene(Scene):
         else:
             print(f"Unrecognized option name : {option_name} with value {option_value}")
             return
-        self.modify_options_file(option_name, str(option_value))
+        options_manager.set_option(option_name, str(option_value))
 
     @staticmethod
     def execute_action(action: Callable) -> None:
