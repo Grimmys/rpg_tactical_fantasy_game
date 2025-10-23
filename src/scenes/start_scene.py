@@ -5,8 +5,7 @@ corresponding to the main menu.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Any, Optional
-from functools import partial
+from typing import Optional
 
 import pygame
 from lxml.etree import XMLSyntaxError
@@ -221,7 +220,7 @@ class StartScene(Scene):
                     "move_speed": int(options_manager.get_option("move_speed")),
                     "screen_size": int(options_manager.get_option("screen_size")),
                 },
-                partial(options_manager.set_option, save=True),
+                self.modify_option_value,
             )
         )
 
