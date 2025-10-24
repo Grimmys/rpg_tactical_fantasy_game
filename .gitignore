@@ -2,7 +2,7 @@ __pycache__/
 build/
 *.zip
 *.whl
-saves/*.xml
+saves/*
 .coverage
 .coverage.*
 .ipynb_checkpoints/

@@ -21,7 +21,7 @@ from src.scenes.level_scene import LevelScene, LevelStatus
 from src.scenes.scene import QuitActionKind, Scene
 from src.services import menu_creator_manager
 from src.services.language import *
-import src.services.options_manager as options_manager
+from src.services import options_manager
 
 
 class StartScene(Scene):

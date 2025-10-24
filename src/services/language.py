@@ -1,6 +1,6 @@
 from lxml import etree
 
-import src.services.options_manager as options_manager
+from src.services import options_manager
 
 language: str = options_manager.get_option('language')
 
