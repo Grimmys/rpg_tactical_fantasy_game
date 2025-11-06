@@ -430,6 +430,7 @@ class LevelScene(Scene):
             )
         )
 
+
     def exit_game(self) -> None:
         """
         Handle the end of the level

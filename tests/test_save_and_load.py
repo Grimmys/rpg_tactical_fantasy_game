@@ -12,6 +12,9 @@ from tests.random_data_library import (random_alteration,
                                        random_player_entity)
 from tests.tools import minimal_setup_for_game
 
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
 
 class TestSaveAndLoad(unittest.TestCase):
     @classmethod
@@ -152,3 +155,25 @@ class TestSaveAndLoad(unittest.TestCase):
         self.assertEqual(potion.description, loaded_potion.description)
         self.assertEqual(potion.price, loaded_potion.price)
         self.assertEqual(potion.resell_price, loaded_potion.resell_price)
+
+    def test_save_file_has_timestamp(self):
+        """Ensure that each save file has a <timestamp> element with text."""
+
+        save_path = Path("test_saves")
+        with  self.subTest(save_file=save_path):
+            # Ensure the file exists
+            self.assertTrue(save_path.exists(), f"{save_path} is missing")
+
+            # Parse XML
+            tree = ET.parse(save_path)
+            root = tree.getroot()
+
+            # Find the <timestamp> tag anywhere in the file
+            timestamp = root.find(".//timestamp")
+
+            # Assert that it exists and has non-empty text
+            self.assertIsNotNone(timestamp, f"{save_path} missing <timestamp> tag")
+            self.assertTrue(
+                timestamp.text and timestamp.text.strip(),
+                f"{save_path} has empty <timestamp> text"
+            )

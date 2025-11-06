@@ -35,6 +35,7 @@ class SaveStateManager:
                 etree.tostring(self.tree, pretty_print=True, encoding="unicode")
             )
 
+
     def _save_level(self):
         """
 
