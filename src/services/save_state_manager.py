@@ -22,15 +22,18 @@ class SaveStateManager:
         Keyword Arguments:
         file_id -- the id of the save file to use
         """
+        timestamp = etree.Element("timestamp")
+        timestamp.text = datetime.now().strftime("%Y-%m-%d %H:%M")
+
         with open(f"saves/save_{file_id}.xml", "w+", encoding="utf-8") as save_file:
             level = self._save_level()
+            self.tree.append(timestamp)
             self.tree.append(level)
 
             # Store XML tree in file
             save_file.write(
                 etree.tostring(self.tree, pretty_print=True, encoding="unicode")
             )
-            save_file.write(f"Saved at: {datetime.now()}")
 
     def _save_level(self):
         """
