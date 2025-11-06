@@ -4,6 +4,7 @@ from lxml import etree
 from lxml.etree import Element
 
 from src.game_entities.entity import Entity
+from datetime import datetime
 
 
 class SaveStateManager:
@@ -29,6 +30,7 @@ class SaveStateManager:
             save_file.write(
                 etree.tostring(self.tree, pretty_print=True, encoding="unicode")
             )
+            save_file.write(f"Saved at: {datetime.now()}")
 
     def _save_level(self):
         """
