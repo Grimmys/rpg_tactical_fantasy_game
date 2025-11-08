@@ -1,0 +1,42 @@
+{
+  "speed_up": {
+    "info": {
+      "en": "The move cap is increased by {val}",
+      "zh-cn": "移动能力提升{val}点"
+    },
+    "effects": [
+      "speed_up"
+    ],
+    "abbreviated_name": "Spd.Up"
+  },
+  "strength_up": {
+    "info": {
+      "en": "The strength cap is increased by {val}",
+      "zh-cn": "力量提升{val}点"
+    },
+    "effects": [
+      "strength_up"
+    ],
+    "abbreviated_name": "Str.Up"
+  },
+  "defense_up": {
+    "info": {
+      "en": "The defense cap is increased by {val}",
+      "zh-cn": "防御力提升{val}点"
+    },
+    "effects": [
+      "defense_up"
+    ],
+    "abbreviated_name": "Def.Up",
+    },
+  "stun": {
+    "info": {
+      "en": "Unit can't attack",
+      "zh-cn": "单位不能攻击"
+    },
+    "effects": [
+      "no_attack"
+    ],
+    "abbreviated_name": "Stn"
+  }
+}
