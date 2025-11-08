@@ -42,7 +42,6 @@ class StartScene(Scene):
     exit -- a boolean indicating if an exit request has been made
     """
 
-    screen_size: int = SCREEN_SIZE
 
     def __init__(self, screen: pygame.Surface) -> None:
         super().__init__(screen)
@@ -87,7 +86,7 @@ class StartScene(Scene):
         # Modify screen
         flags: int = 0
         size: tuple[int, int] = (WIN_WIDTH, WIN_HEIGHT)
-        if StartScene.screen_size == 2:
+        if int(options_manager.get_option("screen_size")) == 2:
             flags = pygame.FULLSCREEN
             size = (0, 0)
         return pygame.display.set_mode(size, flags)

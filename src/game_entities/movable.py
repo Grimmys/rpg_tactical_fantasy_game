@@ -21,6 +21,7 @@ from src.game_entities.entity import Entity
 from src.game_entities.item import Item
 from src.game_entities.skill import Skill, SkillNature
 from src.gui.position import Position
+from src.services import options_manager
 from src.services.language import TRANSLATIONS
 
 TIMER = 60
@@ -101,7 +102,6 @@ class Movable(Destroyable):
 
     SELECTED_DISPLAY: pygame.Surface = None
     XP_NEXT_LVL_BASE: int = 15
-    move_speed: int = ANIMATION_SPEED
 
     @staticmethod
     def init_constant_sprites() -> None:
@@ -455,7 +455,7 @@ class Movable(Destroyable):
         Decrease the current timer according to move speed and move the entity by one tile if it's time for.
         Change the state of the entity if the movement is finished.
         """
-        self._timer -= Movable.move_speed
+        self._timer -= int(options_manager.get_option("move_speed"))
         if self._timer <= 0:
             self.position = self.on_move.pop(0)
             self._timer = TIMER
