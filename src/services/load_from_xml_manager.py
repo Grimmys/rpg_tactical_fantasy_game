@@ -35,33 +35,7 @@ foes_data = {}
 fountains_data = {}
 skills_data = {}
 
-RACES_DATA_PATH = "data/races.xml"
 CLASSES_DATA_PATH = "data/classes.xml"
-
-
-def load_races() -> dict[str, dict[str, any]]:
-    """
-
-    :return:
-    """
-    races = {}
-    races_file = etree.parse(RACES_DATA_PATH).getroot()
-    for race_element in races_file.findall("*"):
-        race = {}
-        constitution = race_element.find("constitution")
-        race["constitution"] = (
-            int(constitution.text.strip()) if constitution is not None else 0
-        )
-        move = race_element.find("move")
-        race["move"] = (
-            int(race_element.find("move").text.strip()) if move is not None else 0
-        )
-        race["skills"] = [
-            get_skill_data(skill.text.strip())
-            for skill in race_element.findall("skills/skill/name")
-        ]
-        races[race_element.tag] = race
-    return races
 
 
 def load_classes() -> dict[str, dict[str, any]]:
