@@ -37,7 +37,7 @@ class Effect:
         if self.name in ("speed_up", "strength_up", "defense_up"):
             alteration_root = ALTERATIONS_DATA[self.name]
             desc = (
-                get_localized_string(alteration_root["info"])
+                get_localized_string_json(alteration_root["info"])
                 .strip()
                 .replace("{val}", str(self.power))
             )
@@ -47,7 +47,7 @@ class Effect:
             )
         elif self.name == "stun":
             alteration_root = ALTERATIONS_DATA[self.name]
-            desc = get_localized_string(alteration_root["info"]).strip()
+            desc = get_localized_string_json(alteration_root["info"]).strip()
             abbr = alteration_root["abbreviated_name"].strip()
             effects = alteration_root.get("effects", [])
             self.alteration = Alteration(
