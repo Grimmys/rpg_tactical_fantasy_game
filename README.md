@@ -5,7 +5,7 @@
 [![latest release](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)](https://github.com/Grimmys/rpg_tactical_fantasy_game/releases/latest)
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/Grimmys/rpg_tactical_fantasy_game/latest/total)
 
-[ [English](README.md) | [简体中文](README/zh-cn.md) | [繁體中文](README/zh-cht.md) ]
+[ [English](README.md) | [简体中文](README/zh-cn.md) | [繁體中文](README/zh-cht.md) | [Español](README/es.md) ]
 
 **Open to collaborative development.**
 
