@@ -1,0 +1,23 @@
+{
+  "human": {
+    "constitution": 10,
+    "move": 5
+  },
+  "elf": {
+    "constitution": 8,
+    "move": 5
+  },
+  "dwarf": {
+    "constitution": 12,
+    "move": 4,
+    "skills": ["brutal_hitter"]
+  },
+  "centaur": {
+    "constitution": 12,
+    "move": 8
+  },
+  "gnome": {
+    "constitution": 7,
+    "move": 6
+  }
+}
