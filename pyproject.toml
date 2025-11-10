@@ -1,0 +1,12 @@
+[project]
+name = ""
+version = "1.0.4"
+dependencies = [
+    "lxml>=4.6.1",
+    "pygame-ce>=2.0.0",
+    "pygame-popup==0.11.2",
+    "pytmx>=3.31",
+]
+
+[tool.uv]
+package = false
