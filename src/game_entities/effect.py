@@ -7,7 +7,10 @@ from __future__ import annotations
 from src.game_entities.alteration import Alteration
 from src.game_entities.destroyable import Destroyable
 from src.services.language import *
+from src.services.load_from_json_manager import load_alteration_data
 
+
+ALTERATIONS_DATA: dict[str, dict] = load_alteration_data()
 
 class Effect:
     """
@@ -30,26 +33,23 @@ class Effect:
         self.power: int = power
         self.duration: int = duration
         if self.name in ("speed_up", "strength_up", "defense_up"):
-            alteration_root = etree.parse("data/alterations.xml").find(name)
+            alteration_root = ALTERATIONS_DATA[self.name]
             desc = (
-                get_localized_string(alteration_root.find("info"))
+                get_localized_string(alteration_root["info"])
                 .strip()
                 .replace("{val}", str(self.power))
             )
-            abbr = alteration_root.find("abbreviated_name").text.strip()
+            abbr = alteration_root["abbreviated_name"].strip()
             self.alteration = Alteration(
                 self.name, abbr, self.power, self.duration, desc
             )
         elif self.name == "stun":
-            alteration_root = etree.parse("data/alterations.xml").find(name)
-            desc = get_localized_string(alteration_root.find("info")).strip()
-            abbr = alteration_root.find("abbreviated_name").text.strip()
-            effs_el = alteration_root.find("effects")
-            durable_effects = (
-                effs_el.text.strip().split(",") if effs_el is not None else []
-            )
+            alteration_root = ALTERATIONS_DATA[self.name]
+            desc = get_localized_string(alteration_root["info"]).strip()
+            abbr = alteration_root["abbreviated_name"].strip()
+            effects = alteration_root.get("effects", [])
             self.alteration = Alteration(
-                self.name, abbr, self.power, self.duration, desc, durable_effects
+                self.name, abbr, self.power, self.duration, desc, effects
             )
 
     def apply_on_ent(self, entity: Destroyable) -> tuple[bool, str]:

@@ -17,7 +17,7 @@ elif language == "es":
     from data.en.fonts_description import fonts_description
     from data.es.text import *
 
-def get_localized_string(tree: etree.Element):
+def get_localized_string_xml(tree: etree.Element):
     """
     Get string of the text in current language from etree element containing language name tags.
     If current language tag cannot be found, return English text.
@@ -37,3 +37,21 @@ def get_localized_string(tree: etree.Element):
         if english_text is not None:
             return english_text.text
     return tree.text
+
+def get_localized_string(json_data: dict):
+    """
+    Get string of the text in current language from json data containing language name keys.
+    If current language key cannot be found, return English text.
+    If the json data doesn't contain any language key, return an empty string.
+
+    Arguments:
+    json_data -- json data containing language name keys
+
+    Returns:
+    String of the text in current language
+    """
+    if language in json_data:
+        return json_data[language]
+    elif language != "en" and "en" in json_data:
+        return json_data["en"]
+    return ""
