@@ -8,6 +8,7 @@
         <info>
             <en> Ability to open some doors and chests. A door (or a chest) needs two turns of picking to be open </en>
             <zh_cn> 能够打开一些门和箱子。 一扇门（或一个箱子）需要两轮拾取才能打开 </zh_cn>
+            <es> Habilidad para abrir algunas puertas y cofres. Una puerta (o un cofre) necesita dos turnos de ganzuado para abrirse </es>
         </info>
     </lock_picking>
     <double_attack>
@@ -19,6 +20,7 @@
         <info>
             <en> When attacking, this character will deal damage twice </en>
             <zh_cn> 攻击时造成双倍伤害 </zh_cn>
+            <es> Al atacar, este personaje infligirá daño dos veces </es>
         </info>
     </double_attack>
     <covered>
@@ -32,6 +34,7 @@
         <info>
             <en> If an ally is adjacent to the unit, during combat defense and resistance are increased by 1 </en>
             <zh_cn> 如果有盟友与该单位相邻，战斗时防御力和抵抗力增加 1 </zh_cn>
+            <es> Si un aliado está adyacente a la unidad, durante el combate la defensa y la resistencia aumentan en 1 </es>
         </info>
     </covered>
     <brutal_hitter>
@@ -45,6 +48,7 @@
         <info>
             <en> Probability to stun an enemy when using a weapon able to do it is increased by 5% </en>
             <zh_cn> 使用能够击晕敌人的武器时，击晕敌人的概率提高 5% </zh_cn>
+            <es> La probabilidad de aturdir a un enemigo al usar un arma capaz de hacerlo aumenta en un 5% </es>
         </info>
     </brutal_hitter>
 </skills>

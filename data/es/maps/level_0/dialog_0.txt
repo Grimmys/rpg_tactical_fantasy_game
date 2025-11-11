@@ -1,0 +1,7 @@
+CONTROLES
+
+El juego comienza en la fase de inicialización.
+Durante esta fase, puedes cambiar la posición inicial de tus personajes seleccionándolos (clic izquierdo) y haciendo clic en la posición deseada.
+No olvides deseleccionar el personaje (clic derecho) cuando hayas terminado.
+Cuando esté listo para jugar, simplemente haga clic en cualquier cuadrado vacío para abrir el menú principal.
+Disfruta la experiencia.

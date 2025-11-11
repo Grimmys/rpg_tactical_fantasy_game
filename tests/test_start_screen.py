@@ -31,7 +31,7 @@ class TestStartScreen(unittest.TestCase):
     def setUpClass(cls):
         super(TestStartScreen, cls).setUpClass()
         minimal_setup_for_game()
-        cls.save_url = "saves/main_save.xml"
+        cls.save_url = "saves/save_0.xml"
         cls.level_class = LevelScene
         cls.buttons.append(
             Rect(
@@ -68,14 +68,21 @@ class TestStartScreen(unittest.TestCase):
 
     @staticmethod
     def generate_position(start_position, end_position):
-        # Generate random pos in a rect having start_pos as top left corner
-        # and end_pos as bottom right corner
-        position = Position(
-            randrange(int(start_position.x), int(end_position.x)),
-            randrange(int(start_position.y), int(end_position.y)),
-        )
-        # Print pos in case of test failure
-        print(f"Generated position: {position}")
+        center_x_base = (float(start_position.x) + float(end_position.x)) / 2
+        center_y_base = (float(start_position.y) + float(end_position.y)) / 2
+
+        current_surface = pygame.display.get_surface()
+        if current_surface is not None:
+            current_w, current_h = current_surface.get_size()
+        else:
+            current_w, current_h = MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT
+
+        scale_x = current_w / MAIN_WIN_WIDTH
+        scale_y = current_h / MAIN_WIN_HEIGHT
+
+        center_x = int(center_x_base * scale_x)
+        center_y = int(center_y_base * scale_y)
+        position = Position(center_x, center_y)
         return position
 
     def setUp(self):
