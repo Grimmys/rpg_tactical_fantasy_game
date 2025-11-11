@@ -5,6 +5,7 @@ dependencies = [
     "lxml>=4.6.1",
     "pygame-ce>=2.0.0",
     "pygame-popup==0.11.2",
+    "pytest>=9.0.0",
     "pytmx>=3.31",
 ]
 
