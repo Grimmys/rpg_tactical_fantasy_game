@@ -4,15 +4,13 @@ Defines Effect class, corresponding to the application of a specific effect to a
 
 from __future__ import annotations
 
-import json
-
 from src.game_entities.alteration import Alteration
 from src.game_entities.destroyable import Destroyable
 from src.services.language import *
+from src.services.load_from_json_manager import load_alteration_data
 
-# Load alteration data
-with open("data/alterations.json", "r", encoding="utf-8") as alterations_file:
-    ALTERATIONS_DATA = json.load(alterations_file)
+
+ALTERATIONS_DATA: dict[str, dict] = load_alteration_data()
 
 class Effect:
     """
