@@ -15,7 +15,7 @@ elif language == "zh_cn":
     from data.zh_cn.text import *
 
 
-def get_localized_string(tree: etree.Element):
+def get_localized_string_xml(tree: etree.Element):
     """
     Get string of the text in current language from etree element containing language name tags.
     If current language tag cannot be found, return English text.
@@ -36,7 +36,7 @@ def get_localized_string(tree: etree.Element):
             return english_text.text
     return tree.text
 
-def get_localized_string_json(json_data: dict):
+def get_localized_string(json_data: dict):
     """
     Get string of the text in current language from json data containing language name keys.
     If current language key cannot be found, return English text.
