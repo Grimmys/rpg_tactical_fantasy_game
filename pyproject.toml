@@ -1,6 +1,7 @@
 [project]
 name = ""
 version = "1.0.4"
+requires-python = ">=3.13"
 dependencies = [
     "lxml>=4.6.1",
     "pygame-ce>=2.0.0",
