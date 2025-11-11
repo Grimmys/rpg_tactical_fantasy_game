@@ -2,7 +2,8 @@
   "speed_up": {
     "info": {
       "en": "The move cap is increased by {val}",
-      "zh-cn": "移动能力提升{val}点"
+      "zh-cn": "移动能力提升{val}点",
+      "es": "El límite de movimiento se incrementa en {val}"
     },
     "effects": [
       "speed_up"
@@ -12,7 +13,8 @@
   "strength_up": {
     "info": {
       "en": "The strength cap is increased by {val}",
-      "zh-cn": "力量提升{val}点"
+      "zh-cn": "力量提升{val}点",
+        "es": "La fuerza se incrementa en {val}"
     },
     "effects": [
       "strength_up"
@@ -22,7 +24,8 @@
   "defense_up": {
     "info": {
       "en": "The defense cap is increased by {val}",
-      "zh-cn": "防御力提升{val}点"
+      "zh-cn": "防御力提升{val}点",
+        "es": "La defensa se incrementa en {val}"
     },
     "effects": [
       "defense_up"
@@ -32,7 +35,8 @@
   "stun": {
     "info": {
       "en": "Unit can't attack",
-      "zh-cn": "单位不能攻击"
+      "zh-cn": "单位不能攻击",
+        "es": "La unidad no puede atacar"
     },
     "effects": [
       "no_attack"
