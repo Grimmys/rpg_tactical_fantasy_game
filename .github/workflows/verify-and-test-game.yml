@@ -45,9 +45,13 @@ jobs:
         with:
           python-version: 3.13
           architecture: x64
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.8"
       - name: Test with pytest
         run: |
-          uv pytest -vv
+          uv run pytest -vv
         env:
           SDL_VIDEODRIVER: dummy
           SDL_AUDIODRIVER: dummy
