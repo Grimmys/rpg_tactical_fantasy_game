@@ -3,6 +3,7 @@ build/
 *.zip
 *.whl
 saves/*
+tests/saves/*
 .coverage
 .coverage.*
 .ipynb_checkpoints/
