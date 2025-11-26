@@ -1,0 +1,7 @@
+COMMANDES
+
+Le jeu démarre par la phase d'initialisation.
+Durant cette phase, vous pouvez modifier la position initiale de vos personnages en les sélectionnant (clic gauche) et en cliquant sur la position souhaitée.
+N'oubliez pas de désélectionner le personnage (clic droit) une fois que vous avez terminé.
+Lorsque vous serez prêt à jouer, il vous suffira de cliquer sur n'importe quelle case vide pour ouvrir le menu principal.
+Amusez-vous bien.
