@@ -15,13 +15,13 @@ from pygamepopup.components.image_button import ImageButton
 from src.constants import (ACTION_MENU_WIDTH, ANIMATION_SPEED,
                            BATTLE_SUMMARY_WIDTH, BLACK, DARK_GREEN,
                            DIALOG_WIDTH, EQUIPMENT_MENU_WIDTH,
-                           FOE_STATUS_MENU_WIDTH, GOLD, GREEN,
+                           FOE_STATUS_MENU_WIDTH, GOLD, GREEN, LIGHT_GREY,
                            ITEM_BUTTON_SIZE, ITEM_INFO_MENU_WIDTH,
-                           ITEM_MENU_WIDTH, ORANGE, REWARD_MENU_WIDTH,
-                           SAVE_SLOTS, SCREEN_SIZE, START_MENU_WIDTH,
-                           STATUS_INFO_MENU_WIDTH, STATUS_MENU_WIDTH,
-                           TILE_SIZE, TRADE_ITEM_BUTTON_SIZE, TRADE_MENU_WIDTH,
-                           TURQUOISE, WHITE)
+                           ITEM_MENU_WIDTH, MARGIN_BOX, ORANGE,
+                           REWARD_MENU_WIDTH, SAVE_SLOTS, SCREEN_SIZE,
+                           START_MENU_WIDTH, STATUS_INFO_MENU_WIDTH,
+                           STATUS_MENU_WIDTH, TILE_SIZE, TRADE_ITEM_BUTTON_SIZE,
+                           TRADE_MENU_WIDTH, TURQUOISE, WHITE, WIN_WIDTH)
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
 from src.game_entities.character import Character
@@ -50,8 +50,96 @@ INVENTORY_MENU_ID = "inventory"
 EQUIPMENT_MENU_ID = "equipment"
 SHOP_MENU_ID = "shop"
 CHARACTER_ACTION_MENU_ID = "character_action"
+CONTROLS_MENU_ID = "controls_help"
 
 close_function: Optional[Callable] = None
+
+
+def create_controls_help_menu() -> InfoBox:
+    """Return an info box summarizing the core controls and extra hints."""
+
+    controls_width = max(START_MENU_WIDTH, WIN_WIDTH - 2 * MARGIN_BOX)
+    padding = 20
+    gutter = 12
+    inner_width = controls_width - 2 * padding
+    column_width = inner_width // 4
+    description_width = inner_width - column_width
+
+    def _make_table_row(
+        left_text: str,
+        right_text: str,
+        left_font_key: str,
+        right_font_key: str,
+        left_color: pygame.Color,
+        right_color: pygame.Color,
+        margin: tuple[int, int, int, int],
+        draw_divider: bool = False,
+    ) -> BoxElement:
+        left_font = fonts[left_font_key]
+        right_font = fonts[right_font_key]
+        left_surface = left_font.render(left_text, True, left_color)
+        right_surface = right_font.render(right_text, True, right_color)
+        row_height = max(left_surface.get_height(), right_surface.get_height()) + (2 if draw_divider else 0)
+        surface = pygame.Surface((inner_width, row_height), pygame.SRCALPHA)
+        surface.fill((0, 0, 0, 0))
+        surface.blit(left_surface, (0, 0))
+        right_x = column_width + gutter
+        surface.blit(right_surface, (right_x, 0))
+        if draw_divider:
+            pygame.draw.line(
+                surface,
+                ORANGE,
+                (column_width, 0),
+                (column_width, row_height),
+                2,
+            )
+        return BoxElement(Position(padding, 0), surface, margin)
+
+    entries = [
+        (STR_CONTROLS_INPUT_LEFT_CLICK, STR_CONTROLS_LEFT_CLICK),
+        (STR_CONTROLS_INPUT_LEFT_CLICK_EMPTY, STR_CONTROLS_LEFT_CLICK_EMPTY),
+        (STR_CONTROLS_INPUT_LEFT_CLICK_ENTITY, STR_CONTROLS_LEFT_CLICK_ENTITY),
+        (STR_CONTROLS_INPUT_RIGHT_CLICK, STR_CONTROLS_RIGHT_CLICK),
+        (STR_CONTROLS_INPUT_RIGHT_CLICK_ENTITY, STR_CONTROLS_RIGHT_CLICK_ENTITY),
+        (STR_CONTROLS_INPUT_ESC, STR_CONTROLS_ESC),
+        (STR_CONTROLS_INPUT_F1, STR_CONTROLS_F1),
+        (STR_CONTROLS_INPUT_HINT, STR_CONTROLS_LEVEL_HINT),
+    ]
+
+    header_row = _make_table_row(
+        STR_CONTROLS_INPUT_HEADER,
+        STR_CONTROLS_DESCRIPTION_HEADER,
+        "MENU_SUB_TITLE_FONT",
+        "MENU_SUB_TITLE_FONT",
+        ORANGE,
+        ORANGE,
+        (0, 0, 6, 6),
+        draw_divider=False,
+    )
+
+    grid_elements = [[header_row]]
+    for action_label, effect_label in entries:
+        grid_elements.append(
+            [
+                _make_table_row(
+                    action_label,
+                    effect_label,
+                    "ITEM_FONT",
+                    "ITEM_DESC_FONT",
+                    WHITE,
+                    WHITE,
+                    (0, 0, 4, 2),
+                )
+            ]
+        )
+
+    return InfoBox(
+        STR_CONTROLS_TITLE,
+        grid_elements,
+        width=controls_width,
+        identifier=CONTROLS_MENU_ID,
+        title_color=ORANGE,
+    )
 
 
 def create_shop_menu(

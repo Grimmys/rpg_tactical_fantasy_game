@@ -58,7 +58,11 @@ from src.services import load_from_xml_manager as loader
 from src.services import menu_creator_manager
 from src.services.language import *
 from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
-                                               INVENTORY_MENU_ID, EQUIPMENT_MENU_ID, SHOP_MENU_ID,
+                                               CONTROLS_MENU_ID,
+                                               EQUIPMENT_MENU_ID,
+                                               INVENTORY_MENU_ID,
+                                               SHOP_MENU_ID,
+                                               create_controls_help_menu,
                                                create_event_dialog,
                                                create_save_dialog)
 from src.services.menus import CharacterMenu
@@ -2285,6 +2289,19 @@ class LevelScene(Scene):
                                 )
                             return
 
+    def _toggle_controls_help(self) -> None:
+        """Toggle the visibility of the controls summary overlay."""
+
+        active_menu = self.menu_manager.active_menu
+        if active_menu and active_menu.identifier == CONTROLS_MENU_ID:
+            self.menu_manager.close_active_menu()
+            return
+
+        if active_menu:
+            self.menu_manager.close_active_menu()
+
+        self.menu_manager.open_menu(create_controls_help_menu())
+
     def key_down(self, keyname):
         """
         Handle the triggering of a key down event.
@@ -2298,6 +2315,8 @@ class LevelScene(Scene):
                 and self.menu_manager.active_menu.identifier != CHARACTER_ACTION_MENU_ID
             ):
                 self.menu_manager.close_active_menu()
+        elif keyname == pygame.K_F1:
+            self._toggle_controls_help()
 
     def motion(self, position: Position) -> None:
         """
