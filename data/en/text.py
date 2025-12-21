@@ -52,6 +52,27 @@ STR_DIARY = "Diary"
 STR_END_TURN = "End turn"
 STR_DEFAULT_DIARY_BODY_CONTENT = "No event has been recorded yet"
 
+# Controls help overlay
+STR_CONTROLS_TITLE = "Controls"
+STR_CONTROLS_INPUT_HEADER = "Input"
+STR_CONTROLS_DESCRIPTION_HEADER = "Effect"
+STR_CONTROLS_INPUT_LEFT_CLICK = "Left click"
+STR_CONTROLS_INPUT_LEFT_CLICK_EMPTY = "Left click (empty tile)"
+STR_CONTROLS_INPUT_LEFT_CLICK_ENTITY = "Left click (entity)"
+STR_CONTROLS_INPUT_RIGHT_CLICK = "Right click"
+STR_CONTROLS_INPUT_RIGHT_CLICK_ENTITY = "Right click (entity)"
+STR_CONTROLS_INPUT_ESC = "Esc key"
+STR_CONTROLS_INPUT_F1 = "F1 key"
+STR_CONTROLS_INPUT_HINT = "Hint"
+STR_CONTROLS_LEFT_CLICK = "Select a player, choose a tile, or pick an action."
+STR_CONTROLS_LEFT_CLICK_EMPTY = "Open or close the main menu."
+STR_CONTROLS_LEFT_CLICK_ENTITY = "Show an active entity's information window."
+STR_CONTROLS_RIGHT_CLICK = "Deselect a player or cancel the last action if possible."
+STR_CONTROLS_RIGHT_CLICK_ENTITY = "Display the hovered entity's possible movements."
+STR_CONTROLS_ESC = "Close the menu currently on top (except action menu)."
+STR_CONTROLS_F1 = "Show or hide this controls summary."
+STR_CONTROLS_LEVEL_HINT = "You can press F1 in every level to review these controls."
+
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "Congratulations! Objective has been completed!"
 

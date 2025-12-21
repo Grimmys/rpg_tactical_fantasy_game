@@ -52,6 +52,27 @@ STR_DIARY = "Diario"
 STR_END_TURN = "Fin del turno"
 STR_DEFAULT_DIARY_BODY_CONTENT = "No se ha registrado ningún evento aún"
 
+# Controls help overlay
+STR_CONTROLS_TITLE = "Controles"
+STR_CONTROLS_INPUT_HEADER = "Entrada"
+STR_CONTROLS_DESCRIPTION_HEADER = "Efecto"
+STR_CONTROLS_INPUT_LEFT_CLICK = "Clic izquierdo"
+STR_CONTROLS_INPUT_LEFT_CLICK_EMPTY = "Clic izquierdo (casilla vacía)"
+STR_CONTROLS_INPUT_LEFT_CLICK_ENTITY = "Clic izquierdo (entidad)"
+STR_CONTROLS_INPUT_RIGHT_CLICK = "Clic derecho"
+STR_CONTROLS_INPUT_RIGHT_CLICK_ENTITY = "Clic derecho (entidad)"
+STR_CONTROLS_INPUT_ESC = "Tecla Esc"
+STR_CONTROLS_INPUT_F1 = "Tecla F1"
+STR_CONTROLS_INPUT_HINT = "Pista"
+STR_CONTROLS_LEFT_CLICK = "Selecciona un jugador, elige una casilla o elige una acción."
+STR_CONTROLS_LEFT_CLICK_EMPTY = "Abre o cierra el menú principal."
+STR_CONTROLS_LEFT_CLICK_ENTITY = "Muestra la ventana de información de una entidad activa."
+STR_CONTROLS_RIGHT_CLICK = "Deselecciona un jugador o cancela la última acción si es posible."
+STR_CONTROLS_RIGHT_CLICK_ENTITY = "Muestra los movimientos posibles de la entidad sobre la que se pasa el cursor."
+STR_CONTROLS_ESC = "Cierra el menú que está arriba (excepto el menú de acciones)."
+STR_CONTROLS_F1 = "Muestra u oculta este resumen de controles."
+STR_CONTROLS_LEVEL_HINT = "Puedes presionar F1 en cada nivel para revisar estos controles."
+
 # Reward menu
 STR_REWARD_CONGRATULATIONS = "¡Felicidades! ¡El objetivo ha sido completado!"
 
