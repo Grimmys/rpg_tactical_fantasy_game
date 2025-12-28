@@ -1,0 +1,40 @@
+{
+  "spritesheet": {
+    "categories": [
+      {
+        "name": "void",
+        "ids": [0]
+      },
+      {
+        "name": "example_range",
+        "ids": [[32, 96]]
+      }
+    ],
+    "properties": {
+      "0": {"type": "void"}
+    }
+  },
+  "houses": {
+    "categories": [
+      {
+        "name": "walls",
+        "ids": [[0, 47]]
+      },
+      {
+        "name": "roofs",
+        "ids": [[48, 95]]
+      }
+    ]
+  },
+  "Thugs": {
+    "categories": [
+      {"name": "enemies", "ids": [0] }
+    ]
+  }
+}
+
+// Instructions:
+// - `ids` can be single ints or [start, end] inclusive ranges.
+// - `categories` are free-form labels used for filtering/grouping in the editor.
+// - `properties` lets you attach key/value pairs to specific tile ids (strings).
+// - Add/remove tilesets by name (must match the TSX `name`).
