@@ -13,11 +13,11 @@ It paints GIDs (global tile IDs) from real Tiled TSX tilesets and saves/loads te
 
 ## Run the editor
 
-From the project root:
+From the project root (no PYTHONPATH needed):
 
 ```powershell
 # Width=22, Height=14, optional template path
-python -m tools.level_editor.editor_app 22 14 maps\editor_templates\template.json
+python level_editor.py 22 14 maps\editor_templates\template.json
 ```
 
 Controls:
