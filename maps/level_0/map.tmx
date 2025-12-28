@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="152">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="10" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="152">
  <editorsettings>
   <export format="tmx"/>
  </editorsettings>
@@ -138,6 +138,7 @@
     <property name="item_3_name" value="scroll_of_knowledge"/>
     <property name="item_3_quantity" type="int" value="3"/>
     <property name="kind" value="shop"/>
+    <property name="money" type="int" value="500"/>
     <property name="number_items" type="int" value="4"/>
     <property name="sprite_link" value="imgs/houses/shop.png"/>
    </properties>

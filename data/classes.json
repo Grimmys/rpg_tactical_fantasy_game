@@ -1,0 +1,38 @@
+{
+  "innkeeper": {
+    "stats_up": {
+      "hp": [1, 2, 2, 2, 3],
+      "str": [0, 0, 1],
+      "def": [0, 1, 1],
+      "res": [0, 1]
+    }
+  },
+  "warrior": {
+    "constitution": 5,
+    "stats_up": {
+      "hp": [1, 1, 2, 2, 2, 3, 4],
+      "str": [0, 1, 1, 2],
+      "def": [0, 1, 1, 2, 2, 3],
+      "res": [0, 1]
+    }
+  },
+  "ranger": {
+    "constitution": 2,
+    "skills": ["covered"],
+    "stats_up": {
+      "hp": [1, 2, 2, 2, 3, 3, 4],
+      "str": [0, 1, 1],
+      "def": [0, 1, 1, 2],
+      "res": [0, 1]
+    }
+  },
+  "spy": {
+    "skills": ["lock_picking", "double_attack"],
+    "stats_up": {
+      "hp": [1, 2, 2, 2, 3, 4],
+      "str": [0, 1],
+      "def": [0, 1, 1, 2, 2],
+      "res": [0, 1, 2]
+    }
+  }
+}

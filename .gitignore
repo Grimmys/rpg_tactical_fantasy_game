@@ -1,5 +1,4 @@
 __pycache__/
-build/
 *.zip
 *.whl
 saves/*
@@ -22,3 +21,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# pyinstaller generated content
+build/
+dist/

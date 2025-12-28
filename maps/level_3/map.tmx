@@ -125,6 +125,7 @@
     <property name="kind" value="shop"/>
     <property name="number_items" type="int" value="4"/>
     <property name="sprite_link" value="imgs/houses/shop.png"/>
+    <property name="money" type="int" value="500"/>
    </properties>
   </object>
   <object id="58" name="apothecary" type="building" gid="6103" x="544" y="224" width="32" height="32">
@@ -138,6 +139,7 @@
     <property name="kind" value="shop"/>
     <property name="number_items" type="int" value="3"/>
     <property name="sprite_link" value="imgs/houses/tavern.png"/>
+    <property name="money" type="int" value="500"/>
    </properties>
   </object>
  </objectgroup>

@@ -180,6 +180,10 @@ class Shop(Building):
         # Specify nature
         nature: etree.SubElement = etree.SubElement(tree, "type")
         nature.text = "shop"
+        
+         # Save the current shop balance
+        money: etree.SubElement = etree.SubElement(tree, "money")
+        money.text = str(self.shop_balance)
 
         # Specify content
         items: etree.SubElement = etree.SubElement(tree, "items")

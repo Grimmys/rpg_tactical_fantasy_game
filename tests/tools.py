@@ -3,6 +3,7 @@ import pygamepopup
 
 import src.gui.fonts as font
 import src.services.load_from_xml_manager as loader
+import src.services.load_from_json_manager as json_loader
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
 from src.game_entities.character import Character
 from src.gui.constant_sprites import init_constant_sprites
@@ -23,7 +24,7 @@ def minimal_setup_for_game():
     pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
     # Load some data
     races = loader.load_races()
-    classes = loader.load_classes()
+    classes = json_loader.load_classes()
     Character.init_data(races, classes)
     init_constant_sprites()
     already_set_up = True

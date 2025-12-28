@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Optional
 
+import logging
+
 import pygame
 import pytmx
 from pytmx import TiledObject
@@ -24,6 +26,8 @@ from src.game_entities.shop import Shop
 from src.gui.position import Position
 from src.services import load_from_xml_manager as xml_loader
 from src.services.global_foes import foes_by_mission, link_foe_to_mission
+
+logger = logging.getLogger(__name__)
 
 objective_tile_by_mission: dict[str, list[Objective]] = {}
 
@@ -244,31 +248,34 @@ def load_chests(
 
 
 def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
-    dialog = {}
+    dialog_path = f"{directory}dialog_{dialog_file_index}.txt"
+    dialog: dict[str, any] = {}
     try:
-        with open(f"{directory}dialog_{dialog_file_index}.txt") as dialog_file:
+        with open(dialog_path, encoding="utf-8") as dialog_file:
             dialog["title"] = dialog_file.readline().rstrip("\n")
             dialog_file.readline()  # Skip splitting line between title and body
             dialog["talks"] = dialog_file.read().splitlines()
     except UnicodeDecodeError:
-        with open(
-                f"{directory}dialog_{dialog_file_index}.txt", encoding="utf-8"
-        ) as dialog_file:
-            dialog["title"] = dialog_file.readline().rstrip("\n")
-            dialog_file.readline()  # Skip splitting line between title and body
-            dialog["talks"] = dialog_file.read().splitlines()
+        logger.warning(
+            "Unable to load dialog file %s because text characters cannot be decoded as UTF-8.",
+            dialog_path,
+        )
+        dialog["title"] = ""
+        dialog["talks"] = []
     return dialog
 
 
 def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
+    dialog_path = f"{directory}house_dialog_{dialog_file_index}.txt"
     try:
-        with open(f"{directory}house_dialog_{dialog_file_index}.txt") as dialog_file:
+        with open(dialog_path, encoding="utf-8") as dialog_file:
             return dialog_file.read().splitlines()
     except UnicodeDecodeError:
-        with open(
-                f"{directory}house_dialog_{dialog_file_index}.txt", encoding="utf-8"
-        ) as dialog_file:
-            return dialog_file.read().splitlines()
+        logger.warning(
+            "Unable to load house dialog file %s because text characters cannot be decoded as UTF-8.",
+            dialog_path,
+        )
+        return []
 
 
 def load_events(
@@ -307,7 +314,7 @@ def load_events(
 
 
 def load_buildings(
-        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int, shop_balance: int
+        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
 ) -> list[Building]:
     buildings = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
@@ -360,12 +367,13 @@ def load_buildings(
                         "quantity": tile_object.properties[f"item_{item_id}_quantity"],
                     }
                     stock.append(item_entry)
+                shop_money = tile_object.properties.get("money", 500)
                 buildings.append(
                     Shop(
                         tile_object.name,
                         position,
                         tile_object.properties["sprite_link"],
-                        shop_balance,
+                        shop_money,
                         stock,
                         interaction,
                         image,

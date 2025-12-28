@@ -43,12 +43,16 @@ from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.gui.tools import determine_gauge_color
 from src.services.language import *
+import xml.etree.ElementTree as ET
+import logging
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
 INVENTORY_MENU_ID = "inventory"
+EQUIPMENT_MENU_ID = "equipment"
 SHOP_MENU_ID = "shop"
 CHARACTER_ACTION_MENU_ID = "character_action"
+GAME_SAVED_INFO_BOX_ID = "game_has_been_saved"
 
 close_function: Optional[Callable] = None
 
@@ -221,6 +225,7 @@ def create_equipment_menu(
         STR_EQUIPMENT,
         grid_elements,
         width=EQUIPMENT_MENU_WIDTH,
+        identifier=EQUIPMENT_MENU_ID,
     )
 
 
@@ -563,7 +568,7 @@ def create_player_menu(
                         ],
                     )
                     chest_option = True
-                if "lock_picking" in player.skills and not pick_lock_option:
+                if "lock_picking" in player.skills and not pick_lock_option and not entity.opened:
                     grid_elements.insert(
                         0,
                         [
@@ -1355,22 +1360,49 @@ def create_options_menu(
         width=START_MENU_WIDTH,
     )
 
+def _generate_saves_grid(button_function):
+    """
+    Args:
+        button_function: either load_game_function or save_game_function, depending on if
+        the Load menu or Save menu is being generated
+
+    Returns:
+        A list of save slots for the Load or Save menu creator to use to generate the grid of save slots
+    """
+
+    element_grid = []
+
+    for i in range(SAVE_SLOTS):
+        # Look through the save files for presence of the timestamp tag, and if found include below the save slot title.
+        save_time = ""
+        try:
+            save_file = ET.parse(f"saves/save_{i}.xml")
+            save_timestamp = save_file.find(".//timestamp")
+            if save_timestamp is not None:
+                save_time = save_timestamp.text
+            else:
+                save_time = ""
+        except:
+            logging.error(f"Cannot parse save file: save_{i}.xml")
+            pass
+
+        element_grid.append(
+            [
+                Button(
+                    title=f"{f_SAVE_NUMBER(i + 1)}\n{save_time}",
+                    callback=lambda slot_id=i: button_function(slot_id)
+                )
+            ]
+        )
+
+    return element_grid
+
 
 def create_load_menu(load_game_function: Callable) -> InfoBox:
     """
     Return the interface of the load game menu.
     """
-    element_grid = []
-
-    for i in range(SAVE_SLOTS):
-        element_grid.append(
-            [
-                Button(
-                    title=f_SAVE_NUMBER(i + 1),
-                    callback=lambda slot_id=i: load_game_function(slot_id),
-                )
-            ]
-        )
+    element_grid = _generate_saves_grid(load_game_function)
 
     return InfoBox(
         STR_LOAD_GAME_MENU,
@@ -1383,17 +1415,7 @@ def create_save_menu(save_game_function: Callable) -> InfoBox:
     """
     Return the interface of the save game menu
     """
-    element_grid = []
-
-    for i in range(SAVE_SLOTS):
-        element_grid.append(
-            [
-                Button(
-                    title=f_SAVE_NUMBER(i + 1),
-                    callback=lambda slot_id=i: save_game_function(slot_id),
-                )
-            ]
-        )
+    element_grid = _generate_saves_grid(save_game_function)
 
     return InfoBox(
         STR_SAVE_GAME_MENU,

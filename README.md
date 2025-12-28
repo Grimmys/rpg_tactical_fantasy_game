@@ -5,7 +5,7 @@
 [![latest release](https://img.shields.io/github/v/release/Grimmys/rpg_tactical_fantasy_game)](https://github.com/Grimmys/rpg_tactical_fantasy_game/releases/latest)
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/Grimmys/rpg_tactical_fantasy_game/latest/total)
 
-[ [English](README.md) | [简体中文](README/zh-cn.md) | [繁體中文](README/zh-cht.md) | [Español](README/es.md) ]
+[ [English](README.md) | [简体中文](README/zh-cn.md) | [繁體中文](README/zh-cht.md) | [Español](README/es.md) | [Français](README/fr.md) ]
 
 **Open to collaborative development.**
 
@@ -39,6 +39,12 @@ If you plan to contribute new images, sounds, or fonts, please enable Git LFS (L
 git lfs install
 git lfs track "*.png" "*.wav" "*.ttf"
 git add .gitattributes
+```
+
+You may need to explicitely download game assets from the LFS when running the game on a system for the first time.
+
+```bash
+git lfs pull
 ```
 
 __Version__ : 1.0.4

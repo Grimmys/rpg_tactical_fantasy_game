@@ -46,16 +46,22 @@ if __name__ == "__main__":
     import subprocess
     import sys
 
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # running main.py in a pyinstaller bundle
+        os.chdir(sys._MEIPASS)
+
     from src.constants import (BLACK, FRAME_RATE, MAIN_WIN_HEIGHT,
                                MAIN_WIN_WIDTH)
     from src.game_entities.character import Character
     from src.game_entities.movable import Movable
     from src.gui import constant_sprites, fonts
     from src.services import load_from_xml_manager as loader
+    from src.services import load_from_json_manager as json_loader
     from src.services.language import *
     from src.services.language import STR_GAME_TITLE
 
     pygame.init()
+    pygame.mixer.init()
     pygamepopup.init()
 
     fonts.init_fonts()
@@ -87,7 +93,7 @@ if __name__ == "__main__":
     constant_sprites.init_constant_sprites()
 
     races = loader.load_races()
-    classes = loader.load_classes()
+    classes = json_loader.load_classes()
     Character.init_data(races, classes)
 
     scene_manager = SceneManager(main_screen)
