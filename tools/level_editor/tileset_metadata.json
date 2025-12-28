@@ -1,0 +1,23 @@
+{
+  "spritesheet": {
+    "categories": [
+      { "name": "object", "ids": [[1, 99]] },
+      { "name": "door", "ids": [[100, 129]] },
+      { "name": "floor", "ids": [[130, 670]] },
+      { "name": "door", "ids": [[671, 769]] },
+      { "name": "object", "ids": [[770, 866]]},
+      { "name": "wall", "ids": [[867, 1356]] },
+      { "name": "equipment", "ids": [[2220, 3190]] },
+      { "name": "effect", "ids": [[3191, 3772]] },
+      { "name": "character", "ids": [[3773, 4567]] },
+      { "name": "character", "ids": [[4711, 5189]] },
+      { "name": "equipment", "ids": [[5190, 5415]]},
+      { "name": "cat", "ids": [[5416, 5420]] },
+      { "name": "equipment", "ids": [[5421, 6015]] },
+      { "name": "monster", "ids": [[6016, 6038]] }
+    ],
+    "properties": {
+      "0": { "type": "void" }
+    }
+  }
+}
