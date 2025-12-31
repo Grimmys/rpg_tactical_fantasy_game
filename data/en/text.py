@@ -4,6 +4,7 @@ STR_GAME_TITLE = "In the name of the Five Cats"
 STR_NEW_GAME = "New game"
 STR_LOAD_GAME = "Load game"
 STR_OPTIONS = "Options"
+STR_LVL_EDITOR = "Level editor"
 STR_EXIT_GAME = "Exit game"
 
 # Close button

@@ -4,6 +4,7 @@ STR_GAME_TITLE = "Au nom des Cinq Chats"
 STR_NEW_GAME = "Nouvelle partie"
 STR_LOAD_GAME = "Charger une partie"
 STR_OPTIONS = "Options"
+STR_LVL_EDITOR = "Éditeur de niveaux"
 STR_EXIT_GAME = "Quitter le jeu"
 
 # Close button
