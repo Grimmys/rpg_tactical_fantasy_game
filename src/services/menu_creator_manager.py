@@ -46,6 +46,7 @@ from src.services.language import *
 
 MAP_WIDTH = TILE_SIZE * 20
 MAP_HEIGHT = TILE_SIZE * 10
+CONTROLS_GUTTER = 12
 INVENTORY_MENU_ID = "inventory"
 EQUIPMENT_MENU_ID = "equipment"
 SHOP_MENU_ID = "shop"
@@ -59,11 +60,9 @@ def create_controls_help_menu() -> InfoBox:
     """Return an info box summarizing the core controls and extra hints."""
 
     controls_width = max(START_MENU_WIDTH, WIN_WIDTH - 2 * MARGIN_BOX)
-    padding = 20
-    gutter = 12
-    inner_width = controls_width - 2 * padding
+    inner_width = controls_width - 2 * MARGIN_BOX
     column_width = inner_width // 4
-    description_width = inner_width - column_width
+    # description_width = inner_width - column_width
 
     def _make_table_row(
         left_text: str,
@@ -83,7 +82,7 @@ def create_controls_help_menu() -> InfoBox:
         surface = pygame.Surface((inner_width, row_height), pygame.SRCALPHA)
         surface.fill((0, 0, 0, 0))
         surface.blit(left_surface, (0, 0))
-        right_x = column_width + gutter
+        right_x = column_width + CONTROLS_GUTTER
         surface.blit(right_surface, (right_x, 0))
         if draw_divider:
             pygame.draw.line(
@@ -93,7 +92,7 @@ def create_controls_help_menu() -> InfoBox:
                 (column_width, row_height),
                 2,
             )
-        return BoxElement(Position(padding, 0), surface, margin)
+        return BoxElement(Position(MARGIN_BOX, 0), surface, margin)
 
     entries = [
         (STR_CONTROLS_INPUT_LEFT_CLICK, STR_CONTROLS_LEFT_CLICK),
