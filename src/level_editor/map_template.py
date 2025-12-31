@@ -16,10 +16,15 @@ Template schema:
 """
 from __future__ import annotations
 
+import json
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List
-import json
+
+import pytmx
+
+from src.services.tmx_loader_core import parse_tmx
 
 
 @dataclass
@@ -47,6 +52,8 @@ class MapTemplate:
     layers: Dict[str, Layer]
     # Optional list of TSX paths (relative to repo root) to reproduce firstgid ordering
     tilesets: List[str] = field(default_factory=list)
+    # Optional list of explicit firstgid values aligned with tilesets
+    tileset_firstgids: List[int] = field(default_factory=list)
 
     @staticmethod
     def create(width: int, height: int, fill: int = 0, tilesets: List[str] | None = None) -> "MapTemplate":
@@ -58,7 +65,121 @@ class MapTemplate:
             "allies": Layer([[0 for _ in range(width)] for _ in range(height)]),
             "foes": Layer([[0 for _ in range(width)] for _ in range(height)])
         }
-        return MapTemplate(width, height, layers, tilesets or [])
+        return MapTemplate(width, height, layers, tilesets or [], [])
+
+    @staticmethod
+    def load_tmx(path: Path) -> "MapTemplate":
+        """Load a TMX map file and convert it to a MapTemplate for editing."""
+        parsed = parse_tmx(path)
+        width, height = parsed.width, parsed.height
+
+        layers: Dict[str, Layer] = {}
+        for lname in ["ground", "obstacles", "allies", "foes"]:
+            p_layer = parsed.layers.get(lname)
+            grid = [[0 for _ in range(width)] for _ in range(height)]
+            if p_layer is not None:
+                for y in range(min(height, len(p_layer.data))):
+                    row = p_layer.data[y]
+                    for x in range(min(width, len(row))):
+                        grid[y][x] = row[x]
+                visible = p_layer.visible
+            else:
+                visible = True
+            layers[lname] = Layer(grid, visible)
+
+        # Extract tileset sources and firstgids directly from the TMX XML to keep TSX paths.
+        tilesets: List[str] = []
+        firstgids: List[int] = []
+        try:
+            root = ET.parse(path).getroot()
+            for ts_el in root.findall("tileset"):
+                src_attr = ts_el.attrib.get("source")
+                if not src_attr:
+                    continue
+                ts_path = (path.parent / src_attr).resolve()
+                tilesets.append(str(ts_path))
+                fg_attr = ts_el.attrib.get("firstgid")
+                if fg_attr is not None:
+                    firstgids.append(int(fg_attr))
+        except Exception as exc:
+            print(f"[editor] Warning: failed to read tilesets from TMX XML: {exc}")
+
+        return MapTemplate(width, height, layers, tilesets, firstgids)
+
+    def save_tmx(
+        self,
+        path: Path,
+        tileset_index: List[tuple[str, Any, int]],
+        tsx_paths: List[Path],
+        tile_width: int = 32,
+        tile_height: int = 32,
+    ) -> None:
+        """Export the map to a TMX file using the provided tileset ordering."""
+
+        # Build firstgid map from tileset_index (already ordered)
+        firstgid_map: Dict[str, int] = {name: fg for name, _, fg in tileset_index}
+
+        map_el = ET.Element(
+            "map",
+            {
+                "version": "1.10",
+                "tiledversion": "1.10.2",
+                "orientation": "orthogonal",
+                "renderorder": "right-down",
+                "width": str(self.width),
+                "height": str(self.height),
+                "tilewidth": str(tile_width),
+                "tileheight": str(tile_height),
+                "infinite": "0",
+            },
+        )
+
+        # Tilesets
+        for tsx_path in tsx_paths:
+            name = tsx_path.stem
+            if name not in firstgid_map:
+                continue
+            rel_source = Path(tsx_path).resolve()
+            if not path.parent.exists():
+                path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                rel_source = rel_source.relative_to(path.parent)
+            except ValueError:
+                rel_source = rel_source
+            ET.SubElement(
+                map_el,
+                "tileset",
+                {
+                    "firstgid": str(firstgid_map[name]),
+                    "source": str(rel_source).replace("\\", "/"),
+                },
+            )
+
+        # Layers (only those present in the template)
+        for layer_name, layer in self.layers.items():
+            layer_el = ET.SubElement(
+                map_el,
+                "layer",
+                {
+                    "name": layer_name,
+                    "width": str(self.width),
+                    "height": str(self.height),
+                },
+            )
+            if not layer.visible:
+                layer_el.set("visible", "0")
+
+            data_el = ET.SubElement(layer_el, "data", {"encoding": "csv"})
+            # Flatten row-major
+            rows = []
+            for y in range(self.height):
+                row = [str(layer.data[y][x] if x < len(layer.data[y]) else 0) for x in range(self.width)]
+                rows.append(",".join(row))
+            data_el.text = "\n" + "\n".join(rows) + "\n"
+
+        tree = ET.ElementTree(map_el)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tree.write(path, encoding="utf-8", xml_declaration=True)
 
     def get_layer(self, layer_name: str) -> Layer:
         """Get layer by name, creating if it doesn't exist."""
@@ -94,6 +215,8 @@ class MapTemplate:
         }
         if self.tilesets:
             obj["tilesets"] = self.tilesets
+        if self.tileset_firstgids:
+            obj["tileset_firstgids"] = self.tileset_firstgids
         
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(obj, indent=2), encoding="utf-8")
@@ -127,4 +250,5 @@ class MapTemplate:
             layers["foes"] = Layer([row[:] for row in empty_data])
         
         tilesets = data.get("tilesets", [])
-        return MapTemplate(width, height, layers, tilesets)
+        tileset_firstgids = [int(x) for x in data.get("tileset_firstgids", [])]
+        return MapTemplate(width, height, layers, tilesets, tileset_firstgids)
