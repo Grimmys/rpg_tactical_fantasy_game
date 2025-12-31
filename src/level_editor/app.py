@@ -102,6 +102,33 @@ def log_ui_error(message: str, exc: Optional[Exception] = None) -> None:
         print(f"[editor][error] {message}", file=sys.stderr)
 
 
+def log_diagnostics(tmpl: MapTemplate, parsed_map: Optional[ParsedMap]) -> None:
+    """Emit a concise diagnostic summary for tilesets, gids, layers, and objects."""
+    if parsed_map is not None:
+        print("[diag] tilesets:")
+        for ts in parsed_map.tilesets:
+            print(f"  - name={ts.name} firstgid={ts.firstgid} tilecount={ts.tilecount} source={ts.source}")
+        print(f"[diag] gid surfaces: {len(parsed_map.gid_surfaces)}")
+        obj_total = 0
+        for lname, objs in parsed_map.object_layers.items():
+            print(f"[diag] objects {lname}: {len(objs)}")
+            obj_total += len(objs)
+        print(f"[diag] objects total: {obj_total}")
+    else:
+        print("[diag] no parsed TMX available (JSON load)")
+
+    for lname, layer in tmpl.layers.items():
+        nz = 0
+        lmin, lmax = 0, 0
+        for row in layer.data:
+            for gid in row:
+                if gid:
+                    nz += 1
+                    lmin = gid if lmin == 0 else min(lmin, gid)
+                    lmax = max(lmax, gid)
+        print(f"[diag] layer {lname}: nz={nz} min={lmin} max={lmax} visible={layer.visible}")
+
+
 def build_tmx_gid_surfaces(tmx_path: Path, tmx_obj: Optional[pytmx.TiledMap] = None) -> Dict[int, pygame.Surface]:
     """Build a gid->surface map directly from a TMX using pytmx, skipping TSX parsing."""
     tmx = tmx_obj or pytmx.TiledMap(str(tmx_path))
@@ -404,6 +431,7 @@ def editor_main(width: int = 22, height: int = 14, template_path: Optional[Path]
         grid_h = tmpl.height * TILE_PIXELS
         total_w = grid_w + LAYER_PANEL_WIDTH + PALETTE_WIDTH
         screen = pygame.display.set_mode((total_w, grid_h))
+        log_diagnostics(tmpl, parsed_map)
     else:
         tmpl = MapTemplate.create(
             width,
@@ -587,6 +615,7 @@ def editor_main(width: int = 22, height: int = 14, template_path: Optional[Path]
         rebuild_tilesets()
         refresh_palette_panel()
         apply_initial_selection()
+        log_diagnostics(tmpl, parsed_map)
 
     def draw_save_modal():
         overlay = pygame.Surface((total_w, grid_h), pygame.SRCALPHA)
