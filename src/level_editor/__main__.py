@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 from typing import Optional
 
-from level_editor.app import editor_main
+from .app import editor_main
 
 
 def main(argv: Optional[list[str]] = None) -> None:

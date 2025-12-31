@@ -12,11 +12,11 @@ from typing import Dict, List, Optional, Tuple
 
 import pygame
 
-from level_editor.map_template import MapTemplate
-from level_editor.metadata import apply_metadata, load_metadata
-from level_editor.palette_model import PaletteModel
-from level_editor.palette_ui import PalettePanel, PaletteUIConfig
-from level_editor.tileset_loader import TileEntry, TilesetData, load_tilesets
+from .map_template import MapTemplate
+from .metadata import apply_metadata, load_metadata
+from .palette_model import PaletteModel
+from .palette_ui import PalettePanel, PaletteUIConfig
+from .tileset_loader import TileEntry, TilesetData, load_tilesets
 
 
 TILE_PIXELS = 32  # Size of map tiles in the editor grid

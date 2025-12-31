@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Set
 
-from level_editor.tileset_loader import TilesetData
+from .tileset_loader import TilesetData
 
 Metadata = Dict[str, dict]
 

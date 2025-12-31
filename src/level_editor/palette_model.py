@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
 
-from level_editor.tileset_loader import TileEntry, TilesetData
+from .tileset_loader import TileEntry, TilesetData
 
 FilterFn = Callable[[TileEntry], bool]
 

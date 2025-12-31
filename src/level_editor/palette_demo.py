@@ -16,10 +16,10 @@ from pathlib import Path
 
 import pygame
 
-from level_editor.metadata import apply_metadata, load_metadata
-from level_editor.palette_model import PaletteModel
-from level_editor.palette_ui import PalettePanel
-from level_editor.tileset_loader import discover_tilesets, load_tilesets
+from .metadata import apply_metadata, load_metadata
+from .palette_model import PaletteModel
+from .palette_ui import PalettePanel
+from .tileset_loader import discover_tilesets, load_tilesets
 
 
 def main() -> None:

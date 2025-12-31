@@ -6,8 +6,8 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 import pygame
 
-from level_editor.palette_model import PaletteModel, category_filter
-from level_editor.tileset_loader import TileEntry
+from .palette_model import PaletteModel, category_filter
+from .tileset_loader import TileEntry
 
 
 @dataclass
