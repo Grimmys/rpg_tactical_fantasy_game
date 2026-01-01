@@ -2297,9 +2297,6 @@ class LevelScene(Scene):
             self.menu_manager.close_active_menu()
             return
 
-        if active_menu:
-            self.menu_manager.close_active_menu()
-
         self.menu_manager.open_menu(create_controls_help_menu())
 
     def key_down(self, keyname):
