@@ -718,7 +718,13 @@ def editor_main(width: int = 22, height: int = 14, template_path: Optional[Path]
                             tmpl.tilesets = persistable_tileset_strings(tsx_paths)
                             tmpl.tileset_firstgids = [fg for _, _, fg in tileset_index]
                             if ext == ".tmx":
-                                tmpl.save_tmx(candidate, tileset_index, tsx_paths, TILE_PIXELS, TILE_PIXELS)
+                                tmpl.save_tmx(
+                                    candidate,
+                                    tileset_index,
+                                    tsx_paths,
+                                    tile_width=tmpl.tile_width,
+                                    tile_height=tmpl.tile_height,
+                                )
                             else:
                                 tmpl.save_json(candidate)
                             current_path = candidate
@@ -777,7 +783,13 @@ def editor_main(width: int = 22, height: int = 14, template_path: Optional[Path]
                         tmpl.tilesets = persistable_tileset_strings(tsx_paths)
                         tmpl.tileset_firstgids = [fg for _, _, fg in tileset_index]
                         if ext == ".tmx":
-                            tmpl.save_tmx(path, tileset_index, tsx_paths, TILE_PIXELS, TILE_PIXELS)
+                            tmpl.save_tmx(
+                                path,
+                                tileset_index,
+                                tsx_paths,
+                                tile_width=tmpl.tile_width,
+                                tile_height=tmpl.tile_height,
+                            )
                         else:
                             tmpl.save_json(path)
                         print(f"Saved template to {path}")
@@ -788,7 +800,13 @@ def editor_main(width: int = 22, height: int = 14, template_path: Optional[Path]
                         tmpl.tilesets = persistable_tileset_strings(tsx_paths)
                         tmpl.tileset_firstgids = [fg for _, _, fg in tileset_index]
                         if ext == ".tmx":
-                            tmpl.save_tmx(path, tileset_index, tsx_paths, TILE_PIXELS, TILE_PIXELS)
+                            tmpl.save_tmx(
+                                path,
+                                tileset_index,
+                                tsx_paths,
+                                tile_width=tmpl.tile_width,
+                                tile_height=tmpl.tile_height,
+                            )
                         else:
                             tmpl.save_json(path)
                         print(f"Saved template to {path}")
