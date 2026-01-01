@@ -352,9 +352,6 @@ def draw_layer_panel(
         
         y_pos += LAYER_BUTTON_HEIGHT + LAYER_SPACING
 
-
-
-
 def fill_rectangle(tmpl: MapTemplate, x0: int, y0: int, x1: int, y1: int, tile_id: int, layer_name: str) -> None:
     """Fill rectangle bounded by (x0,y0) and (x1,y1) inclusive with tile_id on specified layer."""
     if x0 > x1:
