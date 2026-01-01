@@ -66,7 +66,7 @@ class StartScene(Scene):
                     "new_game": self.new_game,
                     "load_menu": self.load_menu,
                     "options_menu": self.options_menu,
-                    "more_options_menu": self.more_options_menu,
+                    "level_editor_menu": self.level_editor_menu,
                     "exit_game": self.exit_game,
                 }
             )
@@ -75,7 +75,7 @@ class StartScene(Scene):
         self.level: Optional[LevelScene] = None
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
 
-    def more_options_menu(self) -> None:
+    def level_editor_menu(self) -> None:
         """Open the secondary tools menu (e.g., map editor actions)."""
         self.menu_manager.open_menu(
             menu_creator_manager.create_tools_menu(
@@ -95,7 +95,7 @@ class StartScene(Scene):
                     "new_game": self.new_game,
                     "load_menu": self.load_menu,
                     "options_menu": self.options_menu,
-                    "more_options_menu": self.more_options_menu,
+                    "level_editor_menu": self.level_editor_menu,
                     "exit_game": self.exit_game,
                 }
             )

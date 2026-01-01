@@ -1276,7 +1276,7 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
                 Button(title=STR_OPTIONS, callback=buttons_callback["options_menu"]),
             ],
             [
-                Button(title=STR_LVL_EDITOR, callback=buttons_callback["more_options_menu"]),
+                Button(title=STR_LVL_EDITOR, callback=buttons_callback["level_editor_menu"]),
             ],
             [
                 Button(title=STR_EXIT_GAME, callback=buttons_callback["exit_game"]),
