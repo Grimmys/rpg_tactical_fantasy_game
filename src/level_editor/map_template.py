@@ -60,7 +60,7 @@ class Layer:
 class MapObject:
     """Simple TMX object representation (objectgroups in the schema)."""
 
-    name: str
+    name: str | None
     type: str | None
     x: float
     y: float
@@ -70,22 +70,29 @@ class MapObject:
     properties: Dict[str, Any] = field(default_factory=dict)
     # Preserve original TMX object ids when present to avoid losing references
     object_id: int | None = None
+    rotation: float = 0.0
+    visible: bool = True
 
     def to_xml(self, parent: ET.Element, object_id: int) -> None:
         """Serialize this object under the given parent element."""
 
         attrs: Dict[str, str] = {
             "id": str(self.object_id if self.object_id is not None else object_id),
-            "name": self.name or "",
             "x": str(self.x),
             "y": str(self.y),
             "width": str(self.width),
             "height": str(self.height),
         }
+        if self.name is not None:
+            attrs["name"] = self.name
         if self.type:
             attrs["type"] = self.type
         if self.gid is not None:
             attrs["gid"] = str(self.gid)
+        if self.rotation:
+            attrs["rotation"] = str(self.rotation)
+        if not self.visible:
+            attrs["visible"] = "0"
 
         obj_el = ET.SubElement(parent, "object", attrs)
 
@@ -129,6 +136,7 @@ class MapTemplate:
     next_layer_id: int | None = None
     next_object_id: int | None = None
     layer_ids: Dict[str, int] = field(default_factory=dict)
+    raw_tileset_sources: Dict[int, str] = field(default_factory=dict)
 
     @staticmethod
     def create(
@@ -173,10 +181,12 @@ class MapTemplate:
         # Extract tileset sources/firstgids, raw layer data, and id bookkeeping directly from the TMX XML.
         tilesets: List[str] = []
         firstgids: List[int] = []
+        raw_tileset_sources: Dict[int, str] = {}
         layer_ids: Dict[str, int] = {}
         next_layer_id: int | None = None
         next_object_id: int | None = None
         object_gid_map: Dict[int, int] = {}
+        object_geom_map: Dict[int, tuple[float, float, float, float, float, bool]] = {}
         tile_data_by_name: Dict[str, List[List[int]]] = {}
         try:
             root = ET.parse(path).getroot()
@@ -186,6 +196,8 @@ class MapTemplate:
                 src_attr = ts_el.attrib.get("source")
                 if not src_attr:
                     continue
+                # Keep the raw source exactly as in TMX (relative) and also a resolved path
+                raw_tileset_sources[int(ts_el.attrib.get("firstgid", "0") or 0)] = src_attr
                 ts_path = (path.parent / src_attr).resolve()
                 tilesets.append(str(ts_path))
                 fg_attr = ts_el.attrib.get("firstgid")
@@ -215,6 +227,23 @@ class MapTemplate:
                         object_gid_map[int(oid)] = int(gid_attr)
                     except ValueError:
                         continue
+                if oid is not None:
+                    try:
+                        ox = float(obj_el.attrib.get("x", "0"))
+                        oy = float(obj_el.attrib.get("y", "0"))
+                        ow = float(obj_el.attrib.get("width", "0"))
+                        oh = float(obj_el.attrib.get("height", "0"))
+                        rot = float(obj_el.attrib.get("rotation", "0"))
+                        vis_attr = obj_el.attrib.get("visible")
+                        vis = False if vis_attr == "0" else True
+                        object_geom_map[int(oid)] = (ox, oy, ow, oh, rot, vis)
+                    except ValueError:
+                        pass
+            for obj_group_el in root.findall("objectgroup"):
+                lname = obj_group_el.attrib.get("name")
+                lid = obj_group_el.attrib.get("id")
+                if lname and lid is not None:
+                    layer_ids[lname] = int(lid)
         except Exception as exc:
             print(f"[editor] Warning: failed to read tilesets from TMX XML: {exc}")
 
@@ -238,20 +267,35 @@ class MapTemplate:
         # Map properties and object layers
         map_props = dict(parsed.properties)
         object_layers: Dict[str, List[MapObject]] = {}
-        for lname, objs in parsed.object_layers.items():
+        for lname, olayer in parsed.object_layers.items():
             collected: List[MapObject] = []
-            for obj in objs:
+            for obj in olayer.objects:
+                raw = object_geom_map.get(getattr(obj, "id", None))
+                ox, oy, ow, oh, rot, vis = (
+                    raw
+                    if raw is not None
+                    else (
+                        obj.x,
+                        obj.y,
+                        obj.width if obj.width else parsed.tilewidth,
+                        obj.height if obj.height else parsed.tileheight,
+                        getattr(obj, "rotation", 0),
+                        getattr(obj, "visible", True),
+                    )
+                )
                 collected.append(
                     MapObject(
-                        name=obj.name,
+                        name=obj.name if obj.name != "" else None,
                         type=obj.type,
                         gid=object_gid_map.get(getattr(obj, "id", None), obj.gid),
-                        x=obj.x,
-                        y=obj.y,
-                        width=obj.width if obj.width else parsed.tilewidth,
-                        height=obj.height if obj.height else parsed.tileheight,
+                        x=ox,
+                        y=oy,
+                        width=ow,
+                        height=oh,
                         properties=dict(obj.properties),
                         object_id=getattr(obj, "id", None),
+                        rotation=rot,
+                        visible=vis,
                     )
                 )
             object_layers[lname] = collected
@@ -273,6 +317,7 @@ class MapTemplate:
             next_layer_id,
             next_object_id,
             layer_ids,
+            raw_tileset_sources,
         )
 
     def save_tmx(
@@ -282,12 +327,27 @@ class MapTemplate:
         tsx_paths: List[Path],
         tile_width: int | None = None,
         tile_height: int | None = None,
+        parsed_tilesets: List[Any] | None = None,
+        parsed_layers: Dict[str, Any] | None = None,
+        parsed_object_layers: Dict[str, Any] | None = None,
+        map_properties: Dict[str, Any] | None = None,
+        map_version: str | None = None,
+        map_tiledversion: str | None = None,
+        nextlayerid: int | None = None,
+        nextobjectid: int | None = None,
+        include_editorsettings: Any | None = None,
+        renderorder: str | None = None,
     ) -> None:
         """Export the map to a TMX file using the provided tileset ordering."""
 
         # Resolve tile dimensions from template if not explicitly provided
         tw = tile_width or self.tile_width or 32
         th = tile_height or self.tile_height or 32
+
+        # Map-level metadata overrides
+        m_version = map_version or "1.10"
+        m_tiledversion = map_tiledversion or "1.11.2"
+        m_renderorder = renderorder or "right-down"
 
         # Prefer the template's stored tilesets/firstgids for exact round-trips
         tileset_sources: List[Path]
@@ -307,10 +367,10 @@ class MapTemplate:
         map_el = ET.Element(
             "map",
             {
-                "version": "1.10",
-                "tiledversion": "1.11.2",
+                "version": m_version,
+                "tiledversion": m_tiledversion,
                 "orientation": "orthogonal",
-                "renderorder": "right-down",
+                "renderorder": m_renderorder,
                 "compressionlevel": "0",
                 "width": str(self.width),
                 "height": str(self.height),
@@ -320,10 +380,18 @@ class MapTemplate:
             },
         )
 
+        # Editor export settings (optional)
+        if include_editorsettings:
+            fmt = include_editorsettings if isinstance(include_editorsettings, str) else "tmx"
+            editor_el = ET.SubElement(map_el, "editorsettings")
+            ET.SubElement(editor_el, "export", {"format": fmt})
+
+        effective_props = map_properties if map_properties is not None else self.map_properties
+
         # Map-level properties (mission metadata, etc.)
-        if self.map_properties:
+        if effective_props:
             props_el = ET.SubElement(map_el, "properties")
-            for key, value in self.map_properties.items():
+            for key, value in effective_props.items():
                 prop_attrs = {"name": key}
                 if isinstance(value, bool):
                     prop_attrs["type"] = "bool"
@@ -339,35 +407,88 @@ class MapTemplate:
                 ET.SubElement(props_el, "property", prop_attrs)
 
         # Tilesets
-        for tsx_path in tileset_sources:
-            name = tsx_path.stem
-            if name not in firstgid_map:
-                continue
-            rel_source = Path(tsx_path).resolve()
+        def _relativize(src_path: Path) -> str:
+            rel_source = src_path
             if not path.parent.exists():
                 path.parent.mkdir(parents=True, exist_ok=True)
             try:
-                rel_source = rel_source.relative_to(path.parent)
+                rel_source = src_path.relative_to(path.parent)
             except ValueError:
-                rel_source = rel_source
-            ET.SubElement(
-                map_el,
-                "tileset",
-                {
-                    "firstgid": str(firstgid_map[name]),
-                    "source": str(rel_source).replace("\\", "/"),
-                },
-            )
+                rel_source = src_path
+            return str(rel_source).replace("\\", "/")
+
+        def _resolve_raw_source(ts_firstgid: int, idx: int) -> str | None:
+            # Prefer the raw TMX source captured at load (already relative in legacy maps)
+            raw = self.raw_tileset_sources.get(ts_firstgid)
+            if raw:
+                return raw.replace("\\", "/")
+            # Fallback to stored tilesets list
+            if self.tilesets and idx < len(self.tilesets):
+                return _relativize(Path(self.tilesets[idx]).resolve())
+            return None
+
+        if parsed_tilesets:
+            for idx, ts in enumerate(parsed_tilesets):
+                src_str = None
+                # Prefer raw TSX source from TMX
+                src_str = _resolve_raw_source(ts.firstgid, idx)
+                if src_str is None and ts.source:
+                    # Only relativize if we have a path; do not allow absolute
+                    candidate = Path(ts.source)
+                    if not candidate.is_absolute():
+                        src_str = candidate.as_posix()
+                    else:
+                        try:
+                            src_str = _relativize(candidate)
+                        except Exception:
+                            src_str = None
+                if src_str is None:
+                    src_str = ""
+                ET.SubElement(
+                    map_el,
+                    "tileset",
+                    {
+                        "firstgid": str(ts.firstgid),
+                        "source": src_str,
+                    },
+                )
+        else:
+            for idx, tsx_path in enumerate(tileset_sources):
+                name = tsx_path.stem
+                if name not in firstgid_map:
+                    continue
+                src_str = _resolve_raw_source(firstgid_map[name], idx)
+                if src_str is None:
+                    src_str = _relativize(Path(tsx_path).resolve())
+                ET.SubElement(
+                    map_el,
+                    "tileset",
+                    {
+                        "firstgid": str(firstgid_map[name]),
+                        "source": src_str,
+                    },
+                )
 
         # Layers (only those present in the template)
         layer_id = 1
         max_layer_id = 0
-        for layer_name, layer in self.layers.items():
+        # If parsed_layers provided, use its ordering/visibility/opacities and only those layers
+        layer_items = (
+            list(parsed_layers.items()) if parsed_layers else list(self.layers.items())
+        )
+        for layer_name, layer_meta in layer_items:
+            layer = self.layers.get(layer_name, Layer([[0 for _ in range(self.width)] for _ in range(self.height)]))
+            parsed_layer = layer_meta if parsed_layers else None
+            lid = (
+                parsed_layer.id
+                if parsed_layer and getattr(parsed_layer, "id", None) is not None
+                else self.layer_ids.get(layer_name, layer_id)
+            )
             layer_el = ET.SubElement(
                 map_el,
                 "layer",
                 {
-                    "id": str(self.layer_ids.get(layer_name, layer_id)),
+                    "id": str(lid),
                     "name": layer_name,
                     "width": str(self.width),
                     "height": str(self.height),
@@ -375,15 +496,19 @@ class MapTemplate:
             )
             max_layer_id = max(max_layer_id, int(layer_el.attrib["id"]))
             layer_id += 1
-            if not layer.visible:
+            layer_visible = parsed_layer.visible if parsed_layer is not None else layer.visible
+            if not layer_visible:
                 layer_el.set("visible", "0")
+            layer_opacity = getattr(parsed_layer, "opacity", None) if parsed_layer else None
+            if layer_opacity is not None:
+                layer_el.set("opacity", str(layer_opacity))
 
             data_el = ET.SubElement(layer_el, "data", {"encoding": "csv"})
             rows: List[str] = []
+            source_data = layer.data
             for y in range(self.height):
-                row = [str(layer.data[y][x] if x < len(layer.data[y]) else 0) for x in range(self.width)]
+                row = [str(source_data[y][x] if x < len(source_data[y]) else 0) for x in range(self.width)]
                 rows.append(",".join(row))
-            # Comma+newline keeps row separation and avoids merged tokens like "1\n1"
             data_el.text = "\n" + ",\n".join(rows) + "\n"
 
         # Object layers (dynamic_data, events, etc.)
@@ -391,18 +516,34 @@ class MapTemplate:
         max_object_id = 0
         canonical_order = ["dynamic_data", "events"]
         remaining = [k for k in self.object_layers.keys() if k not in canonical_order]
-        for lname in canonical_order + remaining:
+        obj_layer_items = (
+            list(parsed_object_layers.items()) if parsed_object_layers else []
+        )
+        if not obj_layer_items:
+            # Fall back to canonical order when no parsed object layers provided
+            obj_layer_items = [(lname, None) for lname in canonical_order + remaining]
+
+        for lname, parsed_obj_layer in obj_layer_items:
             objects = self.object_layers.get(lname, [])
+            oid = (
+                parsed_obj_layer.id
+                if parsed_obj_layer and getattr(parsed_obj_layer, "id", None) is not None
+                else self.layer_ids.get(lname, layer_id)
+            )
             obj_layer_el = ET.SubElement(
                 map_el,
                 "objectgroup",
                 {
-                    "id": str(layer_id),
+                    "id": str(oid),
                     "name": lname,
                 },
             )
             max_layer_id = max(max_layer_id, int(obj_layer_el.attrib["id"]))
             layer_id += 1
+            if parsed_obj_layer and not getattr(parsed_obj_layer, "visible", True):
+                obj_layer_el.set("visible", "0")
+            if parsed_obj_layer and getattr(parsed_obj_layer, "opacity", None) is not None:
+                obj_layer_el.set("opacity", str(parsed_obj_layer.opacity))
             for obj in objects:
                 actual_id = obj.object_id if obj.object_id is not None else object_id
                 obj.to_xml(obj_layer_el, actual_id)
@@ -410,8 +551,10 @@ class MapTemplate:
                 object_id += 1
 
         # nextlayerid/nextobjectid keep ids stable for Tiled round-trips
-        next_lid = self.next_layer_id if self.next_layer_id is not None else (max_layer_id + 1)
-        next_oid = self.next_object_id if self.next_object_id is not None else (max_object_id + 1)
+        candidate_next_lid = self.next_layer_id if self.next_layer_id is not None else (max_layer_id + 1)
+        candidate_next_oid = self.next_object_id if self.next_object_id is not None else (max_object_id + 1)
+        next_lid = nextlayerid if nextlayerid is not None else candidate_next_lid
+        next_oid = nextobjectid if nextobjectid is not None else candidate_next_oid
         map_el.set("nextlayerid", str(next_lid))
         map_el.set("nextobjectid", str(next_oid))
 

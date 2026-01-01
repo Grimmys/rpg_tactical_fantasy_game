@@ -110,9 +110,10 @@ def log_diagnostics(tmpl: MapTemplate, parsed_map: Optional[ParsedMap]) -> None:
             print(f"  - name={ts.name} firstgid={ts.firstgid} tilecount={ts.tilecount} source={ts.source}")
         print(f"[diag] gid surfaces: {len(parsed_map.gid_surfaces)}")
         obj_total = 0
-        for lname, objs in parsed_map.object_layers.items():
-            print(f"[diag] objects {lname}: {len(objs)}")
-            obj_total += len(objs)
+        for lname, olayer in parsed_map.object_layers.items():
+            count = len(getattr(olayer, "objects", []) or [])
+            print(f"[diag] objects {lname}: {count}")
+            obj_total += count
         print(f"[diag] objects total: {obj_total}")
     else:
         print("[diag] no parsed TMX available (JSON load)")
@@ -274,7 +275,10 @@ def draw_grid(
         scale_x = TILE_PIXELS / max(1, parsed_map.tilewidth)
         scale_y = TILE_PIXELS / max(1, parsed_map.tileheight)
         for lname in ("dynamic_data", "events"):
-            for obj in parsed_map.object_layers.get(lname, []):
+            olayer = parsed_map.object_layers.get(lname)
+            if olayer is None:
+                continue
+            for obj in getattr(olayer, "objects", []) or []:
                 surf = obj.image
                 if surf is None:
                     continue
