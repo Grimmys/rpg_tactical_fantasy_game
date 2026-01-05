@@ -58,6 +58,7 @@ from src.services import load_from_xml_manager as loader
 from src.services import menu_creator_manager
 from src.services.language import *
 from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
+                                               GAME_SAVED_INFO_ID,
                                                CONTROLS_MENU_ID,
                                                EQUIPMENT_MENU_ID,
                                                INVENTORY_MENU_ID,
@@ -424,13 +425,24 @@ class LevelScene(Scene):
         Keyword arguments:
         slot_id -- the id of the slot that should be used to save
         """
+        # Refresh the save game menu after a game is saved to refresh save file timestamps.
+        # close_active_menu() called twice: first to close 'Game has been saved', then old instance of 'save game menu'
+        # open_save_menu() called to open the updated instance of the same menu (updated timestamps).
+        def on_close():
+            self.menu_manager.close_active_menu()
+            self.menu_manager.close_active_menu()
+            self.open_save_menu()
+
         save_state_manager = SaveStateManager(self)
         save_state_manager.save_game(slot_id)
+
+        # Replaces the default InfoBox 'Close' button with one that calls the on_close nested function.
+
         self.menu_manager.open_menu(
             InfoBox(
                 STR_GAME_HAS_BEEN_SAVED,
-                [[]],
-                width=ITEM_MENU_WIDTH,
+                [[Button(title="Close",callback=on_close)]],
+                width=ITEM_MENU_WIDTH,has_close_button=False, identifier=GAME_SAVED_INFO_BOX_ID,
             )
         )
 
@@ -1791,7 +1803,7 @@ class LevelScene(Scene):
             new_items_menu = menu_creator_manager.create_inventory_menu(
                 self.interact_item, items, self.selected_player.gold
             )
-            menu_id = INVENTORY_MENU_ID
+        menu_id = INVENTORY_MENU_ID
         # Refresh the inventory menu or equipment menu
         self.menu_manager.replace_given_menu(menu_id, new_items_menu)
         grid_elements = [
@@ -2051,6 +2063,7 @@ class LevelScene(Scene):
             if (
                 not self.menu_manager.active_menu.is_position_inside(position)
                 and self.menu_manager.active_menu.identifier != CHARACTER_ACTION_MENU_ID
+
             ):
                 self.menu_manager.close_active_menu()
             # TODO: check if the raw value could be replaced by a meaningful constant

@@ -1,0 +1,73 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        if: steps.commit_check.outputs.build == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        if: steps.commit_check.outputs.build == 'true'
+        shell: bash
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Sync dependencies (uv.lock)
+        if: steps.commit_check.outputs.build == 'true'
+        shell: bash
+        run: |
+          uv sync --frozen
+
+      - name: Install PyInstaller
+        if: steps.commit_check.outputs.build == 'true'
+        shell: bash
+        run: |
+          uv pip install pyinstaller
+
+      - name: Build with PyInstaller (Windows)
+        if: steps.commit_check.outputs.build == 'true'
+        shell: bash
+        run: |
+          uv run pyinstaller -w main.py \
+            --add-data "fonts:fonts" \
+            --add-data "imgs:imgs" \
+            --add-data "sound_fx:sound_fx" \
+            --add-data "data:data"
+
+      - name: Zip Windows build
+        shell: pwsh
+        run: |
+          cd dist
+          Rename-Item main fivecats
+          Compress-Archive -Path fivecats -DestinationPath fivecats-windows.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Automated release.
+            Triggered by pushing tag `${{ github.ref_name }}`.
+          files: |
+            dist/*

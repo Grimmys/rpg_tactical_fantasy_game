@@ -4,7 +4,7 @@ from lxml import etree
 from lxml.etree import Element
 
 from src.game_entities.entity import Entity
-
+from datetime import datetime
 
 class SaveStateManager:
     """ """
@@ -13,6 +13,7 @@ class SaveStateManager:
         self.level = data
         # Init XML tree
         self.tree = etree.Element("save")
+        self.save_filepath = "saves/save_"
 
     def save_game(self, file_id):
         """
@@ -21,8 +22,15 @@ class SaveStateManager:
         Keyword Arguments:
         file_id -- the id of the save file to use
         """
-        with open(f"saves/save_{file_id}.xml", "w+", encoding="utf-8") as save_file:
+        timestamp = etree.Element("timestamp")
+        timestamp.text = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+
+
+        # Default save files location accessed in /saves/
+        with open(f"{self.save_filepath}{file_id}.xml", "w+", encoding="utf-8") as save_file:
             level = self._save_level()
+            self.tree.append(timestamp)
             self.tree.append(level)
 
             # Store XML tree in file
