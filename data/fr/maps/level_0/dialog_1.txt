@@ -2,7 +2,7 @@ Comment fonctionnent les RPG ?
 
 Il s'agit d'un RPG tactique au tour par tour.
 Déplacez vos unités, puis les ennemis. Élaborez votre stratégie !
-Chaque personnage possède des points de vie, d'attaque et de défense. Cliquez sur les unités pour afficher leurs informations.
+Chaque personnage possède différentes caractéristiques, comme des points de vie, d'attaque et de défense. Cliquez sur eux pour afficher leurs détails.
 Encerclez les ennemis et utilisez le terrain à votre avantage pour remporter les batailles.
 En général, éliminez tous les ennemis ou atteignez l'objectif pour réussir la mission.
 Prêt ? Découvrons les commandes !
