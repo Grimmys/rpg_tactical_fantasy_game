@@ -78,7 +78,7 @@ class StartScene(Scene):
     def level_editor_menu(self) -> None:
         """Open the secondary tools menu (e.g., map editor actions)."""
         self.menu_manager.open_menu(
-            menu_creator_manager.create_tools_menu(
+            menu_creator_manager.create_editor_menu(
                 {
                     "create_map": self.create_map,
                     "load_map": self.load_map,

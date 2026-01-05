@@ -1287,7 +1287,7 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
     )
 
 
-def create_tools_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
+def create_editor_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
     """Secondary menu grouping editor tools to keep the main menu uncluttered."""
     return InfoBox(
         "Tools",
