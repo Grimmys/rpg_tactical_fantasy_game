@@ -9,6 +9,7 @@ The pygame events are caught here and delegated to the start screen.
 
 import pygame
 import pygamepopup
+from pathlib import Path
 
 from src.gui.tools import show_fps
 from src.services.scene_manager import QuitActionKind, SceneManager
@@ -41,10 +42,25 @@ def main_loop(
 
 
 if __name__ == "__main__":
+    import argparse
     import os
     import platform
     import subprocess
     import sys
+
+    parser = argparse.ArgumentParser(description="Run the game or level editor")
+    parser.add_argument("--editor", action="store_true", help="Launch the level editor instead of the game")
+    parser.add_argument("--editor-width", type=int, default=22, help="Grid width for the editor")
+    parser.add_argument("--editor-height", type=int, default=14, help="Grid height for the editor")
+    parser.add_argument("--editor-template", type=str, default=None, help="Optional template path for the editor")
+    args = parser.parse_args()
+
+    if args.editor:
+        from src.level_editor import editor_main
+
+        template_path = Path(args.editor_template) if args.editor_template else None
+        editor_main(args.editor_width, args.editor_height, template_path)
+        sys.exit(0)
 
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         # running main.py in a pyinstaller bundle

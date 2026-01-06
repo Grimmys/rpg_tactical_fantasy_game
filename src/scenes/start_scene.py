@@ -103,9 +103,9 @@ class StartScene(Scene):
 
     def _launch_editor(self, template: Optional[str] = None) -> None:
         """Launch the level editor as a subprocess to avoid disturbing the game loop."""
-        cmd = [sys.executable, '-m', 'src.level_editor']
+        cmd = [sys.executable, "main.py", "--editor"]
         if template:
-            cmd.append(template)
+            cmd.extend(["--editor-template", template])
         subprocess.Popen(cmd)
 
     def create_map(self) -> None:
