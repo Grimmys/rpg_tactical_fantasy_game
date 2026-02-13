@@ -12,3 +12,22 @@ dependencies = [
 
 [tool.uv]
 package = false
+
+[tool.ruff]
+line-length = 127
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "C90",    # mccabe complexity
+]
+ignore = [
+    "F405",   # may be undefined from star import - known pattern in this codebase
+    "F403",   # star imports - known pattern in this codebase
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
