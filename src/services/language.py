@@ -2,25 +2,26 @@ from lxml import etree
 
 from src.services import options_manager
 
-language: str = options_manager.get_option('language')
+language: str = options_manager.get_option("language")
 
-            
+
 DATA_PATH = "data/" + language + "/"
 
 if language == "en":
-    from data.en.fonts_description import fonts_description
+    from data.en.fonts_description import fonts_description  # noqa: F401
     from data.en.text import *
 elif language == "zh_cn":
-    from data.zh_cn.fonts_description import fonts_description
+    from data.zh_cn.fonts_description import fonts_description  # noqa: F401
     from data.zh_cn.text import *
 elif language == "es":
-    from data.en.fonts_description import fonts_description
+    from data.en.fonts_description import fonts_description  # noqa: F401
     from data.es.text import *
 elif language == "fr":
-    from data.en.fonts_description import fonts_description
+    from data.en.fonts_description import fonts_description  # noqa: F401
     from data.fr.text import *
 else:
     raise ValueError(f"Unsupported language: {language}")
+
 
 def get_localized_string(tree: etree.Element):
     """

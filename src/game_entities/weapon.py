@@ -6,10 +6,15 @@ from __future__ import annotations
 
 import random
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from lxml import etree
 
 from src.game_entities.destroyable import DamageKind
+
+if TYPE_CHECKING:
+    from src.game_entities.character import Character
+    from src.game_entities.destroyable import Destroyable
 from src.game_entities.effect import Effect
 from src.game_entities.equipment import Equipment
 from src.game_entities.foe import Keyword
@@ -91,10 +96,7 @@ class Weapon(Equipment):
     def get_formatted_strong_against(self):
         """Return the list of keywords against which the weapon is stronger in a formatted way"""
         return ", ".join(
-            [
-                TRANSLATIONS["foe_keywords"][keyword.name.lower().replace(" ", "_")]
-                for keyword in self.strong_against
-            ]
+            [TRANSLATIONS["foe_keywords"][keyword.name.lower().replace(" ", "_")] for keyword in self.strong_against]
         )
 
     def hit(self, holder, target) -> int:
@@ -123,13 +125,13 @@ class Weapon(Equipment):
         Return the number of uses left after application of the deterioration.
         """
         self.durability -= 1
-        self.resell_price = int(
-            (self.price // 2) * (self.durability / self.durability_max)
-        )
+        self.resell_price = int((self.price // 2) * (self.durability / self.durability_max))
         return self.durability
 
     def apply_effects(
-        self, user: Character, target: Destroyable  # NOQA
+        self,
+        user: Character,
+        target: Destroyable,
     ) -> Sequence[Effect]:
         """
         Check if some effects from the list of possible effects are triggered after the use of the weapon
@@ -145,10 +147,7 @@ class Weapon(Equipment):
         for effect in self.effects:
             probability = effect["probability"]
             for skill in user.skills:
-                if (
-                    skill.nature is SkillNature.ALTERATION_CHANCE_BOOST
-                    and effect["effect"].alteration in skill.alterations
-                ):
+                if skill.nature is SkillNature.ALTERATION_CHANCE_BOOST and effect["effect"].alteration in skill.alterations:
                     probability += skill.power
 
             if random.randint(0, 100) < probability:
