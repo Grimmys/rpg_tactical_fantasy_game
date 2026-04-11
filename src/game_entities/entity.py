@@ -30,17 +30,13 @@ class Entity:
     match the size of a tile
     """
 
-    def __init__(
-        self, name: str, position: Position, sprite: Union[str, pygame.Surface]
-    ) -> None:
+    def __init__(self, name: str, position: Position, sprite: Union[str, pygame.Surface]) -> None:
         self.name: str = name
         self.position: Position = position
         self.sprite: pygame.Surface = (
             sprite
             if isinstance(sprite, pygame.Surface)
-            else pygame.transform.scale(
-                pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)
-            )
+            else pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         )
 
     def display(self, screen: pygame.Surface) -> None:
@@ -64,9 +60,7 @@ class Entity:
         underscores are replaced by spaces and numbers are removed.
         """
         try:
-            string_entity: str = TRANSLATIONS["entity_names"][
-                self.get_proper_entity_name(self.name).lower()
-            ]
+            string_entity: str = TRANSLATIONS["entity_names"][self.get_proper_entity_name(self.name).lower()]
         except KeyError:
             string_entity: str = self.name.replace("_", " ").title()
             string_entity = self.get_proper_entity_name(string_entity)

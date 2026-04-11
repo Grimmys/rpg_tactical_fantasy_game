@@ -12,16 +12,15 @@ from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
 from pygamepopup.menu_manager import MenuManager
 
-from src.constants import SCREEN_SIZE, WIN_HEIGHT, WIN_WIDTH
+from src.constants import WIN_HEIGHT, WIN_WIDTH
 from src.game_entities.movable import Movable
 from src.game_entities.player import Player
 from src.gui.fonts import fonts
 from src.gui.position import Position
 from src.scenes.level_scene import LevelScene, LevelStatus
 from src.scenes.scene import QuitActionKind, Scene
-from src.services import menu_creator_manager
+from src.services import menu_creator_manager, options_manager
 from src.services.language import *
-from src.services import options_manager
 
 
 class StartScene(Scene):
@@ -42,19 +41,14 @@ class StartScene(Scene):
     exit -- a boolean indicating if an exit request has been made
     """
 
-
     def __init__(self, screen: pygame.Surface) -> None:
         super().__init__(screen)
 
         self.menu_screen: pygame.Surface = self.screen.copy()
 
         # Start screen loop
-        background_image: pygame.Surface = pygame.image.load(
-            "imgs/interface/main_menu_background.jpg"
-        ).convert_alpha()
-        self.background: pygame.Surface = pygame.transform.scale(
-            background_image, screen.get_size()
-        )
+        background_image: pygame.Surface = pygame.image.load("imgs/interface/main_menu_background.jpg").convert_alpha()
+        self.background: pygame.Surface = pygame.transform.scale(background_image, screen.get_size())
 
         self.menu_manager = MenuManager(screen)
         self.menu_manager.open_menu(
@@ -116,9 +110,7 @@ class StartScene(Scene):
         """
         if team is None:
             team = []
-        return LevelScene(
-            level_screen, "maps/level_" + str(level) + "/", level, players=team
-        )
+        return LevelScene(level_screen, "maps/level_" + str(level) + "/", level, players=team)
 
     def new_game(self) -> None:
         """
@@ -178,13 +170,7 @@ class StartScene(Scene):
             self.menu_manager.open_menu(
                 InfoBox(
                     name,
-                    [
-                        [
-                            TextElement(
-                                "No saved game.", font=fonts["MENU_SUB_TITLE_FONT"]
-                            )
-                        ]
-                    ],
+                    [[TextElement("No saved game.", font=fonts["MENU_SUB_TITLE_FONT"])]],
                     width=width,
                     background_path="imgs/interface/PopUpMenu.png",
                 )
@@ -195,9 +181,7 @@ class StartScene(Scene):
         Move current active menu to the background and set a freshly created load game menu
         as the new active menu.
         """
-        self.menu_manager.open_menu(
-            menu_creator_manager.create_load_menu(self.load_game)
-        )
+        self.menu_manager.open_menu(menu_creator_manager.create_load_menu(self.load_game))
 
     def options_menu(self) -> None:
         """
@@ -217,9 +201,7 @@ class StartScene(Scene):
         )
 
     def choose_language_menu(self) -> None:
-        self.menu_manager.open_menu(
-            menu_creator_manager.create_choose_language_menu(self.change_language)
-        )
+        self.menu_manager.open_menu(menu_creator_manager.create_choose_language_menu(self.change_language))
 
     def change_language(self, new_language) -> None:
         options_manager.set_option("language", new_language)

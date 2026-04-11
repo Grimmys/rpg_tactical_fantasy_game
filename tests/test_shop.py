@@ -100,7 +100,7 @@ class TestShop(unittest.TestCase):
         for i in range(initial_quantity):
             shop.buy(item_to_buy)
             expected_remaining = initial_quantity - (i + 1)
-            
+
             if expected_remaining > 0:
                 # Item should still be in stock with reduced quantity
                 self.assertEqual(shop.get_item_entry(item_to_buy)["quantity"], expected_remaining)

@@ -15,6 +15,7 @@ STR_LOAD_GAME_MENU = "Charger une partie"
 def f_SAVE_NUMBER(number: int):
     return f"Sauvegarde {number}"
 
+
 # Options menu
 STR_OPTIONS_MENU = "Options"
 STR_LANGUAGE_ = "Langue :"
@@ -31,12 +32,15 @@ STR_FULL = "Plein écran"
 # Save game menu
 STR_SAVE_GAME_MENU = "Enregistrer le jeu"
 
+
 # Level loading scene
 def f_CHAPTER_NUMBER(number: int):
     return f"Chapitre {number}"
 
+
 def f_LEVEL_NUMBER_AND_NAME(number: int, name: str):
     return f"Niveau {number} : {name}"
+
 
 # Main menu
 STR_MAIN_MENU = "Menu principal"
@@ -53,8 +57,10 @@ STR_REWARD_CONGRATULATIONS = "Félicitations ! L'objectif a été atteint !"
 def f_EARNED_GOLD(gold: int):
     return f"Or gagné : {gold} (tous les personnages)"
 
+
 def f_EARNED_ITEMS(item):
     return f"Objet gagné : {item}"
+
 
 # Player menu
 STR_INVENTORY = "Inventaire"
@@ -80,8 +86,10 @@ STR_SHOPPING_SELLING = "Magasin - Vente"
 def f_UR_GOLD(gold):
     return f"Votre or : {gold}"
 
+
 def f_SHOP_GOLD(shop_balance):
     return f"Or du commerçant : {shop_balance}"
+
 
 # Trade menu
 STR_50G_TO_RIGHT = "50G ->"
@@ -94,6 +102,7 @@ STR_ALL_TO_LEFT = "<- Tout"
 
 def f_GOLD_AT_END(player, gold):
     return f"Ton or : {gold} ({player})"
+
 
 # Status menu
 STR_NAME_ = "Nom :"
@@ -124,11 +133,14 @@ STR_INFO = "Informations"
 # Item buy menu
 STR_SHOP_BUYING = "Magasin - Achat"
 
+
 def f_PRICE_NUMBER(price):
     return f"Prix : {price}"
 
+
 def f_QUANTITY_NUMBER(quantity):
     return f"Quantité : {quantity}"
+
 
 # Item sell menu
 STR_SELL = "Vendre"
@@ -167,6 +179,7 @@ STR_REACH_ = "PORTÉE :"
 def f_LEVEL_NUMBER_ENTITY(level):
     return f"NIVEAU : {level}"
 
+
 # Sidebar
 STR_FOE = "ENNEMI"
 STR_PLAYER = "JOUEUR"
@@ -183,12 +196,15 @@ def f_TURN_NUMBER_SIDEBAR(number_turns):
 def f_LEVEL_NUMBER_SIDEBAR(level_id):
     return f"NIVEAU {level_id}"
 
+
 # Chest menu
 STR_CHEST = "Coffre"
+
 
 # Alternation info menu
 def f_TURNS_LEFT_NUMBER(turns_left):
     return f"Tours restants : {turns_left}"
+
 
 # Ask save menu
 STR_SAVE_THE_GAME_ = "Sauvegarder la partie ?"
@@ -204,21 +220,16 @@ def f_YOU_RECEIVED_NUMBER_GOLD(gold):
 def f_YOU_RECEIVED_ITEM(item):
     return f"[Vous avez reçu {item}]"
 
+
 # Messages
-STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = (
-    "Erreur ! Il n'y a pas assez de tuiles libres pour placer les joueurs..."
-)
+STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = "Erreur ! Il n'y a pas assez de tuiles libres pour placer les joueurs..."
 STR_GAME_HAS_BEEN_SAVED = "Le jeu a été enregistré"
 STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY = "L'objet a été ajouté à ton inventaire"
 STR_YOU_FOUND_IN_THE_CHEST = "Vous avez trouvé dans le coffre"
 STR_DOOR_HAS_BEEN_OPENED = "La porte a été ouverte"
-STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = (
-    "Vous n'avez pas d'espace libre dans votre inventaire"
-)
+STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = "Vous n'avez pas d'espace libre dans votre inventaire"
 STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = "Vous avez commencé à forcer, un tour de plus pour y arriver"
-STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = (
-    "Il n'y a pas de case libre autour de l'autre portail"
-)
+STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = "Il n'y a pas de case libre autour de l'autre portail"
 STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT = (
     "Mais il n'y a pas assez d'espace dans l'inventaire pour le prendre !"
 )
@@ -231,13 +242,9 @@ STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = (
 )
 STR_THE_ITEM_HAS_BEEN_UNEQUIPPED = "L'objet a été déséquipé"
 STR_THE_ITEM_HAS_BEEN_EQUIPPED = "L'objet a été équipé"
-STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = (
-    "L'objet précédemment équipé a été ajouté à votre inventaire"
-)
+STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = "L'objet précédemment équipé a été ajouté à votre inventaire"
 STR_THE_ITEM_HAS_BEEN_BOUGHT = "L'objet a été acheté"
-STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = (
-    "Il n'y a pas assez d'espace dans l'inventaire pour acheter cet objet."
-)
+STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = "Il n'y a pas assez d'espace dans l'inventaire pour acheter cet objet."
 STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "Il n'y a pas assez d'or pour acheter cet objet."
 STR_THE_ITEM_HAS_BEEN_SOLD = "L'objet a été vendu."
 STR_THIS_ITEM_CANT_BE_SOLD = "Le vendeur n'a pas les fonds pour acheter cet objet !"
@@ -251,23 +258,30 @@ def f_ATTACKER_ATTACKED_TARGET_BUT_PARRIED(attacker, target):
 def f_ATTACKER_DEALT_DAMAGE_TO_TARGET(attacker, target, damage):
     return f"{attacker} a infligé {damage} de dégâts à {target}"
 
+
 def f_TARGET_DIED(target):
     return f"{target} est mort !"
+
 
 def f_TARGET_DROPPED_ITEM(target, item):
     return f"{target} a laissé tomber {item}"
 
+
 def f_TARGET_HAS_NOW_NUMBER_HP(target, hp):
     return f"{target} a maintenant {hp} PV"
+
 
 def f_ATTACKER_EARNED_NUMBER_XP(attacker, experience):
     return f"{attacker} a gagné {experience} XP"
 
+
 def f_ATTACKER_GAINED_A_LEVEL(attacker):
     return f"{attacker} a monté de niveau !"
 
+
 def f_ITEM_CANNOT_BE_TRADED_NOT_ENOUGH_PLACE_IN_RECEIVERS_INVENTORY(receiver):
     return f"L'objet ne peut pas être échangé : il n'y a pas assez d'espace dans l'inventaire de {receiver}."
+
 
 def f_THIS_ITEM_CANNOT_BE_EQUIPPED_PLAYER_DOESNT_SATISFY_THE_REQUIREMENTS(
     selected_player,
@@ -282,6 +296,7 @@ STR_DEFEAT = "DÉFAITE !"
 STR_MAIN_MISSION = "MISSION PRINCIPALE"
 STR_OPTIONAL_OBJECTIVES = "OBJECTIFS OPTIONNELS"
 
+
 # effect.py
 def f_ENTITY_RECOVERED_NUMBER_HP(entity, recovered):
     return f"{entity} a récupéré {recovered} PV."
@@ -290,29 +305,38 @@ def f_ENTITY_RECOVERED_NUMBER_HP(entity, recovered):
 def f_ENTITY_IS_AT_FULL_HEALTH_AND_CANT_BE_HEALED(entity):
     return f"{entity} est en pleine santé et ne peut pas être soigné."
 
+
 def f_ENTITY_EARNED_NUMBER_XP(entity, power):
     return f"{entity} a gagné {power} XP"
+
 
 def f_ENTITY_GAINED_A_LEVEL(entity):
     return f"{entity} a monté de niveau !"
 
+
 def f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration):
     return f"La vitesse de {entity} a été augmentée pendant {duration} tours."
+
 
 def f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration):
     return f"La force de {entity} a été augmentée pendant {duration} tours."
 
+
 def f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration):
     return f"La défense de {entity} a été augmentée pendant {duration} tours."
+
 
 def f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, duration):
     return f"{entity} a été étourdi pendant {duration} tours."
 
+
 def f_RECOVER_NUMBER_HP(power):
     return f"Soigne {power} PV"
 
+
 def f_EARN_NUMBER_XP(power):
     return f"Donne {power} XP"
+
 
 TRANSLATIONS = {
     "items": {

@@ -64,9 +64,7 @@ class Chest(Entity):
         self.item: Item = Chest.determine_item(potential_items)
         self.opened: bool = False
         self.pick_lock_initiated: bool = False
-        self.chest_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "chest.ogg")
-        )
+        self.chest_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "chest.ogg"))
 
     @staticmethod
     def determine_item(potential_items: Sequence[tuple[Item, float]]) -> Item:

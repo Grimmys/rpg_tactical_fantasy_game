@@ -57,18 +57,10 @@ class Building(Entity):
         super().__init__(name, position, sprite if sprite else sprite_link)
         self.sprite_link: str = sprite_link
         self.interaction: dict[str, any] = interaction
-        self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "door.ogg")
-        )
-        self.talk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "talking.ogg")
-        )
-        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "trade.ogg")
-        )
-        self.inventory_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "inventory.ogg")
-        )
+        self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "door.ogg"))
+        self.talk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "talking.ogg"))
+        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "trade.ogg"))
+        self.inventory_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "inventory.ogg"))
 
     def interact(self, actor: Character) -> list[list[BoxElement]]:
         """
@@ -88,9 +80,7 @@ class Building(Entity):
 
         if not self.interaction:
             pygame.mixer.Sound.play(self.door_sfx)
-            entries.append(
-                [TextElement(STR_THIS_HOUSE_SEEMS_CLOSED, font=fonts["ITEM_DESC_FONT"])]
-            )
+            entries.append([TextElement(STR_THIS_HOUSE_SEEMS_CLOSED, font=fonts["ITEM_DESC_FONT"])])
         else:
             pygame.mixer.Sound.play(self.talk_sfx)
             for talk in self.interaction["talks"]:
@@ -99,24 +89,12 @@ class Building(Entity):
                 pygame.mixer.Sound.play(self.gold_sfx)
                 actor.gold += self.interaction["gold"]
                 earn_text: str = f_YOU_RECEIVED_NUMBER_GOLD(self.interaction["gold"])
-                entries.append(
-                    [
-                        TextElement(
-                            earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN
-                        )
-                    ]
-                )
+                entries.append([TextElement(earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN)])
             if "item" in self.interaction and self.interaction["item"]:
                 pygame.mixer.Sound.play(self.inventory_sfx)
                 actor.set_item(self.interaction["item"])
                 earn_text: str = f_YOU_RECEIVED_ITEM(self.interaction["item"])
-                entries.append(
-                    [
-                        TextElement(
-                            earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN
-                        )
-                    ]
-                )
+                entries.append([TextElement(earn_text, font=fonts["ITEM_DESC_FONT"], text_color=GREEN)])
             # Interaction could not been repeated : should be removed after being used
             self.remove_interaction()
 

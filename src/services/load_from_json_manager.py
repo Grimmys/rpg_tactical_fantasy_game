@@ -12,6 +12,7 @@ import json
 from typing import NotRequired, TypedDict
 
 from src.game_entities.skill import Skill
+
 from .load_from_xml_manager import get_skill_data
 
 CLASSES_DATA_PATH = "data/classes.json"
@@ -40,6 +41,7 @@ class ClassEntry(TypedDict):
     therefore marked ``NotRequired``. After calling ``load_classes`` they will
     always be present (with defaults 0 / 0 / empty list or converted skills).
     """
+
     constitution: NotRequired[int]
     move: NotRequired[int]
     skills: NotRequired[list[Skill]]
@@ -68,8 +70,6 @@ def load_classes() -> dict[str, ClassEntry]:
         stats.setdefault("str", [])
 
         # Replace skill name strings by Skill instances.
-        _class["skills"] = [
-            get_skill_data(skill_name) for skill_name in _class.get("skills", ())
-        ]
+        _class["skills"] = [get_skill_data(skill_name) for skill_name in _class.get("skills", ())]
 
     return classes

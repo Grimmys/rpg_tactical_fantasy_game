@@ -3,8 +3,7 @@ import unittest
 from src.game_entities.chest import Chest
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
-from tests.random_data_library import (random_chest, random_item,
-                                       random_item_or_gold)
+from tests.random_data_library import random_chest, random_item, random_item_or_gold
 from tests.tools import NB_TESTS_FOR_PROPORTIONS, minimal_setup_for_game
 
 
@@ -57,12 +56,8 @@ class TestChest(unittest.TestCase):
         potential_items = [(item_1, 0.3), (item_2, 0.6), (item_3, 0.1)]
         items = [item_1, item_2, item_3]
         chest = random_chest(item_set=potential_items)
-        self.assertTrue(
-            isinstance(chest.item, Item)
-        )  # Test that there is only one item selected
-        self.assertTrue(
-            chest.item in items
-        )  # Test that this item is one of the eligible
+        self.assertTrue(isinstance(chest.item, Item))  # Test that there is only one item selected
+        self.assertTrue(chest.item in items)  # Test that this item is one of the eligible
 
     def test_open_chest_choose_same_probabilities(self):
         item_1 = random_item_or_gold()

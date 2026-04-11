@@ -55,10 +55,8 @@ class LevelLoadingScene(Scene):
         level_title_screen.blit(
             level_title_rendering,
             (
-                level_title_screen.get_width() // 2
-                - level_title_rendering.get_width() // 2,
-                level_title_screen.get_height() // 2
-                - level_title_rendering.get_height() // 2,
+                level_title_screen.get_width() // 2 - level_title_rendering.get_width() // 2,
+                level_title_screen.get_height() // 2 - level_title_rendering.get_height() // 2,
             ),
         )
 
@@ -70,9 +68,7 @@ class LevelLoadingScene(Scene):
 
         Return the surface containing the rendered text.
         """
-        chapter_rendering = fonts["LEVEL_TITLE_FONT"].render(
-            f_CHAPTER_NUMBER(self.level.chapter), True, WHITE
-        )
+        chapter_rendering = fonts["LEVEL_TITLE_FONT"].render(f_CHAPTER_NUMBER(self.level.chapter), True, WHITE)
 
         level_name_rendering = fonts["LEVEL_TITLE_FONT"].render(
             f_LEVEL_NUMBER_AND_NAME(self.level.number, self.level.name), True, WHITE
@@ -80,24 +76,20 @@ class LevelLoadingScene(Scene):
 
         surface_size = (
             max(chapter_rendering.get_width(), level_name_rendering.get_width()),
-            chapter_rendering.get_height()
-            + CHAPTER_LEVEL_SEPARATION_HEIGHT
-            + level_name_rendering.get_height(),
+            chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT + level_name_rendering.get_height(),
         )
         level_title_rendering = pygame.Surface(surface_size)
         level_title_rendering.blit(
             chapter_rendering,
             (
-                level_title_rendering.get_width() // 2
-                - chapter_rendering.get_width() // 2,
+                level_title_rendering.get_width() // 2 - chapter_rendering.get_width() // 2,
                 0,
             ),
         )
         level_title_rendering.blit(
             level_name_rendering,
             (
-                level_title_rendering.get_width() // 2
-                - level_name_rendering.get_width() // 2,
+                level_title_rendering.get_width() // 2 - level_name_rendering.get_width() // 2,
                 chapter_rendering.get_height() + CHAPTER_LEVEL_SEPARATION_HEIGHT,
             ),
         )

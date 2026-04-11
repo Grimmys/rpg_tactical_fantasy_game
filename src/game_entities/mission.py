@@ -100,11 +100,7 @@ class Mission:
             return position in self.objective_tiles
         if self.type is MissionType.TOUCH_POSITION:
             for objective in self.objective_tiles:
-                if (
-                    abs(position[0] - objective.position[0])
-                    + abs(position[1] - objective.position[1])
-                    == TILE_SIZE
-                ):
+                if abs(position[0] - objective.position[0]) + abs(position[1] - objective.position[1]) == TILE_SIZE:
                     return True
         return False
 
@@ -124,9 +120,7 @@ class Mission:
         entities -- the list of entities related to the mission
         turns -- the number of turns elapsed since the beginning of the current level
         """
-        if (
-            self.type in (MissionType.POSITION, MissionType.TOUCH_POSITION)
-        ) and player is not None:
+        if (self.type in (MissionType.POSITION, MissionType.TOUCH_POSITION)) and player is not None:
             self.succeeded_chars.append(player)
             self.ended = len(self.succeeded_chars) == self.min_chars
         elif self.type is MissionType.KILL_EVERYBODY:

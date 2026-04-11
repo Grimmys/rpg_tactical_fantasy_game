@@ -224,23 +224,15 @@ def f_YOU_RECEIVED_ITEM(item):
 
 
 # Messages
-STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = (
-    "Error ! No hay suficientes tiles libres para colocar jugadores..."
-)
+STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = "Error ! No hay suficientes tiles libres para colocar jugadores..."
 STR_GAME_HAS_BEEN_SAVED = "El juego ha sido guardado"
 STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY = "El objeto ha sido añadido a tu inventario"
 STR_YOU_FOUND_IN_THE_CHEST = "Has encontrado en el cofre"
 STR_DOOR_HAS_BEEN_OPENED = "La puerta ha sido abierta"
-STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = (
-    "No tienes espacio libre en tu inventario"
-)
+STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = "No tienes espacio libre en tu inventario"
 STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = "Comenzaste a forzar, un turno más para ir"
-STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = (
-    "No hay un cuadrado libre alrededor del otro portal"
-)
-STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT = (
-    "Pero no hay suficiente espacio en el inventario para tomarlo!"
-)
+STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = "No hay un cuadrado libre alrededor del otro portal"
+STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT = "Pero no hay suficiente espacio en el inventario para tomarlo!"
 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR = "No tienes llave para abrir una puerta"
 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST = "No tienes llave para abrir un cofre"
 STR_ITEM_HAS_BEEN_TRADED = "El objeto ha sido intercambiado"
@@ -250,13 +242,9 @@ STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = (
 )
 STR_THE_ITEM_HAS_BEEN_UNEQUIPPED = "El objeto ha sido desequipado"
 STR_THE_ITEM_HAS_BEEN_EQUIPPED = "El objeto ha sido equipado"
-STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = (
-    "El objeto previamente equipado ha sido añadido a tu inventario"
-)
+STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = "El objeto previamente equipado ha sido añadido a tu inventario"
 STR_THE_ITEM_HAS_BEEN_BOUGHT = "El objeto ha sido comprado."
-STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = (
-    "No hay suficiente espacio en el inventario para comprar este objeto."
-)
+STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = "No hay suficiente espacio en el inventario para comprar este objeto."
 STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "No hay suficiente oro para comprar este objeto."
 STR_THE_ITEM_HAS_BEEN_SOLD = "El objeto ha sido vendido."
 STR_THIS_ITEM_CANT_BE_SOLD = "¡El vendedor no tiene fondos para comprarte!"

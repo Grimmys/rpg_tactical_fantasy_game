@@ -7,7 +7,6 @@ from enum import Enum, auto
 from typing import Optional
 
 from src.game_entities.alteration import Alteration
-from src.services.language import TRANSLATIONS
 
 
 class SkillNature(Enum):

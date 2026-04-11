@@ -18,8 +18,10 @@ STR_LOAD_GAME_MENU = "载入存档"
 def f_SAVE_NUMBER(serial_number: int):
     return f"存档 {serial_number}"
 
+
 def f_SHOP_GOLD(shop_balance):
     return f"商人金币: {shop_balance}"
+
 
 # Options menu
 STR_OPTIONS_MENU = "选项"
@@ -229,17 +231,11 @@ STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = (
     "错误！没有足够的地图空间来安置玩家..."  # "Error ! Not enough free tiles to set players..."
 )
 STR_GAME_HAS_BEEN_SAVED = "游戏已保存"  # "Game has been saved"
-STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY = (
-    "物品已放入背包"  # "Item has been added to your inventory"
-)
+STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY = "物品已放入背包"  # "Item has been added to your inventory"
 STR_YOU_FOUND_IN_THE_CHEST = "你在箱子中找到了"  # "You found in the chest"
 STR_DOOR_HAS_BEEN_OPENED = "门已打开了"  # "Door has been opened"
-STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = (
-    "背包没有剩余的空间了"  # "You have no free space in your inventory"
-)
-STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = (
-    "开始撬锁，需要一个回合结束"  # "Started picking, one more turn to go"
-)
+STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = "背包没有剩余的空间了"  # "You have no free space in your inventory"
+STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = "开始撬锁，需要一个回合结束"  # "Started picking, one more turn to go"
 STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = (
     "传送门的另一侧被堵死了"  # "There is no free square around the other portal"
 )
@@ -250,7 +246,9 @@ STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR = "你没有打开门的钥匙"  # "You have 
 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST = "你没有打开箱子的钥匙"  # "You have no key to open a chest"
 STR_ITEM_HAS_BEEN_TRADED = "物品已被交易"  # "Item has been traded"
 STR_ITEM_HAS_BEEN_THROWN_AWAY = "物品已被丢弃"  # "Item has been thrown away"
-STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = "不能卸下装备：背包中没有足够的空间"  # "The item can't be unequipped : Not enough space in your inventory."
+STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = (
+    "不能卸下装备：背包中没有足够的空间"  # "The item can't be unequipped : Not enough space in your inventory."
+)
 STR_THE_ITEM_HAS_BEEN_UNEQUIPPED = "装备已卸下"  # "The item has been unequipped"
 STR_THE_ITEM_HAS_BEEN_EQUIPPED = "物品已被装备"  # "The item has been equipped"
 STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = (
@@ -316,9 +314,7 @@ def f_ENTITY_RECOVERED_NUMBER_HP(entity, recovered):
 
 
 def f_ENTITY_IS_AT_FULL_HEALTH_AND_CANT_BE_HEALED(entity):
-    return (
-        f"{entity}正处于满血状态，不能被治愈"  # f"{entity} is at full health and can't be healed!"
-    )
+    return f"{entity}正处于满血状态，不能被治愈"  # f"{entity} is at full health and can't be healed!"
 
 
 def f_ENTITY_EARNED_NUMBER_XP(entity, power):
@@ -334,7 +330,9 @@ def f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration):
 
 
 def f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration):
-    return f"{entity}的力量在{duration}个回合内提升"  # f"The strength of {entity} has been increased for {self.duration} turns"
+    return (
+        f"{entity}的力量在{duration}个回合内提升"  # f"The strength of {entity} has been increased for {self.duration} turns"
+    )
 
 
 def f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration):
@@ -342,9 +340,7 @@ def f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, duration
 
 
 def f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, duration):
-    return (
-        f"{entity}被击晕了{duration}回合"  # f"{entity} has been stunned for {duration} turns"
-    )
+    return f"{entity}被击晕了{duration}回合"  # f"{entity} has been stunned for {duration} turns"
 
 
 def f_RECOVER_NUMBER_HP(power):

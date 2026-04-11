@@ -56,9 +56,7 @@ class TestItem(unittest.TestCase):
         for _ in range(NB_TESTS_FOR_PROPORTIONS):
             items.append(random_item())
 
-        self.assertTrue(
-            len(set(map(lambda it: it.identifier, items))), NB_TESTS_FOR_PROPORTIONS
-        )
+        self.assertTrue(len(set(map(lambda it: it.identifier, items))), NB_TESTS_FOR_PROPORTIONS)
 
 
 if __name__ == "__main__":

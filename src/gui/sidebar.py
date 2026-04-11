@@ -56,15 +56,11 @@ class Sidebar:
     ) -> None:
         self.size: tuple[int, int] = size
         self.position: Position = position
-        self.sprite: pygame.Surface = pygame.transform.scale(
-            pygame.image.load(SIDEBAR_SPRITE).convert_alpha(), size
-        )
+        self.sprite: pygame.Surface = pygame.transform.scale(pygame.image.load(SIDEBAR_SPRITE).convert_alpha(), size)
         self.missions: Sequence[Mission] = missions
         self.level_id: int = level_id
 
-    def display(
-        self, screen: pygame.Surface, number_turns: int, hovered_entity: Entity
-    ) -> None:
+    def display(self, screen: pygame.Surface, number_turns: int, hovered_entity: Entity) -> None:
         """
         Display the sidebar and all the expected information on the screen provided.
 
@@ -77,15 +73,11 @@ class Sidebar:
         screen.blit(self.sprite, self.position)
 
         # Turn indication
-        turn_text: pygame.Surface = fonts["MENU_TITLE_FONT"].render(
-            f_TURN_NUMBER_SIDEBAR(number_turns), True, BLACK
-        )
+        turn_text: pygame.Surface = fonts["MENU_TITLE_FONT"].render(f_TURN_NUMBER_SIDEBAR(number_turns), True, BLACK)
         screen.blit(turn_text, (self.position[0] + 50, self.position[1] + 15))
 
         # Level indication
-        turn_text: pygame.Surface = fonts["MENU_TITLE_FONT"].render(
-            f_LEVEL_NUMBER_SIDEBAR(self.level_id), True, BLACK
-        )
+        turn_text: pygame.Surface = fonts["MENU_TITLE_FONT"].render(f_LEVEL_NUMBER_SIDEBAR(self.level_id), True, BLACK)
         screen.blit(turn_text, (self.position[0] + 50, self.position[1] + 50))
 
         # Main mission header
@@ -103,17 +95,13 @@ class Sidebar:
         vertical_shift: int = 0
         for mission in self.missions:
             mission_color = DARK_GREEN if mission.ended else BROWN_RED
-            mission_description = fonts["MISSION_FONT"].render(
-                f"> {mission.description}", True, mission_color
-            )
+            mission_description = fonts["MISSION_FONT"].render(f"> {mission.description}", True, mission_color)
             if mission.main:
                 screen.blit(
                     mission_description,
                     (
                         self.position[0] + self.size[0] - 480,
-                        self.position[1]
-                        + 10
-                        + constant_sprites["main_mission_text"].get_height(),
+                        self.position[1] + 10 + constant_sprites["main_mission_text"].get_height(),
                     ),
                 )
             else:
@@ -146,9 +134,7 @@ class Sidebar:
                 color = BLACK
 
             # Display the entity nature
-            nature_display: pygame.Surface = fonts["MISSION_FONT"].render(
-                nature, True, color
-            )
+            nature_display: pygame.Surface = fonts["MISSION_FONT"].render(nature, True, color)
             nature_position: Position = (
                 self.position[0]
                 + self.size[0] / 4
@@ -175,30 +161,20 @@ class Sidebar:
 
             # Display basic information about the entity
             # Name
-            text_position_x: int = (
-                frame_position[0] + constant_sprites["frame"].get_width() + 15
-            )
-            name_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                STR_NAME_SIDEBAR_, True, color
-            )
+            text_position_x: int = frame_position[0] + constant_sprites["frame"].get_width() + 15
+            name_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(STR_NAME_SIDEBAR_, True, color)
             screen.blit(name_pre_text, (text_position_x, frame_position[1]))
-            name_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                f"         {hovered_entity}", True, BLACK
-            )
+            name_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(f"         {hovered_entity}", True, BLACK)
             screen.blit(name_text, (text_position_x, frame_position[1]))
 
             # HP if it's a destroyable entity
             if isinstance(hovered_entity, Destroyable):
                 hit_points: int = hovered_entity.hit_points
                 hit_points_max: int = hovered_entity.hit_points_max
-                hit_points_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                    STR_HP_, True, color
-                )
+                hit_points_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(STR_HP_, True, color)
                 text_position: Position = (
                     text_position_x,
-                    frame_position[1]
-                    + constant_sprites["frame"].get_height()
-                    - hit_points_pre_text.get_height(),
+                    frame_position[1] + constant_sprites["frame"].get_height() - hit_points_pre_text.get_height(),
                 )
                 screen.blit(hit_points_pre_text, text_position)
                 hit_points_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
@@ -217,13 +193,9 @@ class Sidebar:
                 # Display more information if it is a movable entity
                 if isinstance(hovered_entity, Movable):
                     # Level
-                    level_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                        f"LVL : {hovered_entity.lvl}", True, BLACK
-                    )
+                    level_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(f"LVL : {hovered_entity.lvl}", True, BLACK)
                     lvl_text_position_x: int = (
-                        frame_position[0]
-                        + constant_sprites["frame"].get_width() / 2
-                        - level_text.get_width() / 2
+                        frame_position[0] + constant_sprites["frame"].get_width() / 2 - level_text.get_width() / 2
                     )
                     screen.blit(
                         level_text,
@@ -234,9 +206,7 @@ class Sidebar:
                     )
 
                     # Status
-                    status_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(
-                        STR_ALTERATIONS_, True, color
-                    )
+                    status_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(STR_ALTERATIONS_, True, color)
                     screen.blit(
                         status_pre_text,
                         (
@@ -260,53 +230,39 @@ class Sidebar:
                     # Display more information if it is a character
                     if isinstance(hovered_entity, Character):
                         race: str = hovered_entity.get_formatted_race()
-                        race_pre_text: pygame.Surface = fonts[
-                            "ITEM_FONT_STRONG"
-                        ].render(STR_RACE_, True, color)
+                        race_pre_text: pygame.Surface = fonts["ITEM_FONT_STRONG"].render(STR_RACE_, True, color)
                         screen.blit(
                             race_pre_text,
                             (
                                 text_position_x,
-                                frame_position[1]
-                                + (fonts["ITEM_FONT_STRONG"].get_height() - SHIFT) * 2,
+                                frame_position[1] + (fonts["ITEM_FONT_STRONG"].get_height() - SHIFT) * 2,
                             ),
                         )
-                        race_text = fonts["ITEM_FONT_STRONG"].render(
-                            f"        {race}", True, BLACK
-                        )
+                        race_text = fonts["ITEM_FONT_STRONG"].render(f"        {race}", True, BLACK)
                         screen.blit(
                             race_text,
                             (
                                 text_position_x,
-                                frame_position[1]
-                                + (fonts["ITEM_FONT_STRONG"].get_height() - SHIFT) * 2,
+                                frame_position[1] + (fonts["ITEM_FONT_STRONG"].get_height() - SHIFT) * 2,
                             ),
                         )
 
                         # Display more information if it is a player
                         if isinstance(hovered_entity, Player):
                             classes = hovered_entity.get_formatted_classes()
-                            classes_pre_text = fonts["ITEM_FONT_STRONG"].render(
-                                STR_CLASS_, True, color
-                            )
+                            classes_pre_text = fonts["ITEM_FONT_STRONG"].render(STR_CLASS_, True, color)
                             screen.blit(
                                 classes_pre_text,
                                 (
                                     text_position_x,
-                                    frame_position[1]
-                                    + fonts["ITEM_FONT_STRONG"].get_height()
-                                    - SHIFT,
+                                    frame_position[1] + fonts["ITEM_FONT_STRONG"].get_height() - SHIFT,
                                 ),
                             )
-                            classes_text = fonts["ITEM_FONT_STRONG"].render(
-                                "         " + classes, True, BLACK
-                            )
+                            classes_text = fonts["ITEM_FONT_STRONG"].render("         " + classes, True, BLACK)
                             screen.blit(
                                 classes_text,
                                 (
                                     text_position_x,
-                                    frame_position[1]
-                                    + fonts["ITEM_FONT_STRONG"].get_height()
-                                    - SHIFT,
+                                    frame_position[1] + fonts["ITEM_FONT_STRONG"].get_height() - SHIFT,
                                 ),
                             )

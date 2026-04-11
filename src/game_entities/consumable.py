@@ -40,9 +40,7 @@ class Consumable(Item):
     ) -> None:
         super().__init__(name, sprite, description, price)
         self.effects: Sequence[Effect] = effects
-        self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "potion.ogg")
-        )
+        self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "potion.ogg"))
 
     def use(self, entity: Movable) -> tuple[bool, Sequence[str]]:  # NOQA
         """

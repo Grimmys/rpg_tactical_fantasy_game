@@ -13,7 +13,7 @@ from typing import Optional, Union
 import pygame
 from lxml import etree
 
-from src.constants import ANIMATION_SPEED, INITIAL_MAX, TILE_SIZE
+from src.constants import INITIAL_MAX, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.consumable import Consumable
 from src.game_entities.destroyable import DamageKind, Destroyable
@@ -155,24 +155,14 @@ class Movable(Destroyable):
             )
             self.sprite.blit(complementary_sprite, (0, 0))
 
-        self._attack_kind: DamageKind = (
-            DamageKind[attack_kind] if attack_kind is not None else None
-        )
+        self._attack_kind: DamageKind = DamageKind[attack_kind] if attack_kind is not None else None
         self.strategy: EntityStrategy = EntityStrategy[strategy]
         self.skills: Sequence[Skill] = skills
 
-        self.walk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "walk.ogg")
-        )
-        self.skeleton_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "skeleton_walk.ogg")
-        )
-        self.necrophage_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "necro_walk.ogg")
-        )
-        self.centaur_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "cent_walk.ogg")
-        )
+        self.walk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "walk.ogg"))
+        self.skeleton_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "skeleton_walk.ogg"))
+        self.necrophage_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "necro_walk.ogg"))
+        self.centaur_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "cent_walk.ogg"))
 
     def display(self, screen: pygame.Surface) -> None:
         """
@@ -193,9 +183,7 @@ class Movable(Destroyable):
         """
         return self._attack_kind
 
-    def attacked(
-        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
-    ) -> int:
+    def attacked(self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
         the entity by this value.
@@ -212,11 +200,7 @@ class Movable(Destroyable):
         allies_dist: Sequence[tuple[Entity, int]] = [
             (
                 ally,
-                (
-                    abs(self.position[0] - ally.position[0])
-                    + abs(self.position[1] - ally.position[1])
-                )
-                // TILE_SIZE,
+                (abs(self.position[0] - ally.position[0]) + abs(self.position[1] - ally.position[1])) // TILE_SIZE,
             )
             for ally in allies
         ]
@@ -226,9 +210,7 @@ class Movable(Destroyable):
         temp_res_change: int = self.get_stat_change("resistance")
         # Check if a skill is boosting stats during combat
         for skill in self.skills:
-            if skill.nature is SkillNature.ALLY_BOOST and [
-                ally[0] for ally in allies_dist if ally[1] == 1
-            ]:
+            if skill.nature is SkillNature.ALLY_BOOST and [ally[0] for ally in allies_dist if ally[1] == 1]:
                 if "defense" in skill.stats:
                     temp_def_change += skill.power
                 if "resistance" in skill.stats:
@@ -302,12 +284,7 @@ class Movable(Destroyable):
         formatted_string: str = ""
         for alteration in self.alterations:
             try:
-                formatted_string += (
-                    TRANSLATIONS["alterations"][
-                        str(alteration).lower().replace(" ", "_")
-                    ]
-                    + ", "
-                )
+                formatted_string += TRANSLATIONS["alterations"][str(alteration).lower().replace(" ", "_")] + ", "
             except KeyError:
                 formatted_string += str(alteration) + ", "
         if formatted_string == "":
@@ -349,9 +326,9 @@ class Movable(Destroyable):
         stat -- the name of the state for which the modifier should be returned
         """
         # Check if character as a bonus due to alteration
-        return sum(
-            map(lambda alt: alt.power, self.get_alterations_effect(stat + "_up"))
-        ) - sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + "_down")))
+        return sum(map(lambda alt: alt.power, self.get_alterations_effect(stat + "_up"))) - sum(
+            map(lambda alt: alt.power, self.get_alterations_effect(stat + "_down"))
+        )
 
     def get_formatted_stat_change(self, stat: str) -> str:
         """
@@ -472,9 +449,7 @@ class Movable(Destroyable):
                 return False
         return True
 
-    def act(
-        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
-    ) -> Optional[Position]:
+    def act(self, possible_moves: dict[Position, int], targets: dict[Entity, int]) -> Optional[Position]:
         """
         Determine what action should be done by the entity controlled by AI.
         The action is determined according to the current state of the entity.
@@ -510,8 +485,7 @@ class Movable(Destroyable):
         for distance in self.reach:
             for target in targets:
                 if (
-                    abs(self.position[0] - target.position[0])
-                    + abs(self.position[1] - target.position[1])
+                    abs(self.position[0] - target.position[0]) + abs(self.position[1] - target.position[1])
                     == TILE_SIZE * distance
                 ):
                     if self.target and target == self.target:
@@ -519,9 +493,7 @@ class Movable(Destroyable):
                     temporary_attack = target.position
         return temporary_attack
 
-    def determine_move(
-        self, possible_moves: dict[Position, int], targets: dict[Entity, int]
-    ) -> Position:
+    def determine_move(self, possible_moves: dict[Position, int], targets: dict[Entity, int]) -> Position:
         """
         Determine which movement should be selected by the entity controlled by AI.
         Change the current target of the entity if needed.
@@ -539,11 +511,7 @@ class Movable(Destroyable):
                 for distance in self.reach:
                     for move in possible_moves:
                         # Try to find move next to one target
-                        if (
-                            abs(move[0] - target.position[0])
-                            + abs(move[1] - target.position[1])
-                            == TILE_SIZE * distance
-                        ):
+                        if abs(move[0] - target.position[0]) + abs(move[1] - target.position[1]) == TILE_SIZE * distance:
                             self.target = target
                             return move
         elif self.strategy is EntityStrategy.ACTIVE:

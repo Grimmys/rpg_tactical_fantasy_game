@@ -61,12 +61,8 @@ class Shop(Building):
         self.current_visitor: Optional[Character] = None
         self.stock: list[dict[str, any]] = stock
         self.interaction: dict[str, any] = interaction
-        self.menu: InfoBox = menu_creator_manager.create_shop_menu(
-            Shop.interaction_callback, self.stock, 0, self.shop_balance
-        )
-        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "trade.ogg")
-        )
+        self.menu: InfoBox = menu_creator_manager.create_shop_menu(Shop.interaction_callback, self.stock, 0, self.shop_balance)
+        self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "trade.ogg"))
 
     def get_item_entry(self, item: Item) -> Optional[dict[str, any]]:
         """
@@ -87,9 +83,7 @@ class Shop(Building):
         Keyword arguments:
         gold -- the new gold amount for the player that should be displayed
         """
-        self.menu = menu_creator_manager.create_shop_menu(
-            Shop.interaction_callback, self.stock, gold, self.shop_balance
-        )
+        self.menu = menu_creator_manager.create_shop_menu(Shop.interaction_callback, self.stock, gold, self.shop_balance)
 
     def interact(self, actor: Character) -> list[list[BoxElement]]:
         """
@@ -180,8 +174,8 @@ class Shop(Building):
         # Specify nature
         nature: etree.SubElement = etree.SubElement(tree, "type")
         nature.text = "shop"
-        
-         # Save the current shop balance
+
+        # Save the current shop balance
         money: etree.SubElement = etree.SubElement(tree, "money")
         money.text = str(self.shop_balance)
 

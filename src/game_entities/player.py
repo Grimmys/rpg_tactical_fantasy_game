@@ -108,13 +108,9 @@ class Player(Character):
 
         # Sprite displayed when player cannot be selected
         self.sprite_unavailable: pygame.Surface = self.sprite.copy()
-        color_image: pygame.Surface = pygame.Surface(
-            self.sprite.get_size()
-        ).convert_alpha()
+        color_image: pygame.Surface = pygame.Surface(self.sprite.get_size()).convert_alpha()
         color_image.fill(LIGHT_GREY)
-        self.sprite_unavailable.blit(
-            color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
-        )
+        self.sprite_unavailable.blit(color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
         # Memorize normal state sprite
         self.normal_sprite: pygame.Surface = self.sprite
@@ -141,9 +137,7 @@ class Player(Character):
         screen -- the screen on which the player should be drawn
         """
         Character.display(self, screen)
-        if self.state in range(
-            PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1
-        ):
+        if self.state in range(PlayerState.WAITING_MOVE, PlayerState.WAITING_TARGET + 1):
             screen.blit(Player.SELECTED_DISPLAY, self.position)
 
     @staticmethod
@@ -176,18 +170,13 @@ class Player(Character):
         is_selected -- whether the player is selected or not
         """
         self._selected = is_selected
-        self.state = (
-            PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
-        )
+        self.state = PlayerState.WAITING_MOVE if is_selected else PlayerState.WAITING_SELECTION
 
     def is_waiting_post_action(self) -> bool:
         """
         Return whether the player is waiting a post action or not
         """
-        return (
-            self.state is PlayerState.WAITING_POST_ACTION
-            or self.state is PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
-        )
+        return self.state is PlayerState.WAITING_POST_ACTION or self.state is PlayerState.WAITING_POST_ACTION_UNCANCELLABLE
 
     def target_selected(self) -> None:
         """
@@ -297,11 +286,7 @@ class Player(Character):
         for equipment in self.equipments:
             equipment.set_grey()
         # Remove all alterations that are finished
-        self.alterations = [
-            alteration
-            for alteration in self.alterations
-            if not alteration.is_finished()
-        ]
+        self.alterations = [alteration for alteration in self.alterations if not alteration.is_finished()]
 
     def new_turn(self) -> None:
         """Handle the start of a new turn for the player"""

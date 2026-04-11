@@ -2,9 +2,13 @@ import unittest
 
 from src.game_entities.character import Character
 from src.game_entities.movable import DamageKind
-from tests.random_data_library import (random_character_entity,
-                                       random_equipment, random_foe_entity,
-                                       random_shield, random_weapon)
+from tests.random_data_library import (
+    random_character_entity,
+    random_equipment,
+    random_foe_entity,
+    random_shield,
+    random_weapon,
+)
 from tests.tools import minimal_setup_for_game
 
 
@@ -32,8 +36,7 @@ class TestCharacter(unittest.TestCase):
         interaction = {
             "dialog": [
                 "Hurry up ! Leave the village from the west, and enter the necropolis.",
-                "The clock is ticking... The ogre's bones must be returned to their "
-                "original place.",
+                "The clock is ticking... The ogre's bones must be returned to their " "original place.",
             ],
             "join_team": False,
         }
@@ -66,8 +69,7 @@ class TestCharacter(unittest.TestCase):
         interaction = {
             "dialog": [
                 "Hurry up ! Leave the village from the west, and enter the necropolis.",
-                "The clock is ticking... The ogre's bones must be returned to their "
-                "original place.",
+                "The clock is ticking... The ogre's bones must be returned to their " "original place.",
             ],
             "join_team": False,
         }
@@ -80,8 +82,7 @@ class TestCharacter(unittest.TestCase):
         interaction = {
             "dialog": [
                 "Hurry up ! Leave the village from the west, and enter the necropolis.",
-                "The clock is ticking... The ogre's bones must be returned to their "
-                "original place.",
+                "The clock is ticking... The ogre's bones must be returned to their " "original place.",
             ],
             "join_team": True,
         }

@@ -139,9 +139,7 @@ class Foe(Movable):
         formatted_string: str = ""
         for keyword in self.keywords:
             try:
-                formatted_string += (
-                    TRANSLATIONS["foe_keywords"][keyword.name.lower()] + ", "
-                )
+                formatted_string += TRANSLATIONS["foe_keywords"][keyword.name.lower()] + ", "
             except KeyError:
                 formatted_string += keyword.name.lower().capitalize() + ", "
         if formatted_string == "":
@@ -177,9 +175,7 @@ class Foe(Movable):
                 item_element: etree.SubElement = etree.SubElement(loot_element, "item")
                 item_name = etree.SubElement(item_element, "name")
                 item_name.text = item.name
-            it_probability: etree.SubElement = etree.SubElement(
-                item_element, "probability"
-            )
+            it_probability: etree.SubElement = etree.SubElement(item_element, "probability")
             it_probability.text = str(probability)
 
         # Save mission link

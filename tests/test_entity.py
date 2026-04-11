@@ -58,16 +58,8 @@ class TestEntity(unittest.TestCase):
                 )
             )
         )
-        self.assertFalse(
-            entity.is_on_position(
-                Position(position[0] - random.randrange(0, MAIN_WIN_WIDTH), position[1])
-            )
-        )
-        self.assertFalse(
-            entity.is_on_position(
-                Position(position[0], position[1] - random.randrange(0, MAIN_WIN_HEIGHT))
-            )
-        )
+        self.assertFalse(entity.is_on_position(Position(position[0] - random.randrange(0, MAIN_WIN_WIDTH), position[1])))
+        self.assertFalse(entity.is_on_position(Position(position[0], position[1] - random.randrange(0, MAIN_WIN_HEIGHT))))
 
 
 if __name__ == "__main__":

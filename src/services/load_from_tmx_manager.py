@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from typing import Optional
-
-import logging
 
 import pygame
 import pytmx
@@ -32,12 +31,8 @@ logger = logging.getLogger(__name__)
 objective_tile_by_mission: dict[str, list[Objective]] = {}
 
 
-def _get_object_position(
-        tile_object: TiledObject, horizontal_gap: int, vertical_gap: int
-) -> Position:
-    return Position(
-        tile_object.x * 1.5 + horizontal_gap, tile_object.y * 1.5 + vertical_gap
-    )
+def _get_object_position(tile_object: TiledObject, horizontal_gap: int, vertical_gap: int) -> Position:
+    return Position(tile_object.x * 1.5 + horizontal_gap, tile_object.y * 1.5 + vertical_gap)
 
 
 def load_ground(tmx_data: pytmx.TiledMap, size: tuple[int, int]) -> pygame.Surface:
@@ -51,17 +46,13 @@ def load_ground(tmx_data: pytmx.TiledMap, size: tuple[int, int]) -> pygame.Surfa
     return map_ground
 
 
-def load_obstacles(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Obstacle]:
+def load_obstacles(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Obstacle]:
     obstacles = list()
     for x, y, gid in tmx_data.get_layer_by_name("obstacles"):
         tile = tmx_data.get_tile_properties_by_gid(gid)
         if tile and tile["type"] == "void":
             continue
-        obstacle_image = pygame.transform.scale(
-            tmx_data.get_tile_image_by_gid(gid), (TILE_SIZE, TILE_SIZE)
-        )
+        obstacle_image = pygame.transform.scale(tmx_data.get_tile_image_by_gid(gid), (TILE_SIZE, TILE_SIZE))
         position = Position(x * TILE_SIZE + horizontal_gap, y * TILE_SIZE + vertical_gap)
         obstacles.append(Obstacle(position, obstacle_image))
     return obstacles
@@ -76,9 +67,7 @@ def _link_objective_to_mission(objective: Objective, mission_id: str) -> None:
 def _load_objectives(tmx_data, horizontal_gap, vertical_gap) -> None:
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "objective":
-            objective_image = pygame.transform.scale(
-                tile_object.image, (TILE_SIZE, TILE_SIZE)
-            )
+            objective_image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
             position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
             mission_id = tile_object.properties["mission"]
             walkable = tile_object.properties["walkable"]
@@ -88,17 +77,13 @@ def _load_objectives(tmx_data, horizontal_gap, vertical_gap) -> None:
             )
 
 
-def _load_mission(
-        tmx_data: pytmx.TiledMap, is_main: bool, mission_id: str, players: Sequence[Player]
-) -> Mission:
+def _load_mission(tmx_data: pytmx.TiledMap, is_main: bool, mission_id: str, players: Sequence[Player]) -> Mission:
     nature = MissionType[tmx_data.properties[f"{mission_id}_mission_type"]]
     description = tmx_data.properties[f"{mission_id}_mission_description"]
     objective_tiles: list[Objective] = []
     targets: Optional[Sequence[Foe]] = None
     turns_limit: Optional[int] = (
-        tmx_data.properties[f"{mission_id}_mission_turns"]
-        if f"{mission_id}_mission_turns" in tmx_data.properties
-        else None
+        tmx_data.properties[f"{mission_id}_mission_turns"] if f"{mission_id}_mission_turns" in tmx_data.properties else None
     )
     gold_reward = 0
     items_reward = []
@@ -131,53 +116,35 @@ def _load_mission(
 
 
 def load_missions(
-        tmx_data: pytmx.TiledMap,
-        tmx_map_properties_data: pytmx.TiledMap,
-        players: Sequence[Player],
-        horizontal_gap: int,
-        vertical_gap: int,
+    tmx_data: pytmx.TiledMap,
+    tmx_map_properties_data: pytmx.TiledMap,
+    players: Sequence[Player],
+    horizontal_gap: int,
+    vertical_gap: int,
 ) -> tuple[Sequence[Mission], Mission]:
     _load_objectives(tmx_data, horizontal_gap, vertical_gap)
     main_mission = _load_mission(tmx_map_properties_data, True, "main", players)
     missions = [main_mission]
     if "secondary_missions" in tmx_map_properties_data.properties:
-        secondary_missions = tmx_map_properties_data.properties[
-            "secondary_missions"
-        ].split(",")
+        secondary_missions = tmx_map_properties_data.properties["secondary_missions"].split(",")
         for mission_id in secondary_missions:
-            missions.append(
-                _load_mission(tmx_map_properties_data, False, mission_id, players)
-            )
+            missions.append(_load_mission(tmx_map_properties_data, False, mission_id, players))
 
     return missions, main_mission
 
 
-def load_foes(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Foe]:
+def load_foes(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Foe]:
     foes = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "foe":
             position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
             level = tile_object.properties["level"]
-            strategy = (
-                tile_object.properties["strategy"]
-                if "strategy" in tile_object.properties
-                else None
-            )
+            strategy = tile_object.properties["strategy"] if "strategy" in tile_object.properties else None
             specific_loot = []
             if "number_items" in tile_object.properties:
                 for index in range(tile_object.properties["number_items"]):
-                    specific_loot.append(
-                        xml_loader.parse_item_file(
-                            tile_object.properties[f"loot_item_{index}_name"]
-                        )
-                    )
-            mission_target = (
-                tile_object.properties["mission_target"]
-                if "mission_target" in tile_object.properties
-                else None
-            )
+                    specific_loot.append(xml_loader.parse_item_file(tile_object.properties[f"loot_item_{index}_name"]))
+            mission_target = tile_object.properties["mission_target"] if "mission_target" in tile_object.properties else None
 
             foe = xml_loader.load_foe(
                 tile_object.name,
@@ -195,9 +162,7 @@ def load_foes(
     return foes
 
 
-def load_allies(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Character]:
+def load_allies(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Character]:
     allies = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "ally":
@@ -206,21 +171,15 @@ def load_allies(
     return allies
 
 
-def load_player_placements(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> Sequence[Position]:
+def load_player_placements(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> Sequence[Position]:
     placements = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "placement":
-            placements.append(
-                _get_object_position(tile_object, horizontal_gap, vertical_gap)
-            )
+            placements.append(_get_object_position(tile_object, horizontal_gap, vertical_gap))
     return placements
 
 
-def load_chests(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Chest]:
+def load_chests(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Chest]:
     chests = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "chest":
@@ -228,12 +187,8 @@ def load_chests(
             image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
             content_possibilities = []
             for index in range(tile_object.properties["content_possibilities"]):
-                item = xml_loader.parse_item_file(
-                    tile_object.properties[f"item_{index}_name"]
-                )
-                content_possibilities.append(
-                    (item, tile_object.properties[f"item_{index}_probability"])
-                )
+                item = xml_loader.parse_item_file(tile_object.properties[f"item_{index}_name"])
+                content_possibilities.append((item, tile_object.properties[f"item_{index}_probability"]))
 
             chests.append(
                 Chest(
@@ -278,44 +233,30 @@ def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
         return []
 
 
-def load_events(
-        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
-) -> dict[str, any]:
+def load_events(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> dict[str, any]:
     events = {}
     for tile_object in tmx_data.get_layer_by_name("events"):
         events[tile_object.type] = {}
         dialogs: Optional[Sequence[str]] = (
-            tile_object.properties["dialogs"].split(",")
-            if "dialogs" in tile_object.properties
-            else None
+            tile_object.properties["dialogs"].split(",") if "dialogs" in tile_object.properties else None
         )
         if dialogs:
             events[tile_object.type]["dialogs"] = []
             for dialog in dialogs:
-                events[tile_object.type]["dialogs"].append(
-                    load_dialog(directory, dialog)
-                )
+                events[tile_object.type]["dialogs"].append(load_dialog(directory, dialog))
         new_players: Optional[Sequence[str]] = (
-            tile_object.properties["new_players"].split(",")
-            if "new_players" in tile_object.properties
-            else None
+            tile_object.properties["new_players"].split(",") if "new_players" in tile_object.properties else None
         )
         if new_players:
             events[tile_object.type]["new_players"] = []
-            players_position: Position = _get_object_position(
-                tile_object, horizontal_gap, vertical_gap
-            )
+            players_position: Position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
             for player in new_players:
-                events[tile_object.type]["new_players"].append(
-                    {"name": player, "position": players_position}
-                )
+                events[tile_object.type]["new_players"].append({"name": player, "position": players_position})
 
     return events
 
 
-def load_buildings(
-        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
-) -> list[Building]:
+def load_buildings(tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int) -> list[Building]:
     buildings = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "building":
@@ -323,9 +264,7 @@ def load_buildings(
             image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
             interaction: Optional[dict[str, any]] = {}
             dialog_ids: Optional[Sequence[str]] = (
-                tile_object.properties["house_dialogs"].split(",")
-                if "house_dialogs" in tile_object.properties
-                else None
+                tile_object.properties["house_dialogs"].split(",") if "house_dialogs" in tile_object.properties else None
             )
             if dialog_ids:
                 for dialog_id in dialog_ids:
@@ -333,18 +272,12 @@ def load_buildings(
             if "gold" in tile_object.properties:
                 interaction["gold"] = tile_object.properties["gold"]
             if "items" in tile_object.properties:
-                interaction["item"] = xml_loader.parse_item_file(
-                    tile_object.properties["items"]
-                )
+                interaction["item"] = xml_loader.parse_item_file(tile_object.properties["items"])
 
             if not interaction:
                 interaction = None
 
-            nature = (
-                tile_object.properties["kind"]
-                if "kind" in tile_object.properties
-                else None
-            )
+            nature = tile_object.properties["kind"] if "kind" in tile_object.properties else None
             if not nature:
                 buildings.append(
                     Building(
@@ -361,9 +294,7 @@ def load_buildings(
                 stock = []
                 for item_id in range(tile_object.properties["number_items"]):
                     item_entry = {
-                        "item": xml_loader.parse_item_file(
-                            tile_object.properties[f"item_{item_id}_name"]
-                        ),
+                        "item": xml_loader.parse_item_file(tile_object.properties[f"item_{item_id}_name"]),
                         "quantity": tile_object.properties[f"item_{item_id}_quantity"],
                     }
                     stock.append(item_entry)
@@ -386,37 +317,27 @@ def load_buildings(
     return buildings
 
 
-def load_breakables(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Breakable]:
+def load_breakables(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Breakable]:
     # TODO: implementation
     return []
 
 
-def load_portals(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Portal]:
+def load_portals(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Portal]:
     # TODO: implementation
     return []
 
 
-def load_doors(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Door]:
+def load_doors(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Door]:
     doors = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "door":
             position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
             image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
-            doors.append(
-                Door(position, tile_object.properties["sprite_link"], sprite=image)
-            )
+            doors.append(Door(position, tile_object.properties["sprite_link"], sprite=image))
     return doors
 
 
-def load_fountains(
-        tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int
-) -> list[Fountain]:
+def load_fountains(tmx_data: pytmx.TiledMap, horizontal_gap: int, vertical_gap: int) -> list[Fountain]:
     fountains = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):
         if tile_object.type == "fountain":

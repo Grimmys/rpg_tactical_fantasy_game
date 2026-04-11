@@ -6,8 +6,7 @@ after pygame initialization and after the initialization of at least one pygame 
 
 import pygame
 
-from src.constants import (BLACK, MAX_MAP_HEIGHT, MAX_MAP_WIDTH, TILE_SIZE,
-                           WHITE)
+from src.constants import BLACK, MAX_MAP_HEIGHT, MAX_MAP_WIDTH, TILE_SIZE, WHITE
 from src.gui.fonts import fonts
 from src.services.language import *
 
@@ -27,9 +26,7 @@ CRACKED_SPRITE = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
 FRAME_SPRITE = "imgs/interface/frame.png"
 
 LIGHTLY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png"
-MODERATELY_DAMAGED_SPRITE = (
-    "imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png"
-)
+MODERATELY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png"
 HEAVILY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.png"
 SEVERELY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_severely_damaged.png"
 ALMOST_DEAD_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_almost_dead.png"
@@ -99,12 +96,8 @@ def init_constant_sprites() -> None:
         pygame.image.load(FRAME_SPRITE).convert_alpha(),
         (TILE_SIZE + 10, TILE_SIZE + 10),
     )
-    constant_sprites["main_mission_text"] = fonts["SIDEBAR_TITLE_FONT"].render(
-        STR_MAIN_MISSION, 1, BLACK
-    )
-    constant_sprites["secondaries_mission_text"] = fonts["SIDEBAR_TITLE_FONT"].render(
-        STR_OPTIONAL_OBJECTIVES, 1, BLACK
-    )
+    constant_sprites["main_mission_text"] = fonts["SIDEBAR_TITLE_FONT"].render(STR_MAIN_MISSION, 1, BLACK)
+    constant_sprites["secondaries_mission_text"] = fonts["SIDEBAR_TITLE_FONT"].render(STR_OPTIONAL_OBJECTIVES, 1, BLACK)
 
     constant_sprites["lightly_damaged"] = pygame.transform.scale(
         pygame.image.load(LIGHTLY_DAMAGED_SPRITE).convert_alpha(),

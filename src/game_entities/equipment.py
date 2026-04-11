@@ -67,12 +67,8 @@ class Equipment(Item):
         self.weight: int = weight
         self.restrictions: dict[str, Sequence[str]] = restrictions
         self.body_part: str = body_part
-        raw_equipped_sprite: pygame.Surface = pygame.image.load(
-            equipped_sprites[0]
-        ).convert_alpha()
-        self.equipped_sprite: pygame.Surface = pygame.transform.scale(
-            raw_equipped_sprite, (TILE_SIZE, TILE_SIZE)
-        )
+        raw_equipped_sprite: pygame.Surface = pygame.image.load(equipped_sprites[0]).convert_alpha()
+        self.equipped_sprite: pygame.Surface = pygame.transform.scale(raw_equipped_sprite, (TILE_SIZE, TILE_SIZE))
         if len(equipped_sprites) > 1:
             for equipped_sprite in equipped_sprites[1:]:
                 self.equipped_sprite.blit(
@@ -85,13 +81,9 @@ class Equipment(Item):
 
         # Used when character wearing the equipment cannot be selected
         self.sprite_unavailable: pygame.Surface = self.equipped_sprite.copy()
-        color_image: pygame.Surface = pygame.Surface(
-            self.sprite.get_size()
-        ).convert_alpha()
+        color_image: pygame.Surface = pygame.Surface(self.sprite.get_size()).convert_alpha()
         color_image.fill(LIGHT_GREY)
-        self.sprite_unavailable.blit(
-            color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
-        )
+        self.sprite_unavailable.blit(color_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         self.normal_sprite: pygame.Surface = self.equipped_sprite
 
     def get_formatted_restrictions(self) -> str:
@@ -105,9 +97,7 @@ class Equipment(Item):
                 formatted_string += (
                     ", ".join(
                         [
-                            TRANSLATIONS["races_and_classes"][
-                                restriction.lower().replace(" ", "_")
-                            ]
+                            TRANSLATIONS["races_and_classes"][restriction.lower().replace(" ", "_")]
                             for restriction in self.restrictions[key]
                         ]
                     )
@@ -116,9 +106,7 @@ class Equipment(Item):
 
         return formatted_string[:-2]
 
-    def display(
-        self, screen: pygame.Surface, position: tuple[int, int], equipped: bool = False
-    ) -> None:
+    def display(self, screen: pygame.Surface, position: tuple[int, int], equipped: bool = False) -> None:
         """
         Display the equipment on the given screen.
 
@@ -128,9 +116,7 @@ class Equipment(Item):
         equipped -- whether it's the equipped version (on a character) or
         the item version on a menu that should be displayed
         """
-        sprite_to_blit: pygame.Surface = (
-            self.equipped_sprite if equipped else self.sprite
-        )
+        sprite_to_blit: pygame.Surface = self.equipped_sprite if equipped else self.sprite
         screen.blit(sprite_to_blit, position)
 
     def set_grey(self) -> None:

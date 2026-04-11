@@ -24,6 +24,7 @@ from src.game_entities.skill import Skill
 from src.game_entities.weapon import Weapon
 from src.gui.fonts import fonts
 from src.gui.position import Position
+from src.RL.reward_manager import reward_manager
 from src.services.language import *
 
 
@@ -68,9 +69,7 @@ class Character(Movable):
     classes_data: dict[str, dict[str, any]] = {}
 
     @staticmethod
-    def init_data(
-        races: dict[str, dict[str, any]], classes: dict[str, dict[str, any]]
-    ) -> None:
+    def init_data(races: dict[str, dict[str, any]], classes: dict[str, dict[str, any]]) -> None:
         """
         Initialize the generic data collections for Character.
         This method should be called only once and before any use of this class.
@@ -109,8 +108,7 @@ class Character(Movable):
             hit_points,
             defense,
             resistance,
-            Character.races_data[race]["move"]
-            + Character.classes_data[classes[0]]["move"],
+            Character.races_data[race]["move"] + Character.classes_data[classes[0]]["move"],
             strength,
             "PHYSICAL",
             strategy,
@@ -127,8 +125,7 @@ class Character(Movable):
         self.join_team: bool = False
         self.reach_: Sequence[int] = [1]
         self.constitution: int = (
-            Character.races_data[race]["constitution"]
-            + Character.classes_data[classes[0]]["constitution"]
+            Character.races_data[race]["constitution"] + Character.classes_data[classes[0]]["constitution"]
         )
 
     def talk(self, actor: Entity) -> list[list[BoxElement]]:
@@ -143,9 +140,7 @@ class Character(Movable):
         self.join_team = self.interaction["join_team"]
         element_grid: list[list[BoxElement]] = []
         for line in self.interaction["dialog"]:
-            elements_line: list[BoxElement] = [
-                TextElement(line, font=fonts["ITEM_DESC_FONT"])
-            ]
+            elements_line: list[BoxElement] = [TextElement(line, font=fonts["ITEM_DESC_FONT"])]
             element_grid.append(elements_line)
         return element_grid
 
@@ -183,9 +178,7 @@ class Character(Movable):
                 return parried
         return False
 
-    def attacked(
-        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
-    ) -> int:
+    def attacked(self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
         the entity by this value.
@@ -212,6 +205,7 @@ class Character(Movable):
         Keyword arguments:
         entity -- the target of the attack
         """
+        reward_manager.enemy_killed()  # Reward for attacking an enemy, even if it doesn't result in a kill, to encourage aggressive behavior
         damage: int = self.strength + self.get_stat_change("strength")
         weapon = self.get_weapon()
         if weapon:
@@ -228,18 +222,10 @@ class Character(Movable):
         nb_lvl -- the number of levels earned
         """
         for _ in range(nb_lvl):
-            hp_increased: int = random.choice(
-                self.classes_data[self.classes[0]]["stats_up"]["hp"]
-            )
-            self.defense += random.choice(
-                self.classes_data[self.classes[0]]["stats_up"]["def"]
-            )
-            self.resistance += random.choice(
-                self.classes_data[self.classes[0]]["stats_up"]["res"]
-            )
-            self.strength += random.choice(
-                self.classes_data[self.classes[0]]["stats_up"]["str"]
-            )
+            hp_increased: int = random.choice(self.classes_data[self.classes[0]]["stats_up"]["hp"])
+            self.defense += random.choice(self.classes_data[self.classes[0]]["stats_up"]["def"])
+            self.resistance += random.choice(self.classes_data[self.classes[0]]["stats_up"]["res"])
+            self.strength += random.choice(self.classes_data[self.classes[0]]["stats_up"]["str"])
             self.hit_points_max += hp_increased
             self.hit_points += hp_increased
 
@@ -342,9 +328,7 @@ class Character(Movable):
             allowed = False
         if equipment.restrictions != {}:
             allowed = False
-            if "classes" in equipment.restrictions and (
-                self.race != "centaur" or isinstance(equipment, (Shield, Weapon))
-            ):
+            if "classes" in equipment.restrictions and (self.race != "centaur" or isinstance(equipment, (Shield, Weapon))):
                 for cls in equipment.restrictions["classes"]:
                     if cls in self.classes:
                         allowed = True
@@ -448,9 +432,7 @@ class Character(Movable):
         # Save class (if possible)
         if len(self.classes) > 0:
             class_el: etree.Element = etree.SubElement(tree, "class")
-            class_el.text = self.classes[
-                0
-            ]  # Currently, only first class is saved if any
+            class_el.text = self.classes[0]  # Currently, only first class is saved if any
 
         # Save race
         race: etree.Element = etree.SubElement(tree, "race")

@@ -8,14 +8,11 @@ from math import sqrt
 
 import pygame
 
-from src.constants import (DARK_GREEN, LIGHT_YELLOW, ORANGE, RED, TILE_SIZE,
-                           YELLOW)
+from src.constants import DARK_GREEN, LIGHT_YELLOW, ORANGE, RED, TILE_SIZE, YELLOW
 from src.gui.position import Position
 
 
-def show_fps(
-    surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.font.Font
-) -> None:
+def show_fps(surface: pygame.Surface, inner_clock: pygame.time.Clock, font: pygame.font.Font) -> None:
     """
     Display in the top left corner of the screen the current frame rate.
 
@@ -55,18 +52,10 @@ def distance(position: Position, other_position: Position) -> int:
     position -- the first position
     other_position -- the other position
     """
-    return (
-        sqrt(
-            (position[0] - other_position[0]) ** 2
-            + (position[1] - other_position[1]) ** 2
-        )
-        // TILE_SIZE
-    )
+    return sqrt((position[0] - other_position[0]) ** 2 + (position[1] - other_position[1]) ** 2) // TILE_SIZE
 
 
-def determine_gauge_color(
-    current_value: int, max_value: int, default_color: pygame.Color
-) -> pygame.Color:
+def determine_gauge_color(current_value: int, max_value: int, default_color: pygame.Color) -> pygame.Color:
     """
     Return the color that should be used to display the gauge of a measure
     (for example the hit points of an entity).

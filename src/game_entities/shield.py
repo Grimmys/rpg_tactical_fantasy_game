@@ -73,9 +73,7 @@ class Shield(Equipment):
         Return the number of uses left after application of the deterioration.
         """
         self.durability -= 1
-        self.resell_price = int(
-            (self.price // 2) * (self.durability / self.durability_max)
-        )
+        self.resell_price = int((self.price // 2) * (self.durability / self.durability_max))
         return self.durability
 
     def save(self, tree_name: str) -> etree.Element:

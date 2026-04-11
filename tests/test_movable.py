@@ -2,8 +2,7 @@ import random as rd
 import unittest
 
 from src.game_entities.movable import DamageKind, EntityStrategy, Movable
-from tests.random_data_library import (STATS, random_alteration, random_item,
-                                       random_movable_entity, random_string)
+from tests.random_data_library import STATS, random_alteration, random_item, random_movable_entity, random_string
 from tests.tools import minimal_setup_for_game
 
 
@@ -112,9 +111,7 @@ class TestMovable(unittest.TestCase):
         movable_entity = random_movable_entity()
         stat = rd.choice(STATS)
         other_stat = rd.choice(tuple(filter(lambda s: s != stat, STATS)))
-        stat_up_alteration = random_alteration(
-            name=stat + "_up", effects=[stat + "_up"]
-        )
+        stat_up_alteration = random_alteration(name=stat + "_up", effects=[stat + "_up"])
 
         self.assertEqual(0, movable_entity.get_stat_change(stat))
         self.assertEqual(0, movable_entity.get_stat_change(other_stat))
@@ -131,9 +128,7 @@ class TestMovable(unittest.TestCase):
     def test_stat_down(self):
         movable_entity = random_movable_entity()
         stat = rd.choice(STATS)
-        stat_down_alteration = random_alteration(
-            name=stat + "_down", effects=[stat + "_down"]
-        )
+        stat_down_alteration = random_alteration(name=stat + "_down", effects=[stat + "_down"])
 
         movable_entity.set_alteration(stat_down_alteration)
         # Test formatted stat change rendering
@@ -231,9 +226,7 @@ class TestMovable(unittest.TestCase):
         attacker_entity = random_movable_entity()
         damage = rd.randint(attacked_entity.hit_points // 2, attacked_entity.hit_points)
 
-        hp_left = attacked_entity.attacked(
-            attacker_entity, damage, DamageKind["PHYSICAL"], []
-        )
+        hp_left = attacked_entity.attacked(attacker_entity, damage, DamageKind["PHYSICAL"], [])
         self.assertEqual(hp_left, attacked_entity.hit_points)
         hp_expected = (
             attacked_entity.hit_points_max - damage + attacked_entity.defense
@@ -249,15 +242,10 @@ class TestMovable(unittest.TestCase):
         boost_alteration = random_alteration(name="defense_up", effects=["defense_up"])
 
         attacked_entity.set_alteration(boost_alteration)
-        hp_left = attacked_entity.attacked(
-            attacker_entity, damage, DamageKind["PHYSICAL"], []
-        )
+        hp_left = attacked_entity.attacked(attacker_entity, damage, DamageKind["PHYSICAL"], [])
         self.assertEqual(hp_left, attacked_entity.hit_points)
         hp_expected = (
-            attacked_entity.hit_points_max
-            - damage
-            + attacked_entity.defense
-            + boost_alteration.power
+            attacked_entity.hit_points_max - damage + attacked_entity.defense + boost_alteration.power
             if hp_left < attacked_entity.hit_points_max
             else attacked_entity.hit_points_max
         )

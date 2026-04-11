@@ -4,8 +4,7 @@ from src.constants import TILE_SIZE
 from src.game_entities.destroyable import DamageKind
 from src.game_entities.foe import Keyword
 from src.game_entities.weapon import Weapon
-from tests.random_data_library import (random_foe_entity, random_player_entity,
-                                       random_weapon)
+from tests.random_data_library import random_foe_entity, random_player_entity, random_weapon
 from tests.tools import minimal_setup_for_game
 
 
@@ -114,21 +113,15 @@ class TestWeapon(unittest.TestCase):
         vulnerable_foe = random_foe_entity(keywords=[Keyword.LARGE])
         self.assertEqual(power * 2, weapon.hit(random_player_entity(), vulnerable_foe))
 
-        super_vulnerable_foe = random_foe_entity(
-            keywords=[Keyword.CAVALRY, Keyword.LARGE]
-        )
-        self.assertEqual(
-            power * 3, weapon.hit(random_player_entity(), super_vulnerable_foe)
-        )
+        super_vulnerable_foe = random_foe_entity(keywords=[Keyword.CAVALRY, Keyword.LARGE])
+        self.assertEqual(power * 3, weapon.hit(random_player_entity(), super_vulnerable_foe))
 
     def test_charge_bonus(self):
         power = 4
         spear = random_weapon(atk=power, attack_kind="PHYSICAL", charge=True)
         player = random_player_entity()
         player.strength = 5
-        attacked_ent = random_foe_entity(
-            min_hp=1000, max_hp=1000, max_defense=0, keywords=[]
-        )
+        attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
         player.equip(spear)
         # No charge
         self.assertEqual(player.strength + spear.attack, player.attack(attacked_ent))
@@ -138,27 +131,21 @@ class TestWeapon(unittest.TestCase):
             player.old_position[0] + 5 * TILE_SIZE,
             player.old_position[1],
         )
-        self.assertEqual(
-            player.strength + int(spear.attack * 1.5), player.attack(attacked_ent)
-        )
+        self.assertEqual(player.strength + int(spear.attack * 1.5), player.attack(attacked_ent))
 
         # Stronger charge
         player.position = (
             player.old_position[0] + 8 * TILE_SIZE,
             player.old_position[1],
         )
-        self.assertEqual(
-            player.strength + int(spear.attack * 2), player.attack(attacked_ent)
-        )
+        self.assertEqual(player.strength + int(spear.attack * 2), player.attack(attacked_ent))
 
     def test_no_charge_bonus_for_weapon_with_no_charge(self):
         power = 4
         weapon = random_weapon(atk=power, attack_kind="PHYSICAL", charge=False)
         player = random_player_entity()
         player.strength = 5
-        attacked_ent = random_foe_entity(
-            min_hp=1000, max_hp=1000, max_defense=0, keywords=[]
-        )
+        attacked_ent = random_foe_entity(min_hp=1000, max_hp=1000, max_defense=0, keywords=[])
         player.equip(weapon)
 
         # No charge bonus even if there is a " charge "

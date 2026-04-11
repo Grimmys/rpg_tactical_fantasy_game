@@ -224,23 +224,15 @@ def f_YOU_RECEIVED_ITEM(item):
 
 
 # Messages
-STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = (
-    "Error ! Not enough free tiles to set players..."
-)
+STR_ERROR_NOT_ENOUGH_TILES_TO_SET_PLAYERS = "Error ! Not enough free tiles to set players..."
 STR_GAME_HAS_BEEN_SAVED = "Game has been saved"
 STR_ITEM_HAS_BEEN_ADDED_TO_UR_INVENTORY = "Item has been added to your inventory"
 STR_YOU_FOUND_IN_THE_CHEST = "You found in the chest"
 STR_DOOR_HAS_BEEN_OPENED = "Door has been opened"
-STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = (
-    "You have no free space in your inventory"
-)
+STR_YOU_HAVE_NO_FREE_SPACE_IN_YOUR_INVENTORY = "You have no free space in your inventory"
 STR_STARTED_PICKING_ONE_MORE_TURN_TO_GO = "Started picking, one more turn to go"
-STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = (
-    "There is no free square around the other portal"
-)
-STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT = (
-    "But there is not enough space in inventory to take it!"
-)
+STR_THERE_IS_NO_FREE_SQUARE_AROUND_THE_OTHER_PORTAL = "There is no free square around the other portal"
+STR_BUT_THERE_IS_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_TAKE_IT = "But there is not enough space in inventory to take it!"
 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_DOOR = "You have no key to open a door"
 STR_YOU_HAVE_NO_KEY_TO_OPEN_A_CHEST = "You have no key to open a chest"
 STR_ITEM_HAS_BEEN_TRADED = "Item has been traded"
@@ -250,13 +242,9 @@ STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY = (
 )
 STR_THE_ITEM_HAS_BEEN_UNEQUIPPED = "The item has been unequipped"
 STR_THE_ITEM_HAS_BEEN_EQUIPPED = "The item has been equipped"
-STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = (
-    "Previous equipped item has been added to your inventory"
-)
+STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY = "Previous equipped item has been added to your inventory"
 STR_THE_ITEM_HAS_BEEN_BOUGHT = "The item has been bought."
-STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = (
-    "Not enough space in inventory to buy this item."
-)
+STR_NOT_ENOUGH_SPACE_IN_INVENTORY_TO_BUY_THIS_ITEM = "Not enough space in inventory to buy this item."
 STR_NOT_ENOUGH_GOLD_TO_BY_THIS_ITEM = "Not enough gold to buy this item."
 STR_THE_ITEM_HAS_BEEN_SOLD = "The item has been sold."
 STR_THIS_ITEM_CANT_BE_SOLD = "The vendor lacks the funds to buy from you!"

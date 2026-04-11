@@ -14,9 +14,7 @@ from src.gui.tools import show_fps
 from src.services.scene_manager import QuitActionKind, SceneManager
 
 
-def main_loop(
-    game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock
-) -> QuitActionKind:
+def main_loop(game_controller: SceneManager, screen: pygame.Surface, clock: pygame.time.Clock) -> QuitActionKind:
     """
     Run the game until a quit request happened.
     Pygame events are catch and delegated to the scene manager.
@@ -46,17 +44,16 @@ if __name__ == "__main__":
     import subprocess
     import sys
 
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
         # running main.py in a pyinstaller bundle
         os.chdir(sys._MEIPASS)
 
-    from src.constants import (BLACK, FRAME_RATE, MAIN_WIN_HEIGHT,
-                               MAIN_WIN_WIDTH)
+    from src.constants import BLACK, FRAME_RATE, MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
     from src.game_entities.character import Character
     from src.game_entities.movable import Movable
     from src.gui import constant_sprites, fonts
-    from src.services import load_from_xml_manager as loader
     from src.services import load_from_json_manager as json_loader
+    from src.services import load_from_xml_manager as loader
     from src.services.language import *
     from src.services.language import STR_GAME_TITLE
 

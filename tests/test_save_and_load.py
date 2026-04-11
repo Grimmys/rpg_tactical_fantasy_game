@@ -1,24 +1,29 @@
+import os
 import random
 import unittest
-import os
-from unittest.mock import patch
+import xml.etree.ElementTree as ET
 from datetime import datetime
-
+from unittest.mock import patch
 
 from src.game_entities.foe import Keyword
-from src.services.load_from_xml_manager import (load_ally_from_save,
-                                                load_alteration,
-                                                load_foe_from_save, load_item,
-                                                load_player, parse_item_file)
+from src.services.load_from_xml_manager import (
+    load_ally_from_save,
+    load_alteration,
+    load_foe_from_save,
+    load_item,
+    load_player,
+    parse_item_file,
+)
 from src.services.save_state_manager import SaveStateManager
-from tests.random_data_library import (random_alteration,
-                                       random_character_entity,
-                                       random_foe_entity, random_gold,
-                                       random_player_entity)
-from tests.tools import minimal_setup_for_game
-
-import xml.etree.ElementTree as ET
 from tests.dummy_game_setup import DummyLevel
+from tests.random_data_library import (
+    random_alteration,
+    random_character_entity,
+    random_foe_entity,
+    random_gold,
+    random_player_entity,
+)
+from tests.tools import minimal_setup_for_game
 
 
 class TestSaveAndLoad(unittest.TestCase):
@@ -33,9 +38,7 @@ class TestSaveAndLoad(unittest.TestCase):
         loaded_alteration = load_alteration(alteration_saved)
 
         self.assertEqual(alteration.name, loaded_alteration.name)
-        self.assertEqual(
-            alteration.abbreviated_name, loaded_alteration.abbreviated_name
-        )
+        self.assertEqual(alteration.abbreviated_name, loaded_alteration.abbreviated_name)
         self.assertEqual(alteration.power, loaded_alteration.power)
         self.assertEqual(alteration.duration, loaded_alteration.duration)
         self.assertEqual(alteration.description, loaded_alteration.description)
@@ -45,8 +48,7 @@ class TestSaveAndLoad(unittest.TestCase):
         interaction = {
             "dialog": [
                 "Hurry up ! Leave the village from the west, and enter the necropolis.",
-                "The clock is ticking... The ogre's bones must be returned "
-                "to their original place.",
+                "The clock is ticking... The ogre's bones must be returned " "to their original place.",
             ],
             "join_team": False,
         }
@@ -118,9 +120,7 @@ class TestSaveAndLoad(unittest.TestCase):
         first_item = parse_item_file("short_sword")
         second_item = parse_item_file("life_potion")
         inventory = [first_item, second_item]
-        player = random_player_entity(
-            name="raimund", classes=["warrior"], race="human", items=inventory
-        )
+        player = random_player_entity(name="raimund", classes=["warrior"], race="human", items=inventory)
         player_saved = player.save("player")
         loaded_player = load_player(player_saved, True)
         self.assertFalse(loaded_player.turn_is_finished())
@@ -130,9 +130,7 @@ class TestSaveAndLoad(unittest.TestCase):
     def test_save_and_load_player_with_equipment(self):
         helmet = parse_item_file("helmet")
         equipment = [helmet]
-        player = random_player_entity(
-            name="raimund", classes=["warrior"], race="human", equipments=equipment
-        )
+        player = random_player_entity(name="raimund", classes=["warrior"], race="human", equipments=equipment)
         player_saved = player.save("player")
         loaded_player = load_player(player_saved, True)
         self.assertFalse(loaded_player.turn_is_finished())
@@ -161,17 +159,15 @@ class TestSaveAndLoad(unittest.TestCase):
         self.assertEqual(potion.price, loaded_potion.price)
         self.assertEqual(potion.resell_price, loaded_potion.resell_price)
 
-
     def test_save_file_has_timestamp(self):
         # Set up a dummy game for purposes of testing the save_game method from SaveStateManager
         dummy_level = DummyLevel()
         save_manager = SaveStateManager(dummy_level)
 
-
         # patch to ensure the users test files are not overwritten by this test.
         # save files from this test are saved to tests/saves/
         file_id = 0
-        test_save_path = f"tests/saves/save_"
+        test_save_path = "tests/saves/save_"
         with patch.object(save_manager, "save_filepath", test_save_path):
             save_manager.save_game(file_id)
         current_time_string = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -189,6 +185,3 @@ class TestSaveAndLoad(unittest.TestCase):
         assert timestamp.text and timestamp.text.strip() != ""
         # confirm the current time was written to the save file
         assert timestamp.text == current_time_string
-
-
-

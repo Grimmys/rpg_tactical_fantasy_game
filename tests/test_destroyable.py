@@ -2,8 +2,7 @@ import random as rd
 import unittest
 
 from src.game_entities.destroyable import DamageKind, Destroyable
-from tests.random_data_library import (random_destroyable_entity,
-                                       random_movable_entity)
+from tests.random_data_library import random_destroyable_entity, random_movable_entity
 from tests.tools import minimal_setup_for_game
 
 
@@ -130,9 +129,7 @@ class TestDestroyable(unittest.TestCase):
         destroyable.hit_points -= damage
         recovered_hp = destroyable.healed(heal)
         self.assertEqual(recovered_hp, heal)
-        self.assertEqual(
-            destroyable.hit_points_max - damage + heal, destroyable.hit_points
-        )
+        self.assertEqual(destroyable.hit_points_max - damage + heal, destroyable.hit_points)
         self.assertEqual(hp_max_init, destroyable.hit_points_max)
 
     def test_more_than_possible_heal(self):

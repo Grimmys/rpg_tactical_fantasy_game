@@ -6,9 +6,14 @@ from src.game_entities.foe import Foe
 from src.game_entities.mission import Mission, MissionType
 from src.gui.position import Position
 from src.scenes.level_scene import LevelEntityCollections
-from tests.random_data_library import (random_entities, random_foe_entity,
-                                       random_item, random_objective,
-                                       random_player_entity, random_position)
+from tests.random_data_library import (
+    random_entities,
+    random_foe_entity,
+    random_item,
+    random_objective,
+    random_player_entity,
+    random_position,
+)
 from tests.tools import minimal_setup_for_game
 
 
@@ -72,33 +77,13 @@ class TestMission(unittest.TestCase):
         self.assertFalse(mission.is_position_valid(objectives[1].position))
 
         first_position = objectives[0].position
-        self.assertTrue(
-            mission.is_position_valid(
-                Position(first_position[0] + TILE_SIZE, first_position[1])
-            )
-        )
-        self.assertTrue(
-            mission.is_position_valid(
-                Position(first_position[0], first_position[1] + TILE_SIZE)
-            )
-        )
-        self.assertTrue(
-            mission.is_position_valid(
-                Position(first_position[0] - TILE_SIZE, first_position[1])
-            )
-        )
-        self.assertTrue(
-            mission.is_position_valid(
-                Position(first_position[0], first_position[1] - TILE_SIZE)
-            )
-        )
+        self.assertTrue(mission.is_position_valid(Position(first_position[0] + TILE_SIZE, first_position[1])))
+        self.assertTrue(mission.is_position_valid(Position(first_position[0], first_position[1] + TILE_SIZE)))
+        self.assertTrue(mission.is_position_valid(Position(first_position[0] - TILE_SIZE, first_position[1])))
+        self.assertTrue(mission.is_position_valid(Position(first_position[0], first_position[1] - TILE_SIZE)))
 
         second_position = objectives[1].position
-        self.assertTrue(
-            mission.is_position_valid(
-                Position(second_position[0] + TILE_SIZE, second_position[1])
-            )
-        )
+        self.assertTrue(mission.is_position_valid(Position(second_position[0] + TILE_SIZE, second_position[1])))
 
     def test_update_state_position_objective(self):
         nature = rd.choice([MissionType.POSITION, MissionType.TOUCH_POSITION])

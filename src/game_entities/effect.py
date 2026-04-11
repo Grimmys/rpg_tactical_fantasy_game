@@ -31,26 +31,16 @@ class Effect:
         self.duration: int = duration
         if self.name in ("speed_up", "strength_up", "defense_up"):
             alteration_root = etree.parse("data/alterations.xml").find(name)
-            desc = (
-                get_localized_string(alteration_root.find("info"))
-                .strip()
-                .replace("{val}", str(self.power))
-            )
+            desc = get_localized_string(alteration_root.find("info")).strip().replace("{val}", str(self.power))
             abbr = alteration_root.find("abbreviated_name").text.strip()
-            self.alteration = Alteration(
-                self.name, abbr, self.power, self.duration, desc
-            )
+            self.alteration = Alteration(self.name, abbr, self.power, self.duration, desc)
         elif self.name == "stun":
             alteration_root = etree.parse("data/alterations.xml").find(name)
             desc = get_localized_string(alteration_root.find("info")).strip()
             abbr = alteration_root.find("abbreviated_name").text.strip()
             effs_el = alteration_root.find("effects")
-            durable_effects = (
-                effs_el.text.strip().split(",") if effs_el is not None else []
-            )
-            self.alteration = Alteration(
-                self.name, abbr, self.power, self.duration, desc, durable_effects
-            )
+            durable_effects = effs_el.text.strip().split(",") if effs_el is not None else []
+            self.alteration = Alteration(self.name, abbr, self.power, self.duration, desc, durable_effects)
 
     def apply_on_ent(self, entity: Destroyable) -> tuple[bool, str]:
         """
@@ -76,19 +66,13 @@ class Effect:
                 msg += f_ENTITY_GAINED_A_LEVEL(entity)
         elif self.name == "speed_up":
             entity.set_alteration(self.alteration)
-            msg = f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(
-                entity, self.duration
-            )
+            msg = f_THE_SPEED_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
         elif self.name == "strength_up":
             entity.set_alteration(self.alteration)
-            msg = f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(
-                entity, self.duration
-            )
+            msg = f_THE_STRENGTH_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
         elif self.name == "defense_up":
             entity.set_alteration(self.alteration)
-            msg = f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(
-                entity, self.duration
-            )
+            msg = f_THE_DEFENSE_OF_ENTITY_HAS_BEEN_INCREASED_FOR_NUMBER_TURNS(entity, self.duration)
         elif self.name == "stun":
             entity.set_alteration(self.alteration)
             msg = f_ENTITY_HAS_BEEN_STUNNED_FOR_NUMBER_TURNS(entity, self.duration)

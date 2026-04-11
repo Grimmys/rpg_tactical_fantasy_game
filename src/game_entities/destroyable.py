@@ -60,9 +60,7 @@ class Destroyable(Entity):
         self.hit_points: int = hit_points
         self.defense: int = defense
         self.resistance: int = resistance
-        self.attack_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "attack.ogg")
-        )
+        self.attack_sfx: pygame.mixer.Sound = pygame.mixer.Sound(os.path.join("sound_fx", "attack.ogg"))
 
     def display_hit_points(self, screen: pygame.Surface) -> None:
         """
@@ -85,18 +83,14 @@ class Destroyable(Entity):
             damage_bar = pygame.transform.scale(
                 damage_bar,
                 (
-                    int(
-                        damage_bar.get_width() * (self.hit_points / self.hit_points_max)
-                    ),
+                    int(damage_bar.get_width() * (self.hit_points / self.hit_points_max)),
                     damage_bar.get_height(),
                 ),
             )
             screen.blit(constant_sprites["hp_bar"], self.position)
             screen.blit(damage_bar, self.position)
 
-    def attacked(
-        self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]
-    ) -> int:
+    def attacked(self, entity: Entity, damage: int, kind: DamageKind, allies: Sequence[Entity]) -> int:
         """
         Compute how much the entity should take and reduce the hit points of
         the entity by this value.
@@ -141,9 +135,7 @@ class Destroyable(Entity):
             hp_recovered: int = self.hit_points_max - self.hit_points
         else:
             hp_recovered: int = (
-                value
-                if self.hit_points + value <= self.hit_points_max
-                else self.hit_points_max - self.hit_points
+                value if self.hit_points + value <= self.hit_points_max else self.hit_points_max - self.hit_points
             )
         self.hit_points += hp_recovered
         return hp_recovered

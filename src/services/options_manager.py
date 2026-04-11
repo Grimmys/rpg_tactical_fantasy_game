@@ -1,15 +1,12 @@
-import pathlib
-import os
 import json
+import os
+import pathlib
 from typing import Any
 
-DEFAULT_OPTIONS = {
-    "language": "en",
-    "move_speed": 4,
-    "screen_size": 1
-}
+DEFAULT_OPTIONS = {"language": "en", "move_speed": 4, "screen_size": 1}
 
 options_path = pathlib.Path("saves/options.json")
+
 
 def load_options():
     """
@@ -28,8 +25,10 @@ def load_options():
             json.dump(DEFAULT_OPTIONS, options_file, indent=4)
         return DEFAULT_OPTIONS
 
-options = load_options()   
-    
+
+options = load_options()
+
+
 def get_option(option_name: str):
     """
     Get the value of a specific option.
@@ -42,12 +41,14 @@ def get_option(option_name: str):
     """
     return options[option_name]
 
+
 def save_options():
     """
     Save current options to options.json file.
     """
     with open(options_path, "w", encoding="utf-8") as options_file:
         json.dump(options, options_file, indent=4)
+
 
 def set_option(option_name: str, value: Any, save: bool = True):
     """

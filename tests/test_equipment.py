@@ -53,9 +53,7 @@ class TestEquipment(unittest.TestCase):
                 "races": ["human", "dwarf"],
             }
         )
-        self.assertEqual(
-            "Warrior, Ranger, Spy, Human, Dwarf", equipment.get_formatted_restrictions()
-        )
+        self.assertEqual("Warrior, Ranger, Spy, Human, Dwarf", equipment.get_formatted_restrictions())
 
 
 if __name__ == "__main__":

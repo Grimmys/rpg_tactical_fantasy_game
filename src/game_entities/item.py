@@ -33,13 +33,9 @@ class Item:
 
     internal_identifier: int = 0
 
-    def __init__(
-        self, name: str, sprite: str, description: str, price: int = 0
-    ) -> None:
+    def __init__(self, name: str, sprite: str, description: str, price: int = 0) -> None:
         self.name: str = name
-        self.sprite: pygame.Surface = pygame.transform.scale(
-            pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)
-        )
+        self.sprite: pygame.Surface = pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         self.sprite_path: str = sprite
         self.description: str = description
         self.price: int = price

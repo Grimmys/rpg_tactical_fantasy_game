@@ -8,6 +8,10 @@ dependencies = [
     "pygame-popup==0.11.2",
     "pytest>=9.0.0",
     "pytmx>=3.31",
+]
+
+[project.optional-dependencies]
+rl = [
     "stable-baselines3>=2.3.0",
     "torch>=2.0.0",
     "gymnasium>=0.29.0",
@@ -32,6 +36,8 @@ ignore = [
     "PLR0913",  # Too many arguments
     "PLR0915",  # Too many statements
     "PLR2004",  # Magic value comparison
+    "F403",     # Star imports
+    "F405",     # May be undefined from star import
 ]
 
 [tool.ruff.lint.mccabe]

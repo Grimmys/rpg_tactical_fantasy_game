@@ -100,9 +100,7 @@ class Alteration:
         alteration_description.text = self.description
         alteration_specificities: etree.SubElement = etree.SubElement(tree, "specs")
         for specificity in self.specificities:
-            specificity_element: etree.SubElement = etree.SubElement(
-                alteration_specificities, "spec"
-            )
+            specificity_element: etree.SubElement = etree.SubElement(alteration_specificities, "spec")
             specificity_element.text = specificity
 
         return tree

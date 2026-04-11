@@ -20,8 +20,6 @@ class Spellbook(Book):
     spell -- the name of the spell of the spellbook
     """
 
-    def __init__(
-        self, name: str, sprite: str, description: str, price: int, spell: str
-    ):
+    def __init__(self, name: str, sprite: str, description: str, price: int, spell: str):
         super().__init__(name, sprite, description, price)
         self.spell: str = spell
