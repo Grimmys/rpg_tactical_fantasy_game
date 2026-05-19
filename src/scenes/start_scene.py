@@ -7,6 +7,9 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Optional
 
+import subprocess
+import sys
+
 import pygame
 from lxml.etree import XMLSyntaxError
 from pygamepopup.components import InfoBox, TextElement
@@ -63,6 +66,7 @@ class StartScene(Scene):
                     "new_game": self.new_game,
                     "load_menu": self.load_menu,
                     "options_menu": self.options_menu,
+                    "level_editor_menu": self.level_editor_menu,
                     "exit_game": self.exit_game,
                 }
             )
@@ -70,6 +74,47 @@ class StartScene(Scene):
 
         self.level: Optional[LevelScene] = None
         self.exit: QuitActionKind = QuitActionKind.CONTINUE
+
+    def level_editor_menu(self) -> None:
+        """Open the secondary tools menu (e.g., map editor actions)."""
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_editor_menu(
+                {
+                    "create_map": self.create_map,
+                    "load_map": self.load_map,
+                    "back_to_main": self.back_to_main_menu,
+                }
+            )
+        )
+
+    def back_to_main_menu(self) -> None:
+        """Return to the main menu."""
+        self.menu_manager.open_menu(
+            menu_creator_manager.create_start_menu(
+                {
+                    "new_game": self.new_game,
+                    "load_menu": self.load_menu,
+                    "options_menu": self.options_menu,
+                    "level_editor_menu": self.level_editor_menu,
+                    "exit_game": self.exit_game,
+                }
+            )
+        )
+
+    def _launch_editor(self, template: Optional[str] = None) -> None:
+        """Launch the level editor as a subprocess to avoid disturbing the game loop."""
+        cmd = [sys.executable, "main.py", "--editor"]
+        if template:
+            cmd.extend(["--editor-template", template])
+        subprocess.Popen(cmd)
+
+    def create_map(self) -> None:
+        """Start the editor without a preset template."""
+        self._launch_editor()
+
+    def load_map(self) -> None:
+        """Start the editor on the default template location."""
+        self._launch_editor("maps/editor_templates/template.json")
 
     def display(self) -> None:
         """

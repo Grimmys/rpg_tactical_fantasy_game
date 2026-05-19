@@ -1276,8 +1276,25 @@ def create_start_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
                 Button(title=STR_OPTIONS, callback=buttons_callback["options_menu"]),
             ],
             [
+                Button(title=STR_LVL_EDITOR, callback=buttons_callback["level_editor_menu"]),
+            ],
+            [
                 Button(title=STR_EXIT_GAME, callback=buttons_callback["exit_game"]),
             ],
+        ],
+        width=START_MENU_WIDTH,
+        has_close_button=False,
+    )
+
+
+def create_editor_menu(buttons_callback: dict[str, Callable]) -> InfoBox:
+    """Secondary menu grouping editor tools to keep the main menu uncluttered."""
+    return InfoBox(
+        "Tools",
+        [
+            [Button(title="Create map", callback=buttons_callback["create_map"])],
+            [Button(title="Load map", callback=buttons_callback["load_map"])],
+            [Button(title="Back", callback=buttons_callback["back_to_main"])],
         ],
         width=START_MENU_WIDTH,
         has_close_button=False,

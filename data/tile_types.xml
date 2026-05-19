@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tiletypes>
+    <!-- Starter set for the editor; extend as needed -->
+    <tiletype id="1" name="grass">
+        <walk_cost>1</walk_cost>
+        <def>0</def>
+        <color>#3CB043</color>
+    </tiletype>
+    <tiletype id="2" name="forest">
+        <walk_cost>2</walk_cost>
+        <def>1</def>
+        <color>#2E8B57</color>
+    </tiletype>
+    <tiletype id="3" name="mountain">
+        <walk_cost>3</walk_cost>
+        <def>2</def>
+        <color>#8B8682</color>
+    </tiletype>
+    <tiletype id="4" name="water">
+        <walk_cost>99</walk_cost>
+        <def>0</def>
+        <color>#1E90FF</color>
+    </tiletype>
+    <tiletype id="5" name="road">
+        <walk_cost>1</walk_cost>
+        <def>0</def>
+        <color>#B8860B</color>
+    </tiletype>
+</tiletypes>

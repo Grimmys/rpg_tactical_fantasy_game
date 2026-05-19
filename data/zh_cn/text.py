@@ -6,6 +6,7 @@ STR_GAME_TITLE = "以五猫之名"
 STR_NEW_GAME = "新游戏"
 STR_LOAD_GAME = "载入存档"
 STR_OPTIONS = "选项"
+STR_LVL_EDITOR = "关卡编辑器"
 STR_EXIT_GAME = "退出游戏"
 
 # Close button
