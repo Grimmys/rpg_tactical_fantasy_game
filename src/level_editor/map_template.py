@@ -137,6 +137,18 @@ class MapTemplate:
     next_object_id: int | None = None
     layer_ids: Dict[str, int] = field(default_factory=dict)
     raw_tileset_sources: Dict[int, str] = field(default_factory=dict)
+    # Preserved TMX metadata so a no-op save reproduces the original document
+    map_version: str | None = None
+    map_tiledversion: str | None = None
+    map_renderorder: str | None = None
+    editorsettings_export: str | None = None
+    layer_opacity: Dict[str, float] = field(default_factory=dict)
+    object_layer_visibility: Dict[str, bool] = field(default_factory=dict)
+    object_layer_opacity: Dict[str, float] = field(default_factory=dict)
+    # Ordered list of tile-layer names actually present in the source TMX
+    tile_layer_order: List[str] = field(default_factory=list)
+    # Ordered list of object-layer names actually present in the source TMX
+    object_layer_order: List[str] = field(default_factory=list)
 
     @staticmethod
     def create(
@@ -153,8 +165,6 @@ class MapTemplate:
         layers = {
             "ground": Layer([row[:] for row in empty_data]),
             "obstacles": Layer([[0 for _ in range(width)] for _ in range(height)]),
-            "allies": Layer([[0 for _ in range(width)] for _ in range(height)]),
-            "foes": Layer([[0 for _ in range(width)] for _ in range(height)]),
         }
         default_obj_layers: Dict[str, List[MapObject]] = {
             "dynamic_data": [],
@@ -247,27 +257,34 @@ class MapTemplate:
         except Exception as exc:
             print(f"[editor] Warning: failed to read tilesets from TMX XML: {exc}")
 
+        # Only materialise tile layers that exist in the source TMX (preserves order).
+        # This avoids accidentally adding allies/foes tile layers, which the main
+        # game does NOT model as tile layers (see Phase 2: entities live in objects).
         layers: Dict[str, Layer] = {}
-        for lname in ["ground", "obstacles", "allies", "foes"]:
-            p_layer = parsed.layers.get(lname)
+        layer_opacity: Dict[str, float] = {}
+        tile_layer_order: List[str] = list(parsed.layers.keys())
+        for lname in tile_layer_order:
+            p_layer = parsed.layers[lname]
             grid = [[0 for _ in range(width)] for _ in range(height)]
-            source_data = tile_data_by_name.get(lname)
-            if source_data is None and p_layer is not None:
-                source_data = p_layer.data
-            if source_data is not None:
-                for y in range(min(height, len(source_data))):
-                    row = source_data[y]
-                    for x in range(min(width, len(row))):
-                        grid[y][x] = row[x]
-                visible = p_layer.visible if p_layer is not None else True
-            else:
-                visible = True
-            layers[lname] = Layer(grid, visible)
+            source_data = tile_data_by_name.get(lname) or p_layer.data
+            for y in range(min(height, len(source_data))):
+                row = source_data[y]
+                for x in range(min(width, len(row))):
+                    grid[y][x] = row[x]
+            layers[lname] = Layer(grid, p_layer.visible)
+            if p_layer.opacity is not None:
+                layer_opacity[lname] = p_layer.opacity
 
         # Map properties and object layers
         map_props = dict(parsed.properties)
         object_layers: Dict[str, List[MapObject]] = {}
+        object_layer_visibility: Dict[str, bool] = {}
+        object_layer_opacity: Dict[str, float] = {}
+        object_layer_order: List[str] = list(parsed.object_layers.keys())
         for lname, olayer in parsed.object_layers.items():
+            object_layer_visibility[lname] = olayer.visible
+            if olayer.opacity is not None:
+                object_layer_opacity[lname] = olayer.opacity
             collected: List[MapObject] = []
             for obj in olayer.objects:
                 raw = object_geom_map.get(getattr(obj, "id", None))
@@ -303,6 +320,8 @@ class MapTemplate:
         # Ensure the canonical object layers exist
         for required in ("dynamic_data", "events"):
             object_layers.setdefault(required, [])
+            if required not in object_layer_order:
+                object_layer_order.append(required)
 
         return MapTemplate(
             width,
@@ -318,6 +337,15 @@ class MapTemplate:
             next_object_id,
             layer_ids,
             raw_tileset_sources,
+            map_version=parsed.version,
+            map_tiledversion=parsed.tiledversion,
+            map_renderorder=parsed.renderorder,
+            editorsettings_export=parsed.editorsettings_export,
+            layer_opacity=layer_opacity,
+            object_layer_visibility=object_layer_visibility,
+            object_layer_opacity=object_layer_opacity,
+            tile_layer_order=tile_layer_order,
+            object_layer_order=object_layer_order,
         )
 
     def save_tmx(
@@ -344,10 +372,10 @@ class MapTemplate:
         tw = tile_width or self.tile_width or 32
         th = tile_height or self.tile_height or 32
 
-        # Map-level metadata overrides
-        m_version = map_version or "1.10"
-        m_tiledversion = map_tiledversion or "1.11.2"
-        m_renderorder = renderorder or "right-down"
+        # Map-level metadata overrides; fall back to stored values from the source TMX
+        m_version = map_version or self.map_version or "1.10"
+        m_tiledversion = map_tiledversion or self.map_tiledversion or "1.11.2"
+        m_renderorder = renderorder or self.map_renderorder or "right-down"
 
         # Prefer the template's stored tilesets/firstgids for exact round-trips
         tileset_sources: List[Path]
@@ -380,9 +408,10 @@ class MapTemplate:
             },
         )
 
-        # Editor export settings (optional)
-        if include_editorsettings:
-            fmt = include_editorsettings if isinstance(include_editorsettings, str) else "tmx"
+        # Editor export settings (optional). Honour stored value when not overridden.
+        editor_export_fmt = include_editorsettings if include_editorsettings is not None else self.editorsettings_export
+        if editor_export_fmt:
+            fmt = editor_export_fmt if isinstance(editor_export_fmt, str) else "tmx"
             editor_el = ET.SubElement(map_el, "editorsettings")
             ET.SubElement(editor_el, "export", {"format": fmt})
 
@@ -469,13 +498,20 @@ class MapTemplate:
                     },
                 )
 
-        # Layers (only those present in the template)
+        # Layers (only those present in the template). Prefer parsed_layers if given,
+        # else use the source-TMX ordering captured at load time, else dict order.
         layer_id = 1
         max_layer_id = 0
-        # If parsed_layers provided, use its ordering/visibility/opacities and only those layers
-        layer_items = (
-            list(parsed_layers.items()) if parsed_layers else list(self.layers.items())
-        )
+        if parsed_layers:
+            layer_items = list(parsed_layers.items())
+        elif self.tile_layer_order:
+            layer_items = [(n, None) for n in self.tile_layer_order if n in self.layers]
+            # Append any layers added after load
+            for n in self.layers.keys():
+                if n not in self.tile_layer_order:
+                    layer_items.append((n, None))
+        else:
+            layer_items = list(self.layers.items())
         for layer_name, layer_meta in layer_items:
             layer = self.layers.get(layer_name, Layer([[0 for _ in range(self.width)] for _ in range(self.height)]))
             parsed_layer = layer_meta if parsed_layers else None
@@ -499,9 +535,12 @@ class MapTemplate:
             layer_visible = parsed_layer.visible if parsed_layer is not None else layer.visible
             if not layer_visible:
                 layer_el.set("visible", "0")
-            layer_opacity = getattr(parsed_layer, "opacity", None) if parsed_layer else None
-            if layer_opacity is not None:
-                layer_el.set("opacity", str(layer_opacity))
+            if parsed_layer is not None:
+                layer_opacity_val = getattr(parsed_layer, "opacity", None)
+            else:
+                layer_opacity_val = self.layer_opacity.get(layer_name)
+            if layer_opacity_val is not None:
+                layer_el.set("opacity", str(layer_opacity_val))
 
             data_el = ET.SubElement(layer_el, "data", {"encoding": "csv"})
             rows: List[str] = []
@@ -516,10 +555,15 @@ class MapTemplate:
         max_object_id = 0
         canonical_order = ["dynamic_data", "events"]
         remaining = [k for k in self.object_layers.keys() if k not in canonical_order]
-        obj_layer_items = (
-            list(parsed_object_layers.items()) if parsed_object_layers else []
-        )
-        if not obj_layer_items:
+        if parsed_object_layers:
+            obj_layer_items = list(parsed_object_layers.items())
+        elif self.object_layer_order:
+            ordered = [(n, None) for n in self.object_layer_order if n in self.object_layers]
+            for n in self.object_layers.keys():
+                if n not in self.object_layer_order:
+                    ordered.append((n, None))
+            obj_layer_items = ordered
+        else:
             # Fall back to canonical order when no parsed object layers provided
             obj_layer_items = [(lname, None) for lname in canonical_order + remaining]
 
@@ -540,10 +584,17 @@ class MapTemplate:
             )
             max_layer_id = max(max_layer_id, int(obj_layer_el.attrib["id"]))
             layer_id += 1
-            if parsed_obj_layer and not getattr(parsed_obj_layer, "visible", True):
-                obj_layer_el.set("visible", "0")
-            if parsed_obj_layer and getattr(parsed_obj_layer, "opacity", None) is not None:
-                obj_layer_el.set("opacity", str(parsed_obj_layer.opacity))
+            if parsed_obj_layer is not None:
+                if not getattr(parsed_obj_layer, "visible", True):
+                    obj_layer_el.set("visible", "0")
+                if getattr(parsed_obj_layer, "opacity", None) is not None:
+                    obj_layer_el.set("opacity", str(parsed_obj_layer.opacity))
+            else:
+                if not self.object_layer_visibility.get(lname, True):
+                    obj_layer_el.set("visible", "0")
+                stored_opacity = self.object_layer_opacity.get(lname)
+                if stored_opacity is not None:
+                    obj_layer_el.set("opacity", str(stored_opacity))
             for obj in objects:
                 actual_id = obj.object_id if obj.object_id is not None else object_id
                 obj.to_xml(obj_layer_el, actual_id)

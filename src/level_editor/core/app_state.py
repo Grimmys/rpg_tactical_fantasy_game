@@ -29,6 +29,8 @@ class EditorState:
     load_index: int = 0
     help_active: bool = False
     dirty: bool = False
+    # Object editing tool selector (one of object_model.SUPPORTED_OBJECT_TYPES)
+    active_object_type: str = "placement"
 
     def reset_rect(self) -> None:
         self.rect_active = False

@@ -53,14 +53,23 @@ if __name__ == "__main__":
     parser.add_argument("--editor-width", type=int, default=22, help="Grid width for the editor")
     parser.add_argument("--editor-height", type=int, default=14, help="Grid height for the editor")
     parser.add_argument("--editor-template", type=str, default=None, help="Optional template path for the editor")
+    parser.add_argument(
+        "editor_map",
+        nargs="?",
+        default=None,
+        help="Optional TMX map path to load in the editor (positional shortcut for --editor-template)",
+    )
     args = parser.parse_args()
 
     if args.editor:
         from src.level_editor import editor_main
 
-        template_path = Path(args.editor_template) if args.editor_template else None
+        template_arg = args.editor_template or args.editor_map
+        template_path = Path(template_arg) if template_arg else None
         editor_main(args.editor_width, args.editor_height, template_path)
         sys.exit(0)
+    if args.editor_map is not None:
+        parser.error("positional map path is only valid with --editor")
 
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         # running main.py in a pyinstaller bundle

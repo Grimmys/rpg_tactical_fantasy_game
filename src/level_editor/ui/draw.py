@@ -81,6 +81,11 @@ def draw_grid(
     label = f"GID {selected_gid} (Tool: {tool_name}, Layer: {current_layer})"
     text_surface = font.render(f"Selected: {label}", True, (255, 255, 255))
     screen.blit(text_surface, (8, 8))
+    if tool_name == "OBJECT":
+        active_type = getattr(tmpl, "_editor_active_object_type", None)
+        # Fallback annotation: caller passes via attribute or skip.
+        hint_text = "Click: place  RClick: delete  Tab/]: next type  [: prev"
+        screen.blit(font.render(hint_text, True, (200, 220, 255)), (8, 26))
 
     if rect_preview is not None:
         x0, y0, x1, y1 = rect_preview
@@ -112,6 +117,31 @@ def draw_grid(
                 if surf.get_width() != tile_pixels or surf.get_height() != tile_pixels:
                     surf = pygame.transform.smoothscale(surf, (tile_pixels, tile_pixels))
                 screen.blit(surf, (int(obj.x * scale_x), int(obj.y * scale_y)))
+
+    # Editable object overlay (from MapTemplate) — colour-coded by type, drawn above tiles.
+    object_palette = {
+        "placement": (80, 200, 240),
+        "foe": (220, 60, 60),
+        "ally": (60, 180, 90),
+        "objective": (240, 200, 60),
+    }
+    dynamic_layer = tmpl.object_layers.get("dynamic_data", [])
+    tw = max(1, tmpl.tile_width)
+    th = max(1, tmpl.tile_height)
+    for obj in dynamic_layer:
+        if obj.type not in object_palette:
+            continue
+        px = int(obj.x / tw * tile_pixels)
+        py = int(obj.y / th * tile_pixels)
+        rect = pygame.Rect(px + 3, py + 3, tile_pixels - 6, tile_pixels - 6)
+        color = object_palette[obj.type]
+        overlay = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+        overlay.fill((*color, 90))
+        screen.blit(overlay, rect.topleft)
+        pygame.draw.rect(screen, color, rect, width=2)
+        glyph = obj.type[0].upper()
+        label = font.render(glyph, True, (10, 10, 10))
+        screen.blit(label, (rect.x + 4, rect.y + 2))
 
 
 def draw_layer_panel(

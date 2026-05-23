@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Optional
 
 from ..map_template import MapTemplate
+from .. import object_model
 from .app_state import EditorState
 
 
@@ -104,3 +105,29 @@ def cycle_tileset(state: EditorState, delta: int) -> None:
 
 def set_selected_gid(state: EditorState, gid: int) -> None:
     state.selected_gid = gid
+
+
+def place_object(state: EditorState, x: int, y: int) -> None:
+    """Stamp the current active object type on the dynamic_data layer."""
+    object_model.place_object(state.tmpl, state.active_object_type, x, y)
+    state.dirty = True
+
+
+def delete_object(state: EditorState, x: int, y: int) -> bool:
+    """Delete an editable object at the given tile cell."""
+    removed = object_model.delete_object_at(state.tmpl, x, y)
+    if removed:
+        state.dirty = True
+    return removed
+
+
+def cycle_object_type(state: EditorState, delta: int = 1) -> None:
+    """Cycle through SUPPORTED_OBJECT_TYPES for the OBJECT tool."""
+    types = object_model.SUPPORTED_OBJECT_TYPES
+    if not types:
+        return
+    try:
+        idx = types.index(state.active_object_type)
+    except ValueError:
+        idx = 0
+    state.active_object_type = types[(idx + delta) % len(types)]

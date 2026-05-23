@@ -156,6 +156,12 @@ def handle_event(
         elif event.key == pygame.K_f:
             if event.mod & pygame.KMOD_CTRL:
                 commands.set_tool(state, "FILL")
+        elif event.key == pygame.K_o:
+            commands.set_tool(state, "OBJECT")
+        elif event.key in (pygame.K_RIGHTBRACKET, pygame.K_TAB) and state.tool == "OBJECT":
+            commands.cycle_object_type(state, 1)
+        elif event.key == pygame.K_LEFTBRACKET and state.tool == "OBJECT":
+            commands.cycle_object_type(state, -1)
         return True
 
     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -191,6 +197,8 @@ def handle_event(
                     commands.rect_begin(state, x, y)
                 elif state.tool == "FILL":
                     commands.flood(state, x, y, flood_fill)
+                elif state.tool == "OBJECT":
+                    commands.place_object(state, x, y)
             elif mx < ctx.grid_w + ctx.layer_panel_width:
                 rel_x = mx - ctx.grid_w
                 rel_y = my
@@ -211,19 +219,22 @@ def handle_event(
             if mx < ctx.grid_w:
                 x = mx // ctx.tile_pixels
                 y = my // ctx.tile_pixels
-                try:
-                    picked = ctx.tmpl.get(x, y, state.current_layer)
-                    if isinstance(picked, int):
-                        palette_controller.handle_eyedropper_selection(
-                            state,
-                            ctx.palette_model,
-                            ctx.palette_panel,
-                            ctx.tileset_names,
-                            ctx.tileset_index,
-                            picked,
-                        )
-                except (IndexError, KeyError):
-                    pass
+                if state.tool == "OBJECT":
+                    commands.delete_object(state, x, y)
+                else:
+                    try:
+                        picked = ctx.tmpl.get(x, y, state.current_layer)
+                        if isinstance(picked, int):
+                            palette_controller.handle_eyedropper_selection(
+                                state,
+                                ctx.palette_model,
+                                ctx.palette_panel,
+                                ctx.tileset_names,
+                                ctx.tileset_index,
+                                picked,
+                            )
+                    except (IndexError, KeyError):
+                        pass
         return True
 
     if event.type == pygame.MOUSEMOTION:

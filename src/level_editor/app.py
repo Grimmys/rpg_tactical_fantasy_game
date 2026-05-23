@@ -58,6 +58,10 @@ LAYER_COLORS = {
 
 def editor_main(width: int = 22, height: int = 14, template_path: Optional[Path] = None) -> None:
     pygame.init()
+    # pytmx's pygame loader calls Surface.convert_alpha(), which requires an
+    # active display surface. Create a tiny placeholder window now; we resize
+    # it to the real editor dimensions once the template has been loaded.
+    pygame.display.set_mode((1, 1))
     repo_root = Path(__file__).resolve().parents[2]
     default_tsx_dir = repo_root / "imgs" / "tiled_tilesets"
     tsx_paths = sorted(default_tsx_dir.glob("*.tsx"))
