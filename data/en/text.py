@@ -29,6 +29,8 @@ STR_FAST = "Fast"
 STR_SLOW = "Slow"
 STR_WINDOW = "Window"
 STR_FULL = "Full"
+STR_BGM_ = "BGM :"
+STR_SFX_ = "SFX :"
 
 # Save game menu
 STR_SAVE_GAME_MENU = "Save Game"

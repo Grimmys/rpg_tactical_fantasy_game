@@ -1357,6 +1357,28 @@ def create_options_menu(
                     lambda value: modify_option_function("screen_size", value),
                 ),
             ],
+            [
+                load_parameter_button(
+                    STR_BGM_,
+                    [
+                        {"label": STR_YES, "value": 1},
+                        {"label": STR_NO, "value": 0},
+                    ],
+                    parameters["bgm"],
+                    lambda value: modify_option_function("bgm", value),
+                ),
+            ],
+            [
+                load_parameter_button(
+                    STR_SFX_,
+                    [
+                        {"label": STR_YES, "value": 1},
+                        {"label": STR_NO, "value": 0},
+                    ],
+                    parameters["sfx"],
+                    lambda value: modify_option_function("sfx", value),
+                ),
+            ],
         ],
         width=START_MENU_WIDTH,
     )

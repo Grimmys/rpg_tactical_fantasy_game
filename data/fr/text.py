@@ -27,6 +27,8 @@ STR_FAST = "Rapide"
 STR_SLOW = "Lent"
 STR_WINDOW = "Fenêtré"
 STR_FULL = "Plein écran"
+STR_BGM_ = "Musique :"
+STR_SFX_ = "Son :"
 
 # Save game menu
 STR_SAVE_GAME_MENU = "Enregistrer le jeu"

@@ -33,6 +33,8 @@ STR_FAST = "快速"
 STR_SLOW = "慢速"
 STR_WINDOW = "窗口化"
 STR_FULL = "全屏"
+STR_BGM_ = "音乐 :"
+STR_SFX_ = "音效 :"
 
 # Save game menu
 STR_SAVE_GAME_MENU = "保存游戏"
