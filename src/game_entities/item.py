@@ -17,7 +17,7 @@ class Item:
 
     Keyword arguments:
     name -- the name of the item
-    sprite -- the relative path to the visual representation of the item
+    sprite_path -- the relative path to the visual representation of the item
     description -- the description of the item that may be displayed on an interface
     price -- the standard price of the item in a shop, optional if the item can't be sold or bought
 
@@ -34,13 +34,13 @@ class Item:
     internal_identifier: int = 0
 
     def __init__(
-        self, name: str, sprite: str, description: str, price: int = 0
+        self, name: str, sprite_path: Path, description: str, price: int = 0
     ) -> None:
         self.name: str = name
         self.sprite: pygame.Surface = pygame.transform.scale(
-            pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+            pygame.image.load(sprite_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)
         )
-        self.sprite_path: str = sprite
+        self.sprite_path: Path = sprite_path
         self.description: str = description
         self.price: int = price
         self.resell_price: int = price // 2

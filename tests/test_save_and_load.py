@@ -1,10 +1,10 @@
 import random
 import unittest
-import os
 from unittest.mock import patch
 from datetime import datetime
 
 
+from pathlib import Path
 from src.game_entities.foe import Keyword
 from src.services.load_from_xml_manager import (load_ally_from_save,
                                                 load_alteration,
@@ -167,18 +167,17 @@ class TestSaveAndLoad(unittest.TestCase):
         dummy_level = DummyLevel()
         save_manager = SaveStateManager(dummy_level)
 
-
         # patch to ensure the users test files are not overwritten by this test.
         # save files from this test are saved to tests/saves/
         file_id = 0
-        test_save_path = f"tests/saves/save_"
-        with patch.object(save_manager, "save_filepath", test_save_path):
-            save_manager.save_game(file_id)
+        test_save_directory = Path("tests", "saves")
+        with patch.object(save_manager, "save_directory", test_save_directory):
+            save_manager.save_game(str(file_id))
         current_time_string = datetime.now().strftime("%Y-%m-%d %H:%M")
 
         # check that the file exists
-        test_save_path = "tests/saves/save_0.xml"
-        assert os.path.exists(test_save_path)
+        test_save_path = Path("tests", "saves", "save_0.xml")
+        assert test_save_path.exists()
 
         tree = ET.parse(test_save_path)
         root = tree.getroot()

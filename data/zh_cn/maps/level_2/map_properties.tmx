@@ -2,6 +2,7 @@
     <properties>
         <property name="chapter_id" type="int" value="1"/>
         <property name="level_name" value="窃回"/>
+        <property name="level_music" value="sound_fx/8_bit_dungeon.ogg"/>
         <property name="main_mission_description" value="将遗骸放回祭坛上"/>
         <property name="main_mission_number_players" type="int" value="1"/>
         <property name="main_mission_type" value="TOUCH_POSITION"/>

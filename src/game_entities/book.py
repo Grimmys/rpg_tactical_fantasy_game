@@ -3,6 +3,7 @@ Defines Book, an item that is a book and can be read
 """
 
 from src.game_entities.item import Item
+from pathlib import Path
 
 
 class Book(Item):
@@ -12,10 +13,10 @@ class Book(Item):
 
     Keyword arguments:
     name -- the name of the item
-    sprite -- the relative path to the visual representation of the item
+    sprite_path -- the relative path to the visual representation of the item
     description -- the description of the item that might be displayed on an interface
     price -- the standard price of the item in a shop, optional if the item can't be sold or bought
     """
 
-    def __init__(self, name: str, sprite: str, description: str, price: int):
-        super().__init__(name, sprite, description, price)
+    def __init__(self, name: str, sprite_path: Path, description: str, price: int):
+        super().__init__(name, sprite_path, description, price)

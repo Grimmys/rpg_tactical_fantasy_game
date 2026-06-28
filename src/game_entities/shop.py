@@ -4,12 +4,10 @@ Defines Shop class, a Building in which a player character can buy or sell stuff
 
 from __future__ import annotations
 
-import os
 from copy import copy
 from typing import Optional
 
 import pygame.mixer
-from lxml import etree
 from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
 
 from src.game_entities.building import Building
@@ -50,7 +48,7 @@ class Shop(Building):
         self,
         name: str,
         position: Position,
-        sprite_link: str,
+        sprite_link: Path,
         shop_balance: int,
         stock: list[dict[str, any]],
         interaction: Optional[dict[str, any]] = None,
@@ -65,7 +63,7 @@ class Shop(Building):
             Shop.interaction_callback, self.stock, 0, self.shop_balance
         )
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "trade.ogg")
+            Path("sound_fx", "trade.ogg")
         )
 
     def get_item_entry(self, item: Item) -> Optional[dict[str, any]]:

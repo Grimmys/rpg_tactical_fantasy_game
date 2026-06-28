@@ -5,15 +5,15 @@ different classes handling the management of entities that can move, only living
 
 from __future__ import annotations
 
-import os
 from collections.abc import Sequence
 from enum import Enum, IntEnum, auto
+from pathlib import Path
 from typing import Optional, Union
 
 import pygame
 from lxml import etree
 
-from src.constants import ANIMATION_SPEED, INITIAL_MAX, TILE_SIZE
+from src.constants import INITIAL_MAX, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.consumable import Consumable
 from src.game_entities.destroyable import DamageKind, Destroyable
@@ -109,7 +109,7 @@ class Movable(Destroyable):
         Initialize the generic sprites.
         This operation should be called after the initialization of a pygame window.
         """
-        selected_sprite: str = "imgs/dungeon_crawl/misc/cursor.png"
+        selected_sprite: Path = Path("imgs", "dungeon_crawl", "misc", "cursor.png")
         Movable.SELECTED_DISPLAY = pygame.transform.scale(
             pygame.image.load(selected_sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)
         )
@@ -118,7 +118,7 @@ class Movable(Destroyable):
         self,
         name: str,
         position: Position,
-        sprite: Union[str, pygame.Surface],
+        sprite: Union[Path, pygame.Surface],
         hit_points: int,
         defense: int,
         resistance: int,
@@ -162,16 +162,16 @@ class Movable(Destroyable):
         self.skills: Sequence[Skill] = skills
 
         self.walk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "walk.ogg")
+            Path("sound_fx", "walk.ogg")
         )
         self.skeleton_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "skeleton_walk.ogg")
+            Path("sound_fx", "skeleton_walk.ogg")
         )
         self.necrophage_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "necro_walk.ogg")
+            Path("sound_fx", "necro_walk.ogg")
         )
         self.centaur_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "cent_walk.ogg")
+            Path("sound_fx", "cent_walk.ogg")
         )
 
     def display(self, screen: pygame.Surface) -> None:

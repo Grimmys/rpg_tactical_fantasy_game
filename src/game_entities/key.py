@@ -3,6 +3,7 @@ Defines Key class, an item permitting to unlock specific entities.
 """
 
 from src.game_entities.item import Item
+from pathlib import Path
 
 
 class Key(Item):
@@ -25,12 +26,12 @@ class Key(Item):
     def __init__(
         self,
         name: str,
-        sprite: str,
+        sprite_path: Path,
         description: str,
         price: int,
         for_chest: bool,
         for_door: bool,
     ) -> None:
-        super().__init__(name, sprite, description, price)
+        super().__init__(name, sprite_path, description, price)
         self.for_chest: bool = for_chest
         self.for_door: bool = for_door

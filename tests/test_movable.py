@@ -1,6 +1,7 @@
 import random as rd
 import unittest
 
+from pathlib import Path
 from src.game_entities.movable import DamageKind, EntityStrategy, Movable
 from tests.random_data_library import (STATS, random_alteration, random_item,
                                        random_movable_entity, random_string)
@@ -15,7 +16,7 @@ class TestMovable(unittest.TestCase):
     def test_init_movable(self):
         name = "movable0"
         pos = (3, 2)
-        sprite = "imgs/dungeon_crawl/monster/angel.png"
+        sprite = Path("imgs", "dungeon_crawl", "monster", "angel.png")
         hp = 10
         defense = 4
         res = 3

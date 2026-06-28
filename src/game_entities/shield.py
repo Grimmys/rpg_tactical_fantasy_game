@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from lxml import etree
+from pathlib import Path
 
 from src.game_entities.equipment import Equipment
 
@@ -18,10 +19,10 @@ class Shield(Equipment):
 
     Keyword arguments:
     name -- the name of the item
-    sprite -- the relative path to the visual representation of the item
+    sprite_path -- the relative path to the visual representation of the item
     description -- the description of the item that might be displayed on an interface
     price -- the standard price of the item in a shop, optional if the item can't be sold or bought
-    equipped_sprites -- the ordered sequence of relative paths to the sprites that should be blitted
+    equipped_sprites_paths -- the ordered sequence of relative paths to the sprites that should be blitted
     on top of the character wearing the equipment
     wearing the equipment
     defense -- the defense bonus granted by the equipment
@@ -39,10 +40,10 @@ class Shield(Equipment):
     def __init__(
         self,
         name: str,
-        sprite: str,
+        sprite_path: Path,
         description: str,
         price: int,
-        equipped_sprites: Sequence[str],
+        equipped_sprites_paths: Sequence[Path],
         defense: int,
         weight: int,
         parry: float,
@@ -51,10 +52,10 @@ class Shield(Equipment):
     ) -> None:
         super().__init__(
             name,
-            sprite,
+            sprite_path,
             description,
             price,
-            equipped_sprites,
+            equipped_sprites_paths,
             "left_hand",
             defense,
             0,

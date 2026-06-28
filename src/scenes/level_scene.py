@@ -5,9 +5,9 @@ corresponding to an ongoing level.
 
 from __future__ import annotations
 
-import os
 from collections.abc import Sequence
 from enum import IntEnum, auto
+from pathlib import Path
 from typing import Optional, Union
 
 import pygame
@@ -68,6 +68,9 @@ from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID,
                                                create_save_dialog)
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
+
+
+DEFAULT_MUSIC: Path = Path("sound_fx", "soundtrack.ogg").resolve().absolute()
 
 
 class LevelStatus(IntEnum):
@@ -182,7 +185,7 @@ class LevelScene(Scene):
     def __init__(
         self,
         screen: pygame.Surface,
-        directory: str,
+        directory: Path,
         number: int,
         status: LevelStatus = LevelStatus.VERY_BEGINNING,
         turn: int = 0,
@@ -201,12 +204,13 @@ class LevelScene(Scene):
         )
         Shop.sell_interface_callback = self.open_sell_interface
 
-        self.directory: str = directory
+        self.directory: Path = directory
         self.number: int = number
 
-        self.tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
+        self.tmx_data = pytmx.load_pygame(self.directory / "map.tmx")
         self.tmx_map_properties_data = pytmx.load_pygame(
-            DATA_PATH + self.directory + "map_properties.tmx"
+            (DATA_PATH / self.directory / "map_properties")
+            .with_suffix(".tmx")
         )
         map_width, map_height = (
             self.tmx_data.width * TILE_SIZE,
@@ -303,13 +307,35 @@ class LevelScene(Scene):
         self.menu_manager.close_active_menu()
         self.open_save_menu()
 
+    def _get_level_music_track(self) -> Path:
+        track = self.tmx_map_properties_data.properties.get("level_music")
+        if isinstance(track, str) and track.strip():
+            return Path(track.strip()).resolve().absolute()
+        return DEFAULT_MUSIC
+
+    def _play_level_music(self) -> None:
+        track = self._get_level_music_track()
+        try:
+            pygame.mixer.music.load(track)
+            pygame.mixer.music.play(-1)
+        except pygame.error as exc:
+            print(f"[audio] Failed to load music '{track}': {exc}")
+
+    def _stop_level_music(self) -> None:
+        try:
+            pygame.mixer.music.fadeout(300)
+        except pygame.error as exc:
+            print(f"[audio] Failed to stop music: {exc}")
+
     def load_level_content(self) -> None:
         """
         Load all the content of the level
         """
 
+        self._play_level_music()
+
         self.events = tmx_loader.load_events(
-            self.tmx_data, DATA_PATH + self.directory, self.map["x"], self.map["y"]
+            self.tmx_data, DATA_PATH / self.directory, self.map["x"], self.map["y"]
         )
 
         self.player_possible_placements = tmx_loader.load_player_placements(
@@ -345,7 +371,7 @@ class LevelScene(Scene):
             self.entities.chests = tmx_loader.load_chests(self.tmx_data, gap_x, gap_y)
             self.entities.allies = tmx_loader.load_allies(self.tmx_data, gap_x, gap_y)
             self.entities.buildings = tmx_loader.load_buildings(
-                self.tmx_data, DATA_PATH + self.directory, gap_x, gap_y
+                self.tmx_data, DATA_PATH / self.directory, gap_x, gap_y
             )
             self.entities.breakables = tmx_loader.load_breakables(
                 self.tmx_data, gap_x, gap_y
@@ -391,13 +417,13 @@ class LevelScene(Scene):
             self.number,
         )
 
-        self.wait_sfx = pygame.mixer.Sound(os.path.join("sound_fx", "waiting.ogg"))
+        self.wait_sfx = pygame.mixer.Sound(Path("sound_fx", "waiting.ogg"))
         self.inventory_sfx = pygame.mixer.Sound(
-            os.path.join("sound_fx", "inventory.ogg")
+            Path("sound_fx", "inventory.ogg")
         )
-        self.armor_sfx = pygame.mixer.Sound(os.path.join("sound_fx", "armor.ogg"))
-        self.talk_sfx = pygame.mixer.Sound(os.path.join("sound_fx", "talking.ogg"))
-        self.gold_sfx = pygame.mixer.Sound(os.path.join("sound_fx", "trade.ogg"))
+        self.armor_sfx = pygame.mixer.Sound(Path("sound_fx", "armor.ogg"))
+        self.talk_sfx = pygame.mixer.Sound(Path("sound_fx", "talking.ogg"))
+        self.gold_sfx = pygame.mixer.Sound(Path("sound_fx", "trade.ogg"))
 
         self.is_loaded = True
 
@@ -434,7 +460,7 @@ class LevelScene(Scene):
             self.open_save_menu()
 
         save_state_manager = SaveStateManager(self)
-        save_state_manager.save_game(slot_id)
+        save_state_manager.save_game(str(slot_id))
 
         # Replaces the default InfoBox 'Close' button with one that calls the on_close nested function.
 
@@ -450,6 +476,7 @@ class LevelScene(Scene):
         """
         Handle the end of the level
         """
+        self._stop_level_music()
         # At next update, level will be destroyed
         self.quit_request = True
         if self.game_phase not in (LevelStatus.ENDED_VICTORY, LevelStatus.ENDED_DEFEAT):
@@ -501,6 +528,7 @@ class LevelScene(Scene):
         Return whether the game should be ended or not.
         """
         if self.quit_request:
+            self._stop_level_music()
             return True
 
         if self.animation:
@@ -520,6 +548,7 @@ class LevelScene(Scene):
             self.game_phase is LevelStatus.ENDED_DEFEAT
             or self.game_phase is LevelStatus.ENDED_VICTORY
         ):
+            self._stop_level_music()
             return True
 
         for mission in self.missions:
@@ -2214,13 +2243,9 @@ class LevelScene(Scene):
                             self.traded_items.clear()
                         if self.traded_gold:
                             # Return traded gold
-                            for gold in self.traded_gold:
-                                if gold[1] == self.selected_player:
-                                    self.selected_player.gold += gold[0]
-                                    gold[2].gold -= gold[0]
-                                else:
-                                    self.selected_player.gold -= gold[0]
-                                    gold[2].gold += gold[0]
+                            for value, sender, receiver in self.traded_gold:
+                                receiver.gold -= value
+                                sender.gold += value
                             self.traded_gold.clear()
                         self.selected_player.selected = False
                         self.selected_player = None

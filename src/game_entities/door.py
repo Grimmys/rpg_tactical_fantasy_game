@@ -4,6 +4,7 @@ Defines Door class, a non-living entity that eventually could be opened by the l
 from typing import Optional
 
 import pygame
+from pathlib import Path
 from lxml import etree
 
 from src.game_entities.entity import Entity
@@ -22,19 +23,19 @@ class Door(Entity):
     would be loaded from sprite_link if not provided
 
     Attributes:
-    sprite_name -- the relative path to the visual representation of the door
+    sprite_path -- the relative path to the visual representation of the door
     pick_lock_initiated -- whether the door is currently being pick-locked or not
     """
 
     def __init__(
         self,
         position: Position,
-        sprite_link: str,
+        sprite_link: Path,
         pick_lock_initiated: bool = False,
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__("Door", position, sprite if sprite else sprite_link)
-        self.sprite_name: str = sprite_link
+        self.sprite_path: Path = sprite_link
         self.pick_lock_initiated: bool = pick_lock_initiated
 
     def save(self, tree_name: str) -> etree.Element:
@@ -50,7 +51,7 @@ class Door(Entity):
 
         # Save sprite
         sprite: etree.SubElement = etree.SubElement(tree, "sprite")
-        sprite.text = self.sprite_name
+        sprite.text = str(self.sprite_path)
 
         # Save if pick lock has been initiated
         if self.pick_lock_initiated:

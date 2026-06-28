@@ -2,8 +2,8 @@
 Defines Destroyable class, an entity that could be destroyed.
 """
 
-import os
 from collections.abc import Sequence
+from pathlib import Path
 from enum import Enum
 from typing import Union
 
@@ -50,7 +50,7 @@ class Destroyable(Entity):
         self,
         name: str,
         position: Position,
-        sprite: Union[str, pygame.Surface],
+        sprite: Union[Path, pygame.Surface],
         hit_points: int,
         defense: int,
         resistance: int,
@@ -61,7 +61,7 @@ class Destroyable(Entity):
         self.defense: int = defense
         self.resistance: int = resistance
         self.attack_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "attack.ogg")
+            Path("sound_fx", "attack.ogg")
         )
 
     def display_hit_points(self, screen: pygame.Surface) -> None:

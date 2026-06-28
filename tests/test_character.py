@@ -1,5 +1,6 @@
 import unittest
 
+from pathlib import Path
 from src.game_entities.character import Character
 from src.game_entities.movable import DamageKind
 from tests.random_data_library import (random_character_entity,
@@ -16,7 +17,7 @@ class TestCharacter(unittest.TestCase):
     def test_init_character(self):
         name = "character_test"
         pos = (3, 2)
-        sprite = "imgs/characs/jist.png"
+        sprite = Path("imgs", "characs", "jist.png")
         hp = 10
         defense = 4
         res = 3

@@ -5,6 +5,7 @@ Defines Portal class, an entity that is working by pair and that could teleport 
 from __future__ import annotations
 
 from typing import Optional
+from pathlib import Path
 
 from src.game_entities.entity import Entity
 from src.gui.position import Position
@@ -18,14 +19,14 @@ class Portal(Entity):
 
     Keyword arguments:
     position -- the position of the portal
-    sprite -- the relative path to the visual representation of the portal
+    sprite_path -- the relative path to the visual representation of the portal
 
     Attributes:
     linked_to -- the second member of the pair
     """
 
-    def __init__(self, position: Position, sprite: str) -> None:
-        super().__init__("Portal", position, sprite)
+    def __init__(self, position: Position, sprite_path: Path) -> None:
+        super().__init__("Portal", position, sprite_path)
         self.linked_to: Optional[Portal] = None
 
     @staticmethod

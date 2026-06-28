@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Optional
 
 import logging
@@ -247,8 +248,8 @@ def load_chests(
     return chests
 
 
-def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
-    dialog_path = f"{directory}dialog_{dialog_file_index}.txt"
+def load_dialog(directory: Path, dialog_file_index: str) -> dict[str, any]:
+    dialog_path: Path = (directory / ("dialog_" + str(dialog_file_index))).with_suffix(".txt")
     dialog: dict[str, any] = {}
     try:
         with open(dialog_path, encoding="utf-8") as dialog_file:
@@ -265,8 +266,8 @@ def load_dialog(directory: str, dialog_file_index: str) -> dict[str, any]:
     return dialog
 
 
-def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
-    dialog_path = f"{directory}house_dialog_{dialog_file_index}.txt"
+def load_house_dialog(directory: Path, dialog_file_index: str) -> Sequence[str]:
+    dialog_path: Path = (directory / ("house_dialog_" + str(dialog_file_index))).with_suffix(".txt")
     try:
         with open(dialog_path, encoding="utf-8") as dialog_file:
             return dialog_file.read().splitlines()
@@ -279,7 +280,7 @@ def load_house_dialog(directory: str, dialog_file_index: str) -> Sequence[str]:
 
 
 def load_events(
-        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, directory: Path, horizontal_gap: int, vertical_gap: int
 ) -> dict[str, any]:
     events = {}
     for tile_object in tmx_data.get_layer_by_name("events"):
@@ -314,7 +315,7 @@ def load_events(
 
 
 def load_buildings(
-        tmx_data: pytmx.TiledMap, directory: str, horizontal_gap: int, vertical_gap: int
+        tmx_data: pytmx.TiledMap, directory: Path, horizontal_gap: int, vertical_gap: int
 ) -> list[Building]:
     buildings = []
     for tile_object in tmx_data.get_layer_by_name("dynamic_data"):

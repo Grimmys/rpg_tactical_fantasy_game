@@ -1,6 +1,7 @@
 import random as rd
 import shutil
 import unittest
+from pathlib import Path
 
 import pygame as pg
 from pygamepopup.components import Button
@@ -14,10 +15,18 @@ from tests.tools import minimal_setup_for_game
 
 
 class TestLevel(unittest.TestCase):
+    COMPLETE_SAVE_PATH = Path("tests", "test_saves", "complete_first_level_save.xml")
+    SIMPLE_SAVE_PATH = Path("tests", "test_saves", "simple_save.xml")
+    ACTIVE_PLAYER_NAME = "raimund"
+    TRADE_PARTNER_NAME = "braern"
+    TRADE_GOLD_AMOUNT = 50
+    GOLD_TO_SEND = 30
+    GOLD_TO_RECEIVE = 20
+
     @classmethod
     def setUpClass(cls):
         minimal_setup_for_game()
-        cls.save_path = "saves/save_0.xml"
+        cls.save_path = Path("saves", "save_0.xml")
 
     def setUp(self):
         # Window parameters
@@ -45,9 +54,27 @@ class TestLevel(unittest.TestCase):
         self.level.menu_manager.close_active_menu()
         self.level.menu_manager.close_active_menu()
 
+    def open_character_menu(self, player):
+        self.level.menu_manager.open_menu(
+            menu_creator_manager.create_player_menu(
+                {"inventory": None, "equipment": None, "status": None, "wait": None},
+                player,
+                [],
+                [],
+                [],
+                [],
+            )
+        )
+
+    def get_player(self, name):
+        return [player for player in self.level.players if player.name == name][0]
+
+    def snapshot_inventory(self, player):
+        return [item.name for item in player.items]
+
     def test_distance_between_two_entities(self):
         # Import simple save file
-        self.import_save_file("tests/test_saves/simple_save.xml")
+        self.import_save_file(Path("tests", "test_saves", "simple_save.xml"))
 
         players = self.level.players
         foe = self.level.entities.foes[0]
@@ -57,7 +84,7 @@ class TestLevel(unittest.TestCase):
 
     def test_distance_between_many_entities(self):
         # Import complete save file
-        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+        self.import_save_file(Path("tests", "test_saves", "complete_first_level_save.xml"))
 
         players = self.level.players
         foes = self.level.entities.foes
@@ -97,7 +124,7 @@ class TestLevel(unittest.TestCase):
 
     def test_cancel_movement_after_trade_item_sent(self):
         # Import complete save file
-        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
 
         players = self.level.players
 
@@ -106,8 +133,6 @@ class TestLevel(unittest.TestCase):
         self.level.selected_player = active_player
 
         item = rd.choice(active_player.items)
-
-        # Open character menu
         self.level.menu_manager.open_menu(
             menu_creator_manager.create_player_menu(
                 {"inventory": None, "equipment": None, "status": None, "wait": None},
@@ -132,160 +157,183 @@ class TestLevel(unittest.TestCase):
         self.assertFalse(item in receiver_player.items)
 
     def test_cancel_movement_after_trade_item_received(self):
-        # Import complete save file
-        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
 
-        players = self.level.players
-
-        active_player = [player for player in players if player.name == "raimund"][0]
-        sender_player = [player for player in players if player.name == "braern"][0]
+        active_player = self.get_player(self.ACTIVE_PLAYER_NAME)
+        sender_player = self.get_player(self.TRADE_PARTNER_NAME)
         self.level.selected_player = active_player
+        self.open_character_menu(active_player)
 
-        item = rd.choice(sender_player.items)
+        item_to_receive = sender_player.items[0]
+        active_inventory_before = self.snapshot_inventory(active_player)
+        sender_inventory_before = self.snapshot_inventory(sender_player)
 
-        # Open character menu
-        self.level.menu_manager.open_menu(
-            menu_creator_manager.create_player_menu(
-                {"inventory": None, "equipment": None, "status": None, "wait": None},
-                active_player,
-                [],
-                [],
-                [],
-                [],
-            )
+        self.simulate_trade_item(
+            item_to_receive, active_player, sender_player, False
         )
-
-        # Make trade (send item from active player to receiver player)
-        self.simulate_trade_item(item, active_player, sender_player, False)
-
-        self.assertTrue(item in active_player.items)
-        self.assertFalse(item in sender_player.items)
-
-        # Cancel active player turn
         self.level.right_click()
 
-        self.assertFalse(item in active_player.items)
-        self.assertTrue(item in sender_player.items)
+        self.assertCountEqual(
+            self.snapshot_inventory(active_player), active_inventory_before
+        )
+        self.assertCountEqual(
+            self.snapshot_inventory(sender_player), sender_inventory_before
+        )
 
     def test_cancel_movement_after_trade_items_sent_and_received(self):
-        # Import complete save file
-        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
 
-        players = self.level.players
-
-        active_player = [player for player in players if player.name == "raimund"][0]
-        trade_partner_player = [
-            player for player in players if player.name == "braern"
-        ][0]
+        active_player = self.get_player(self.ACTIVE_PLAYER_NAME)
+        trade_partner_player = self.get_player(self.TRADE_PARTNER_NAME)
         self.level.selected_player = active_player
+        self.open_character_menu(active_player)
 
-        item = rd.choice(trade_partner_player.items)
-        second_item = rd.choice(active_player.items)
+        item_to_receive = trade_partner_player.items[0]
+        item_to_send = active_player.items[0]
+        active_inventory_before = self.snapshot_inventory(active_player)
+        partner_inventory_before = self.snapshot_inventory(trade_partner_player)
 
-        # Open character menu
-        self.level.menu_manager.open_menu(
-            menu_creator_manager.create_player_menu(
-                {"inventory": None, "equipment": None, "status": None, "wait": None},
-                active_player,
-                [],
-                [],
-                [],
-                [],
-            )
+        self.simulate_trade_item(
+            item_to_receive, active_player, trade_partner_player, False
         )
-
-        # Make trade in both way
-        self.simulate_trade_item(item, active_player, trade_partner_player, False)
-        self.simulate_trade_item(second_item, active_player, trade_partner_player, True)
-
-        self.assertTrue(item in active_player.items)
-        self.assertFalse(item in trade_partner_player.items)
-        self.assertFalse(second_item in active_player.items)
-        self.assertTrue(second_item in trade_partner_player.items)
-
-        # Cancel active player turn
+        self.simulate_trade_item(
+            item_to_send, active_player, trade_partner_player, True
+        )
         self.level.right_click()
 
-        self.assertFalse(item in active_player.items)
-        self.assertTrue(item in trade_partner_player.items)
-        self.assertTrue(second_item in active_player.items)
-        self.assertFalse(second_item in trade_partner_player.items)
+        self.assertCountEqual(
+            self.snapshot_inventory(active_player), active_inventory_before
+        )
+        self.assertCountEqual(
+            self.snapshot_inventory(trade_partner_player), partner_inventory_before
+        )
 
     def test_cancel_movement_after_trade_done_during_previous_turn_does_not_cancel_trade(
         self,
     ):
-        # Import complete save file
-        self.import_save_file("tests/test_saves/complete_first_level_save.xml")
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
 
-        players = self.level.players
-
-        active_player = [player for player in players if player.name == "raimund"][0]
-        trade_partner_player = [
-            player for player in players if player.name == "braern"
-        ][0]
+        active_player = self.get_player(self.ACTIVE_PLAYER_NAME)
+        trade_partner_player = self.get_player(self.TRADE_PARTNER_NAME)
         self.level.selected_player = active_player
+        self.open_character_menu(active_player)
 
-        item = rd.choice(trade_partner_player.items)
-        second_item = rd.choice(active_player.items)
+        item_to_receive = trade_partner_player.items[0]
+        item_to_send = active_player.items[0]
 
-        # Open character menu
-        self.level.menu_manager.open_menu(
-            menu_creator_manager.create_player_menu(
-                {"inventory": None, "equipment": None, "status": None, "wait": None},
-                active_player,
-                [],
-                [],
-                [],
-                [],
-            )
+        self.simulate_trade_item(
+            item_to_receive, active_player, trade_partner_player, False
         )
+        self.simulate_trade_item(
+            item_to_send, active_player, trade_partner_player, True
+        )
+        expected_active_inventory = self.snapshot_inventory(active_player)
+        expected_partner_inventory = self.snapshot_inventory(trade_partner_player)
 
-        # Make trade in both way
-        self.simulate_trade_item(item, active_player, trade_partner_player, False)
-        self.simulate_trade_item(second_item, active_player, trade_partner_player, True)
-
-        self.assertTrue(item in active_player.items)
-        self.assertFalse(item in trade_partner_player.items)
-        self.assertFalse(second_item in active_player.items)
-        self.assertTrue(second_item in trade_partner_player.items)
-
-        # Next turn
         self.level.end_active_character_turn()
         self.level.end_turn()
 
-        # Select and cancel player turn
         self.level.selected_player = active_player
-        self.level.menu_manager.open_menu(
-            menu_creator_manager.create_player_menu(
-                {"inventory": None, "equipment": None, "status": None, "wait": None},
-                active_player,
-                [],
-                [],
-                [],
-                [],
-            )
+        self.open_character_menu(active_player)
+        self.level.right_click()
+
+        self.assertCountEqual(
+            self.snapshot_inventory(active_player), expected_active_inventory
+        )
+        self.assertCountEqual(
+            self.snapshot_inventory(trade_partner_player), expected_partner_inventory
+        )
+
+    def simulate_trade_gold(
+        self, amount, active_player, other_player, is_active_the_sender
+    ):
+        # Store the current menu before making trade
+        self.level.menu_manager.reduce_active_menu()
+        self.level.interact(active_player, other_player, Position(0, 0))
+        self.level.send_gold(active_player, other_player, is_active_the_sender, amount)
+        # send_gold closes interaction menu and opens trade menu
+        # Close the trade menu to return to character action menu
+        self.level.menu_manager.close_active_menu()
+
+    def test_cancel_movement_after_trade_gold_sent(self):
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
+
+        active_player = self.get_player(self.ACTIVE_PLAYER_NAME)
+        receiver_player = self.get_player(self.TRADE_PARTNER_NAME)
+        self.level.selected_player = active_player
+        self.open_character_menu(active_player)
+
+        active_gold_before = active_player.gold
+        receiver_gold_before = receiver_player.gold
+
+        self.simulate_trade_gold(
+            self.TRADE_GOLD_AMOUNT, active_player, receiver_player, True
         )
         self.level.right_click()
 
-        self.assertTrue(item in active_player.items)
-        self.assertFalse(item in trade_partner_player.items)
-        self.assertFalse(second_item in active_player.items)
-        self.assertTrue(second_item in trade_partner_player.items)
+        self.assertEqual(active_player.gold, active_gold_before)
+        self.assertEqual(receiver_player.gold, receiver_gold_before)
 
-    @unittest.skip
-    def test_cancel_movement_after_trade_gold_sent(self):
-        pass
-
-    @unittest.skip
     def test_cancel_movement_after_trade_gold_received(self):
-        pass
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
 
-    @unittest.skip
+        active_player = self.get_player(self.ACTIVE_PLAYER_NAME)
+        sender_player = self.get_player(self.TRADE_PARTNER_NAME)
+        self.level.selected_player = active_player
+        self.open_character_menu(active_player)
+
+        active_gold_before = active_player.gold
+        sender_gold_before = sender_player.gold
+
+        self.simulate_trade_gold(
+            self.TRADE_GOLD_AMOUNT, active_player, sender_player, False
+        )
+        self.level.right_click()
+
+        self.assertEqual(active_player.gold, active_gold_before)
+        self.assertEqual(sender_player.gold, sender_gold_before)
+
     def test_cancel_movement_after_trade_items_and_gold_sent_and_received(self):
-        pass
+        self.import_save_file(self.COMPLETE_SAVE_PATH)
+
+        active_player = self.get_player(self.ACTIVE_PLAYER_NAME)
+        trade_partner_player = self.get_player(self.TRADE_PARTNER_NAME)
+        self.level.selected_player = active_player
+        self.open_character_menu(active_player)
+
+        item_to_receive = trade_partner_player.items[0]
+        item_to_send = active_player.items[0]
+        active_inventory_before = self.snapshot_inventory(active_player)
+        trade_partner_inventory_before = self.snapshot_inventory(trade_partner_player)
+        active_gold_before = active_player.gold
+        trade_partner_gold_before = trade_partner_player.gold
+
+        self.simulate_trade_item(
+            item_to_receive, active_player, trade_partner_player, False
+        )
+        self.simulate_trade_item(
+            item_to_send, active_player, trade_partner_player, True
+        )
+        self.simulate_trade_gold(
+            self.GOLD_TO_SEND, active_player, trade_partner_player, True
+        )
+        self.simulate_trade_gold(
+            self.GOLD_TO_RECEIVE, active_player, trade_partner_player, False
+        )
+        self.level.right_click()
+
+        self.assertCountEqual(
+            self.snapshot_inventory(active_player), active_inventory_before
+        )
+        self.assertCountEqual(
+            self.snapshot_inventory(trade_partner_player),
+            trade_partner_inventory_before,
+        )
+        self.assertEqual(active_player.gold, active_gold_before)
+        self.assertEqual(trade_partner_player.gold, trade_partner_gold_before)
 
     def test_throw_selected_item(self):
-        self.import_save_file("tests/test_saves/simple_save.xml")
+        self.import_save_file(Path("tests", "test_saves", "simple_save.xml"))
 
         raimund_player = [
             player for player in self.level.players if player.name == "raimund"
@@ -305,7 +353,7 @@ class TestLevel(unittest.TestCase):
         self.assertIsNone(self.level.selected_item)
 
     def test_throw_selected_equipped_item(self):
-        self.import_save_file("tests/test_saves/simple_save.xml")
+        self.import_save_file(Path("tests", "test_saves", "simple_save.xml"))
 
         raimund_player = [
             player for player in self.level.players if player.name == "raimund"
@@ -329,7 +377,7 @@ class TestLevel(unittest.TestCase):
         self.assertIsNone(self.level.selected_item)
 
     def test_throw_selected_equipment_but_not_the_equipped_one(self):
-        self.import_save_file("tests/test_saves/simple_save.xml")
+        self.import_save_file(Path("tests", "test_saves", "simple_save.xml"))
 
         raimund_player = [
             player for player in self.level.players if player.name == "raimund"

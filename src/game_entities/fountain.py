@@ -5,6 +5,7 @@ Defines Fountain class, a passive entity with which characters can interact to e
 from __future__ import annotations
 
 import pygame
+from pathlib import Path
 from lxml import etree
 from pygamepopup.components import BoxElement, TextElement
 
@@ -23,8 +24,8 @@ class Fountain(Entity):
     Keyword arguments:
     name -- the name of the fountain
     position -- the current position of the fountain on screen
-    sprite --  the relative path to the visual representation of the entity
-    sprite_empty -- the relative path to the visual representation of the fountain when it couldn't be used anymore
+    sprite_path --  the relative path to the visual representation of the entity
+    sprite_empty_path -- the relative path to the visual representation of the fountain when it couldn't be used anymore
     effect -- the effect that should be applied to the character interacting with the fountain
     times -- the number of times the fountain could be used until being empty
 
@@ -39,16 +40,16 @@ class Fountain(Entity):
         self,
         name: str,
         position: Position,
-        sprite: str,
-        sprite_empty: str,
+        sprite_path: Path,
+        sprite_empty_path: Path,
         effect: Effect,
         times: int,
     ) -> None:
-        super().__init__(name, position, sprite)
+        super().__init__(name, position, sprite_path)
         self.effect: Effect = effect
         self.times: int = times
         self.sprite_empty: pygame.Surface = pygame.transform.scale(
-            pygame.image.load(sprite_empty).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+            pygame.image.load(sprite_empty_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)
         )
 
     def drink(self, entity: Destroyable) -> list[list[BoxElement]]:

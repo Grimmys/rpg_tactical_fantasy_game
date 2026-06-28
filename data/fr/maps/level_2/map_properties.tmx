@@ -2,6 +2,7 @@
     <properties>
         <property name="chapter_id" type="int" value="1"/>
         <property name="level_name" value="Remettre et Voler"/>
+        <property name="level_music" value="sound_fx/8_bit_dungeon.ogg"/>
         <property name="main_mission_description" value="Replacez les restes sur l'autel"/>
         <property name="main_mission_number_players" type="int" value="1"/>
         <property name="main_mission_type" value="TOUCH_POSITION"/>

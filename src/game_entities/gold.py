@@ -3,6 +3,7 @@ Defines Gold class, the special item permitting to representing gold as chest or
 """
 
 from src.game_entities.item import Item
+from pathlib import Path
 
 
 class Gold(Item):
@@ -19,7 +20,7 @@ class Gold(Item):
     def __init__(self, amount: int) -> None:
         super().__init__(
             str(amount) + " Gold",
-            "imgs/dungeon_crawl/item/gold/gold_pile_10.png",
+            Path("imgs", "dungeon_crawl", "item", "gold", "gold_pile_10.png"),
             "Gold could be used to buy some items or other services",
             0,
         )

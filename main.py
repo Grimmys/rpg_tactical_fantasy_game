@@ -98,9 +98,6 @@ if __name__ == "__main__":
 
     scene_manager = SceneManager(main_screen)
 
-    pygame.mixer.music.load(os.path.join("sound_fx", "soundtrack.ogg"))
-    pygame.mixer.music.play(-1)
-
     # Lets the game start!
     quit_action = main_loop(scene_manager, main_screen, pygame.time.Clock())
 

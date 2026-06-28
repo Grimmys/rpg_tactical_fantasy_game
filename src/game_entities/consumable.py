@@ -4,8 +4,8 @@ Defines Consumable class, an item that can be consumed by an entity and that mig
 
 from __future__ import annotations
 
-import os
 from collections.abc import Sequence
+from pathlib import Path
 
 import pygame
 
@@ -20,7 +20,7 @@ class Consumable(Item):
 
     Keyword arguments:
     name -- the name of the item
-    sprite -- the relative path to the visual representation of the item
+    sprite_path -- the relative path to the visual representation of the item
     description -- the description of the item that might be displayed on an interface
     price -- the standard price of the item in a shop, optional if the item can't be sold or bought
     effects -- the sequence of effects that will happen when using the consumable
@@ -33,15 +33,15 @@ class Consumable(Item):
     def __init__(
         self,
         name: str,
-        sprite: str,
+        sprite_path: Path,
         description: str,
         price: int,
         effects: Sequence[Effect],
     ) -> None:
-        super().__init__(name, sprite, description, price)
+        super().__init__(name, sprite_path, description, price)
         self.effects: Sequence[Effect] = effects
         self.drink_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "potion.ogg")
+            Path("sound_fx", "potion.ogg")
         )
 
     def use(self, entity: Movable) -> tuple[bool, Sequence[str]]:  # NOQA

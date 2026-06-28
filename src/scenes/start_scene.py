@@ -5,6 +5,7 @@ corresponding to the main menu.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from pathlib import Path
 from typing import Optional
 
 import pygame
@@ -50,7 +51,7 @@ class StartScene(Scene):
 
         # Start screen loop
         background_image: pygame.Surface = pygame.image.load(
-            "imgs/interface/main_menu_background.jpg"
+            Path("imgs", "interface", "main_menu_background.jpg")
         ).convert_alpha()
         self.background: pygame.Surface = pygame.transform.scale(
             background_image, screen.get_size()
@@ -117,7 +118,10 @@ class StartScene(Scene):
         if team is None:
             team = []
         return LevelScene(
-            level_screen, "maps/level_" + str(level) + "/", level, players=team
+            level_screen,
+            Path("maps", "level_" + str(level)),
+            level,
+            players=team
         )
 
     def new_game(self) -> None:
@@ -135,16 +139,20 @@ class StartScene(Scene):
         game_id -- the id of the saved file that should be load
         """
         try:
-            with open(f"saves/save_{game_id}.xml", "r", encoding="utf-8") as save:
+            with open(
+                Path("saves", "save_" + str(game_id)).with_suffix(".xml"),
+                "r",
+                encoding="utf-8"
+            ) as save:
                 tree_root: etree.Element = etree.parse(save).getroot()
                 level_id = int(tree_root.find("level/index").text.strip())
-                level_path = f"maps/level_{level_id}/"
+                level_directory = Path("maps", "level_" + str(level_id))
                 game_status = tree_root.find("level/phase").text.strip()
                 turn_nb = int(tree_root.find("level/turn").text.strip())
 
                 self.level = LevelScene(
                     StartScene.generate_level_window(),
-                    level_path,
+                    level_directory,
                     level_id,
                     LevelStatus[game_status],
                     turn_nb,

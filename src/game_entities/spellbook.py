@@ -2,6 +2,7 @@
 Defines Spellbook class, a Book used to cast spells.
 """
 
+from pathlib import Path
 from src.game_entities.book import Book
 
 
@@ -11,7 +12,7 @@ class Spellbook(Book):
 
     Keyword arguments:
     name -- the name of the spellbook
-    sprite -- the relative path to the visual representation of the spellbook
+    sprite_path -- the relative path to the visual representation of the spellbook
     description -- the description of the spellbook that may be displayed on an interface
     price -- the price of the spellbook
     spell -- the name of the spell of the spellbook
@@ -21,7 +22,7 @@ class Spellbook(Book):
     """
 
     def __init__(
-        self, name: str, sprite: str, description: str, price: int, spell: str
+        self, name: str, sprite_path: Path, description: str, price: int, spell: str
     ):
-        super().__init__(name, sprite, description, price)
+        super().__init__(name, sprite_path, description, price)
         self.spell: str = spell

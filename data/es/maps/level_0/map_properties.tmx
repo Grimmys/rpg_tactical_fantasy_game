@@ -2,6 +2,7 @@
     <properties>
         <property name="chapter_id" type="int" value="1"/>
         <property name="level_name" value="Vandalismo en la Cripta"/>
+        <property name="level_music" value="sound_fx/the_hunt_begins.ogg"/>
         <property name="main_mission_description" value="Salir de la Aldea"/>
         <property name="main_mission_type" value="POSITION"/>
     </properties>

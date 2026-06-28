@@ -6,6 +6,7 @@ import re
 from typing import Union
 
 import pygame
+from pathlib import Path
 
 from src.constants import TILE_SIZE
 from src.gui.position import Position
@@ -31,7 +32,7 @@ class Entity:
     """
 
     def __init__(
-        self, name: str, position: Position, sprite: Union[str, pygame.Surface]
+        self, name: str, position: Position, sprite: Union[Path, pygame.Surface]
     ) -> None:
         self.name: str = name
         self.position: Position = position

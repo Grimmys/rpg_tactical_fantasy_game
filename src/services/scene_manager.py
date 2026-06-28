@@ -5,6 +5,7 @@ Define SceneManager class, the orchestrator of the communication between every d
 from __future__ import annotations
 
 import pygame
+from pathlib import Path
 
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH
 from src.scenes.level_loading_scene import LevelLoadingScene
@@ -85,7 +86,7 @@ class SceneManager:
                 level_screen = StartScene.generate_level_window()
                 level = LevelScene(
                     level_screen,
-                    f"maps/level_{next_level_number}/",
+                    Path("maps", f"level_{next_level_number}"),
                     next_level_number,
                     players=team,
                 )

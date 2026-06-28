@@ -1,6 +1,7 @@
 import random as rd
 import unittest
 
+from pathlib import Path
 from src.game_entities.destroyable import DamageKind, Destroyable
 from tests.random_data_library import (random_destroyable_entity,
                                        random_movable_entity)
@@ -15,7 +16,7 @@ class TestDestroyable(unittest.TestCase):
     def test_init_destroyable(self):
         name = "destroyable"
         pos = (3, 2)
-        sprite = "imgs/dungeon_crawl/monster/angel.png"
+        sprite = Path("imgs", "dungeon_crawl", "monster", "angel.png")
         hp = 10
         defense = 4
         res = 3

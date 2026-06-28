@@ -9,12 +9,13 @@ names to fully built ``Skill`` instances via ``get_skill_data``.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import NotRequired, TypedDict
 
 from src.game_entities.skill import Skill
 from .load_from_xml_manager import get_skill_data
 
-CLASSES_DATA_PATH = "data/classes.json"
+CLASSES_DATA_PATH = Path("data", "classes.json")
 
 
 # NOTE: ``def`` is a reserved keyword in Python and cannot be used as a

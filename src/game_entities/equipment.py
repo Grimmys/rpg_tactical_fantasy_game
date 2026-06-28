@@ -8,6 +8,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import pygame
+from pathlib import Path
 
 from src.constants import LIGHT_GREY, TILE_SIZE
 from src.game_entities.item import Item
@@ -21,10 +22,10 @@ class Equipment(Item):
 
     Keyword arguments:
     name -- the name of the item
-    sprite -- the relative path to the visual representation of the item
+    sprite_path -- the relative path to the visual representation of the item
     description -- the description of the item that might be displayed on an interface
     price -- the standard price of the item in a shop, optional if the item can't be sold or bought
-    equipped_sprites -- the ordered sequence of relative paths to the sprites that should be blitted
+    equipped_sprites_paths -- the ordered sequence of relative paths to the sprites that should be blitted
     on top of the character wearing the equipment
     wearing the equipment
     body_part -- the body part on which the equipment should be worn
@@ -49,10 +50,10 @@ class Equipment(Item):
     def __init__(
         self,
         name: str,
-        sprite: str,
+        sprite_path: Path,
         description: str,
         price: int,
-        equipped_sprites: Sequence[str],
+        equipped_sprites_paths: Sequence[Path],
         body_part: str,
         defense: int,
         resistance: int,
@@ -60,7 +61,7 @@ class Equipment(Item):
         weight: int,
         restrictions: dict[str, Sequence[str]],
     ) -> None:
-        super().__init__(name, sprite, description, price)
+        super().__init__(name, sprite_path, description, price)
         self.defense: int = defense
         self.resistance: int = resistance
         self.attack: int = attack
@@ -68,13 +69,13 @@ class Equipment(Item):
         self.restrictions: dict[str, Sequence[str]] = restrictions
         self.body_part: str = body_part
         raw_equipped_sprite: pygame.Surface = pygame.image.load(
-            equipped_sprites[0]
+            equipped_sprites_paths[0]
         ).convert_alpha()
         self.equipped_sprite: pygame.Surface = pygame.transform.scale(
             raw_equipped_sprite, (TILE_SIZE, TILE_SIZE)
         )
-        if len(equipped_sprites) > 1:
-            for equipped_sprite in equipped_sprites[1:]:
+        if len(equipped_sprites_paths) > 1:
+            for equipped_sprite in equipped_sprites_paths[1:]:
                 self.equipped_sprite.blit(
                     pygame.transform.scale(
                         pygame.image.load(equipped_sprite).convert_alpha(),

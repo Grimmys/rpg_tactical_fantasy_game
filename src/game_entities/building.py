@@ -4,7 +4,6 @@ Defines Building class, an entity that can be visited by the player
 
 from __future__ import annotations
 
-import os
 from typing import Optional
 
 import pygame
@@ -50,24 +49,24 @@ class Building(Entity):
         self,
         name: str,
         position: Position,
-        sprite_link: str,
+        sprite_link: Path,
         interaction: Optional[dict[str, any]] = None,
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__(name, position, sprite if sprite else sprite_link)
-        self.sprite_link: str = sprite_link
+        self.sprite_link: Path = sprite_link
         self.interaction: dict[str, any] = interaction
         self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "door.ogg")
+            Path("sound_fx", "door.ogg")
         )
         self.talk_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "talking.ogg")
+            Path("sound_fx", "talking.ogg")
         )
         self.gold_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "trade.ogg")
+            Path("sound_fx", "trade.ogg")
         )
         self.inventory_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "inventory.ogg")
+            Path("sound_fx", "inventory.ogg")
         )
 
     def interact(self, actor: Character) -> list[list[BoxElement]]:

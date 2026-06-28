@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from enum import IntEnum, auto
+from pathlib import Path
 from typing import Optional, Union
 
 import pygame
@@ -69,7 +70,7 @@ class Player(Character):
     def __init__(
         self,
         name: str,
-        sprite: Union[str, pygame.Surface],
+        sprite: Union[Path, pygame.Surface],
         hit_points: int,
         defense: int,
         resistance: int,
@@ -81,7 +82,7 @@ class Player(Character):
         lvl: int,
         skills: Sequence[Skill],
         alterations: list[Alteration],
-        complementary_sprite_link: str = None,
+        complementary_sprite_link: Path | None = None,
     ):
         super().__init__(
             name,

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from pathlib import Path
 
 from lxml import etree
 from lxml.etree import Element
@@ -6,16 +7,21 @@ from lxml.etree import Element
 from src.game_entities.entity import Entity
 from datetime import datetime
 
+def format_save_filename(file_id: str) -> str:
+    return f"save_{file_id}"
+
 class SaveStateManager:
     """ """
+
+    save_directory: Path
 
     def __init__(self, data):
         self.level = data
         # Init XML tree
         self.tree = etree.Element("save")
-        self.save_filepath = "saves/save_"
+        self.save_directory = Path("saves")
 
-    def save_game(self, file_id):
+    def save_game(self, file_id: str):
         """
         Save the current state of the game to the given file in XML format
 
@@ -28,7 +34,12 @@ class SaveStateManager:
 
 
         # Default save files location accessed in /saves/
-        with open(f"{self.save_filepath}{file_id}.xml", "w+", encoding="utf-8") as save_file:
+        with open(
+            (self.save_directory / format_save_filename(file_id))
+            .with_suffix(".xml"),
+            "w+",
+            encoding="utf-8"
+        ) as save_file:
             level = self._save_level()
             self.tree.append(timestamp)
             self.tree.append(level)

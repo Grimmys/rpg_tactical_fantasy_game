@@ -71,7 +71,7 @@ class Foe(Movable):
         self,
         name: str,
         position: Position,
-        sprite: Union[str, pygame.Surface],
+        sprite: Union[Path, pygame.Surface],
         hit_points: int,
         defense: int,
         resistance: int,

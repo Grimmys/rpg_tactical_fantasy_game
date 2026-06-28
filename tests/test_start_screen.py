@@ -1,6 +1,6 @@
-import os
 import shutil
 import unittest
+from pathlib import Path
 from random import randrange
 
 import pygame
@@ -117,8 +117,7 @@ class TestStartScreen(unittest.TestCase):
         self.assertEqual(len(self.start_screen.menu_manager.background_menus), 0)
 
         # Erase save file if any
-        if os.path.exists(self.save_url):
-            os.remove(self.save_url)
+        Path(self.save_url).unlink(missing_ok=True)
 
         # Generate random pos on load game button
         position = self.generate_position(

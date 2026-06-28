@@ -1,5 +1,6 @@
 import unittest
 
+from pathlib import Path
 from src.game_entities.equipment import Equipment
 from tests.random_data_library import random_equipment
 from tests.tools import minimal_setup_for_game
@@ -12,10 +13,10 @@ class TestEquipment(unittest.TestCase):
 
     def test_init_equipment(self):
         name = "dark_boots"
-        sprite = "imgs/dungeon_crawl/item/armor/feet/dark_boots.png"
+        sprite = Path("imgs", "dungeon_crawl", "item", "armor", "feet", "dark_boots.png")
         description = "Well... Those are dark boots"
         price = 250
-        equipped_sprite = "imgs/dungeon_crawl/player/boots/middle_gray.png"
+        equipped_sprite = Path("imgs", "dungeon_crawl", "player", "boots", "middle_gray.png")
         body_part = "feet"
         defense = 2
         resistance = 1

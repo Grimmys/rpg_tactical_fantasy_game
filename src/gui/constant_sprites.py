@@ -12,29 +12,29 @@ from src.gui.fonts import fonts
 from src.services.language import *
 
 LANDING_OPACITY = 80
-LANDING_SPRITE = "imgs/dungeon_crawl/misc/move.png"
+LANDING_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "move.png")
 
 ATTACKABLE_OPACITY = 80
-ATTACKABLE_SPRITE = "imgs/dungeon_crawl/misc/attackable.png"
+ATTACKABLE_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "attackable.png")
 
 INTERACTION_OPACITY = 500
-INTERACTION_SPRITE = "imgs/dungeon_crawl/misc/landing.png"
+INTERACTION_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "landing.png")
 
-NEW_TURN_SPRITE = "imgs/interface/new_turn.png"
+NEW_TURN_SPRITE_PATH = Path("imgs", "interface", "new_turn.png")
 
-CRACKED_SPRITE = "imgs/dungeon_crawl/dungeon/wall/destroyed_wall.png"
+CRACKED_SPRITE_PATH = Path("imgs", "dungeon_crawl", "dungeon", "wall", "destroyed_wall.png")
 
-FRAME_SPRITE = "imgs/interface/frame.png"
+FRAME_SPRITE_PATH = Path("imgs", "interface", "frame.png")
 
-LIGHTLY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_lightly_damaged.png"
-MODERATELY_DAMAGED_SPRITE = (
-    "imgs/dungeon_crawl/misc/damage_meter_moderately_damaged.png"
+LIGHTLY_DAMAGED_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "damage_meter_lightly_damaged.png")
+MODERATELY_DAMAGED_SPRITE_PATH = Path(
+    "imgs", "dungeon_crawl", "misc", "damage_meter_moderately_damaged.png"
 )
-HEAVILY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_heavily_damaged.png"
-SEVERELY_DAMAGED_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_severely_damaged.png"
-ALMOST_DEAD_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_almost_dead.png"
+HEAVILY_DAMAGED_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "damage_meter_heavily_damaged.png")
+SEVERELY_DAMAGED_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "damage_meter_severely_damaged.png")
+ALMOST_DEAD_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "damage_meter_almost_dead.png")
 
-HP_BAR_SPRITE = "imgs/dungeon_crawl/misc/damage_meter_sample.png"
+HP_BAR_SPRITE_PATH = Path("imgs", "dungeon_crawl", "misc", "damage_meter_sample.png")
 
 constant_sprites = {}
 
@@ -45,15 +45,15 @@ def init_constant_sprites() -> None:
     These sprites will be available in all modules by importing the constant_sprites dictionary.
     """
     constant_sprites["landing"] = pygame.transform.scale(
-        pygame.image.load(LANDING_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        pygame.image.load(LANDING_SPRITE_PATH).convert_alpha(), (TILE_SIZE, TILE_SIZE)
     )
     constant_sprites["attackable"] = pygame.transform.scale(
-        pygame.image.load(ATTACKABLE_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        pygame.image.load(ATTACKABLE_SPRITE_PATH).convert_alpha(), (TILE_SIZE, TILE_SIZE)
     )
     constant_sprites["interaction"] = pygame.transform.scale(
-        pygame.image.load(INTERACTION_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        pygame.image.load(INTERACTION_SPRITE_PATH).convert_alpha(), (TILE_SIZE, TILE_SIZE)
     )
-    new_turn = pygame.image.load(NEW_TURN_SPRITE).convert_alpha()
+    new_turn = pygame.image.load(NEW_TURN_SPRITE_PATH).convert_alpha()
     new_turn = pygame.transform.scale(
         new_turn.convert_alpha(),
         (int(new_turn.get_width() * 1.5), int(new_turn.get_height() * 1.5)),
@@ -92,11 +92,11 @@ def init_constant_sprites() -> None:
     constant_sprites["defeat"].blit(defeat_text, defeat_text_pos)
 
     constant_sprites["cracked"] = pygame.transform.scale(
-        pygame.image.load(CRACKED_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        pygame.image.load(CRACKED_SPRITE_PATH).convert_alpha(), (TILE_SIZE, TILE_SIZE)
     )
 
     constant_sprites["frame"] = pygame.transform.scale(
-        pygame.image.load(FRAME_SPRITE).convert_alpha(),
+        pygame.image.load(FRAME_SPRITE_PATH).convert_alpha(),
         (TILE_SIZE + 10, TILE_SIZE + 10),
     )
     constant_sprites["main_mission_text"] = fonts["SIDEBAR_TITLE_FONT"].render(
@@ -107,25 +107,25 @@ def init_constant_sprites() -> None:
     )
 
     constant_sprites["lightly_damaged"] = pygame.transform.scale(
-        pygame.image.load(LIGHTLY_DAMAGED_SPRITE).convert_alpha(),
+        pygame.image.load(LIGHTLY_DAMAGED_SPRITE_PATH).convert_alpha(),
         (TILE_SIZE, TILE_SIZE),
     )
     constant_sprites["moderately_damaged"] = pygame.transform.scale(
-        pygame.image.load(MODERATELY_DAMAGED_SPRITE).convert_alpha(),
+        pygame.image.load(MODERATELY_DAMAGED_SPRITE_PATH).convert_alpha(),
         (TILE_SIZE, TILE_SIZE),
     )
     constant_sprites["heavily_damaged"] = pygame.transform.scale(
-        pygame.image.load(HEAVILY_DAMAGED_SPRITE).convert_alpha(),
+        pygame.image.load(HEAVILY_DAMAGED_SPRITE_PATH).convert_alpha(),
         (TILE_SIZE, TILE_SIZE),
     )
     constant_sprites["severely_damaged"] = pygame.transform.scale(
-        pygame.image.load(SEVERELY_DAMAGED_SPRITE).convert_alpha(),
+        pygame.image.load(SEVERELY_DAMAGED_SPRITE_PATH).convert_alpha(),
         (TILE_SIZE, TILE_SIZE),
     )
     constant_sprites["almost_dead"] = pygame.transform.scale(
-        pygame.image.load(ALMOST_DEAD_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        pygame.image.load(ALMOST_DEAD_SPRITE_PATH).convert_alpha(), (TILE_SIZE, TILE_SIZE)
     )
 
     constant_sprites["hp_bar"] = pygame.transform.scale(
-        pygame.image.load(HP_BAR_SPRITE).convert_alpha(), (TILE_SIZE, TILE_SIZE)
+        pygame.image.load(HP_BAR_SPRITE_PATH).convert_alpha(), (TILE_SIZE, TILE_SIZE)
     )

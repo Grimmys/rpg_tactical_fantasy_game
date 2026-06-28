@@ -1,6 +1,7 @@
 import random
 import unittest
 
+from pathlib import Path
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.game_entities.entity import Entity
 from src.gui.position import Position
@@ -16,7 +17,7 @@ class TestEntity(unittest.TestCase):
     def test_init_entity(self):
         name = "entity"
         position = Position(3, 2)
-        sprite = "imgs/dungeon_crawl/monster/angel.png"
+        sprite = Path("imgs", "dungeon_crawl", "monster", "angel.png")
         entity = Entity(name, position, sprite)
         self.assertEqual(name, entity.name)
         self.assertEqual(position, entity.position)
@@ -25,7 +26,7 @@ class TestEntity(unittest.TestCase):
 
     def test_name_format(self):
         position = random_position()
-        sprite = "imgs/dungeon_crawl/monster/angel.png"
+        sprite = Path("imgs", "dungeon_crawl", "monster", "angel.png")
 
         name = "test"
         entity = Entity(name, position, sprite)
@@ -45,7 +46,7 @@ class TestEntity(unittest.TestCase):
 
     def test_position(self):
         name = "test"
-        sprite = "imgs/dungeon_crawl/monster/angel.png"
+        sprite = Path("imgs", "dungeon_crawl", "monster", "angel.png")
         position = random_position()
         entity = Entity(name, position, sprite)
 

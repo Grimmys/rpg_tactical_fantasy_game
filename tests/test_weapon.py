@@ -1,5 +1,6 @@
 import unittest
 
+from pathlib import Path
 from src.constants import TILE_SIZE
 from src.game_entities.destroyable import DamageKind
 from src.game_entities.foe import Keyword
@@ -16,10 +17,10 @@ class TestWeapon(unittest.TestCase):
 
     def test_init_weapon(self):
         name = "short_sword"
-        sprite = "imgs/dungeon_crawl/item/weapon/short_sword_2_old.png"
+        sprite = Path("imgs", "dungeon_crawl", "item", "weapon", "short_sword_2_old.png")
         description = "A basic little sword, but one that can already prove very useful"
         price = 500
-        equipped_sprite = ["imgs/dungeon_crawl/player/hand_right/short_sword.png"]
+        equipped_sprite = [Path("imgs", "dungeon_crawl", "player", "hand_right", "short_sword.png")]
         durability = 40
         reach = [1]
         power = 4

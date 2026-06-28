@@ -1,5 +1,6 @@
 import random
 
+from pathlib import Path
 from src.constants import MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, TILE_SIZE
 from src.game_entities.alteration import Alteration
 from src.game_entities.building import Building
@@ -63,8 +64,8 @@ def random_item_attributes(price):
     """
     return {
         "name": random_string(),
-        "sample_img": "imgs/dungeon_crawl/item/potion/yellow_new.png",
         "desc": random_string(min_len=10, max_len=100),
+        "sample_img": Path("imgs", "dungeon_crawl", "item", "potion", "yellow_new.png"),
         "cost": price if price else random.randint(0, 1000),
     }
 
@@ -266,8 +267,8 @@ def random_chest(item_set=None, nb_items=None, equal_probs=False, gold_proportio
     :return:
     """
     position = random_position()
-    sprite_close = "imgs/dungeon_crawl/dungeon/chest_2_closed.png"
-    sprite_open = "imgs/dungeon_crawl/dungeon/chest_2_open.png"
+    sprite_close = Path("imgs", "dungeon_crawl", "dungeon", "chest_2_closed.png")
+    sprite_open = Path("imgs", "dungeon_crawl", "dungeon", "chest_2_open.png")
     if item_set:
         potential_items = item_set
     else:
@@ -297,7 +298,7 @@ def random_destroyable_attributes(min_hp, max_hp, max_defense, max_res, name):
     return {
         "name": name if name else random_string(),
         "pos": random_position(),
-        "sprite": "imgs/dungeon_crawl/monster/angel.png",
+        "sprite": Path("imgs", "dungeon_crawl", "monster", "angel.png"),
         "hp": random.randint(min_hp, max_hp),
         "defense": random.randint(0, max_defense),
         "res": random.randint(0, max_res),
@@ -667,7 +668,7 @@ def random_building(
     """
     name = random_string()
     position = random_position()
-    sprite = "imgs/houses/blue_house.png"
+    sprite = Path("imgs", "houses", "blue_house.png")
     interaction = None
     if is_interactive:
         talks_el = [
@@ -733,6 +734,6 @@ def random_alteration(name=None, effects=None, min_duration=1, max_duration=5):
 def random_objective(name=None, position=None):
     name = name if name else random_string()
     position = position if position else random_position()
-    sprite = "imgs/dungeon_crawl/dungeon/gateways/abyssal_stair.png"
+    sprite = Path("imgs", "dungeon_crawl", "dungeon", "gateways", "abyssal_stair.png")
 
     return Objective(name, position, sprite, random_boolean())

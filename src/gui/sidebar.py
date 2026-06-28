@@ -22,7 +22,7 @@ from src.gui.tools import determine_gauge_color
 from src.services.language import *
 
 SHIFT = 2
-SIDEBAR_SPRITE = "imgs/interface/sidebar.png"
+SIDEBAR_SPRITE_PATH = Path("imgs", "interface", "sidebar.png")
 
 
 class Sidebar:
@@ -57,7 +57,7 @@ class Sidebar:
         self.size: tuple[int, int] = size
         self.position: Position = position
         self.sprite: pygame.Surface = pygame.transform.scale(
-            pygame.image.load(SIDEBAR_SPRITE).convert_alpha(), size
+            pygame.image.load(SIDEBAR_SPRITE_PATH).convert_alpha(), size
         )
         self.missions: Sequence[Mission] = missions
         self.level_id: int = level_id

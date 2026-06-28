@@ -1,11 +1,12 @@
 from lxml import etree
+from pathlib import Path
 
 from src.services import options_manager
 
 language: str = options_manager.get_option('language')
 
-            
-DATA_PATH = "data/" + language + "/"
+
+DATA_PATH = Path("data", language)
 
 if language == "en":
     from data.en.fonts_description import fonts_description

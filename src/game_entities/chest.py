@@ -5,9 +5,9 @@ or items.
 
 from __future__ import annotations
 
-import os
 import random
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Optional
 
 import pygame
@@ -50,14 +50,14 @@ class Chest(Entity):
     def __init__(
         self,
         position: Position,
-        sprite_close: str,
-        sprite_open: str,
+        sprite_close: Path,
+        sprite_open: Path,
         potential_items: Sequence[tuple[Item, float]],
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__("Chest", position, sprite if sprite else sprite_close)
-        self.sprite_close_link: str = sprite_close
-        self.sprite_open_link: str = sprite_open
+        self.sprite_close_link: Path = sprite_close
+        self.sprite_open_link: Path = sprite_open
         self.sprite_open: pygame.Surface = pygame.transform.scale(
             pygame.image.load(sprite_open).convert_alpha(), (TILE_SIZE, TILE_SIZE)
         )
@@ -65,7 +65,7 @@ class Chest(Entity):
         self.opened: bool = False
         self.pick_lock_initiated: bool = False
         self.chest_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
-            os.path.join("sound_fx", "chest.ogg")
+            Path("sound_fx", "chest.ogg")
         )
 
     @staticmethod
@@ -120,11 +120,11 @@ class Chest(Entity):
         # Save sprites
         closed: etree.SubElement = etree.SubElement(tree, "closed")
         closed_sprite = etree.SubElement(closed, "sprite")
-        closed_sprite.text = self.sprite_close_link
+        closed_sprite.text = str(self.sprite_close_link)
 
         opened: etree.SubElement = etree.SubElement(tree, "opened")
         opened_sprite = etree.SubElement(opened, "sprite")
-        opened_sprite.text = self.sprite_open_link
+        opened_sprite.text = str(self.sprite_open_link)
 
         # Save content
         content: etree.SubElement = etree.SubElement(tree, "contains")

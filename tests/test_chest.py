@@ -1,5 +1,6 @@
 import unittest
 
+from pathlib import Path
 from src.game_entities.chest import Chest
 from src.game_entities.gold import Gold
 from src.game_entities.item import Item
@@ -15,12 +16,12 @@ class TestChest(unittest.TestCase):
 
     def test_init_chest(self):
         pos = (0, 0)
-        sprite_close = "imgs/dungeon_crawl/dungeon/chest_2_closed.png"
-        sprite_open = "imgs/dungeon_crawl/dungeon/chest_2_open.png"
+        sprite_close = Path("imgs", "dungeon_crawl", "dungeon", "chest_2_closed.png")
+        sprite_open = Path("imgs", "dungeon_crawl", "dungeon", "chest_2_open.png")
         item = Item(
             "TestItem",
-            "imgs/dungeon_crawl/item/potion/yellow_new.png",
-            "This is a desc",
+            Path("imgs", "dungeon_crawl", "item", "potion", "yellow_new.png"),
+            "desc",
             50,
         )
         potential_items = [(item, 1.0)]

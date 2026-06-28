@@ -28,14 +28,14 @@ from src.game_entities.skill import Skill
 from src.game_entities.spellbook import Spellbook
 from src.game_entities.weapon import Weapon
 from src.gui.position import Position
-from src.services.language import *
 from src.services.global_foes import link_foe_to_mission
+from src.services.language import *
 
 foes_data = {}
 fountains_data = {}
 skills_data = {}
 
-RACES_DATA_PATH = "data/races.xml"
+RACES_DATA_PATH = Path("data", "races.xml")
 
 
 def load_races() -> dict[str, dict[str, any]]:
@@ -98,7 +98,7 @@ def get_skill_data(name) -> Skill:
     """
     if name not in skills_data:
         # Required data
-        skill_element = etree.parse("data/skills.xml").find(name)
+        skill_element = etree.parse(Path("data", "skills.xml")).find(name)
         formatted_name = skill_element.find("name/" + language)
         if formatted_name is not None:
             formatted_name = formatted_name.text.strip()
@@ -231,7 +231,7 @@ def load_entities_from_save(entity_nature, data, gap_x, gap_y) -> list[Entity]:
     return collection
 
 
-def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=""):
+def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path: str | Path = ""):
     """
 
     :param entity:
@@ -244,7 +244,7 @@ def load_artificial_entity_from_save(entity, data, gap_x, gap_y, extension_path=
     name = entity.find("name").text.strip()
 
     # Static data
-    sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
+    sprite = Path("imgs", extension_path, data.find("sprite").text.strip())
     strategy = data.find("strategy").text.strip()
 
     # Dynamic data
@@ -292,7 +292,7 @@ def load_artificial_entity(
         extension_path: str = "",
 ):
     # Static data
-    sprite = "imgs/" + extension_path + data.find("sprite").text.strip()
+    sprite = Path("imgs", extension_path, data.find("sprite").text.strip())
     if strategy is None:
         strategy = data.find("strategy").text.strip()
 
@@ -330,7 +330,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
     :return:
     """
     name = ally_element.find("name").text.strip()
-    generic_data = etree.parse("data/characters.xml").find(name)
+    generic_data = etree.parse(Path("data", "characters.xml")).find(name)
 
     attributes = load_artificial_entity_from_save(
         ally_element, generic_data, gap_x, gap_y
@@ -368,7 +368,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
     loaded_ally = Character(
         attributes["name"],
         attributes["position"],
-        attributes["sprite"],
+        Path(attributes["sprite"]),
         attributes["hp"],
         attributes["defense"],
         attributes["resistance"],
@@ -398,7 +398,7 @@ def load_ally_from_save(ally_element, gap_x, gap_y):
 
 
 def load_ally(name: str, position: Position) -> Character:
-    generic_data = etree.parse("data/characters.xml").find(name)
+    generic_data = etree.parse(Path("data", "characters.xml")).find(name)
 
     attributes = load_artificial_entity(name, generic_data, position)
 
@@ -430,7 +430,7 @@ def load_ally(name: str, position: Position) -> Character:
     loaded_ally = Character(
         attributes["name"],
         attributes["position"],
-        attributes["sprite"],
+        Path(attributes["sprite"]),
         attributes["hp"],
         attributes["defense"],
         attributes["resistance"],
@@ -469,12 +469,12 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
     """
     name = foe_element.find("name").text.strip()
     if name not in foes_data:
-        foes_data[name] = etree.parse("data/foes.xml").find(name)
+        foes_data[name] = etree.parse(Path("data", "foes.xml")).find(name)
         # Load grow rates of this kind of foe in the class
         Foe.grow_rates[name] = load_stats_up(foes_data[name])
 
     attributes = load_artificial_entity_from_save(
-        foe_element, foes_data[name], gap_x, gap_y, "dungeon_crawl/monster/"
+        foe_element, foes_data[name], gap_x, gap_y, Path("dungeon_crawl", "monster")
     )
 
     # Static data foe
@@ -540,7 +540,7 @@ def load_foe_from_save(foe_element, gap_x, gap_y):
     loaded_foe = Foe(
         attributes["name"],
         attributes["position"],
-        attributes["sprite"],
+        Path(attributes["sprite"]),
         attributes["hp"],
         attributes["defense"],
         attributes["resistance"],
@@ -578,12 +578,12 @@ def load_foe(
         mission_target: str,
 ) -> Foe:
     if name not in foes_data:
-        foes_data[name] = etree.parse("data/foes.xml").find(name)
+        foes_data[name] = etree.parse(Path("data", "foes.xml")).find(name)
         # Load grow rates of this kind of foe in the class
         Foe.grow_rates[name] = load_stats_up(foes_data[name])
 
     attributes = load_artificial_entity(
-        name, foes_data[name], position, level, strategy, "dungeon_crawl/monster/"
+        name, foes_data[name], position, level, strategy, Path("dungeon_crawl", "monster")
     )
 
     # Static data foe
@@ -624,7 +624,7 @@ def load_foe(
     loaded_foe = Foe(
         attributes["name"],
         attributes["position"],
-        attributes["sprite"],
+        Path(attributes["sprite"]),
         attributes["hp"],
         attributes["defense"],
         attributes["resistance"],
@@ -661,8 +661,8 @@ def load_chest_from_save(chest, gap_x, gap_y):
     x_coordinate = int(chest.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(chest.find("position/y").text) * TILE_SIZE + gap_y
     position = Position(x_coordinate, y_coordinate)
-    sprite_closed = chest.find("closed/sprite").text.strip()
-    sprite_opened = chest.find("opened/sprite").text.strip()
+    sprite_closed = Path(chest.find("closed/sprite").text.strip())
+    sprite_opened = Path(chest.find("opened/sprite").text.strip())
 
     # Dynamic data
     potential_items = []
@@ -692,7 +692,7 @@ def load_door_from_save(door, gap_x, gap_y):
     x_coordinate = int(door.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(door.find("position/y").text) * TILE_SIZE + gap_y
     position = Position(x_coordinate, y_coordinate)
-    sprite = door.find("sprite").text.strip()
+    sprite = Path(door.find("sprite").text.strip())
 
     # Dynamic data
     pick_lock_initiated = door.find("pick_lock_initiated") is not None
@@ -715,7 +715,7 @@ def load_building_from_save(building, gap_x, gap_y, shop_balance=500):
     x_coordinate = int(building.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(building.find("position/y").text) * TILE_SIZE + gap_y
     position = Position(x_coordinate, y_coordinate)
-    sprite = building.find("sprite").text.strip()
+    sprite = Path(building.find("sprite").text.strip())
     interaction = building.find("interaction")
     interaction_element = {}
     if interaction is not None:
@@ -817,7 +817,7 @@ def load_portal_from_save(portal_couple, gap_x, gap_y):
     second_x = int(portal_couple.find("second/position/x").text) * TILE_SIZE + gap_x
     second_y = int(portal_couple.find("second/position/y").text) * TILE_SIZE + gap_y
     second_position = Position(second_x, second_y)
-    sprite = "imgs/dungeon_crawl/" + portal_couple.find("sprite").text.strip()
+    sprite = Path("imgs", "dungeon_crawl", portal_couple.find("sprite").text.strip())
     first_portal = Portal(first_position, sprite)
     second_portal = Portal(second_position, sprite)
     Portal.link_portals(first_portal, second_portal)
@@ -837,11 +837,9 @@ def load_fountain_from_save(fountain, gap_x, gap_y):
     y_coordinate = int(fountain.find("position/y").text) * TILE_SIZE + gap_y
     position = Position(x_coordinate, y_coordinate)
     if name not in fountains_data:
-        fountains_data[name] = etree.parse("data/fountains.xml").find(name)
-    sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
-    sprite_empty = (
-            "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
-    )
+        fountains_data[name] = etree.parse(Path("data", "fountains.xml")).find(name)
+    sprite = Path("imgs", "dungeon_crawl", fountains_data[name].find("sprite").text.strip())
+    sprite_empty = Path("imgs", "dungeon_crawl", fountains_data[name].find("sprite_empty").text.strip())
     effect_name = fountains_data[name].find("effect").text.strip()
     power = int(fountains_data[name].find("power").text.strip())
     duration = int(fountains_data[name].find("duration").text.strip())
@@ -859,12 +857,10 @@ def load_fountain_from_save(fountain, gap_x, gap_y):
 
 def load_fountain(name: str, position: Position) -> Fountain:
     if name not in fountains_data:
-        fountains_data[name] = etree.parse("data/fountains.xml").find(name)
+        fountains_data[name] = etree.parse(Path("data", "fountains.xml")).find(name)
 
-    sprite = "imgs/dungeon_crawl/" + fountains_data[name].find("sprite").text.strip()
-    sprite_empty = (
-            "imgs/dungeon_crawl/" + fountains_data[name].find("sprite_empty").text.strip()
-    )
+    sprite = Path("imgs", "dungeon_crawl", fountains_data[name].find("sprite").text.strip())
+    sprite_empty = Path("imgs", "dungeon_crawl", fountains_data[name].find("sprite_empty").text.strip())
 
     effect_name = fountains_data[name].find("effect").text.strip()
     power = int(fountains_data[name].find("power").text.strip())
@@ -887,7 +883,7 @@ def load_breakable_from_save(breakable, gap_x, gap_y):
     x_coordinate = int(breakable.find("position/x").text) * TILE_SIZE + gap_x
     y_coordinate = int(breakable.find("position/y").text) * TILE_SIZE + gap_y
     pos = (x_coordinate, y_coordinate)
-    sprite = "imgs/dungeon_crawl/dungeon/" + breakable.find("sprite").text.strip()
+    sprite = Path("imgs", "dungeon_crawl", "dungeon", breakable.find("sprite").text.strip())
     hit_points = int(breakable.find("current_hp").text.strip())
 
     return Breakable(pos, sprite, hit_points, 0, 0)
@@ -1011,7 +1007,7 @@ def load_player(player_element, from_save):
         ]
         for alteration in player_element.findall("alterations/alteration"):
             alterations.append(load_alteration(alteration))
-        tree = etree.parse("data/characters.xml").getroot()
+        tree = etree.parse(Path("data", "characters.xml")).getroot()
         player_t = tree.xpath(name)[0]
     else:
         skills = (
@@ -1021,10 +1017,10 @@ def load_player(player_element, from_save):
         player_t = player_element
 
     # -- Reading of the XML file for default character's values (i.e. sprites)
-    sprite = "imgs/" + player_t.find("sprite").text.strip()
+    sprite = Path("imgs", player_t.find("sprite").text.strip())
     compl_sprite = player_t.find("complement_sprite")
     if compl_sprite is not None:
-        compl_sprite = "imgs/" + compl_sprite.text.strip()
+        compl_sprite = Path("imgs", compl_sprite.text.strip())
 
     player = Player(
         name,
@@ -1094,7 +1090,7 @@ def init_player(name):
     :return:
     """
     # -- Reading of the XML file
-    tree = etree.parse("data/characters.xml").getroot()
+    tree = etree.parse(Path("data", "characters.xml")).getroot()
     player_t = tree.xpath(name)[0]
     return load_player(player_t, False)
 
@@ -1147,9 +1143,9 @@ def parse_item_file(name):
     :return:
     """
     # Retrieve data root for item
-    item_tree_root = etree.parse("data/items.xml").getroot().find(".//" + name)
+    item_tree_root = etree.parse(Path("data", "items.xml")).getroot().find(".//" + name)
 
-    sprite = "imgs/dungeon_crawl/item/" + item_tree_root.find("sprite").text.strip()
+    sprite = Path("imgs", "dungeon_crawl", "item", item_tree_root.find("sprite").text.strip())
     info = get_localized_string(item_tree_root.find("info")).strip()
     price = item_tree_root.find("price")
     if price is not None:
@@ -1188,12 +1184,17 @@ def parse_item_file(name):
             equipped_sprites = []
             for eq_sprite in equipment_sprites.findall("sprite"):
                 equipped_sprites.append(
-                    "imgs/dungeon_crawl/player/" + eq_sprite.text.strip()
+                    Path(
+                        "imgs", "dungeon_crawl", "player",
+                        eq_sprite.text.strip()
+                    )
                 )
         else:
             equipped_sprites = [
-                "imgs/dungeon_crawl/player/"
-                + item_tree_root.find("equipped_sprite").text.strip()
+                Path(
+                    "imgs", "dungeon_crawl", "player",
+                    item_tree_root.find("equipped_sprite").text.strip()
+                )
             ]
         restrictions = load_restrictions(item_tree_root.find("restrictions"))
         item = Equipment(
@@ -1217,9 +1218,12 @@ def parse_item_file(name):
         )
         fragility = int(item_tree_root.find("fragility").text.strip())
         weight = int(item_tree_root.find("weight").text.strip())
+
         equipped_sprite = [
-            "imgs/dungeon_crawl/player/hand_left/"
-            + item_tree_root.find("equipped_sprite").text.strip()
+            Path(
+                "imgs", "dungeon_crawl", "player", "hand_left",
+                item_tree_root.find("equipped_sprite").text.strip()
+            )
         ]
         restrictions = load_restrictions(item_tree_root.find("restrictions"))
         item = Shield(
@@ -1243,8 +1247,10 @@ def parse_item_file(name):
             int(reach) for reach in item_tree_root.find("range").text.strip().split(",")
         ]
         equipped_sprite = [
-            "imgs/dungeon_crawl/player/hand_right/"
-            + item_tree_root.find("equipped_sprite").text.strip()
+            Path(
+                "imgs", "dungeon_crawl", "player", "hand_right",
+                item_tree_root.find("equipped_sprite").text.strip()
+            )
         ]
         restrictions = load_restrictions(item_tree_root.find("restrictions"))
         effects = item_tree_root.find("effects")

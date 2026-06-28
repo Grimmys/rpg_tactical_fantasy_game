@@ -1,6 +1,7 @@
 import random as rd
 import unittest
 
+from pathlib import Path
 from src.game_entities.building import Building
 from tests.random_data_library import (random_building,
                                        random_character_entity, random_item,
@@ -16,7 +17,7 @@ class TestBuilding(unittest.TestCase):
     def test_init_building_empty_interaction(self):
         name = "house"
         pos = (3, 2)
-        sprite = "imgs/houses/blue_house.png"
+        sprite = Path("imgs", "houses", "blue_house.png")
         interaction = {}
         house = Building(name, pos, sprite, interaction)
 
@@ -27,7 +28,7 @@ class TestBuilding(unittest.TestCase):
     def test_init_building_interactive(self):
         name = "house"
         pos = (3, 2)
-        sprite = "imgs/houses/blue_house.png"
+        sprite = Path("imgs", "houses", "blue_house.png")
         interaction = {
             "talks": [
                 random_string(min_len=10, max_len=100),

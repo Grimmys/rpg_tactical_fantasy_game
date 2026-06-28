@@ -6,6 +6,7 @@ Generally, this class helps to represent breakable walls.
 from __future__ import annotations
 
 import pygame
+from pathlib import Path
 from lxml import etree
 
 from src.game_entities.destroyable import Destroyable
@@ -20,7 +21,7 @@ class Breakable(Destroyable):
 
     Keyword arguments:
     position -- the current position of the entity on screen
-    sprite -- the relative path to the visual representation of the entity
+    sprite_path -- the relative path to the visual representation of the entity
     hit_points -- the total of damage that the entity can take before disappearing
     defense -- the resistance of the entity from physical attacks
     resistance -- the resistance of the entity from spiritual attacks
@@ -32,14 +33,14 @@ class Breakable(Destroyable):
     def __init__(
         self,
         position: tuple[int, int],
-        sprite: str,
+        sprite_path: Path,
         hit_points: int,
         defense: int,
         resistance: int,
     ) -> None:
-        super().__init__("Breakable", position, sprite, hit_points, defense, resistance)
+        super().__init__("Breakable", position, sprite_path, hit_points, defense, resistance)
         # Useful in case of saving
-        self.sprite_link: str = sprite
+        self.sprite_link: Path = sprite_path
 
     def display(self, screen: pygame.Surface) -> None:
         """
