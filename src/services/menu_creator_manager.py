@@ -56,6 +56,7 @@ SHOP_MENU_ID = "shop"
 CHARACTER_ACTION_MENU_ID = "character_action"
 CONTROLS_MENU_ID = "controls_help"
 GAME_SAVED_INFO_BOX_ID = "game_has_been_saved"
+GAME_SAVED_INFO_ID = GAME_SAVED_INFO_BOX_ID
 
 close_function: Optional[Callable] = None
 
