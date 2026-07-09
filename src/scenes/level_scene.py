@@ -7,8 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from enum import IntEnum, auto
-from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import pygame
 import pytmx
@@ -63,7 +62,6 @@ from src.services.menu_creator_manager import (CHARACTER_ACTION_MENU_ID, GAME_SA
                                                create_save_dialog)
 from src.services.menus import CharacterMenu
 from src.services.save_state_manager import SaveStateManager
-
 
 DEFAULT_MUSIC: Path = Path("sound_fx", "soundtrack.ogg").resolve().absolute()
 
@@ -215,7 +213,7 @@ class LevelScene(Scene):
             self.tmx_data, (map_width, map_height)
         )
 
-        self.map: dict[str, any] = {
+        self.map: dict[str, Any] = {
             "img": map_static_content,
             "width": map_width,
             "height": map_height,
@@ -230,7 +228,7 @@ class LevelScene(Scene):
 
         self.is_loaded: bool = False
 
-        self.events: dict[str, any] = {}
+        self.events: dict[str, Any] = {}
         self.player_possible_placements: Sequence[Position] = []
 
         self.menu_manager = MenuManager(self.screen)

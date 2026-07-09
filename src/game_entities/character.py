@@ -7,7 +7,7 @@ from __future__ import annotations
 import math
 import random
 from collections.abc import Sequence
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import pygame
 from pygamepopup.components import BoxElement, TextElement
@@ -64,12 +64,12 @@ class Character(Movable):
     constitution -- the global constitution of the character used to know its capacity to bear items
     """
 
-    races_data: dict[str, dict[str, any]] = {}
-    classes_data: dict[str, dict[str, any]] = {}
+    races_data: dict[str, dict[str, Any]] = {}
+    classes_data: dict[str, dict[str, Any]] = {}
 
     @staticmethod
     def init_data(
-        races: dict[str, dict[str, any]], classes: dict[str, dict[str, any]]
+        races: dict[str, dict[str, Any]], classes: dict[str, dict[str, Any]]
     ) -> None:
         """
         Initialize the generic data collections for Character.
@@ -99,7 +99,7 @@ class Character(Movable):
         alterations: list[Alteration],
         race: str,
         gold: int,
-        interaction: dict[str, any],
+        interaction: dict[str, Any],
         complementary_sprite_link: Optional[str] = None,
     ):
         super().__init__(
@@ -123,7 +123,7 @@ class Character(Movable):
         self.classes: Sequence[str] = classes
         self.race: str = race
         self.gold: int = gold
-        self.interaction: dict[str, any] = interaction
+        self.interaction: dict[str, Any] = interaction
         self.join_team: bool = False
         self.reach_: Sequence[int] = [1]
         self.constitution: int = (

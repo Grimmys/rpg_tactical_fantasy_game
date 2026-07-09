@@ -4,7 +4,7 @@ Defines Building class, an entity that can be visited by the player
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Any
 
 import pygame
 from pygamepopup.components import BoxElement, TextElement
@@ -50,12 +50,12 @@ class Building(Entity):
         name: str,
         position: Position,
         sprite_link: Path,
-        interaction: Optional[dict[str, any]] = None,
+        interaction: Optional[dict[str, Any]] = None,
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__(name, position, sprite if sprite else sprite_link)
         self.sprite_link: Path = sprite_link
-        self.interaction: dict[str, any] = interaction
+        self.interaction: Optional[dict[str, Any]] = interaction
         self.door_sfx: pygame.mixer.Sound = pygame.mixer.Sound(
             Path("sound_fx", "door.ogg")
         )

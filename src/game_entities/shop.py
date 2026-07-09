@@ -5,7 +5,7 @@ Defines Shop class, a Building in which a player character can buy or sell stuff
 from __future__ import annotations
 
 from copy import copy
-from typing import Optional
+from typing import Optional, Any
 
 import pygame.mixer
 from pygamepopup.components import BoxElement, Button, InfoBox, TextElement
@@ -28,7 +28,7 @@ class Shop(Building):
     position -- the current position of the shop on screen
     sprite_link -- the relative path to the visual representation of the shop
     stock -- the data structure containing all the available items to be bought with their associated quantity
-    interaction -- the interaction that should be triggered when a character player try to interact with the shop
+    interaction -- the interaction that should be triggered when a character player tries to interact with the shop
     sprite -- the pygame Surface corresponding to the appearance of the shop on screen,
     would be loaded from sprite_link if not provided
 
@@ -50,15 +50,15 @@ class Shop(Building):
         position: Position,
         sprite_link: Path,
         shop_balance: int,
-        stock: list[dict[str, any]],
-        interaction: Optional[dict[str, any]] = None,
+        stock: list[dict[str, Any]],
+        interaction: Optional[dict[str, Any]] = None,
         sprite: Optional[pygame.Surface] = None,
     ) -> None:
         super().__init__(name, position, sprite_link, interaction, sprite)
         self.shop_balance = shop_balance
         self.current_visitor: Optional[Character] = None
-        self.stock: list[dict[str, any]] = stock
-        self.interaction: dict[str, any] = interaction
+        self.stock: list[dict[str, Any]] = stock
+        self.interaction: dict[str, Any] = interaction
         self.menu: InfoBox = menu_creator_manager.create_shop_menu(
             Shop.interaction_callback, self.stock, 0, self.shop_balance
         )
@@ -66,7 +66,7 @@ class Shop(Building):
             Path("sound_fx", "trade.ogg")
         )
 
-    def get_item_entry(self, item: Item) -> Optional[dict[str, any]]:
+    def get_item_entry(self, item: Item) -> Optional[dict[str, Any]]:
         """
         Return the entry corresponding to one item
 
@@ -131,7 +131,7 @@ class Shop(Building):
                 self.current_visitor.gold -= item.price
                 self.current_visitor.set_item(copy(item))
                 self.shop_balance += item.price
-                entry: Optional[dict[str, any]] = self.get_item_entry(item)
+                entry: Optional[dict[str, Any]] = self.get_item_entry(item)
                 entry["quantity"] -= 1
                 if entry["quantity"] <= 0:
                     self.stock.remove(entry)

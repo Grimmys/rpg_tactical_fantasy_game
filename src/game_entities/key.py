@@ -8,7 +8,7 @@ from pathlib import Path
 
 class Key(Item):
     """
-    A Key is an Item that can permits to open doors or chests.
+    A Key is an Item to open doors or chests.
 
     Keyword arguments:
     name -- the name of the item

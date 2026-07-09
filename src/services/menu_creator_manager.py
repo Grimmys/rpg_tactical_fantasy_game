@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 from collections.abc import Callable, Sequence
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import pygame
 from pygamepopup.components import (BoxElement, Button, DynamicButton, InfoBox,
@@ -1213,7 +1213,7 @@ def create_status_entity_menu(
     )
 
 
-def create_event_dialog(dialog_element: dict[str, any]) -> InfoBox:
+def create_event_dialog(dialog_element: dict[str, Any]) -> InfoBox:
     """
     Return the interface of a dialog.
 

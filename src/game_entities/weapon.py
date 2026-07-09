@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import random
 from collections.abc import Sequence
+from typing import Any
 
 from lxml import etree
 from pathlib import Path
@@ -64,7 +65,7 @@ class Weapon(Equipment):
         durability: int,
         reach: Sequence[int],
         restrictions: dict[str, Sequence[str]],
-        possible_effects: Sequence[dict[str, any]],
+        possible_effects: Sequence[dict[str, Any]],
         strong_against: Sequence[Keyword],
         can_charge: bool = False,
     ):
@@ -85,7 +86,7 @@ class Weapon(Equipment):
         self.durability: int = self.durability_max
         self.reach: Sequence[int] = reach
         self.attack_kind: DamageKind = DamageKind[attack_kind]
-        self.effects: Sequence[dict[str, any]] = possible_effects
+        self.effects: Sequence[dict[str, Any]] = possible_effects
         self.strong_against: Sequence[Keyword] = strong_against
         self.can_charge: bool = can_charge
 

@@ -32,7 +32,7 @@ class MissionType(Enum):
 
 class Mission:
     """
-    A Mission is an objective that can be accomplished by the player during a level.
+    A Mission is an objective that can be achieved by the player during a level.
     It can be a primary objective (i.e. mandatory) or only a secondary objective.
 
     Keyword Arguments:
@@ -90,7 +90,7 @@ class Mission:
 
     def is_position_valid(self, position: Position) -> bool:
         """
-        Determine whether the mission can be accomplished from the given position or not.
+        Determine whether the mission can be achieved from the given position or not.
         Return the result of the computation.
 
         Keyword Arguments:
@@ -120,7 +120,7 @@ class Mission:
         Return always True.
 
         Keyword Arguments:
-        player -- the player character who have validated the mission if any
+        player -- the player character who has validated the mission if any
         entities -- the list of entities related to the mission
         turns -- the number of turns elapsed since the beginning of the current level
         """

@@ -120,7 +120,7 @@ class Player(Character):
         # Memorize normal state sprite
         self.normal_sprite: pygame.Surface = self.sprite
 
-        # Memorize the current action performed by the player, it must be a value of CharacterMenu
+        # Memorize the current action performed by the player; it must be a value of CharacterMenu
         self.current_action: Optional[CharacterMenu] = None
 
     def set_initial_pos(self, position: Position) -> None:
@@ -183,7 +183,7 @@ class Player(Character):
 
     def is_waiting_post_action(self) -> bool:
         """
-        Return whether the player is waiting a post action or not
+        Return whether the player is waiting a post-action or not
         """
         return (
             self.state is PlayerState.WAITING_POST_ACTION
@@ -192,7 +192,7 @@ class Player(Character):
 
     def target_selected(self) -> None:
         """
-        Change back the state to waiting an action and not waiting for the selection of a target
+        Change back the state to waiting for an action and not waiting for the selection of a target
         """
         self.state = PlayerState.WAITING_POST_ACTION
 
@@ -254,7 +254,7 @@ class Player(Character):
         """
         Equip the given equipment.
 
-        Return whether the equipment has been equipped or not and if it replaced an another equipment.
+        Return whether the equipment has been equipped or not and if it replaced another equipment.
 
         Keyword arguments:
         equipment -- the equipment that should be equipped

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Optional
+from typing import Optional, Any
 
 from src.constants import TILE_SIZE
 from src.game_entities.alteration import Alteration
@@ -38,7 +38,7 @@ skills_data = {}
 RACES_DATA_PATH = Path("data", "races.xml")
 
 
-def load_races() -> dict[str, dict[str, any]]:
+def load_races() -> dict[str, dict[str, Any]]:
     """
 
     :return:

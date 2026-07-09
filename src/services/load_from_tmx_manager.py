@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 import logging
 
@@ -248,9 +248,9 @@ def load_chests(
     return chests
 
 
-def load_dialog(directory: Path, dialog_file_index: str) -> dict[str, any]:
+def load_dialog(directory: Path, dialog_file_index: str) -> dict[str, Any]:
     dialog_path: Path = (directory / ("dialog_" + str(dialog_file_index))).with_suffix(".txt")
-    dialog: dict[str, any] = {}
+    dialog: dict[str, Any] = {}
     try:
         with open(dialog_path, encoding="utf-8") as dialog_file:
             dialog["title"] = dialog_file.readline().rstrip("\n")
@@ -281,7 +281,7 @@ def load_house_dialog(directory: Path, dialog_file_index: str) -> Sequence[str]:
 
 def load_events(
         tmx_data: pytmx.TiledMap, directory: Path, horizontal_gap: int, vertical_gap: int
-) -> dict[str, any]:
+) -> dict[str, Any]:
     events = {}
     for tile_object in tmx_data.get_layer_by_name("events"):
         events[tile_object.type] = {}
@@ -322,7 +322,7 @@ def load_buildings(
         if tile_object.type == "building":
             position = _get_object_position(tile_object, horizontal_gap, vertical_gap)
             image = pygame.transform.scale(tile_object.image, (TILE_SIZE, TILE_SIZE))
-            interaction: Optional[dict[str, any]] = {}
+            interaction: Optional[dict[str, Any]] = {}
             dialog_ids: Optional[Sequence[str]] = (
                 tile_object.properties["house_dialogs"].split(",")
                 if "house_dialogs" in tile_object.properties

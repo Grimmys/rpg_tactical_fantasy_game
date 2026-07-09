@@ -1,6 +1,7 @@
 """
 Defines Alteration class, permitting to temporarily modify the state of a living-entity.
 """
+from typing import Any
 
 from lxml import etree
 
@@ -38,7 +39,7 @@ class Alteration:
         power: int,
         duration: int,
         description: str,
-        specificities: any = None,
+        specificities: Any = None,
     ) -> None:
         if specificities is None:
             specificities = []
@@ -48,7 +49,7 @@ class Alteration:
         self.duration: int = duration
         self.time: int = 0
         self.description: str = description
-        self.specificities: any = specificities
+        self.specificities: Any = specificities
 
     def get_turns_left(self) -> int:
         """
