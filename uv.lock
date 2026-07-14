@@ -182,8 +182,8 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "lxml", specifier = ">=4.6.1" },
-    { name = "pygame-ce", specifier = ">=2.0.0" },
-    { name = "pygame-popup", specifier = "==0.11.2" },
+    { name = "pygame-ce", specifier = ">=2.5.7" },
+    { name = "pygame-popup", specifier = ">=0.11.2" },
     { name = "pytest", specifier = ">=9.0.0" },
     { name = "pytmx", specifier = ">=3.31" },
 ]
