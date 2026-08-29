@@ -1,6 +1,8 @@
-Jist
+CÓMO FUNCIONAN LOS RPGS
 
-¡Hola, aventureros! La situación es crítica. Unos matones han robado huesos de ogro enterrados en la cripta.
-Desde entonces, la aldea ha sido constantemente atacada por los no muertos...
-Afortunadamente, logré recuperar los huesos de los matones.
-¡Buena suerte, aventureros! Todos los habitantes de Nervie los apoyamos.
+Este es un RPG táctico por turnos.
+Mueve tus unidades y luego los enemigos. ¡Planifica con cuidado!
+Cada personaje tiene Salud, Ataque y Defensa. Haz clic en las unidades para ver su información.
+Rodea a los enemigos y usa el terreno para ganar batallas.
+Normalmente, derrota a todos los enemigos o alcanza un objetivo para ganar la misión.
+¿Listos? ¡Aprendamos los controles!
