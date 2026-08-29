@@ -1,3 +1,5 @@
+import importlib
+import json
 import shutil
 import unittest
 from pathlib import Path
@@ -11,6 +13,7 @@ from src.gui.position import Position
 from src.scenes.level_scene import LevelScene
 from src.scenes.scene import QuitActionKind
 from src.scenes.start_scene import StartScene
+from src.services import options_manager as options_manager_module
 from tests.tools import minimal_setup_for_game
 
 NEW_GAME_BUTTON_POS = Position(200, 230)
@@ -170,6 +173,28 @@ class TestStartScreen(unittest.TestCase):
             self.start_screen.menu_manager.background_menus[0], old_active_menu
         )
         self.assertNotEqual(self.start_screen.menu_manager.active_menu, old_active_menu)
+
+    def test_audio_options_are_backfilled_from_defaults(self):
+        options_path = Path("saves/options.json")
+        original_options = None
+        if options_path.exists():
+            original_options = options_path.read_text(encoding="utf-8")
+
+        try:
+            options_path.write_text(
+                json.dumps({"language": "en", "move_speed": 4, "screen_size": 1}),
+                encoding="utf-8",
+            )
+            importlib.reload(options_manager_module)
+
+            self.assertEqual(1, options_manager_module.get_option("bgm"))
+            self.assertEqual(1, options_manager_module.get_option("sfx"))
+        finally:
+            if original_options is None:
+                options_path.unlink(missing_ok=True)
+            else:
+                options_path.write_text(original_options, encoding="utf-8")
+            importlib.reload(options_manager_module)
 
     def test_exit_game(self):
         # Generate random pos on exit game button

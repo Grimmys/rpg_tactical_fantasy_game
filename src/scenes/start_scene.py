@@ -219,6 +219,8 @@ class StartScene(Scene):
                     "language": str(options_manager.get_option("language")),
                     "move_speed": int(options_manager.get_option("move_speed")),
                     "screen_size": int(options_manager.get_option("screen_size")),
+                    "bgm": int(options_manager.get_option("bgm")),
+                    "sfx": int(options_manager.get_option("sfx")),
                 },
                 self.modify_option_value,
             )
@@ -253,10 +255,14 @@ class StartScene(Scene):
             Movable.move_speed = option_value
         elif option_name == "screen_size":
             StartScene.screen_size = option_value
+        elif option_name == "bgm":
+            pygame.mixer.music.set_volume(option_value)
+        elif option_name == "sfx":
+            pygame.mixer.set_num_channels(8 if option_value else 0)
         else:
             print(f"Unrecognized option name : {option_name} with value {option_value}")
             return
-        options_manager.set_option(option_name, str(option_value))
+        options_manager.set_option(option_name, option_value)
 
     @staticmethod
     def execute_action(action: Callable) -> None:

@@ -57,6 +57,7 @@ if __name__ == "__main__":
     from src.gui import constant_sprites, fonts
     from src.services import load_from_xml_manager as loader
     from src.services import load_from_json_manager as json_loader
+    from src.services import options_manager
     from src.services.language import *
     from src.services.language import STR_GAME_TITLE
 
@@ -79,6 +80,10 @@ if __name__ == "__main__":
 
     pygame.display.set_caption(STR_GAME_TITLE)
     main_screen = pygame.display.set_mode((MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT))
+
+    pygame.mixer.music.set_volume(options_manager.get_option("bgm"))
+    if not options_manager.get_option("sfx"):
+        pygame.mixer.set_num_channels(0)
 
     # Make sure the game will display correctly on high DPI monitors on Windows.
     if platform.system() == "Windows":
